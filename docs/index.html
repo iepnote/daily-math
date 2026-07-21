@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 49 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 50 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -660,6 +660,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .seqmodel .crow5{ gap:3.5px; }
 .seqmodel .cdot{ width:12px; height:12px; }
 .seqrow.withmodel{ gap:.9rem; }   /* 모형 폭이 상자와 비슷해져 간격은 조금만 확대 */
+.seqrow.withmodel.wide{ gap:2.2rem; }   /* 뛰어세기: 막대가 여러 개라 모형이 넓어 더 벌림 */
 
 </style>
 </head>
@@ -676,7 +677,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 49';
+const APP_VERSION = 'ver 50';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3445,12 +3446,15 @@ function seqModel(n, dotsOnly) {
 function hintSeq(p, h, stage) {
   const rule = p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 ${p.step}씩 커져요. 뛰어 세어 봐요.`;
   /* 1차: 채워진 수 아래에 수 모형 — 빈칸은 비워 두어 "얼마씩 늘어나는지" 규칙을 스스로 찾게.
-     20 초과(뛰어세기 큰 수)는 모형 폭이 상자 간격을 넘어 겹치므로 글 안내만 */
-  const useModel = Math.max(...p.arr) <= 20;
-  /* 10을 건너는 구간(예: 8·9·10·11)은 막대로 바뀌면 연속성이 끊겨 보임 → 전부 동그라미로 */
-  const dotsOnly = Math.min(...p.arr) < 10 && Math.max(...p.arr) >= 10;
+     뛰어세기(최대 80)도 포함: 10씩=막대만 하나씩 / 5씩=막대+동그라미 5개가 번갈아 — 규칙이 눈에 보임 */
+  const useModel = Math.max(...p.arr) <= 80;
+  /* 10을 건너는 구간(예: 8·9·10·11)은 막대로 바뀌면 연속성이 끊겨 보임 → 전부 동그라미로.
+     단 뛰어세기(step≠1)는 제외 — 5씩인데 20을 동그라미 20개로 그리면 "5씩"이 오히려 안 보임 */
+  const dotsOnly = p.step === 1 && Math.min(...p.arr) < 10 && Math.max(...p.arr) >= 10;
   if (useModel) {
-    const row = document.querySelector('#qface .seqrow'); if (row) row.classList.add('withmodel');   // 모형 폭만큼 상자 간격 확대
+    const row = document.querySelector('#qface .seqrow');
+    /* 뛰어세기는 막대가 여러 개라 모형이 넓어짐 → 상자 간격을 더 벌림 */
+    if (row) row.classList.add('withmodel', ...(p.step === 1 ? [] : ['wide']));
     [...document.querySelectorAll('#qface .seqbox')].forEach((b, i) => {
       if (i !== p.blank && !b.querySelector('.seqmodel')) b.insertAdjacentHTML('beforeend', seqModel(p.arr[i], dotsOnly));
     });
