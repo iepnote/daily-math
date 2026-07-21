@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 40 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 41 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -646,7 +646,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 40';
+const APP_VERSION = 'ver 41';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2601,6 +2601,7 @@ function setPref(group, v) {
    ========================================================= */
 let calY = null, calM = null;
 function renderCalendar(justFinished, keepMonth) {
+  document.querySelectorAll('#stage .grpring, #stage .gbox').forEach(e => e.remove());   // 마지막 문제의 힌트 잔여물 정리(노란 묶음이 완료 화면에 남던 버그)
   if (!keepMonth) { const t = new Date(); calY = t.getFullYear(); calM = t.getMonth(); }
   const now = new Date(); const atCurrent = (calY > now.getFullYear()) || (calY === now.getFullYear() && calM >= now.getMonth());
   const resumable = !!(current && (() => { const r = lsGet('resume:' + current.id, null); return r && r.date === todayStr() && r.idx < r.items.length; })());
