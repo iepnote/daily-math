@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 41 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 42 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -424,6 +424,8 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 
 /* ===== 마스코트·칭찬 도장·점수 팝업 ===== */
 .mascot-imgs{ display:flex; align-items:center; justify-content:center; gap:1rem; }
+.kidface{ width:150px; height:150px; object-fit:cover; border-radius:22px; border:3px solid var(--accent-strong);
+  display:block; margin:0 auto; box-shadow:0 4px 12px rgba(0,0,0,.15); }
 .mascot-imgs img{ height:130px; }
 .praiseimg{ height:160px; }
 .cheerstamp{ position:absolute; top:24px; left:calc(100% - 50px); height:240px; transform:rotate(11deg);
@@ -646,7 +648,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 41';
+const APP_VERSION = 'ver 42';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2600,6 +2602,20 @@ function setPref(group, v) {
    07 달력 (학생 홈 화면) + 점수 팝업
    ========================================================= */
 let calY = null, calM = null;
+/* 학생 사진: 한글놀이터와 저장소 공유(hubPhotos, 같은 오리진) → 없으면 같은 Supabase의 hangul_students에서 */
+async function photoFor(name) {
+  try { const ph = JSON.parse(localStorage.getItem('hubPhotos') || '{}'); if (ph[name]) return ph[name]; } catch (e) { }
+  if (!IS_REMOTE() || !navigator.onLine || !current) return null;
+  try {
+    const r = await fetch(REMOTE.url + '/rest/v1/hangul_students?class_code=eq.' + current.classCode
+      + '&name=eq.' + encodeURIComponent(name) + '&select=photo',
+      { headers: { 'apikey': REMOTE.anonKey, 'x-class-code': current.classCode } });
+    const rows = await r.json();
+    const p = rows && rows[0] && rows[0].photo;
+    if (p) { try { const ph = JSON.parse(localStorage.getItem('hubPhotos') || '{}'); ph[name] = p; localStorage.setItem('hubPhotos', JSON.stringify(ph)); } catch (e) { } }
+    return p || null;
+  } catch (e) { return null; }
+}
 function renderCalendar(justFinished, keepMonth) {
   document.querySelectorAll('#stage .grpring, #stage .gbox').forEach(e => e.remove());   // 마지막 문제의 힌트 잔여물 정리(노란 묶음이 완료 화면에 남던 버그)
   if (!keepMonth) { const t = new Date(); calY = t.getFullYear(); calM = t.getMonth(); }
@@ -2630,6 +2646,12 @@ function renderCalendar(justFinished, keepMonth) {
     </div>
     <div class="cal-grid">${cells}</div>
   </div>`;
+  // 학생 사진이 있으면 상단 그림(참잘했어요/마스코트)을 사진으로 교체 — 한글놀이터에서 등록한 사진 재사용
+  photoFor(current.name).then(p => {
+    if (!p) return;
+    const host = $('wrap').querySelector('.praiseimg, .mascot-imgs');
+    if (host) host.outerHTML = `<img class="kidface" src="${p}" alt="">`;
+  });
   if (justFinished) {
     if (lastScore) showScorePop(lastScore);
     setTimeout(() => speak("오늘 날짜에 동그라미를 했어요."), 900);
