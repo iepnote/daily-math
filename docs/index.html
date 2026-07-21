@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 53 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 54 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -670,6 +670,18 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .btn-name.guest{ border-style:dashed; border-color:var(--teal); background:#E9F7F5; }
 .btn-name.guest .nm{ color:#00695C; }
 
+/* ===== 모으기·가르기 개선(v54) ===== */
+.gcell.gans .qblank.plain{ border:0; padding:0; }              /* 점선 상자 없이 물음표만 */
+.gsplit.ctr .gcell{ align-items:center; justify-content:center; }   /* 5까지는 상자 가운데 배치 */
+.cdot.gv{ background-color:#7CB342; border-color:#33691E; }    /* 갈라 줄 만큼 표시하는 연두 동그라미 */
+/* 자유 가르기 */
+.gsplit.free .fdot{ cursor:grab; touch-action:none; user-select:none; transition:none; }
+.gsplit.free .fdot.lift{ position:relative; z-index:9; box-shadow:0 10px 18px rgba(0,0,0,.35); cursor:grabbing; }
+.gsplit.free .gcell{ gap:5px; flex-wrap:wrap; align-content:flex-start; }
+.gsplit.free .gcell.drop{ border-style:dashed; }
+.fcount{ margin-top:.5rem; font-size:1.5rem; font-weight:800; color:var(--accent-strong); }
+.fcount span{ display:inline-block; min-width:1.6em; padding:.05em .3em; border-radius:.5rem; background:var(--choice-bg); }
+
 </style>
 </head>
 <body>
@@ -685,7 +697,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 53';
+const APP_VERSION = 'ver 54';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -773,6 +785,7 @@ const LEVELS = [
  { id: 42, g: "기초 · 수 감각", name: "크기 비교", gen: () => { const a = R(1, 9); let b; do { b = R(1, 9); } while (b === a); return { type: 'compare', a, b, ans: a > b ? 0 : 1 }; } },
  { id: 40, g: "기초 · 모으기와 가르기", name: "다섯까지 모으기·가르기", gen: () => gatherSplit(5) },
  { id: 41, g: "기초 · 모으기와 가르기", name: "아홉까지 모으기·가르기", gen: () => gatherSplit(9) },
+ { id: 49, g: "기초 · 모으기와 가르기", name: "자유롭게 가르기", gen: () => { const n = R(3, 9); return { type: 'freesplit', n, ans: n }; } },
  { id: 1, g: "1학년 · 5까지의 수", name: "5 이하 덧셈", gen: () => bAdd(5) },
  { id: 2, g: "1학년 · 5까지의 수", name: "5 이하 뺄셈", gen: () => bSub(5) },
  { id: 3, g: "1학년 · 5까지의 수", name: "5 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(5) : bSub(5) },
@@ -819,13 +832,13 @@ const LEVELS = [
 const levelById = id => LEVELS.find(l => l.id === id) || LEVELS[0];
 /* 진급 순서(교육과정 순) — id 번호와 다름: 10의 보수(16~18)와 다리 단계(32~33)가 두 자리 받아올림·내림(14~15)의 선수 기능.
    id 1~18은 저장된 진도 때문에 번호 변경 금지 → 순서표로 해결 */
-const LEVEL_ORDER = [36, 37, 38, 39, 47, 48, 43, 42, 40, 41, 1, 2, 3, 34, 35, 4, 45, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 32, 33, 14, 15, 19, 20, 21, 22, 44, 23, 24, 25, 26, 27, 46, 28, 29, 30, 31];
+const LEVEL_ORDER = [36, 37, 38, 39, 47, 48, 43, 42, 40, 41, 49, 1, 2, 3, 34, 35, 4, 45, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 17, 18, 32, 33, 14, 15, 19, 20, 21, 22, 44, 23, 24, 25, 26, 27, 46, 28, 29, 30, 31];
 /* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) — 저장·내부 참조는 여전히 id (id 1~18 변경 금지 원칙 유지) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
 /* 단계 선택 화면의 영역 탭 — 표시용 묶음(진급 순서는 LEVEL_ORDER 그대로) */
 const LEVEL_BANDS = [
-  { name: '수 기초', ids: [36, 37, 38, 39, 47, 48, 43, 42, 40, 41] },
+  { name: '수 기초', ids: [36, 37, 38, 39, 47, 48, 43, 42, 40, 41, 49] },
   { name: '한 자리 수 덧셈·뺄셈', ids: [1, 2, 3, 34, 35, 4, 45, 11, 12, 13, 16, 17, 18, 32, 33] },
   { name: '두 자리 수 덧셈·뺄셈', ids: [5, 6, 7, 8, 9, 10, 14, 15] },
   { name: '세 자리 수 덧셈·뺄셈', ids: [19, 20, 21, 22, 31] },
@@ -1453,6 +1466,7 @@ const qStr = p => {
   if (p.type === 'put') return `담기 (${p.n})`;
   if (p.type === 'gather') return `${p.a}${sgn('+')}${p.b} 모으기`;
   if (p.type === 'split') return `${p.n}은 ${p.k}과 ☐`;
+  if (p.type === 'freesplit') return `${p.n} 자유 가르기`;
   if (p.type === 'compare') return `크기 비교 ${p.a} : ${p.b}`;
   if (p.type === 'seq') return p.arr.map((v, i) => i === p.blank ? '☐' : v).join(', ');
   if (p.type === 'word') return `문장제 ${p.a} ${sgn(p.op)} ${p.b}`;
@@ -1530,12 +1544,15 @@ function paintFace(flip) {
   if (before) runFlip(el, before);
   if (p.type === 'put') initPut();                // 담기: 드래그/탭 상호작용 연결
   if (p.type === 'count') initCount();            // 세기: 동그라미 누르면 "하나, 둘…" 소리
-  if (p.type === 'gather' || p.type === 'split') initTapCount('#qface .gcell .cdot');   // 모으기·가르기도 탭 세기
+  /* 탭 세기는 상자별 독립 카운터 — 모으기만 위 두 상자를 이어 셈(2+3=5), 아래·가르기는 상자마다 1부터 */
+  if (p.type === 'gather') { initTapCount('#gA .cdot, #gB .cdot'); initTapCount('#gC .cdot'); }
+  if (p.type === 'split') { initTapCount('#gC .cdot'); initTapCount('#gA .cdot'); initTapCount('#gB .cdot'); }
+  if (p.type === 'freesplit') initFreeSplit();
 }
 function paintChoices() {
   const p = session.items[session.idx];
   if (p.type === 'put') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="putSubmit()">다 담았어요 ✓</button>`; return; }
-  if (p.type === 'compare') { $('choices').innerHTML = ''; return; }   // 접시 자체가 선택지
+  if (p.type === 'compare' || p.type === 'freesplit') { $('choices').innerHTML = ''; return; }   // 접시·상자 자체가 조작 대상
   if (p.type === 'judge') {
     $('choices').innerHTML = `<button class="btn-choice jbtn" data-v="1" onclick="answer(this,${p.ans})">⭕ 맞아요</button>
       <button class="btn-choice jbtn" data-v="0" onclick="answer(this,${p.ans})">❌ 틀려요</button>`;
@@ -1564,6 +1581,7 @@ function speakProblem() {
   else if (p.type === 'put') t = `동그라미를 ${p.n}개, 접시에 담아 주세요.`;
   else if (p.type === 'gather') t = `${p.a}${josaGwa(p.a)} ${p.b}${josaEul(p.b)} 모으면 얼마일까요?`;
   else if (p.type === 'split') t = `${p.n}${josaEun(p.n)} ${p.k}${josaGwa(p.k)} 몇으로 가를 수 있을까요?`;
+  else if (p.type === 'freesplit') t = `동그라미 ${p.n}개를 아래 두 상자에 나누어 담아요.`;
   else if (p.type === 'compare') t = '어느 쪽이 더 많을까요? 많은 쪽을 눌러 주세요.';
   else if (p.type === 'seq') t = p.step === 1 ? '빈칸에 알맞은 수는 무엇일까요?' : `${p.step}씩 뛰어 세어요. 빈칸의 수는 무엇일까요?`;
   else if (p.type === 'word') t = p.text;
@@ -3226,6 +3244,9 @@ function wsEarly(p, num, o) {
   if (p.type === 'gather') {
     q = '모으면 몇 개일까요?';   /* 한 줄에 들어가게 짧게(줄바꿈 방지) */
     body = `<div class="wgs"><div class="wgrow">${wsBox(wsDots(p.a))}<span class="wgplus">＋</span>${wsBox(wsDots(p.b))}</div><div class="wgarr">↓</div><div class="wgbox dash">&nbsp;</div></div>`;
+  } else if (p.type === 'freesplit') {
+    q = `${p.n}을 둘로 자유롭게 가르세요.`;
+    body = `<div class="wgs"><div class="wgbox">${p.n}</div><div class="wgarr">↙ ↘</div><div class="wgrow"><div class="wgbox dash">&nbsp;</div><div class="wgbox dash">&nbsp;</div></div></div>`;
   } else if (p.type === 'split') {
     q = `${p.n}을 둘로 가르세요.`;
     body = `<div class="wgs"><div class="wgbox">${p.n}</div><div class="wgarr">↙ ↘</div><div class="wgrow"><div class="wgbox">${p.k}</div><div class="wgbox dash">&nbsp;</div></div></div>`;
@@ -3252,7 +3273,7 @@ function wsProblemH(p, num) {
    토도수학 워크시트 패턴(2026-07-16 검토) 기반. ver23 힌트 공통 문법 준수:
    1차=단서만 / 2차=세어 읽기(음성 동기)로 정답까지 유도, 타깃 사전 확정, KO_NUM 수사.
    ========================================================= */
-const EARLY_TYPES = new Set(['count', 'put', 'gather', 'split', 'compare', 'seq', 'word', 'judge']);
+const EARLY_TYPES = new Set(['count', 'put', 'gather', 'split', 'compare', 'seq', 'word', 'judge', 'freesplit']);
 
 /* 이모지 묶음(문장제) — 5개씩 줄바꿈, 낱개는 .wem으로 감싸 힌트에서 하나씩 짚음 */
 function emojiRows(e, n) {
@@ -3275,16 +3296,22 @@ function earlyFace(p) {
       <div class="plate put" id="putplate"></div>
       <div class="puttray" id="puttray" style="min-height:${rows * 58 + (rows - 1) * 15 + 28}px">${'<div class="pdot cdot red"></div>'.repeat(p.max)}</div></div>`;
   }
-  if (p.type === 'gather')
-    return `<div class="early gsplit">
+  if (p.type === 'gather')   /* 5까지는 상자 가운데 정렬(.ctr) — 수가 적어 왼쪽 정렬이 허전함 */
+    return `<div class="early gsplit ${p.ans <= 5 ? 'ctr' : ''}">
       <div class="grow2"><div class="gcell" id="gA">${circleStack(p.a, 'red')}</div><div class="gcell" id="gB">${circleStack(p.b, 'red')}</div></div>
       <div class="glink gv"><i></i><i></i></div>
-      <div class="grow1"><div class="gcell gans" id="gC"><span class="qblank" id="qslot">?</span></div></div></div>`;
+      <div class="grow1"><div class="gcell gans" id="gC"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
   if (p.type === 'split')
-    return `<div class="early gsplit">
+    return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''}">
       <div class="grow1"><div class="gcell" id="gC">${circleStack(p.n, 'red')}</div></div>
       <div class="glink gs"><i></i><i></i></div>
-      <div class="grow2"><div class="gcell" id="gA">${circleStack(p.k, 'red')}</div><div class="gcell gans" id="gB"><span class="qblank" id="qslot">?</span></div></div></div>`;
+      <div class="grow2"><div class="gcell" id="gA">${circleStack(p.k, 'red')}</div><div class="gcell gans" id="gB"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
+  if (p.type === 'freesplit')   /* 자유 가르기: 위 상자의 동그라미를 아래 두 상자로 스스로 나눔 */
+    return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''} free">
+      <div class="grow1"><div class="gcell" id="gC">${'<div class="cdot red fdot"></div>'.repeat(p.n)}</div></div>
+      <div class="glink gs"><i></i><i></i></div>
+      <div class="grow2"><div class="gcell drop" id="gA"></div><div class="gcell drop" id="gB"></div></div>
+      <div class="fcount"><span id="fa">0</span> 과 <span id="fb">0</span></div></div>`;
   if (p.type === 'compare')
     return `<div class="early cmprow">
       <button class="cmp" data-v="0" onclick="answer(this,${p.ans})">${circleStack(p.a, 'red')}</button>
@@ -3386,6 +3413,7 @@ function routeEarlyHint(p, h, stage) {
   if (p.type === 'count') return hintCount(p, h, stage);
   if (p.type === 'put') return hintPut(p, h, stage);
   if (p.type === 'gather' || p.type === 'split') return hintGS(p, h, stage);
+  if (p.type === 'freesplit') return hintFree(p, h, stage);
   if (p.type === 'compare') return hintCompare(p, h, stage);
   if (p.type === 'seq') return hintSeq(p, h, stage);
   if (p.type === 'word') return hintWord(p, h, stage);
@@ -3448,45 +3476,80 @@ function hintPut(p, h, stage) {
   speakSequence(items);
 }
 /* 모으기·가르기 — 착지 슬롯 사전 생성, 동그라미가 상자 사이를 날아 이동 */
-function gsSlots(cell, n) {
+function gsSlots(cell, n, cls) {
   cell.innerHTML = '';
   const stack = document.createElement('div'); stack.className = 'cstack'; cell.appendChild(stack);
   const slots = [];
   for (let i = 0; i < n; i++) {
     let row = [...stack.querySelectorAll('.crow5')].find(r => r.children.length < 5);
     if (!row) { row = document.createElement('div'); row.className = 'crow5'; stack.appendChild(row); }
-    const s = document.createElement('div'); s.className = 'cdot red'; s.style.visibility = 'hidden'; row.appendChild(s); slots.push(s);
+    const s = document.createElement('div'); s.className = 'cdot red' + (cls ? ' ' + cls : ''); s.style.visibility = 'hidden'; row.appendChild(s); slots.push(s);
   }
   return slots;
 }
 function hintGS(p, h, stage) {
   const gather = p.type === 'gather';
-  h.innerHTML = `<div class="tip">${gather ? '위의 두 상자를 아래 상자로 모아요' : `${p.n}${josaEul(p.n)} 두 상자로 갈라요`}</div>`;
-  if (stage === 1) { speak(gather ? '위의 두 상자를 아래 상자로 모아 봐요.' : '위의 동그라미를 두 상자로 나눠 봐요.'); return; }
-  if (gather) {
-    const slots = gsSlots($('gC'), p.ans);
-    const src = [...document.querySelectorAll('#gA .cdot'), ...document.querySelectorAll('#gB .cdot')];
-    const items = src.map((d, i) => ({
-      text: KO_NUM[i + 1] || String(i + 1),
-      action: () => flyMove(d, slots[i], () => { d.style.visibility = 'hidden'; slots[i].style.visibility = ''; slots[i].classList.add('born'); })
-    }));
-    items.push({ text: `모두 ${koCnt(p.ans)} 개. 정답은 ${p.ans}${josaYeyo(p.ans)}.` });
-    speakSequence(items);
-  } else {
-    const top = [...document.querySelectorAll('#gC .cdot')];
-    const slots = gsSlots($('gB'), p.ans);
-    const items = [{ text: `${p.k}${josaEun(p.k)} 왼쪽 상자에 있어요.`, action: () => top.slice(0, p.k).forEach(d => d.classList.add('slash', 'gray')) }];
-    top.slice(p.k).forEach((d, i) => items.push({
-      text: KO_NUM[i + 1] || String(i + 1),
-      action: () => flyMove(d, slots[i], () => { d.style.visibility = 'hidden'; slots[i].style.visibility = ''; slots[i].classList.add('born'); })
-    }));
-    items.push({ text: `남은 것은 ${koCnt(p.ans)} 개. 정답은 ${p.ans}${josaYeyo(p.ans)}.` });
-    speakSequence(items);
-  }
+  if (gather) return hintGather(p, h, stage);
+  return hintSplit(p, h, stage);
 }
-/* 크기 비교 — 1:1 짝짓기 세기(크기 비교의 핵심 전략).
-   양쪽 같은 번호를 동시에 세어 짝을 짓고, 짝 없이 남는 쪽이 더 많음을 보게 함(남는 것은 노란 테두리).
-   1차=짝짓기만(정답 미공개) / 2차=이어서 정답 안내 */
+/* 모으기 — 1차: 동그라미가 아래 상자로 모이는 애니메이션 / 2차: 모인 것에 번호를 매기며 세기 */
+function hintGather(p, h, stage) {
+  h.innerHTML = `<div class="tip">동그라미를 아래 상자에 모아요</div>`;
+  const gC = $('gC');
+  const landed = [...gC.querySelectorAll('.cdot')].filter(d => d.style.visibility !== 'hidden');
+  if (!landed.length) {                                  // 아직 안 모았으면 먼저 모으기(1·2차 공통)
+    const slots = gsSlots(gC, p.ans);
+    const src = [...document.querySelectorAll('#gA .cdot'), ...document.querySelectorAll('#gB .cdot')];
+    speak('동그라미를 아래 상자에 모아요.');
+    src.forEach((d, i) => setTimeout(() => flyMove(d, slots[i], () => {
+      d.style.visibility = 'hidden'; slots[i].style.visibility = ''; slots[i].classList.add('born');
+    }), 350 + i * 300));
+    if (stage < 2) return;
+    setTimeout(() => countGathered(p), 350 + src.length * 300 + 500);   // 2차: 모으기 끝나고 세기
+    return;
+  }
+  if (stage >= 2) countGathered(p);
+}
+/* 모인 동그라미에 번호를 매기며 "하나, 둘…" → "모으면 네 개가 돼요" */
+function countGathered(p) {
+  const ds = [...$('gC').querySelectorAll('.cdot')];   // 이동이 아직 끝나지 않았어도 슬롯 전체를 셈
+  const items = ds.map((d, i) => ({
+    text: KO_NUM[i + 1] || String(i + 1),
+    action: () => { d.style.visibility = ''; d.textContent = i + 1; d.classList.add('tapped'); d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 }); },
+  }));
+  items.push({ text: `모으면 ${koCnt(p.ans)} 개가 돼요.` });
+  speakSequence(items);
+}
+/* 가르기 — 1차: 갈라 줄 만큼(k개) 색을 바꿔 표시(위·아래 같은 색) / 2차: 그 색 동그라미를 아래로 옮겨 남는 수 세기 */
+function hintSplit(p, h, stage) {
+  const top = [...$('gC').querySelectorAll('.cdot')];
+  if (stage === 1) {
+    h.innerHTML = `<div class="tip"><b>연두색 ${koCnt(p.k)} 개</b>를 갈라 주면, <b>빨간 동그라미</b>가 몇 개 남을까요?</div>`;
+    top.slice(0, p.k).forEach(d => d.classList.add('gv'));              // 위 상자: 갈라 줄 만큼 연두
+    [...$('gA').querySelectorAll('.cdot')].forEach(d => d.classList.add('gv'));   // 아래 왼쪽도 같은 색
+    speak(`연두색 ${koCnt(p.k)} 개를 갈라 주면, 빨간 동그라미가 몇 개 남을까요?`);
+    return;
+  }
+  /* 2차: 연두 k개가 아래 왼쪽 상자로 이동 → 위에는 빨간 것만 남음 → 남은 것 세기 */
+  h.innerHTML = `<div class="tip">가르고 남은 동그라미가 몇 개인지 세어 봐요</div>`;
+  const gv = top.filter(d => d.classList.contains('gv'));
+  const movers = gv.length ? gv : top.slice(0, p.k);
+  movers.forEach(d => d.classList.add('gv'));
+  const slots = gsSlots($('gA'), p.k, 'gv');            // 아래 왼쪽을 착지 슬롯으로 다시 그림
+  const rest = top.filter(d => !movers.includes(d));
+  const items = [{                                     // 한 멘트 동안 연두 동그라미가 차례로 날아감(무음 항목 없이)
+    text: `연두색 ${koCnt(p.k)} 개를 갈라 줘요.`,
+    action: () => movers.forEach((d, i) => setTimeout(() => flyMove(d, slots[i], () => {
+      d.style.visibility = 'hidden'; slots[i].style.visibility = ''; slots[i].classList.add('born');
+    }), i * 260)),
+  }];
+  rest.forEach((d, i) => items.push({
+    text: KO_NUM[i + 1] || String(i + 1),
+    action: () => { d.textContent = i + 1; d.classList.add('tapped'); d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 }); },
+  }));
+  items.push({ text: `${koCnt(p.ans)} 개가 남아요. 정답은 ${p.ans}${josaYeyo(p.ans)}.` });
+  speakSequence(items);
+}
 function hintCompare(p, h, stage) {
   const L = [...document.querySelectorAll('.cmp[data-v="0"] .cdot')];
   const R = [...document.querySelectorAll('.cmp[data-v="1"] .cdot')];
@@ -3562,6 +3625,62 @@ function hintWord(p, h, stage) {
   else for (let k = 0; k < p.b; k++) { const idx = p.a - 1 - k; items.push({ text: String(p.a - 1 - k), action: () => ems[idx] && ems[idx].classList.add('slash') }); }
   items.push({ text: `정답은 ${p.ans}${josaYeyo(p.ans)}.` });
   speakSequence(items);
+}
+
+/* ---- 자유 가르기: 위 상자의 동그라미를 아래 두 상자로 스스로 나눠 담기 ----
+   담기(initPut)와 같은 드래그 문법 + 탭 대체. 위가 비면 완료 → "4는 1과 3으로 가를 수 있어요" */
+function initFreeSplit() {
+  const src = $('gC'), A = $('gA'), B = $('gB'); if (!src || !A || !B) return;
+  const hit = (e, el) => { const r = el.getBoundingClientRect(); return e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom; };
+  [...document.querySelectorAll('#qface .fdot')].forEach(d => {
+    let drag = null;
+    d.onpointerdown = e => {
+      if (locked) return;
+      try { d.setPointerCapture(e.pointerId); } catch (err) { }
+      drag = { sx: e.clientX, sy: e.clientY, moved: false }; d.classList.add('lift');
+    };
+    d.onpointermove = e => {
+      if (!drag) return;
+      const sc = window._sc || 1, dx = (e.clientX - drag.sx) / sc, dy = (e.clientY - drag.sy) / sc;
+      if (Math.abs(dx) + Math.abs(dy) > 6) drag.moved = true;
+      d.style.transform = `translate(${dx}px,${dy}px)`;
+    };
+    d.onpointerup = e => {
+      if (!drag) return;
+      const moved = drag.moved; drag = null;
+      d.classList.remove('lift'); d.style.transform = '';
+      let to = null;
+      if (moved) to = hit(e, A) ? A : hit(e, B) ? B : hit(e, src) ? src : null;
+      else to = src.contains(d) ? A : src;              // 탭: 위→왼쪽 상자 / 아래→위로 되돌리기
+      if (!to || to === d.parentNode) return;
+      to.appendChild(d);
+      d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 });
+      tick();
+      freeUpdate();
+    };
+    d.onpointercancel = () => { drag = null; d.classList.remove('lift'); d.style.transform = ''; };
+  });
+  freeUpdate();
+}
+function freeUpdate() {
+  const p = session.items[session.idx];
+  const a = $('gA').querySelectorAll('.fdot').length, b = $('gB').querySelectorAll('.fdot').length;
+  $('fa').textContent = a; $('fb').textContent = b;
+  if (locked || $('gC').querySelectorAll('.fdot').length) return;     // 위가 비어야 완료
+  if (!a || !b) { speakFast('양쪽에 나누어 담아요.'); return; }        // 한쪽이 0이면 가르기가 아님
+  locked = true;
+  chime(true); celebrate($('gA'));
+  speak(`${p.n}${josaEun(p.n)} ${a}${josaGwa(a)} ${b}${josaRo(b)} 가를 수 있어요. ` + praise());
+  logItem(); session.idx++; saveResume();
+  setTimeout(() => { if (session.idx >= session.items.length) finishSession(); else renderProblem(); }, 2600);
+}
+function hintFree(p, h, stage) {
+  h.innerHTML = `<div class="tip">동그라미를 <b>아래 두 상자에 나누어</b> 담아요. 어떻게 나눠도 좋아요.</div>`;
+  speak('동그라미를 아래 두 상자에 나누어 담아요. 어떻게 나눠도 좋아요.');
+  if (stage < 2) return;
+  /* 2차: 한 개를 대신 옮겨 시범 */
+  const d = $('gC').querySelector('.fdot'); if (!d) return;
+  setTimeout(() => { $('gA').appendChild(d); d.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 240 }); freeUpdate(); }, 700);
 }
 
 /* 내장 이미지 (v3에서 이관) */
