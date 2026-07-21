@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 50 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 51 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -653,8 +653,9 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .seqmodel{ position:absolute; top:calc(100% + 1.2rem); left:50%; transform:translateX(-50%);
   display:flex; align-items:flex-start; gap:.45rem; }
 .seqmodel{ gap:.3rem; }
-.seqmodel .rodwrap{ display:flex; flex-direction:column; gap:3.5px; }
-.seqmodel .rodrow{ display:flex; gap:3.5px; }
+/* 공용 .rodwrap의 align-items:center를 덮어씀 — 5개 넘어 아랫줄로 내려오면 왼쪽부터 채우기(동그라미와 동일 규칙) */
+.seqmodel .rodwrap{ display:flex; flex-direction:column; align-items:flex-start; gap:3.5px; }
+.seqmodel .rodrow{ display:flex; justify-content:flex-start; gap:3.5px; min-height:0; }
 .seqmodel .rod{ width:10px; height:44px; border-radius:2.5px; }
 .seqmodel .cstack{ gap:3.5px; }
 .seqmodel .crow5{ gap:3.5px; }
@@ -677,7 +678,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 50';
+const APP_VERSION = 'ver 51';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
