@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 46 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 47 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -648,6 +648,18 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
    축소 이모지(BtnEmoji) 포함 스택: 이모지 유무와 무관하게 버튼 속 한글이 세로 가운데 정렬됨 */
 button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ font-family:var(--font-btn); }
 
+/* 수 배열 1차 힌트: 상자 아래 매달린 수 모형(막대=10·동그라미=1) — 절대배치라 수열 배치 불변 */
+.seqbox{ position:relative; }
+.seqmodel{ position:absolute; top:calc(100% + .4rem); left:50%; transform:translateX(-50%);
+  display:flex; align-items:flex-start; gap:.45rem; }
+.seqmodel .rodwrap{ display:flex; flex-direction:column; gap:5px; }
+.seqmodel .rodrow{ display:flex; gap:5px; }
+.seqmodel .rod{ width:13px; height:58px; border-radius:3px; }
+.seqmodel .cstack{ gap:5px; }
+.seqmodel .crow5{ gap:5px; }
+.seqmodel .cdot{ width:20px; height:20px; }
+.seqrow.withmodel{ gap:1.9rem; }   /* 모형이 옆 상자와 붙지 않도록 힌트 중에만 간격 확대 */
+
 </style>
 </head>
 <body>
@@ -663,7 +675,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 46';
+const APP_VERSION = 'ver 47';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3421,9 +3433,27 @@ function hintCompare(p, h, stage) {
   items.push({ text: `오른쪽은 ${koCnt(p.b)} 개. ${big}${josaIga(big)} 더 많아요. 많은 쪽을 눌러요.` });
   speakSequence(items);
 }
+/* 수 배열 1차 힌트용 수 모형 — 십 막대(파랑)+낱개 동그라미(빨강), 둘 다 5개씩 줄바꿈.
+   상자 아래 절대배치라 수열 배치가 흔들리지 않음(힌트 공통 문법: 모형은 매달림) */
+function seqModel(n) {
+  const T = Math.floor(n / 10), U = n % 10;
+  const rows = (cnt, cls, row) => { let s = ''; for (let i = 0; i < cnt; i += 5) s += `<div class="${row}">${`<div class="${cls}"></div>`.repeat(Math.min(5, cnt - i))}</div>`; return s; };
+  return `<div class="seqmodel"><div class="rodwrap">${rows(T, 'rod', 'rodrow')}</div><div class="cstack">${rows(U, 'cdot red', 'crow5')}</div></div>`;
+}
 function hintSeq(p, h, stage) {
-  h.innerHTML = `<div class="tip">${p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 <b>${p.step}씩</b> 커져요. 뛰어 세어 봐요.`}</div>`;
-  if (stage === 1) { speak(p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 ${p.step}씩 커져요. 뛰어 세어 봐요.`); return; }
+  const rule = p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 ${p.step}씩 커져요. 뛰어 세어 봐요.`;
+  /* 1차: 채워진 수 아래에 수 모형 — 빈칸은 비워 두어 "얼마씩 늘어나는지" 규칙을 스스로 찾게.
+     20 초과(뛰어세기 큰 수)는 모형 폭이 상자 간격을 넘어 겹치므로 글 안내만 */
+  const useModel = Math.max(...p.arr) <= 20;
+  if (useModel) {
+    const row = document.querySelector('#qface .seqrow'); if (row) row.classList.add('withmodel');   // 모형 폭만큼 상자 간격 확대
+    [...document.querySelectorAll('#qface .seqbox')].forEach((b, i) => {
+      if (i !== p.blank && !b.querySelector('.seqmodel')) b.insertAdjacentHTML('beforeend', seqModel(p.arr[i]));
+    });
+  }
+  h.innerHTML = `<div class="tip">${p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 <b>${p.step}씩</b> 커져요. 뛰어 세어 봐요.`}
+    ${useModel ? '<br><b>파란 막대는 10</b>, <b>빨간 동그라미는 1</b>이에요. 얼마씩 늘어나는지 보세요.' : ''}</div>`;
+  if (stage === 1) { speak(rule + (useModel ? ' 파란 막대는 십, 빨간 동그라미는 일이에요.' : '')); return; }
   const boxes = [...document.querySelectorAll('#qface .seqbox')];
   const items = p.arr.map((v, i) => ({ text: String(v), action: () => boxes[i] && boxes[i].classList.add('on') }));
   items.push({ text: `빈칸은 ${p.ans}${josaYeyo(p.ans)}.` });
