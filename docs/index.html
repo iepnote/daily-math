@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 44 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 45 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -521,6 +521,8 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 /* 동그라미를 담는 네모 상자 + 번호·상자·답칸 한 줄 배치 */
 .wdbox{ border:0.5mm solid #444; border-radius:2mm; padding:2mm 2.5mm; display:inline-flex; }
 .wdline{ display:flex; align-items:center; gap:3mm; }
+/* 상자 + 그 아래 답칸: 열 폭이 상자 폭이라 답칸이 상자 오른쪽 끝에 맞고 밖으로 나가지 않음 */
+.wcol{ display:flex; flex-direction:column; align-items:flex-end; gap:1.5mm; }
 .ws-inst{ font-size:13.5pt; font-weight:800; padding:2mm 0 0; }
 /* 크기 비교: 상자 2개가 한 칸에 들어가야 해 조금 작게(10문제는 더 작게) */
 .cmpq .wdots{ --d:5.8mm; --g:1.3mm; min-height:calc(var(--d)*2 + 1.6mm); }   /* 두 줄 높이 고정 — 상자 크기가 완전히 같아야 세어서 비교 */
@@ -528,8 +530,10 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .weans{ font-size:16pt; font-weight:800; display:flex; align-items:center; gap:2.5mm; }
 .weans .bl, .wjudge .bl{ display:inline-block; width:14mm; height:10mm; }
 .weans .bl.w{ width:34mm; }
+/* 모으기·가르기: 상자 2개+＋ 가 한 칸(88mm)에 들어가도록 동그라미를 작게 */
 .wgs{ display:flex; flex-direction:column; align-items:center; gap:1.6mm; }
-.wgrow{ display:flex; align-items:center; gap:5mm; }
+.wgs .wdots{ --d:5mm; --g:1.1mm; }
+.wgrow{ display:flex; align-items:center; gap:3mm; }
 .wgrow.wide{ gap:12mm; }
 .wgplus{ font-size:15pt; font-weight:800; }
 .wgarr{ font-size:13pt; color:#888; }
@@ -657,7 +661,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 44';
+const APP_VERSION = 'ver 45';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3128,9 +3132,9 @@ function wsEarly(p, num, o) {
   const B = '<span class="bl"></span>', N = `<span class="wnum">${num || ''}</span>`;
   let body = '', q = '';
   /* 지시문을 위로 뺀 유형: 번호 + 네모 상자(+답칸)만 */
-  if (p.type === 'count')
-    return `<div class="wpe"><div class="wdline">${N}${wsBox(wsDots(p.n, false, o.per))}</div>
-      <div class="weans">( ${B} )개</div></div>`;
+  if (p.type === 'count')   /* 답칸은 상자 아래 오른쪽 끝에 맞춤(.wcol이 상자 폭이라 밖으로 안 나감) */
+    return `<div class="wpe"><div class="wdline">${N}<div class="wcol">${wsBox(wsDots(p.n, false, o.per))}
+      <div class="weans">( ${B} )개</div></div></div></div>`;
   if (p.type === 'compare')
     return `<div class="wpe cmpq"><div class="wdline">${N}${wsBox(wsDots(p.a))}${wsBox(wsDots(p.b))}</div></div>`;
   if (p.type === 'seq')
@@ -3140,10 +3144,10 @@ function wsEarly(p, num, o) {
     return `<div class="wpe"><div class="wpe-q">${N}${p.n}개만큼 색칠하세요.</div>
       <div class="wdline">${wsBox(wsDots(p.max, true))}</div></div>`;
   if (p.type === 'gather') {
-    q = '모으면 모두 몇 개일까요?';
-    body = `<div class="wgs"><div class="wgrow">${wsDots(p.a)}<span class="wgplus">＋</span>${wsDots(p.b)}</div><div class="wgarr">↓</div><div class="wgbox dash">&nbsp;</div></div>`;
+    q = '모으면 몇 개일까요?';   /* 한 줄에 들어가게 짧게(줄바꿈 방지) */
+    body = `<div class="wgs"><div class="wgrow">${wsBox(wsDots(p.a))}<span class="wgplus">＋</span>${wsBox(wsDots(p.b))}</div><div class="wgarr">↓</div><div class="wgbox dash">&nbsp;</div></div>`;
   } else if (p.type === 'split') {
-    q = `${p.n}개를 둘로 갈라요. 빈칸에 알맞은 수를 쓰세요.`;
+    q = `${p.n}을 둘로 가르세요.`;
     body = `<div class="wgs"><div class="wgbox">${p.n}</div><div class="wgarr">↙ ↘</div><div class="wgrow"><div class="wgbox">${p.k}</div><div class="wgbox dash">&nbsp;</div></div></div>`;
   } else if (p.type === 'word') {
     q = p.text;
