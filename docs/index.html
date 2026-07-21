@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 55 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 56 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -232,6 +232,12 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .hangmodel.compact .rod{ width:8px; height:44px; }
 .hangmodel.compact .cdot{ width:13px; height:13px; }
 .hangmodel.compact .rodrow, .hangmodel.compact .crow5{ gap:3px; }
+/* 한 자리·십몇 힌트(combineAdd/Sub): 문제 화면 동그라미(.cstack .cdot 26px)와 같은 크기 — 힌트로 넘어갈 때 작아지지 않게 */
+.hangmodel.big .cdot{ width:26px; height:26px; }
+.hangmodel.big .rod{ width:15px; height:78px; border-radius:4px; }
+.hangmodel.big .rodrow, .hangmodel.big .cstack, .hangmodel.big .crow5{ gap:5px; }
+.hangmodel.big.compact .cdot{ width:20px; height:20px; }
+.hangmodel.big.compact .rod{ width:11px; height:60px; }
 /* 빼는 수(뒷수) 모형: 빗금 단서만(테두리 없음) — 자리 색 약속 유지하면서 "없어질 쪽" 구분 */
 .sub-src .rod, .sub-src .cdot, .sub-src .bunit, .sub-src .brod, .sub-src .bflat{
   background-image:repeating-linear-gradient(45deg, rgba(255,255,255,.8) 0 2px, transparent 2px 6px) !important; }
@@ -701,7 +707,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 55';
+const APP_VERSION = 'ver 56';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1699,14 +1705,15 @@ const flyKill = (s, m) => {
      ④올림: 낱개 10개→막대 변신 / 내림: 막대→낱개 10개  ⑤자리 끝날 때마다 정답칸 채움  ⑥진행 카운터
    ========================================================= */
 /* 두 자리 모형 매달기 + 가로 겹침 보정 — hintTwo · startColumn(두 자리 덧셈 2차) 공용 */
-function hangTwoModels(p) {
+function hangTwoModels(p, big) {
   const aT = Math.floor(p.a / 10), aU = p.a % 10, bT = Math.floor(p.b / 10), bU = p.b % 10;
   /* 숫자 아래(세로셈은 옆)에 미니 모형 매달기 */
   const modelHtml = (T, U) => `<div class="rodrow">${'<div class="rod"></div>'.repeat(T)}</div>` +
     `<div class="cstack">${(() => { let s = ''; for (let i = 0; i < U; i += 5) { let r = ''; for (let j = i; j < Math.min(i + 5, U); j++) r += '<div class="cdot red"></div>'; s += `<div class="crow5">${r}</div>`; } return s; })()}</div>`;
   const hang = (tok, T, U) => {
     const el = document.querySelector(`#qface [data-t="${tok}"]`); if (!el) return null;
-    const m = document.createElement('div'); m.className = 'hangmodel'; m.innerHTML = modelHtml(T, U);
+    const m = document.createElement('div'); m.className = 'hangmodel' + (big ? ' big' : '');   // big=한 자리·십몇(문제 화면 동그라미와 같은 크기)
+    m.innerHTML = modelHtml(T, U);
     if (prefs.mode === 'v') { m.classList.add('vside-c'); el.parentNode.appendChild(m); }
     else el.closest('.opcol').appendChild(m);
     return m;
@@ -2243,7 +2250,7 @@ function combineAdd(p, h, stage) {
   const a = p.a, b = p.b, sum = a + b, anim = stage >= 2;
   curCirc = null; paintFace(false);
   const bigIdx = a >= b ? 0 : 1, big = Math.max(a, b), small = Math.min(a, b);
-  const { ma, mb } = hangTwoModels(p);
+  const { ma, mb } = hangTwoModels(p, true);
   const mBig = bigIdx === 0 ? ma : mb, mSmall = bigIdx === 0 ? mb : ma;
   h.innerHTML = `<div class="tip">${anim ? `${big}부터 ${small}만큼 더해 봐요` : '큰 수를 찾아요. 큰 수부터 작은 수만큼 이어서 세요.'}</div>`;
   if (!anim) { speak('큰 수를 찾아요. 큰 수부터 작은 수만큼 이어서 세요.'); return; }
@@ -2316,7 +2323,7 @@ function killPop(s, m) {
 function combineSub(p, h, stage) {
   const a = p.a, b = p.b, anim = stage >= 2;
   curCirc = null; paintFace(false);
-  const { ma, mb } = hangTwoModels(p);   // 빼는 수(mb)는 sub-src(빗금) 자동
+  const { ma, mb } = hangTwoModels(p, true);   // 빼는 수(mb)는 sub-src(빗금) 자동
   h.innerHTML = `<div class="tip">${anim ? `${a}부터 거꾸로 세면서 ${b}개를 하나씩 빼 봐요.` : '동그라미를 세어 봐요. 그리고 빗금 친 것만큼 빼요.'}</div>`;
   if (!anim) { speak('동그라미를 세어 봐요. 그리고 빗금 친 것만큼 빼요.'); return; }
   const aT = Math.floor(a / 10), aU = a % 10, bT = Math.floor(b / 10), bU = b % 10;
