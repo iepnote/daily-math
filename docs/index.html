@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 59 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 60 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -627,8 +627,8 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .cmp.wrong{ border-color:var(--no); opacity:.5; }
 /* 수 배열·뛰어세기 */
 .seqrow{ flex-direction:row; gap:.45rem; align-items:center; }
-.seqbox{ min-width:92px; padding:.45rem .55rem; border:4px solid var(--accent); border-radius:.95rem; background:#fff;
-  font-size:2.3rem; font-weight:800; text-align:center; color:var(--ink); transition:background .3s; }
+.seqbox{ min-width:100px; padding:.45rem .6rem; border:4px solid var(--accent); border-radius:.95rem; background:#fff;
+  font-size:2.8rem; font-weight:800; text-align:center; color:var(--ink); transition:background .3s; }   /* 보기 버튼(2.8rem)과 같은 크기 */
 .seqbox.on{ background:var(--choice-bg); border-color:var(--accent-strong); color:var(--accent-strong); }
 .seqbox.qblank{ color:var(--accent-strong); }
 .seqarrow{ color:var(--ink-soft); font-weight:800; font-size:1.5rem; }
@@ -708,7 +708,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 59';
+const APP_VERSION = 'ver 60';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
