@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 47 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 48 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -652,13 +652,14 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .seqbox{ position:relative; }
 .seqmodel{ position:absolute; top:calc(100% + .4rem); left:50%; transform:translateX(-50%);
   display:flex; align-items:flex-start; gap:.45rem; }
-.seqmodel .rodwrap{ display:flex; flex-direction:column; gap:5px; }
-.seqmodel .rodrow{ display:flex; gap:5px; }
-.seqmodel .rod{ width:13px; height:58px; border-radius:3px; }
-.seqmodel .cstack{ gap:5px; }
-.seqmodel .crow5{ gap:5px; }
-.seqmodel .cdot{ width:20px; height:20px; }
-.seqrow.withmodel{ gap:1.9rem; }   /* 모형이 옆 상자와 붙지 않도록 힌트 중에만 간격 확대 */
+.seqmodel{ gap:.3rem; }
+.seqmodel .rodwrap{ display:flex; flex-direction:column; gap:3.5px; }
+.seqmodel .rodrow{ display:flex; gap:3.5px; }
+.seqmodel .rod{ width:10px; height:44px; border-radius:2.5px; }
+.seqmodel .cstack{ gap:3.5px; }
+.seqmodel .crow5{ gap:3.5px; }
+.seqmodel .cdot{ width:12px; height:12px; }
+.seqrow.withmodel{ gap:.9rem; }   /* 모형 폭이 상자와 비슷해져 간격은 조금만 확대 */
 
 </style>
 </head>
@@ -675,7 +676,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 47';
+const APP_VERSION = 'ver 48';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
