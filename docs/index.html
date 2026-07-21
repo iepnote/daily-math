@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 51 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 52 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -663,6 +663,10 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .seqrow.withmodel{ gap:.9rem; }   /* 모형 폭이 상자와 비슷해져 간격은 조금만 확대 */
 .seqrow.withmodel.wide{ gap:2.2rem; }   /* 뛰어세기: 막대가 여러 개라 모형이 넓어 더 벌림 */
 
+/* 🎈 손님 카드(학생 이름 선택 화면) — 학생 버튼과 구분되는 청록 점선 */
+.btn-name.guest{ border-style:dashed; border-color:var(--teal); background:#E9F7F5; }
+.btn-name.guest .nm{ color:#00695C; }
+
 </style>
 </head>
 <body>
@@ -678,7 +682,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 51';
+const APP_VERSION = 'ver 52';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1461,7 +1465,7 @@ function startSession() {
   renderProblem();
 }
 function saveResume() {
-  if (!current || !session) return;
+  if (!current || !session || current.guest) return;   // 손님: 기록 저장 안 함
   lsSet('resume:' + current.id, { date: todayStr(), items: session.items, idx: session.idx, levelId: session.levelId, levelName: session.levelName, log: session.log, startAt: session.startAt });
 }
 function clearResume() { if (current) lsDel('resume:' + current.id); }
@@ -1479,7 +1483,8 @@ function tryResume() {
 /* ---- 상단 메뉴 (왼쪽: 학생, 오른쪽: 버튼) ---- */
 const schoolShort = s => String(s || '').replace('초등학교', '초').replace('중학교', '중').replace('고등학교', '고');
 function studyNav() {
-  const who = current ? `${schoolShort(klass && klass.school)} ${esc(current.name)}`.trim() : '';
+  const who = current && current.guest ? '🎈 손님 · 기록 저장 안 함'
+    : current ? `${schoolShort(klass && klass.school)} ${esc(current.name)}`.trim() : '';
   return `<span class="nav-student">🧑‍🎓 ${who}</span>
     <button class="home" onclick="goHome()">🏠 홈</button>
     <button class="prev" onclick="prevProblem()">◀ 이전</button>
@@ -2541,6 +2546,7 @@ function toggleMode() {
    반환 2=진급, 1=이번 세션만 통과(다음 세션 예고), 0=미달.
    ponytail: 기준(80%·2세션·3문제 이상) 고정·전체 공통 — 학생별 켬끔이 필요해지면 hint_lv처럼 컬럼 추가 */
 async function checkPromotion() {
+  if (current.guest) return 0;                          // 손님: 진도 판정 없음
   const nx = nextLevel(current.level);
   if (!nx) return 0;
   const ss = (await Store.listSessions(current.classCode, { studentId: current.id }))
@@ -2552,11 +2558,17 @@ async function checkPromotion() {
 }
 async function finishSession() {
   const t = todayStr();
-  if (!current.completedDates.includes(t)) current.completedDates.push(t);
-  current.lastAccess = new Date().toISOString();
   const log = session.log.filter(Boolean);
   const got = log.filter(it => it.wrongs === 0).length;
   clearResume();
+  if (current.guest) {                                  // 손님: 달력 도장·세션 기록 없이 점수만
+    lastScore = { got, total: session.items.length, promo: 0, levelName: levelById(current.level).name };
+    speak('다 했어요! 잘했어요.');
+    renderCalendar(true);
+    return;
+  }
+  if (!current.completedDates.includes(t)) current.completedDates.push(t);
+  current.lastAccess = new Date().toISOString();
   await Store.updateStudent(current);
   await Store.saveSession({
     id: uid(), classCode: current.classCode, studentId: current.id, sdate: t,
@@ -2597,7 +2609,7 @@ function openLevelPicker(tabIdx) {
     <div style="text-align:center;margin-top:.6rem"><button class="btn btn--gray" onclick="closeModal()">닫기</button></div>`, '760px');
 }
 async function chooseLevel(id) {
-  if (current) { current.level = id; await Store.updateStudent(current); }
+  if (current) { current.level = id; if (!current.guest) await Store.updateStudent(current); }
   closeModal(); clearResume(); startSession();
 }
 function openSettings() {
@@ -2655,6 +2667,8 @@ function renderCalendar(justFinished, keepMonth) {
           <button class="next" onclick="${resumable ? 'tryResume()' : 'startSession()'}">${resumable ? '▶ 이어하기' : '➕ 더하기'}</button>
           <button class="quit" onclick="logoutStudent()">🚪 나가기</button>
           <button class="set" onclick="openSettings()">⚙ 설정</button>`);
+  /* 손님: 저장되는 진도가 없어 달력이 무의미 → 점수·안내만 보여주고 단계 다시 고르기 */
+  if (current.guest) return renderGuestHome(justFinished);
   const done = new Set(current.completedDates);
   const y = calY, m = calM;
   const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate(), tStr = todayStr();
@@ -2677,7 +2691,7 @@ function renderCalendar(justFinished, keepMonth) {
     <div class="cal-grid">${cells}</div>
   </div>`;
   // 학생 사진이 있으면 상단 그림(참잘했어요/마스코트)을 사진으로 교체 — 한글놀이터에서 등록한 사진 재사용
-  photoFor(current.name).then(p => {
+  if (!current.guest) photoFor(current.name).then(p => {
     if (!p) return;
     const host = $('wrap').querySelector('.praiseimg, .mascot-imgs');
     if (host) host.outerHTML = `<img class="kidface" src="${p}" alt="">`;
@@ -2700,6 +2714,27 @@ function showScorePop(s) {
 }
 function logoutStudent() { current = null; device.lastStudentId = ''; saveDevice(); renderStudentPick(); }
 
+/* 🎈 손님 홈 — 달력·도장 없이 점수와 다음 행동만 */
+function renderGuestHome(justFinished) {
+  setNav(`<button class="brand">🎈 손님</button>
+    <button class="next" onclick="startSession()">➕ 더하기</button>
+    <button class="lvl" onclick="openLevelPicker()">📚 단계</button>
+    <button class="quit" onclick="exitGuest()">🚪 나가기</button>
+    <button class="set" onclick="openSettings()">⚙ 설정</button>`);
+  $('wrap').innerHTML = `<div class="card card--accent" style="max-width:640px;margin:0 auto;">
+    <div class="mascot-imgs"><img src="${IMG_ADD}" alt=""><img src="${IMG_SUB}" alt=""></div>
+    <div class="read-sentence">${justFinished ? '다 했어요!' : '🎈 손님으로 해보는 중'}</div>
+    <div class="sub">${esc(levelById(current.level).name)}</div>
+    <div style="display:flex;gap:.8rem;justify-content:center;margin-top:1.2rem;flex-wrap:wrap">
+      <button class="btn btn--orange" style="font-weight:800" onclick="startSession()">다시 해보기</button>
+      <button class="btn btn--teal" style="font-weight:800" onclick="openLevelPicker()">📚 다른 단계</button>
+      <button class="btn btn--gray" style="font-weight:800" onclick="exitGuest()">나가기</button>
+    </div>
+    <div class="note" style="margin-top:1rem">손님 모드예요. <b>기록이 저장되지 않아</b> 학생 진도에 영향을 주지 않습니다.</div>
+  </div>`;
+  if (justFinished && lastScore) showScorePop(lastScore);
+}
+
 /* =========================================================
    08 시작·로그인 (교실 코드 → 학생 이름 선택)
    - 교실 코드는 기기당 1회 입력(localStorage 기억)
@@ -2716,7 +2751,9 @@ function renderStart() {
       <button class="btn btn--orange" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" onclick="enterClass()">들어가기</button>
       <button class="btn btn--gray" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" onclick="renderTeacherLogin()">선생님 모드</button>
     </div>
-    <div class="note" style="margin-top:1rem">교실 코드는 선생님이 알려 줘요.<br>처음이라면 선생님 모드에서 [새 교실 만들기]를 눌러 주세요.</div>
+    <div style="margin-top:.9rem"><button class="btn btn--teal" style="font-size:1.1rem;padding:.5rem 1.2rem;font-weight:800" onclick="startGuest()">🎈 손님으로 해보기</button></div>
+    <div class="note" style="margin-top:1rem">교실 코드는 선생님이 알려 줘요.<br>처음이라면 선생님 모드에서 [새 교실 만들기]를 눌러 주세요.<br>
+    <b>🎈 손님</b>은 코드 없이 바로 해볼 수 있어요(기록은 저장되지 않아요).</div>
     <div class="ver">${APP_VERSION} · ${Store.mode() === 'remote' ? '온라인 저장' : '이 기기에만 저장'}</div>
   </div>`;
   setTimeout(() => { const e = $('in-code'); if (e) e.focus(); }, 50);
@@ -2748,11 +2785,29 @@ async function renderStudentPick() {
   $('wrap').innerHTML = `<div class="card card--accent" style="max-width:820px;margin:0 auto;">
     <div class="mascot-imgs"><img src="${IMG_ADD}" alt=""><img src="${IMG_SUB}" alt=""></div>
     <div class="read-sentence">내 이름을 눌러 주세요</div>
-    <div class="name-grid">${btns}</div>
+    <div class="name-grid">${btns}
+      <button class="btn-name guest" onclick="startGuest()"><span class="nm">🎈 손님</span><span class="tg">기록 저장 안 함</span></button>
+    </div>
     <div class="ver">${APP_VERSION}</div>
   </div>`;
 }
 function changeClass() { klass = null; device.classCode = ''; saveDevice(); renderStart(); }
+
+/* ---- 🎈 손님 모드 (기록 저장 안 함) ----
+   용도: ①교실 코드 없는 사람이 둘러보기 ②교사가 학생 진도를 건드리지 않고 단계·문제 확인.
+   current를 임시 학생처럼 만들되 guest 플래그로 모든 저장 경로(Store·이어하기·달력·진급)를 건너뜀. */
+function startGuest() {
+  current = {
+    id: 'guest', classCode: (klass && klass.code) || '', name: '손님',
+    level: (current && current.level) || LEVEL_ORDER[0], daily: DAILY_DEFAULT,
+    completedDates: [], lastAccess: null, guest: true,
+  };
+  openLevelPicker();   // 어느 단계를 볼지 먼저 고르게(교사 확인 용도가 대부분)
+}
+function exitGuest() {
+  current = null;
+  if (klass) renderStudentPick(); else renderStart();
+}
 async function pickStudent(id) {
   const students = await Store.listStudents(klass.code);
   const s = students.find(x => x.id === id); if (!s) { renderStudentPick(); return; }
@@ -2887,6 +2942,7 @@ async function renderDashboard() {
       <div class="stat"><div class="k">이번 주 정답률</div><div class="v">${wkRate === null ? '—' : wkRate + '%'}</div></div>
       <div class="stat"><div class="k">교실 코드</div><div class="v code">${klass.code}</div></div>
       <div style="margin-left:auto;display:flex;gap:.5rem;align-items:center">
+        <button class="btn btn--orange btn-sm" onclick="startGuest()">🎈 손님으로 미리 보기</button>
         <button class="btn btn--teal btn-sm" onclick="copyInvite()">🔗 초대 링크</button>
         <button class="btn btn--purple btn-sm" onclick="openPrintModal()">🖨 학습지 출력</button>
         <button class="btn btn--gray btn-sm" onclick="renderDashboard()">🔄 새로고침</button>
@@ -2904,7 +2960,8 @@ async function renderDashboard() {
     <div style="margin-top:.8rem;text-align:center"><button class="btn btn--teal" onclick="addStudentT()">학생 추가하기</button></div>
     <div class="note">학생은 첫 화면에서 교실 코드 <b>${klass.code}</b>를 넣은 뒤, 자기 이름을 눌러 시작합니다.<br>
     <b>🔗 초대 링크</b>를 보내면 코드 입력 없이 이름만 누르면 돼요.<br>
-    📈 단계는 <b>연속 2회 스스로(힌트 없이) 80% 이상</b> 맞히면 자동으로 올라갑니다. 표의 단계 선택으로 언제든 조정할 수 있어요.</div>
+    📈 단계는 <b>연속 2회 스스로(힌트 없이) 80% 이상</b> 맞히면 자동으로 올라갑니다. 표의 단계 선택으로 언제든 조정할 수 있어요.<br>
+    🎈 <b>손님으로 미리 보기</b>로 단계·문제를 확인하면 <b>학생 진도에 기록되지 않습니다</b>(테스트용).</div>
   </div>`;
 }
 /* ---- 초대 링크: 열면 교실 코드가 자동 입력됨(?code=) ---- */
