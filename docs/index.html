@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 56 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 58 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -687,10 +687,11 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .gsplit.free .gcell.drop{ border-style:dashed; }
 .gsplit.ctr.free .gcell{ align-content:center; }        /* 5 이하 자유 가르기도 상자 가운데 */
 .fwrap{ display:flex; flex-direction:column; align-items:center; gap:.35rem; }
-.fnum{ font-size:1.9rem; font-weight:800; min-width:1.8rem; text-align:center; }
-.fnum.ga, .fsent b.ga{ color:#33691E; }                 /* 왼쪽 = 초록(연두 동그라미와 짝) */
-.fnum.gb, .fsent b.gb{ color:#C62828; }                 /* 오른쪽 = 빨강 */
-.fsent{ margin-top:.6rem; font-size:1.45rem; font-weight:700; color:var(--ink); }
+/* ⚠ .fnum 은 가로·세로셈 숫자가 쓰는 클래스 — 자유 가르기 개수는 .fcnt 로 분리(전역 충돌 방지) */
+.fcnt{ font-size:1.9rem; font-weight:800; min-width:1.8rem; text-align:center; }
+.fcnt.ga, .fsent b.ga{ color:#33691E; }                 /* 왼쪽 = 초록(연두 동그라미와 짝) */
+.fcnt.gb, .fsent b.gb{ color:#C62828; }                 /* 오른쪽 = 빨강 */
+.fsent{ margin-top:2.5rem; font-size:1.9rem; font-weight:700; color:var(--ink); }   /* 문장 30% 확대 + 위로 한 줄 여백 */
 
 </style>
 </head>
@@ -707,7 +708,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 56';
+const APP_VERSION = 'ver 58';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3326,8 +3327,8 @@ function earlyFace(p) {
       <div class="grow1"><div class="gcell" id="gC">${'<div class="cdot red fdot"></div>'.repeat(p.n)}</div></div>
       <div class="glink gs"><i></i><i></i></div>
       <div class="grow2">
-        <div class="fwrap"><div class="gcell drop" id="gA"></div><div class="fnum ga" id="fa">0</div></div>
-        <div class="fwrap"><div class="gcell drop" id="gB"></div><div class="fnum gb" id="fb">0</div></div></div>
+        <div class="fwrap"><div class="gcell drop" id="gA"></div><div class="fcnt ga" id="fa">0</div></div>
+        <div class="fwrap"><div class="gcell drop" id="gB"></div><div class="fcnt gb" id="fb">0</div></div></div>
       <div class="fsent" id="fsent"></div></div>`;
   if (p.type === 'compare')
     return `<div class="early cmprow">
