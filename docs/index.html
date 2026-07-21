@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 43 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 44 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -509,11 +509,22 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 /* 기초 유형 지필형 칸(세기·담기·모으기·가르기·비교·수열·문장제·채점) */
 .wpe{ display:flex; flex-direction:column; gap:2.5mm; min-width:78mm; max-width:88mm; }
 .wpe-q{ display:flex; align-items:flex-start; gap:2.5mm; font-size:13pt; font-weight:700; line-height:1.45; }
-.wdots{ display:flex; flex-direction:column; gap:1.6mm; }
-.wdrow{ display:flex; gap:5mm; }                              /* 5개 묶음 사이 넓은 간격 */
-.wdg{ display:inline-flex; gap:1.8mm; }
-.wdot{ width:7.5mm; height:7.5mm; border-radius:50%; background:#E53935; border:0.3mm solid #B71C1C; display:inline-block; }
+/* 동그라미: 한 줄에 정확히 5개(p5) 또는 10개(p10). 지름(--d)·간격(--g)을 변수로 두고
+   한 줄 폭(min-width)을 계산 → 개수가 적어도 상자 크기가 같아 "상자 크기=답" 단서가 생기지 않음 */
+.wdots{ --d:7.4mm; --g:1.8mm; display:flex; flex-direction:column; gap:1.6mm; }
+.wdrow{ display:flex; gap:var(--g); }
+.wdot{ width:var(--d); height:var(--d); border-radius:50%; background:#E53935; border:0.3mm solid #B71C1C;
+  display:inline-block; flex:0 0 auto; }
+.wdots.p5{ min-width:calc(var(--d)*5 + var(--g)*4); }
+.wdots.p10{ --d:5.6mm; --g:1.2mm; min-width:calc(var(--d)*10 + var(--g)*9); }
 .wdot.hollow{ background:#fff; border:0.45mm solid #555; }   /* 색칠용 빈 동그라미 */
+/* 동그라미를 담는 네모 상자 + 번호·상자·답칸 한 줄 배치 */
+.wdbox{ border:0.5mm solid #444; border-radius:2mm; padding:2mm 2.5mm; display:inline-flex; }
+.wdline{ display:flex; align-items:center; gap:3mm; }
+.ws-inst{ font-size:13.5pt; font-weight:800; padding:2mm 0 0; }
+/* 크기 비교: 상자 2개가 한 칸에 들어가야 해 조금 작게(10문제는 더 작게) */
+.cmpq .wdots{ --d:5.8mm; --g:1.3mm; min-height:calc(var(--d)*2 + 1.6mm); }   /* 두 줄 높이 고정 — 상자 크기가 완전히 같아야 세어서 비교 */
+.ws-page.n10 .cmpq .wdots{ --d:5mm; --g:1.1mm; }
 .weans{ font-size:16pt; font-weight:800; display:flex; align-items:center; gap:2.5mm; }
 .weans .bl, .wjudge .bl{ display:inline-block; width:14mm; height:10mm; }
 .weans .bl.w{ width:34mm; }
@@ -646,7 +657,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 43';
+const APP_VERSION = 'ver 44';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3041,11 +3052,13 @@ function buildPrintSheet(lvlId, cnt, mode) {
     : `<span class="wl lg"></span>초등학교`;
   const early = EARLY_TYPES.has(probs[0].type);       // 기초 유형: 지필형 칸(가로/세로 선택 무관), 한 줄 2문제
   const per = cnt === 5 ? 1 : (!early && cnt === 20 && mode === 'v') ? 4 : 2;
+  const eo = { per: (lvlId === 47 || lvlId === 48) ? 10 : 5 };   // 열·스물까지 세기는 동그라미 한 줄 10개
   const rows = [];
   for (let i = 0; i < probs.length; i += per) {
     rows.push(`<div class="ws-row ${mode === 'h' || early ? 'h' : ''} ${per === 1 ? 'single' : ''}">${probs.slice(i, i + per)
-      .map((p, j) => early ? wsEarly(p, WS_NUM[i + j]) : mode === 'v' ? wsProblemV(p, WS_NUM[i + j]) : wsProblemH(p, WS_NUM[i + j])).join('')}</div>`);
+      .map((p, j) => early ? wsEarly(p, WS_NUM[i + j], eo) : mode === 'v' ? wsProblemV(p, WS_NUM[i + j]) : wsProblemH(p, WS_NUM[i + j])).join('')}</div>`);
   }
+  const inst = early ? (WS_INST[probs[0].type] || '') : '';   // 문제가 같은 유형은 지시문 한 번만
   /* 일일수학풍 헤더: [네이비 로고 블록 | 왼쪽정렬 제목(그룹 小+단계명 大) | 학습일 기입란] */
   const header = `
     <div class="ws-head">
@@ -3055,7 +3068,7 @@ function buildPrintSheet(lvlId, cnt, mode) {
     </div>
     <div class="ws-info">${schoolPart} &nbsp; (${'&nbsp;'.repeat(4)})학년 (${'&nbsp;'.repeat(4)})반 &nbsp; 이름: (${'&nbsp;'.repeat(24)})</div>`;
   const bg = (typeof WS_BG !== 'undefined' && WS_BG) ? `<img class="ws-bg" src="${WS_BG}" alt="">` : '';
-  ps.innerHTML = `<div class="ws-page n${cnt} ${mode === 'v' ? 'v' : 'h'}">${bg}${header}<div class="ws-problems">${rows.join('')}</div></div>`;
+  ps.innerHTML = `<div class="ws-page n${cnt} ${mode === 'v' ? 'v' : 'h'}">${bg}${header}${inst ? `<div class="ws-inst">${inst}</div>` : ''}<div class="ws-problems">${rows.join('')}</div></div>`;
 }
 
 /* ---- 세로셈 문제 한 칸 (자리 맞춤 점선 칸) ---- */
@@ -3094,31 +3107,44 @@ function wsProblemV(p, num) {
   return `<div class="wp"><span class="wnum">${num || ''}</span><table class="wpv">${html}</table></div>`;
 }
 
-/* ---- 기초 유형 지필형 한 칸 (세기·담기·모으기·가르기·비교·수열·문장제·채점) ---- */
-const wsDots = (n, hollow) => {
-  /* 5개 묶음(.wdg) × 한 줄 2묶음(=10개) — 5씩 세는 습관 유지 + 지면 높이 절약 */
-  const dot = `<span class="wdot${hollow ? ' hollow' : ''}"></span>`;
-  const gs = [];
-  for (let i = 0; i < n; i += 5) gs.push(`<span class="wdg">${dot.repeat(Math.min(5, n - i))}</span>`);
-  let s = '';
-  for (let i = 0; i < gs.length; i += 2) s += `<div class="wdrow">${gs.slice(i, i + 2).join('')}</div>`;
-  return `<div class="wdots">${s}</div>`;
+/* ---- 기초 유형 지필형 한 칸 (세기·담기·모으기·가르기·비교·수열·문장제·채점) ----
+   문제 문장이 모든 문항에서 같은 유형은 지면 상단에 지시문 한 번만(WS_INST), 문항엔 그림·답칸만. */
+const WS_INST = {
+  count: '※ 모두 몇 개인지 세어 보세요.',
+  seq: '※ 빈칸에 알맞은 수를 쓰세요.',
+  compare: '※ 더 많은 쪽에 ○ 하세요.',
 };
-function wsEarly(p, num) {
-  const B = '<span class="bl"></span>';
+/* 동그라미: 한 줄에 정확히 per개(5 또는 10) — 겹치지 않도록 크기는 .wdots.pN 에서 지정 */
+const wsDots = (n, hollow, per) => {
+  per = per || 5;
+  const dot = `<span class="wdot${hollow ? ' hollow' : ''}"></span>`;
+  let s = '';
+  for (let i = 0; i < n; i += per) s += `<div class="wdrow">${dot.repeat(Math.min(per, n - i))}</div>`;
+  return `<div class="wdots p${per}">${s}</div>`;
+};
+const wsBox = inner => `<div class="wdbox">${inner}</div>`;   // 동그라미를 담는 네모 상자
+function wsEarly(p, num, o) {
+  o = o || {};
+  const B = '<span class="bl"></span>', N = `<span class="wnum">${num || ''}</span>`;
   let body = '', q = '';
-  if (p.type === 'count') { q = '모두 몇 개인지 세어 보세요.'; body = `${wsDots(p.n)}<div class="weans">${B} 개</div>`; }
-  else if (p.type === 'put') { q = `${p.n}개만큼 색칠하세요.`; body = wsDots(p.max, true); }
-  else if (p.type === 'gather') {
+  /* 지시문을 위로 뺀 유형: 번호 + 네모 상자(+답칸)만 */
+  if (p.type === 'count')
+    return `<div class="wpe"><div class="wdline">${N}${wsBox(wsDots(p.n, false, o.per))}</div>
+      <div class="weans">( ${B} )개</div></div>`;
+  if (p.type === 'compare')
+    return `<div class="wpe cmpq"><div class="wdline">${N}${wsBox(wsDots(p.a))}${wsBox(wsDots(p.b))}</div></div>`;
+  if (p.type === 'seq')
+    return `<div class="wpe"><div class="wdline">${N}<div class="wseq">${p.arr.map((v, i) => i === p.blank
+      ? `<span class="wsbox ans">&nbsp;</span>` : `<span class="wsbox">${v}</span>`).join('<span class="wsarr">→</span>')}</div></div></div>`;
+  if (p.type === 'put')   /* 색칠할 수가 문항마다 달라 문제는 그대로 두고, 그림만 상자 안에 */
+    return `<div class="wpe"><div class="wpe-q">${N}${p.n}개만큼 색칠하세요.</div>
+      <div class="wdline">${wsBox(wsDots(p.max, true))}</div></div>`;
+  if (p.type === 'gather') {
     q = '모으면 모두 몇 개일까요?';
     body = `<div class="wgs"><div class="wgrow">${wsDots(p.a)}<span class="wgplus">＋</span>${wsDots(p.b)}</div><div class="wgarr">↓</div><div class="wgbox dash">&nbsp;</div></div>`;
   } else if (p.type === 'split') {
     q = `${p.n}개를 둘로 갈라요. 빈칸에 알맞은 수를 쓰세요.`;
     body = `<div class="wgs"><div class="wgbox">${p.n}</div><div class="wgarr">↙ ↘</div><div class="wgrow"><div class="wgbox">${p.k}</div><div class="wgbox dash">&nbsp;</div></div></div>`;
-  } else if (p.type === 'compare') { q = '더 많은 쪽에 ○표 하세요.'; body = `<div class="wgrow wide">${wsDots(p.a)}${wsDots(p.b)}</div>`; }
-  else if (p.type === 'seq') {
-    q = '빈칸에 알맞은 수를 쓰세요.';
-    body = `<div class="wseq">${p.arr.map((v, i) => i === p.blank ? `<span class="wsbox ans">&nbsp;</span>` : `<span class="wsbox">${v}</span>`).join('<span class="wsarr">→</span>')}</div>`;
   } else if (p.type === 'word') {
     q = p.text;
     body = `<div class="weans">식: <span class="bl w"></span> &nbsp; 답: ${B} 개</div>`;
