@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개인정보처리방침 — 매일매일 수학</title>
+<style>
+body{ font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif; max-width:720px; margin:0 auto; padding:2rem 1.2rem 4rem; line-height:1.7; color:#263238; }
+h1{ font-size:1.5rem; color:#0277BD; } h2{ font-size:1.15rem; margin-top:2rem; color:#0277BD; }
+table{ border-collapse:collapse; width:100%; font-size:.95rem; }
+th,td{ border:1px solid #B0BEC5; padding:.45rem .6rem; text-align:left; }
+th{ background:#E3F2FD; }
+.note{ background:#E8F5E9; border-radius:.6rem; padding:.8rem 1rem; font-size:.95rem; }
+</style>
+</head>
+<body>
+<h1>개인정보처리방침 — 매일매일 수학</h1>
+<p>시행일: 2026-07-16 · 문의: <a href="mailto:iepnote@gmail.com">iepnote@gmail.com</a></p>
+
+<p>「매일매일 수학」(이하 "앱")은 자폐성장애·지적장애 초등학생을 위한 연산 학습 앱입니다.
+앱은 <b>회원가입과 계정이 없으며</b>, 개인을 식별할 수 있는 정보를 수집하지 않는 것을 원칙으로 설계되었습니다.</p>
+
+<h2>1. 수집·저장하는 정보</h2>
+<table>
+<tr><th>항목</th><th>내용</th><th>비고</th></tr>
+<tr><td>교실 코드</td><td>무작위 6자리 문자</td><td>개인정보 아님(교사가 생성)</td></tr>
+<tr><td>학생 표시 이름</td><td>교사가 입력한 별명·이니셜</td><td>앱 안내문에서 <b>실명 사용을 권장하지 않음</b></td></tr>
+<tr><td>학습 기록</td><td>학습 단계, 정답률, 완료 날짜, 문제별 풀이 시간</td><td>학습 지도 목적</td></tr>
+<tr><td>교사 PIN</td><td>SHA-256 해시로만 저장</td><td>원문 저장 안 함</td></tr>
+</table>
+<p class="note">이메일, 전화번호, 주소, 위치, 사진, 연락처, 생년월일 등 <b>개인 식별 정보는 수집하지 않습니다.</b>
+아동에게서 직접 정보를 수집하지 않으며, 모든 입력(교실·학생 등록)은 교사가 수행합니다.</p>
+
+<h2>2. 저장 위치와 보안</h2>
+<ul>
+<li>기본적으로 정보는 <b>사용 기기 안(localStorage)</b>에 저장됩니다.</li>
+<li>여러 기기 진도 공유를 위해 온라인 저장소(Supabase, 암호화 통신 HTTPS)를 사용하며, 교실 코드 단위로 데이터가 격리됩니다.</li>
+<li>교실 코드를 아는 사람만 해당 교실 데이터에 접근할 수 있으므로, 코드는 학급 구성원 외 공유하지 않도록 안내합니다.</li>
+</ul>
+
+<h2>3. 이용 목적</h2>
+<p>수집한 정보는 <b>학습 진도 저장, 완료 달력 표시, 교사의 학습 지도(대시보드)</b>에만 사용됩니다.</p>
+
+<h2>4. 제3자 제공·광고·추적</h2>
+<ul>
+<li>수집 정보를 제3자에게 제공하지 않습니다.</li>
+<li><b>광고가 없으며</b>, 광고 SDK·분석 도구·추적 쿠키를 사용하지 않습니다.</li>
+</ul>
+
+<h2>5. 보관 기간과 삭제</h2>
+<ul>
+<li>교사는 대시보드에서 학생과 학습 기록을 언제든 삭제할 수 있습니다.</li>
+<li>교실 전체 삭제를 원하시면 위 문의 이메일로 교실 코드를 알려 주세요. 지체 없이 삭제합니다.</li>
+</ul>
+
+<h2>6. 아동의 개인정보 보호</h2>
+<p>이 앱은 아동이 직접 개인정보를 입력하는 화면이 없습니다. 학생 등록·이름 표기는 보호자 또는 교사가 하며,
+별명·이니셜 사용을 권장하는 안내문이 앱 안에 표시됩니다.</p>
+
+<h2>7. 방침의 변경</h2>
+<p>방침이 바뀌면 이 페이지에 변경 내용과 시행일을 게시합니다.</p>
+</body>
+</html>
