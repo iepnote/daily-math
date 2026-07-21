@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 54 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 55 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -679,8 +679,12 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .gsplit.free .fdot.lift{ position:relative; z-index:9; box-shadow:0 10px 18px rgba(0,0,0,.35); cursor:grabbing; }
 .gsplit.free .gcell{ gap:5px; flex-wrap:wrap; align-content:flex-start; }
 .gsplit.free .gcell.drop{ border-style:dashed; }
-.fcount{ margin-top:.5rem; font-size:1.5rem; font-weight:800; color:var(--accent-strong); }
-.fcount span{ display:inline-block; min-width:1.6em; padding:.05em .3em; border-radius:.5rem; background:var(--choice-bg); }
+.gsplit.ctr.free .gcell{ align-content:center; }        /* 5 이하 자유 가르기도 상자 가운데 */
+.fwrap{ display:flex; flex-direction:column; align-items:center; gap:.35rem; }
+.fnum{ font-size:1.9rem; font-weight:800; min-width:1.8rem; text-align:center; }
+.fnum.ga, .fsent b.ga{ color:#33691E; }                 /* 왼쪽 = 초록(연두 동그라미와 짝) */
+.fnum.gb, .fsent b.gb{ color:#C62828; }                 /* 오른쪽 = 빨강 */
+.fsent{ margin-top:.6rem; font-size:1.45rem; font-weight:700; color:var(--ink); }
 
 </style>
 </head>
@@ -697,7 +701,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 54';
+const APP_VERSION = 'ver 55';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1630,10 +1634,14 @@ function answer(btn, ans) {
   } else {
     btn.classList.add('wrong'); btn.disabled = true;
     chime(false); wrongCount++; wiggle($('qface'));
-    speak('다시 한 번 해 볼까요?');
     const lv = (current && current.hintLv) || 'normal';   // 학생별 힌트 수준(IEP 개별화)
-    if (lv === 'off') return;
-    routeHint(wrongCount + (lv === 'strong' ? 1 : 0));    // 강한 지원은 한 단계 앞당김
+    if (lv === 'off') { speak('다시 한 번 해 볼까요?'); return; }
+    /* 힌트가 곧바로 speak/speakSequence를 부르면 이 안내가 잘림 → 발화가 끝난 뒤 힌트 시작(보루 타이머 병행) */
+    const stage = wrongCount + (lv === 'strong' ? 1 : 0);   // 강한 지원은 한 단계 앞당김
+    let started = false;
+    const go = () => { if (started) return; started = true; routeHint(stage); };
+    speak('다시 한 번 해 볼까요?', go);
+    setTimeout(go, foreignPraise() ? 5200 : 3000);
   }
 }
 
@@ -3310,8 +3318,10 @@ function earlyFace(p) {
     return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''} free">
       <div class="grow1"><div class="gcell" id="gC">${'<div class="cdot red fdot"></div>'.repeat(p.n)}</div></div>
       <div class="glink gs"><i></i><i></i></div>
-      <div class="grow2"><div class="gcell drop" id="gA"></div><div class="gcell drop" id="gB"></div></div>
-      <div class="fcount"><span id="fa">0</span> 과 <span id="fb">0</span></div></div>`;
+      <div class="grow2">
+        <div class="fwrap"><div class="gcell drop" id="gA"></div><div class="fnum ga" id="fa">0</div></div>
+        <div class="fwrap"><div class="gcell drop" id="gB"></div><div class="fnum gb" id="fb">0</div></div></div>
+      <div class="fsent" id="fsent"></div></div>`;
   if (p.type === 'compare')
     return `<div class="early cmprow">
       <button class="cmp" data-v="0" onclick="answer(this,${p.ans})">${circleStack(p.a, 'red')}</button>
@@ -3401,10 +3411,14 @@ function putSubmit() {
     afterCorrect(foreignPraise() ? 2800 : undefined);
   } else {
     chime(false); wrongCount++; wiggle($('putplate'));
-    speak(c < p.n ? `아직 모자라요. ${p.n}개를 담아요.` : `너무 많아요. ${p.n}개만 담아요.`);
+    const msg = c < p.n ? `아직 모자라요. ${p.n}개를 담아요.` : `너무 많아요. ${p.n}개만 담아요.`;
     const lv = (current && current.hintLv) || 'normal';
-    if (lv === 'off') return;
-    routeHint(wrongCount + (lv === 'strong' ? 1 : 0));
+    if (lv === 'off') { speak(msg); return; }
+    const stage = wrongCount + (lv === 'strong' ? 1 : 0);
+    let started = false;
+    const go = () => { if (started) return; started = true; routeHint(stage); };
+    speak(msg, go);                                   // 안내가 끝난 뒤 힌트(잘림 방지)
+    setTimeout(go, foreignPraise() ? 5200 : 3200);
   }
 }
 
@@ -3530,24 +3544,27 @@ function hintSplit(p, h, stage) {
     speak(`연두색 ${koCnt(p.k)} 개를 갈라 주면, 빨간 동그라미가 몇 개 남을까요?`);
     return;
   }
-  /* 2차: 연두 k개가 아래 왼쪽 상자로 이동 → 위에는 빨간 것만 남음 → 남은 것 세기 */
+  /* 2차: 연두 k개는 왼쪽, 빨강 나머지는 오른쪽 상자로 갈라지고 각각 번호를 붙임 */
   h.innerHTML = `<div class="tip">가르고 남은 동그라미가 몇 개인지 세어 봐요</div>`;
   const gv = top.filter(d => d.classList.contains('gv'));
   const movers = gv.length ? gv : top.slice(0, p.k);
   movers.forEach(d => d.classList.add('gv'));
-  const slots = gsSlots($('gA'), p.k, 'gv');            // 아래 왼쪽을 착지 슬롯으로 다시 그림
   const rest = top.filter(d => !movers.includes(d));
-  const items = [{                                     // 한 멘트 동안 연두 동그라미가 차례로 날아감(무음 항목 없이)
-    text: `연두색 ${koCnt(p.k)} 개를 갈라 줘요.`,
-    action: () => movers.forEach((d, i) => setTimeout(() => flyMove(d, slots[i], () => {
-      d.style.visibility = 'hidden'; slots[i].style.visibility = ''; slots[i].classList.add('born');
-    }), i * 260)),
+  const slotsA = gsSlots($('gA'), p.k, 'gv');           // 왼쪽=갈라 준 만큼(연두)
+  const slotsB = gsSlots($('gB'), p.ans);              // 오른쪽=남은 만큼(빨강) — 물음표 자리를 대체
+  const fly = (d, slot, i) => setTimeout(() => flyMove(d, slot, () => {
+    d.style.visibility = 'hidden'; slot.style.visibility = ''; slot.classList.add('born');
+  }), i * 240);
+  const items = [{
+    text: '연두색은 왼쪽 상자에, 빨간색은 오른쪽 상자에 갈라요.',
+    action: () => { movers.forEach((d, i) => fly(d, slotsA[i], i)); rest.forEach((d, i) => fly(d, slotsB[i], movers.length + i)); },
+  }, {
+    text: `${p.n}${josaEun(p.n)} ${p.k}${josaGwa(p.k)} ${p.ans}${josaRo(p.ans)} 가를 수 있어요.`,
+    action: () => [slotsA, slotsB].forEach(ss => ss.forEach((d, i) => {   // 상자마다 1부터 번호
+      d.style.visibility = ''; d.textContent = i + 1; d.classList.add('tapped');
+      d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 });
+    })),
   }];
-  rest.forEach((d, i) => items.push({
-    text: KO_NUM[i + 1] || String(i + 1),
-    action: () => { d.textContent = i + 1; d.classList.add('tapped'); d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 }); },
-  }));
-  items.push({ text: `${koCnt(p.ans)} 개가 남아요. 정답은 ${p.ans}${josaYeyo(p.ans)}.` });
   speakSequence(items);
 }
 function hintCompare(p, h, stage) {
@@ -3664,15 +3681,21 @@ function initFreeSplit() {
 }
 function freeUpdate() {
   const p = session.items[session.idx];
-  const a = $('gA').querySelectorAll('.fdot').length, b = $('gB').querySelectorAll('.fdot').length;
+  const A = $('gA'), B = $('gB');
+  /* 담긴 곳에 따라 색: 왼쪽=연두, 오른쪽·위=빨강 (숫자 색과 짝지어 한눈에) */
+  [...document.querySelectorAll('#qface .fdot')].forEach(d => d.classList.toggle('gv', A.contains(d)));
+  const a = A.querySelectorAll('.fdot').length, b = B.querySelectorAll('.fdot').length;
   $('fa').textContent = a; $('fb').textContent = b;
+  $('fsent').innerHTML = `${p.n}${josaEun(p.n)} <b class="ga">${a}</b>${josaGwa(a)} <b class="gb">${b}</b>${josaRo(b)} 가를 수 있어요.`;
   if (locked || $('gC').querySelectorAll('.fdot').length) return;     // 위가 비어야 완료
   if (!a || !b) { speakFast('양쪽에 나누어 담아요.'); return; }        // 한쪽이 0이면 가르기가 아님
   locked = true;
   chime(true); celebrate($('gA'));
-  speak(`${p.n}${josaEun(p.n)} ${a}${josaGwa(a)} ${b}${josaRo(b)} 가를 수 있어요. ` + praise());
   logItem(); session.idx++; saveResume();
-  setTimeout(() => { if (session.idx >= session.items.length) finishSession(); else renderProblem(); }, 2600);
+  let done = false;
+  const go = () => { if (done) return; done = true; if (session.idx >= session.items.length) finishSession(); else renderProblem(); };
+  speak(`${p.n}${josaEun(p.n)} ${a}${josaGwa(a)} ${b}${josaRo(b)} 가를 수 있어요. ` + praise(), () => setTimeout(go, 700));
+  setTimeout(go, foreignPraise() ? 11000 : 7000);   // 보루(발화 끝 이벤트가 안 올 때만)
 }
 function hintFree(p, h, stage) {
   h.innerHTML = `<div class="tip">동그라미를 <b>아래 두 상자에 나누어</b> 담아요. 어떻게 나눠도 좋아요.</div>`;
