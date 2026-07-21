@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 39 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 40 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -646,7 +646,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 39';
+const APP_VERSION = 'ver 40';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3176,9 +3176,17 @@ function earlyFace(p) {
    세기(cplate)·모으기·가르기(gcell) 공용 — 문제당 카운터 하나(상자를 건너 이어 셈) ---- */
 function initTapCount(sel) {
   const dots = [...document.querySelectorAll(sel)];
-  /* 카운터는 DOM(tapped 수)에서 유도 — 힌트가 미리 번호를 매겨도 이어서 셀 수 있음 */
+  /* 카운터는 DOM(tapped 수)에서 유도 — 힌트가 미리 번호를 매겨도 이어서 셀 수 있음.
+     다시 누르면 번호 취소 + 뒤 번호들 자동 당김(항상 1..k 연속 유지) */
   dots.forEach(d => d.onpointerdown = () => {
-    if (locked || d.classList.contains('tapped')) return;
+    if (locked) return;
+    if (d.classList.contains('tapped')) {           // 토글 해제
+      const k = +d.textContent;
+      d.classList.remove('tapped'); d.textContent = '';
+      dots.forEach(x => { if (x.classList.contains('tapped') && +x.textContent > k) x.textContent = +x.textContent - 1; });
+      tick();
+      return;
+    }
     const cnt = dots.filter(x => x.classList.contains('tapped')).length + 1;
     d.classList.add('tapped'); d.textContent = cnt;
     d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 });
@@ -3268,6 +3276,7 @@ function hintCount(p, h, stage) {
      1차=묶음만(노란 채움 + 묶인 동그라미에 번호 1~5) → 학생이 이어 세도록 / 2차=남은 것까지 번호 이어 붙이며 정답. */
   const grp = p.n > 10 ? 10 : p.n >= 5 ? 5 : 0;
   const dots = [...document.querySelectorAll('#cplate .cdot')];
+  dots.forEach(d => { d.classList.remove('tapped'); d.textContent = ''; });    // 학생이 매긴 번호와 섞이지 않게 전부 초기화
   const mark = (d, no) => { d.textContent = no; d.classList.add('tapped'); };   // 탭 세기와 같은 번호 표시(이어 세기 연동)
   if (!grp) {
     h.innerHTML = `<div class="tip">손으로 하나씩 짚으며 세어 봐요</div>`;
