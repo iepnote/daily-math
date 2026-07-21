@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 38 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 39 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -565,7 +565,7 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
   display:flex; align-items:center; justify-content:center; padding:1.1rem 1.6rem; box-shadow:0 8px 18px rgba(0,0,0,.08); }
 .plate .cdot{ width:58px; height:58px; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:1.7rem; cursor:pointer; }
 .plate.big{ min-width:560px; min-height:360px; }   /* 스물까지 세기: 4줄(5개씩)이 타원 안에 들어가는 크기 */
-.grpring{ position:absolute; border:6px solid #E53935; border-radius:999px; pointer-events:none; z-index:3; }   /* 묶어 세기 빨간 동그라미 */
+.grpring{ position:absolute; background:rgba(255,202,40,.42); border-radius:999px; pointer-events:none; z-index:3; }   /* 묶어 세기: 테두리 없이 노란 채움 */
 /* 담기 */
 .plate.put{ min-height:185px; width:410px; min-width:0; border-radius:2.4rem; gap:13px; flex-wrap:wrap; align-content:center; justify-content:flex-start; padding:1.1rem 1.4rem; }
 .puttray{ display:flex; gap:15px; flex-wrap:wrap; justify-content:center; padding:.7rem 1.1rem; border-radius:1.2rem;
@@ -646,7 +646,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 38';
+const APP_VERSION = 'ver 39';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -817,7 +817,7 @@ const lsSet = (k, v) => { try { localStorage.setItem(LS + k, JSON.stringify(v));
 const lsDel = k => { try { localStorage.removeItem(LS + k); } catch (e) { } };
 
 /* ---- 기기 설정 (화면 모드·크기·소리, 마지막 교실) ---- */
-let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false }, lsGet('prefs', {}));
+let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko' }, lsGet('prefs', {}));
 const savePrefs = () => lsSet('prefs', prefs);
 let device = Object.assign({ classCode: '', lastStudentId: '' }, lsGet('device', {}));
 const saveDevice = () => lsSet('device', device);
@@ -1008,11 +1008,13 @@ function speak(text, onEnd) {
   if (vol() <= 0 || !('speechSynthesis' in window)) { if (onEnd) setTimeout(onEnd, 0); return; }
   try {
     speechSynthesis.cancel();
+    const fr = trKo(text);                          // 설정 언어면 같은 내용을 외국어로 한 번 더
     const u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; u.volume = vol();
     const v = pickKoVoice(); if (v) u.voice = v;
     u.pitch = 1.0; u.rate = spRate(0.95);
-    if (onEnd) u.onend = onEnd;                     // 발화가 끝난 뒤 진행할 동작(잘림 방지) — 호출부는 보루 타이머 병행
+    if (onEnd && !fr) u.onend = onEnd;              // 발화가 끝난 뒤 진행할 동작(잘림 방지) — 호출부는 보루 타이머 병행
     speechSynthesis.speak(u);
+    if (fr) speakForeign(fr, onEnd);                // onEnd는 마지막(외국어) 발화 뒤에
   } catch (e) { if (onEnd) setTimeout(onEnd, 0); }
 }
 /* 짧은 반응어(하나, 둘…)용 — 즉시 '톡' 효과음 + 로컬 음성(온라인 신경망 음성은 1~3초 지연이라 부적합) */
@@ -1037,6 +1039,7 @@ function speakFast(text) {
     const v = pickKoVoice(); if (v) u.voice = v;
     u.pitch = 1.05; u.rate = spRate(1.1);
     speechSynthesis.speak(u);
+    const fr = trKo(text); if (fr) speakForeign(fr);   // 세기 수사(하나→1 등)도 외국어로 한 번 더
   } catch (e) { }
 }
 /* 발화 시작(onstart)에 맞춰 화면 동작(action)을 실행 — 세기 애니메이션 동기화 */
@@ -1048,6 +1051,7 @@ function speakSequence(items) {
       const v = pickKoVoice(); if (v) u.voice = v; u.pitch = 1.0; u.rate = spRate(1.0);
       if (it.action) u.onstart = () => { try { it.action(); } catch (e) { } };
       speechSynthesis.speak(u);
+      const fr = trKo(it.text); if (fr) speakForeign(fr);   // 각 항목을 외국어로 한 번 더(세기 안내 포함)
     });
   } else {
     items.forEach((it, i) => setTimeout(() => { it.action && it.action(); }, i * 600));
@@ -1058,8 +1062,138 @@ const KO_NUM = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱',
 /* 관형 수사(뒤에 단위가 올 때): 두 개, 세 개 … TTS가 '2개'를 '이 개'로 읽는 것 방지 */
 const KO_CNT = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
 const koCnt = n => n <= 10 ? KO_CNT[n] : (n < 20 ? '열' + KO_CNT[n - 10] : (n === 20 ? '스무' : String(n)));
-const PRAISES = ['잘했어요!', '참 잘했어요!', '최고예요!', '딩동댕! 맞았어요!', '멋져요!'];
+const PRAISES = ['잘했어요!', '참 잘했어요!', '최고예요!', '딩동댕! 맞았어요!', '멋져요!', '천재예요!'];
 const praise = () => PRAISES[Math.floor(Math.random() * PRAISES.length)];
+
+/* ================= 다국어 음성(낱말놀이 문법 이식) =================
+   화면·기본 발화는 항상 한국어. 설정 언어(prefs.lang)가 있으면 같은 내용을
+   외국어로 '한 번 더' 이어 말한다(다문화 가정 지원) — 문제·칭찬·힌트·세기 안내 포함.
+   번역은 trKo()가 중앙에서 담당(패턴 사전, speak·speakFast·speakSequence가 자동 호출).
+   사전에 없는 문장(문장제·모형 변신 내레이션 등)은 한국어만 — 우아한 축소. */
+const LANG_CODE = { ko: 'ko-KR', en: 'en-US', zh: 'zh-CN', vi: 'vi-VN', ja: 'ja-JP', ru: 'ru-RU' };
+const LANG_NAME = { ko: '한국어', en: 'English', zh: '中文', vi: 'Tiếng Việt', ja: '日本語', ru: 'Русский' };
+function pickVoiceFor(code) {
+  const pre = code.slice(0, 2).toLowerCase();
+  const list = _voices.filter(v => v.lang && v.lang.toLowerCase().startsWith(pre));
+  if (!list.length) return null;
+  return list.find(v => /google|neural|online|premium|natural|wavenet/i.test(v.name)) || list[0];
+}
+/* 한국어 발화 '뒤에' 이어 말할 외국어 문장 — cancel 없이 큐에 추가. 큐 추가 여부 반환 */
+function speakForeign(text, onEnd) {
+  const l = prefs.lang || 'ko';
+  if (l === 'ko' || !text || vol() <= 0 || !('speechSynthesis' in window)) { if (onEnd) setTimeout(onEnd, 0); return false; }
+  try {
+    const u = new SpeechSynthesisUtterance(text); u.lang = LANG_CODE[l] || 'en-US'; u.volume = vol();
+    const v = pickVoiceFor(LANG_CODE[l]); if (v) u.voice = v;
+    u.rate = spRate(0.95);
+    if (onEnd) u.onend = onEnd;
+    speechSynthesis.speak(u);
+    return true;
+  } catch (e) { if (onEnd) setTimeout(onEnd, 0); return false; }
+}
+const foreignPraise = () => {
+  const l = prefs.lang || 'ko';
+  return l === 'ko' ? '' : ({ en: 'Great job!', zh: '真棒！', vi: 'Giỏi lắm!', ja: 'よくできました！', ru: 'Молодец!' })[l] || '';
+};
+/* ---- 번역 사전 ---- */
+const OPW = {
+  '더하기': { en: 'plus', zh: '加', vi: 'cộng', ja: 'たす', ru: 'плюс' },
+  '빼기': { en: 'minus', zh: '减', vi: 'trừ', ja: 'ひく', ru: 'минус' },
+  '곱하기': { en: 'times', zh: '乘', vi: 'nhân', ja: 'かける', ru: 'умножить на' },
+  '나누기': { en: 'divided by', zh: '除以', vi: 'chia', ja: 'わる', ru: 'разделить на' },
+};
+const EQW = { en: '?', zh: '等于几？', vi: ' bằng mấy?', ja: ' は？', ru: '?' };
+const PLW = {
+  '일': { en: 'Ones place', zh: '个位', vi: 'Hàng đơn vị', ja: 'いちのくらい', ru: 'Разряд единиц' },
+  '십': { en: 'Tens place', zh: '十位', vi: 'Hàng chục', ja: 'じゅうのくらい', ru: 'Разряд десятков' },
+  '백': { en: 'Hundreds place', zh: '百位', vi: 'Hàng trăm', ja: 'ひゃくのくらい', ru: 'Разряд сотен' },
+  '천': { en: 'Thousands place', zh: '千位', vi: 'Hàng nghìn', ja: 'せんのくらい', ru: 'Разряд тысяч' },
+};
+const TRX = {
+  '동그라미가 모두 몇 개일까요?': { en: 'How many circles are there?', zh: '一共有几个圆圈？', vi: 'Có tất cả mấy hình tròn?', ja: 'まるは ぜんぶで いくつ？', ru: 'Сколько всего кружков?' },
+  '어느 쪽이 더 많을까요? 많은 쪽을 눌러 주세요.': { en: 'Which side has more? Tap the bigger one.', zh: '哪边更多？请点多的一边。', vi: 'Bên nào nhiều hơn? Hãy chạm vào bên nhiều hơn.', ja: 'どっちが おおい？ おおい ほうを おしてね。', ru: 'Где больше? Нажми, где больше.' },
+  '빈칸에 알맞은 수는 무엇일까요?': { en: 'What number goes in the blank?', zh: '空格里应该填几？', vi: 'Số nào điền vào ô trống?', ja: 'あいた ますに はいる かずは？', ru: 'Какое число пропущено?' },
+  '손으로 하나씩 짚으며 세어 봐요.': { en: 'Point and count one by one.', zh: '用手一个一个指着数。', vi: 'Hãy chỉ tay đếm từng cái một.', ja: 'ゆびで ひとつずつ かぞえよう。', ru: 'Считай по одному, показывая пальцем.' },
+  '일의 자리부터 차례로 계산해요.': { en: 'Start from the ones place.', zh: '从个位开始按顺序算。', vi: 'Tính lần lượt từ hàng đơn vị.', ja: 'いちのくらいから じゅんばんに けいさんしよう。', ru: 'Считай по порядку с разряда единиц.' },
+  '좋아요': { en: 'Good!', zh: '很好！', vi: 'Tốt lắm!', ja: 'いいね！', ru: 'Хорошо!' },
+  '다시 한 번 세어 볼까요?': { en: "Let's count again!", zh: '再数一次吧！', vi: 'Đếm lại lần nữa nhé!', ja: 'もういちど かぞえてみよう！', ru: 'Давай посчитаем ещё раз!' },
+  '다시 한 번 해 볼까요?': { en: "Let's try again!", zh: '再试一次吧！', vi: 'Thử lại lần nữa nhé!', ja: 'もういちど やってみよう！', ru: 'Попробуй ещё раз!' },
+  '십이 넘어요. 1을 위 자리로 올려요.': { en: 'It goes over ten. Carry the 1.', zh: '满十了，向前一位进 1。', vi: 'Quá mười rồi, nhớ 1 sang hàng trên.', ja: '10を こえたよ。1を うえの くらいに あげよう。', ru: 'Больше десяти. Перенеси 1 в старший разряд.' },
+  '큰 수를 찾아요. 큰 수부터 작은 수만큼 이어서 세요.': { en: 'Find the bigger number and count on from it.', zh: '找出大的数，从它接着数。', vi: 'Tìm số lớn hơn rồi đếm tiếp từ đó.', ja: 'おおきい かずを みつけて、つづけて かぞえよう。', ru: 'Найди большее число и считай дальше от него.' },
+  '동그라미를 세어 봐요. 그리고 빗금 친 것만큼 빼요.': { en: 'Count the circles, then take away the crossed ones.', zh: '数一数圆圈，再去掉画线的。', vi: 'Đếm hình tròn rồi bớt đi phần gạch chéo.', ja: 'まるを かぞえて、せんの ぶんだけ ひこう。', ru: 'Сосчитай кружки и убери зачёркнутые.' },
+  '동그라미 열 개는, 십 막대 한 개로 바뀌어요!': { en: 'Ten circles become one tens rod!', zh: '十个圆圈变成一根十的小棒！', vi: 'Mười hình tròn đổi thành một thanh chục!', ja: 'まる10こは、10の ぼう 1ぽんに かわるよ！', ru: 'Десять кружков — это одна палочка-десяток!' },
+};
+/* hintTwo 단서(더해/빼 × 세로/가로) */
+[['더해', { en: 'add', zh: '加一加', vi: 'cộng lại', ja: 'たしてみよう', ru: 'сложи' }], ['빼', { en: 'subtract', zh: '减一减', vi: 'trừ đi', ja: 'ひいてみよう', ru: 'вычти' }]].forEach(([k, w]) => {
+  TRX[`숫자 위에 자리 이름이 있어요. 각 자릿값의 수를 세어 ${k} 봐요.`] = {
+    en: `The place names are above the numbers. Count each place and ${w.en}.`, zh: `数字上面写着数位。每一位数一数，${w.zh}。`,
+    vi: `Tên hàng ở phía trên các số. Đếm từng hàng rồi ${w.vi}.`, ja: `すうじの うえに くらいの なまえが あるよ。くらいごとに かぞえて、${w.ja}。`,
+    ru: `Над числами написаны разряды. Посчитай каждый разряд и ${w.ru}.`
+  };
+  TRX[`파란 막대는 십, 빨간 동그라미는 일이에요. 각 자릿값의 수를 세어 ${k} 봐요.`] = {
+    en: `Blue rods are tens, red circles are ones. Count each place and ${w.en}.`, zh: `蓝色小棒是十，红色圆圈是一。每一位数一数，${w.zh}。`,
+    vi: `Thanh xanh là chục, hình tròn đỏ là đơn vị. Đếm từng hàng rồi ${w.vi}.`, ja: `あおい ぼうは 10、あかい まるは 1だよ。くらいごとに かぞえて、${w.ja}。`,
+    ru: `Синие палочки — десятки, красные кружки — единицы. Посчитай каждый разряд и ${w.ru}.`
+  };
+});
+const KO_NUM_IDX = {}; KO_NUM.forEach((w, i) => { if (w) KO_NUM_IDX[w] = i; });
+function cntToNum(w) {
+  if (w === '스무' || w === '스물') return 20;
+  const i = KO_CNT.indexOf(w); if (i > 0) return i;
+  if (w[0] === '열' && w.length > 1) { const j = KO_CNT.indexOf(w.slice(1)); if (j > 0) return 10 + j; }
+  return null;
+}
+/* 한국어 안내문 → 외국어. 매칭 실패 시 '' (한국어만 발화) */
+function trKo(t) {
+  const l = prefs.lang || 'ko';
+  if (l === 'ko' || !t) return '';
+  t = String(t).trim();
+  const T = o => (o && o[l]) || '';
+  if (TRX[t]) return T(TRX[t]);
+  if (PRAISES.includes(t)) return foreignPraise();
+  if (/^[\d.,]+\.?$/.test(t)) return t.replace(/\.$/, '');            // 세기 숫자: 그 언어로 읽음
+  if (KO_NUM_IDX[t.replace(/\.$/, '')] !== undefined) return String(KO_NUM_IDX[t.replace(/\.$/, '')]);
+  let m;
+  if (m = t.match(/^(.+?) ?개[.!]?$/)) { const n = cntToNum(m[1]); if (n) return String(n); }
+  const op = w => T(OPW[w]), pl = w => T(PLW[w]);
+  /* 문제 읽기 */
+  if (m = t.match(/^(\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/)) return `${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`;
+  if (m = t.match(/^(\d+) (더하기|빼기) (\d+) (더하기|빼기) (\d+)[은는]\?$/)) return `${m[1]} ${op(m[2])} ${m[3]} ${op(m[4])} ${m[5]}${T(EQW)}`;
+  if (m = t.match(/^(\d+)에 얼마를 더하면 10이 될까요\?$/)) return T({ en: `${m[1]} plus what makes 10?`, zh: `${m[1]} 加几等于 10？`, vi: `${m[1]} cộng mấy bằng 10?`, ja: `${m[1]}に いくつ たすと 10？`, ru: `${m[1]} плюс сколько будет 10?` });
+  if (m = t.match(/^10이 되려면 (\d+)[와과] 무엇을 더해야 할까요\?$/)) return T({ en: `${m[1]} plus what makes 10?`, zh: `${m[1]} 加几等于 10？`, vi: `${m[1]} cộng mấy bằng 10?`, ja: `${m[1]}に いくつ たすと 10？`, ru: `${m[1]} плюс сколько будет 10?` });
+  if (m = t.match(/^10에서 얼마를 빼면 (\d+)[이가] 될까요\?$/)) return T({ en: `10 minus what makes ${m[1]}?`, zh: `10 减几等于 ${m[1]}？`, vi: `10 trừ mấy bằng ${m[1]}?`, ja: `10から いくつ ひくと ${m[1]}？`, ru: `10 минус сколько будет ${m[1]}?` });
+  if (m = t.match(/^동그라미를 (\d+)개, 접시에 담아 주세요\.$/)) return T({ en: `Put ${m[1]} on the plate.`, zh: `把 ${m[1]} 个放到盘子里。`, vi: `Hãy đặt ${m[1]} cái vào đĩa.`, ja: `${m[1]}こ、おさらに いれてね。`, ru: `Положи ${m[1]} на тарелку.` });
+  if (m = t.match(/^(\d+)[과와] (\d+)[을를] 모으면 얼마일까요\?$/)) return T({ en: `How much is ${m[1]} and ${m[2]} together?`, zh: `${m[1]} 和 ${m[2]} 合起来是几？`, vi: `${m[1]} và ${m[2]} gộp lại là mấy?`, ja: `${m[1]}と ${m[2]}を あわせると いくつ？`, ru: `Сколько будет ${m[1]} и ${m[2]} вместе?` });
+  if (m = t.match(/^(\d+)[은는] (\d+)[과와] 몇으로 가를 수 있을까요\?$/)) return T({ en: `${m[1]} splits into ${m[2]} and what?`, zh: `${m[1]} 可以分成 ${m[2]} 和几？`, vi: `${m[1]} tách thành ${m[2]} và mấy?`, ja: `${m[1]}は ${m[2]}と いくつに わけられる？`, ru: `${m[1]} — это ${m[2]} и сколько?` });
+  if (m = t.match(/^(\d+) 곱하기 (\d+)[은는] (\d+)\. 맞으면/)) return T({ en: `${m[1]} times ${m[2]} is ${m[3]}. Right or wrong?`, zh: `${m[1]} 乘 ${m[2]} 等于 ${m[3]}，对不对？`, vi: `${m[1]} nhân ${m[2]} bằng ${m[3]}, đúng hay sai?`, ja: `${m[1]}かける${m[2]}は ${m[3]}。あってる？`, ru: `${m[1]} умножить на ${m[2]} будет ${m[3]}. Верно или нет?` });
+  if (m = t.match(/^(\d+)씩 뛰어 세어요\./)) return T({ en: `Skip count by ${m[1]}. What number goes in the blank?`, zh: `${m[1]} 个 ${m[1]} 个地数。空格里应该填几？`, vi: `Đếm cách ${m[1]}. Số nào điền vào ô trống?`, ja: `${m[1]}とびで かぞえよう。あいた ますの かずは？`, ru: `Считай по ${m[1]}. Какое число пропущено?` });
+  /* 자리별 직접 입력(2차) */
+  if (m = t.match(/^(일|십|백|천)의 자리\. (\d+) 더하기 (\d+)( 하고 1)?[은는]\?$/)) { const c = m[4] ? 1 : 0;
+    return T({ en: `${pl(m[1])}. ${m[2]} plus ${m[3]}${c ? ' plus 1' : ''}?`, zh: `${pl(m[1])}。${m[2]} 加 ${m[3]}${c ? ' 再加 1' : ''}等于几？`, vi: `${pl(m[1])}. ${m[2]} cộng ${m[3]}${c ? ' cộng 1' : ''} bằng mấy?`, ja: `${pl(m[1])}。${m[2]} たす ${m[3]}${c ? ' たす 1' : ''} は？`, ru: `${pl(m[1])}. ${m[2]} плюс ${m[3]}${c ? ' плюс 1' : ''}?` }); }
+  if (m = t.match(/^(일|십|백|천)의 자리\. (\d+) 빼기 (\d+)[은는]\?$/))
+    return T({ en: `${pl(m[1])}. ${m[2]} minus ${m[3]}?`, zh: `${pl(m[1])}。${m[2]} 减 ${m[3]}等于几？`, vi: `${pl(m[1])}. ${m[2]} trừ ${m[3]} bằng mấy?`, ja: `${pl(m[1])}。${m[2]} ひく ${m[3]} は？`, ru: `${pl(m[1])}. ${m[2]} минус ${m[3]}?` });
+  if (m = t.match(/^(일|십|백|천)의 자리\. (\d+)에서 (\d+)[을를] 뺄 수 없어요\. 윗자리에서 10을 빌려요\. (\d+) 빼기 (\d+)[은는]\?$/))
+    return T({ en: `${pl(m[1])}. You can't take ${m[3]} from ${m[2]}. Borrow 10. ${m[4]} minus ${m[5]}?`, zh: `${pl(m[1])}。${m[2]} 减不了 ${m[3]}，向前一位借 10。${m[4]} 减 ${m[5]}等于几？`, vi: `${pl(m[1])}. ${m[2]} không trừ được ${m[3]}. Mượn 10 từ hàng trên. ${m[4]} trừ ${m[5]} bằng mấy?`, ja: `${pl(m[1])}。${m[2]}から ${m[3]}は ひけないよ。うえの くらいから 10を かりよう。${m[4]} ひく ${m[5]} は？`, ru: `${pl(m[1])}. Из ${m[2]} нельзя вычесть ${m[3]}. Займи 10. ${m[4]} минус ${m[5]}?` });
+  /* 이어 세기·세기 안내 */
+  if (m = t.match(/^(\d+)부터 거꾸로 세면서 (\d+)개를 하나씩 빼 봐요\.$/))
+    return T({ en: `Count back from ${m[1]}, taking away ${m[2]} one by one.`, zh: `从 ${m[1]} 开始倒着数，一个一个减去 ${m[2]} 个。`, vi: `Đếm ngược từ ${m[1]}, bớt từng cái một trong ${m[2]} cái.`, ja: `${m[1]}から さかさまに かぞえて、${m[2]}こ ひとつずつ ひこう。`, ru: `Считай назад от ${m[1]}, убирая по одному ${m[2]} раз.` });
+  if (m = t.match(/^(\d+)부터 (\d+)만큼 더해 봐요\.?$/))
+    return T({ en: `Start at ${m[1]} and count on ${m[2]}.`, zh: `从 ${m[1]} 开始，再数 ${m[2]} 个。`, vi: `Từ ${m[1]}, đếm thêm ${m[2]}.`, ja: `${m[1]}から ${m[2]}こ すすめよう。`, ru: `От ${m[1]} посчитай ещё ${m[2]}.` });
+  if (m = t.match(/^(다섯|열) 개를 한 번에 묶어요\./)) { const n = cntToNum(m[1]);
+    return T({ en: `Circle ${n} at once. ${n}.`, zh: `把 ${n} 个圈在一起。${n}。`, vi: `Khoanh ${n} cái một lần. ${n}.`, ja: `${n}こを ひとまとめに しよう。${n}。`, ru: `Обведи сразу ${n}. ${n}.` }); }
+  if (m = t.match(/^접시에 자리가 (.+?) 개 생겼어요\./)) { const n = cntToNum(m[1]) || m[1];
+    return T({ en: `There are ${n} spots on the plate. Put one in each.`, zh: `盘子上有 ${n} 个位置，一个一个放进去。`, vi: `Trên đĩa có ${n} chỗ. Hãy đặt vào từng chỗ.`, ja: `おさらに ${n}この ばしょが あるよ。あわせて いれてね。`, ru: `На тарелке ${n} мест. Клади по одному.` }); }
+  if (m = t.match(/^아직 모자라요\. (\d+)개를 담아요\.$/))
+    return T({ en: `Not enough yet. Put ${m[1]} in.`, zh: `还不够，要放 ${m[1]} 个。`, vi: `Chưa đủ. Hãy đặt ${m[1]} cái.`, ja: `まだ たりないよ。${m[1]}こ いれよう。`, ru: `Ещё мало. Положи ${m[1]}.` });
+  if (m = t.match(/^너무 많아요\. (\d+)개만 담아요\.$/))
+    return T({ en: `Too many. Put only ${m[1]}.`, zh: `太多了，只放 ${m[1]} 个。`, vi: `Nhiều quá. Chỉ đặt ${m[1]} cái thôi.`, ja: `おおすぎるよ。${m[1]}こだけ いれよう。`, ru: `Слишком много. Положи только ${m[1]}.` });
+  if (m = t.match(/^(\d+)에서 (\d+)[을를] 빼면 (.+?) 개가 남아요\. 정답은/)) { const r = m[1] - m[2];
+    return T({ en: `${m[1]} minus ${m[2]} leaves ${r}. The answer is ${r}.`, zh: `${m[1]} 减 ${m[2]} 剩 ${r} 个。答案是 ${r}。`, vi: `${m[1]} trừ ${m[2]} còn ${r}. Đáp án là ${r}.`, ja: `${m[1]}から ${m[2]}を ひくと ${r}こ のこるよ。こたえは ${r}。`, ru: `${m[1]} минус ${m[2]} — остаётся ${r}. Ответ: ${r}.` }); }
+  if (m = t.match(/^스스로 다 풀었어요!/)) return T({ en: 'You solved it all by yourself! Great job!', zh: '你自己全做出来了！真棒！', vi: 'Con tự giải hết rồi! Giỏi lắm!', ja: 'ぜんぶ じぶんで とけたね！すごい！', ru: 'Ты решил всё сам! Молодец!' });
+  if (m = t.match(/^모두 (.+?) 개\. 정답은 (\d+)/)) return T({ en: `${m[2]} in all. The answer is ${m[2]}.`, zh: `一共 ${m[2]} 个。答案是 ${m[2]}。`, vi: `Tất cả là ${m[2]}. Đáp án là ${m[2]}.`, ja: `ぜんぶで ${m[2]}こ。こたえは ${m[2]}。`, ru: `Всего ${m[2]}. Ответ: ${m[2]}.` });
+  if (m = t.match(/정답은 (\d+)/)) return T({ en: `The answer is ${m[1]}.`, zh: `答案是 ${m[1]}。`, vi: `Đáp án là ${m[1]}.`, ja: `こたえは ${m[1]}。`, ru: `Ответ: ${m[1]}.` });
+  return '';
+}
 
 /* =========================================================
    국어 조사 자동 선택 — 한자어 수 읽기의 받침 여부로 결정
@@ -1397,7 +1531,7 @@ function speakProblem() {
   else if (p.form === 'addToTen') t = `${p.k}에 얼마를 더하면 10이 될까요?`;
   else if (p.form === 'partner') t = `10이 되려면 ${p.k}${josaGwa(p.k)} 무엇을 더해야 할까요?`;
   else t = `10에서 얼마를 빼면 ${p.result}${josaIga(p.result)} 될까요?`;
-  speak(t);
+  speak(t);                                         // 설정 언어가 있으면 trKo가 외국어로 한 번 더(자동)
 }
 
 /* ---- 정답 처리 ---- */
@@ -1434,7 +1568,7 @@ function answer(btn, ans) {
       afterCorrect(3200);                          // 고친 식을 보고 들을 시간
       return;
     } else speak(praise());
-    afterCorrect();
+    afterCorrect(foreignPraise() ? 2800 : undefined);   // 외국어 칭찬이 이어질 땐 여유 있게
   } else {
     btn.classList.add('wrong'); btn.disabled = true;
     chime(false); wrongCount++; wiggle($('qface'));
@@ -2004,8 +2138,8 @@ function finishColumnAdd() {
   /* 칭찬 멘트가 끝난 뒤 800ms 여유를 두고 다음 문제로(잘림 방지). 음성 이벤트 유실 대비 6초 보루. */
   const next = () => { if (session.idx >= session.items.length) finishSession(); else renderProblem(); };
   let moved = false; const go = () => { if (moved) return; moved = true; setTimeout(next, 800); };
-  speak('스스로 다 풀었어요! ' + praise(), go);
-  setTimeout(go, 6000);
+  speak('스스로 다 풀었어요! ' + praise(), go);      // 외국어 설정이면 speak가 외국어까지 말한 뒤 go
+  setTimeout(go, foreignPraise() ? 9000 : 6000);
 }
 
 function countAdd(p, h) {
@@ -2443,6 +2577,8 @@ function openSettings() {
     <div class="optrow">${opt('sound', 'low', prefs.soundLevel, '작게')}${opt('sound', 'mid', prefs.soundLevel, '보통')}${opt('sound', 'high', prefs.soundLevel, '크게')}${opt('sound', 'off', prefs.soundLevel, '🔇')}</div>
     <div style="font-weight:700">말 빠르기</div>
     <div class="optrow">${opt('rate', 'normal', prefs.rate, '보통')}${opt('rate', 'slow', prefs.rate, '느리게')}</div>
+    <div style="font-weight:700">음성 언어 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— 문제·칭찬을 고른 언어로 한 번 더 말해요</span></div>
+    <div class="optrow">${['ko', 'en', 'zh', 'vi', 'ja', 'ru'].map(l => opt('lang', l, prefs.lang || 'ko', LANG_NAME[l])).join('')}</div>
     <div style="font-weight:700">화면 효과</div>
     <div class="optrow">${opt('calm', 'off', prefs.calm ? 'on' : 'off', '반짝임 켜기')}${opt('calm', 'on', prefs.calm ? 'on' : 'off', '저자극(반짝임 끄기)')}</div>
     <button class="btn btn--orange" onclick="closeModal()">닫기</button>`);
@@ -2452,9 +2588,11 @@ function setPref(group, v) {
   else if (group === 'sound') prefs.soundLevel = v;
   else if (group === 'rate') prefs.rate = v;
   else if (group === 'calm') prefs.calm = v === 'on';
+  else if (group === 'lang') prefs.lang = v;
   savePrefs(); openSettings();
   if (group === 'sound') speak('이렇게 들려요.');
   if (group === 'rate') speak('이 빠르기로 말해요.');
+  if (group === 'lang') speak('참 잘했어요!');       // trKo가 외국어 칭찬을 이어 말함(미리듣기)
   if (group === 'size' && $('study')) { $('study').className = 'study sz-' + prefs.size; }
 }
 
@@ -3038,10 +3176,11 @@ function earlyFace(p) {
    세기(cplate)·모으기·가르기(gcell) 공용 — 문제당 카운터 하나(상자를 건너 이어 셈) ---- */
 function initTapCount(sel) {
   const dots = [...document.querySelectorAll(sel)];
-  let cnt = 0;
+  /* 카운터는 DOM(tapped 수)에서 유도 — 힌트가 미리 번호를 매겨도 이어서 셀 수 있음 */
   dots.forEach(d => d.onpointerdown = () => {
     if (locked || d.classList.contains('tapped')) return;
-    cnt++; d.classList.add('tapped'); d.textContent = cnt;
+    const cnt = dots.filter(x => x.classList.contains('tapped')).length + 1;
+    d.classList.add('tapped'); d.textContent = cnt;
     d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 });
     speakFast(KO_NUM[cnt] || String(cnt));
   });
@@ -3093,7 +3232,7 @@ function putSubmit() {
   const c = $('putplate').querySelectorAll('.pdot').length;
   if (c === p.n) {
     locked = true; chime(true); celebrate($('putplate')); speak(praise());
-    afterCorrect();
+    afterCorrect(foreignPraise() ? 2800 : undefined);
   } else {
     chime(false); wrongCount++; wiggle($('putplate'));
     speak(c < p.n ? `아직 모자라요. ${p.n}개를 담아요.` : `너무 많아요. ${p.n}개만 담아요.`);
@@ -3125,28 +3264,35 @@ function grpRing(ds) {
   e.style.visibility = 'hidden'; stg.appendChild(e); return e;
 }
 function hintCount(p, h, stage) {
-  document.querySelectorAll('#stage .grpring').forEach(e => e.remove());
-  /* 아홉까지(n>5)=다섯 묶어 "다섯"부터 / 스물까지(n>10)=열 묶어 "열"부터 이어 세기. 다섯 이하=하나씩 */
-  const grp = p.n > 10 ? 10 : p.n > 5 ? 5 : 0;
+  /* 다섯 미만=하나씩 / 5 이상=다섯 묶음 / 10 초과=열 묶음.
+     1차=묶음만(노란 채움 + 묶인 동그라미에 번호 1~5) → 학생이 이어 세도록 / 2차=남은 것까지 번호 이어 붙이며 정답. */
+  const grp = p.n > 10 ? 10 : p.n >= 5 ? 5 : 0;
+  const dots = [...document.querySelectorAll('#cplate .cdot')];
+  const mark = (d, no) => { d.textContent = no; d.classList.add('tapped'); };   // 탭 세기와 같은 번호 표시(이어 세기 연동)
   if (!grp) {
     h.innerHTML = `<div class="tip">손으로 하나씩 짚으며 세어 봐요</div>`;
     if (stage === 1) { speak('손으로 하나씩 짚으며 세어 봐요.'); return; }
-  } else h.innerHTML = `<div class="tip"><b>${koCnt(grp)} 개</b>를 한 번에 묶고, 이어서 세어 봐요</div>`;
-  const dots = [...document.querySelectorAll('#cplate .cdot')];
+    const items = dots.map((d, i) => ({ text: KO_NUM[i + 1] || String(i + 1), action: () => mark(d, i + 1) }));
+    items.push({ text: `모두 ${koCnt(p.n)} 개. 정답은 ${p.n}${josaYeyo(p.n)}.` });
+    speakSequence(items); return;
+  }
+  h.innerHTML = `<div class="tip"><b>${koCnt(grp)} 개</b>를 한 번에 묶고, 이어서 세어 봐요</div>`;
   const items = [];
-  if (grp) {
+  if (!document.querySelector('#stage .grpring')) {          // 1차: 묶음 생성(2차 재진입 시엔 유지)
     const ring = grpRing(dots.slice(0, grp));
     items.push({
       text: `${koCnt(grp)} 개를 한 번에 묶어요. ${KO_NUM[grp]}.`, action: () => {
         ring.style.visibility = '';
         ring.animate([{ transform: 'scale(.6)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(.2,1.4,.4,1)' });
-        dots.slice(0, grp).forEach(d => d.classList.add('slash'));
+        dots.slice(0, grp).forEach((d, i) => mark(d, i + 1));
       }
     });
+  } else dots.slice(0, grp).forEach((d, i) => mark(d, i + 1));
+  if (stage >= 2) {                                          // 2차: 남은 동그라미 이어 번호(여섯, 일곱…) + 정답
+    for (let i = grp; i < p.n; i++) { const d = dots[i]; items.push({ text: KO_NUM[i + 1] || String(i + 1), action: () => mark(d, i + 1) }); }
+    items.push({ text: `모두 ${koCnt(p.n)} 개. 정답은 ${p.n}${josaYeyo(p.n)}.` });
   }
-  for (let i = grp; i < p.n; i++) { const d = dots[i]; items.push({ text: KO_NUM[i + 1] || String(i + 1), action: () => d.classList.add('slash') }); }
-  items.push({ text: `모두 ${koCnt(p.n)} 개. 정답은 ${p.n}${josaYeyo(p.n)}.` });
-  speakSequence(items);
+  if (items.length) speakSequence(items);
 }
 function hintPut(p, h, stage) {
   const plate = $('putplate'), tray = $('puttray');
