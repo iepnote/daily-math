@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 45 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 46 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -508,7 +508,8 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .ws-page.n20.v .ws-row{ justify-content:space-between; padding:0 2mm; }
 /* 기초 유형 지필형 칸(세기·담기·모으기·가르기·비교·수열·문장제·채점) */
 .wpe{ display:flex; flex-direction:column; gap:2.5mm; min-width:78mm; max-width:88mm; }
-.wpe-q{ display:flex; align-items:flex-start; gap:2.5mm; font-size:13pt; font-weight:700; line-height:1.45; }
+.wpe-q{ display:flex; align-items:flex-start; gap:2.5mm; font-size:13pt; font-weight:700; line-height:1.45;
+  word-break:keep-all; }   /* 문장제: 어절 중간에서 줄이 끊기지 않게 */
 /* 동그라미: 한 줄에 정확히 5개(p5) 또는 10개(p10). 지름(--d)·간격(--g)을 변수로 두고
    한 줄 폭(min-width)을 계산 → 개수가 적어도 상자 크기가 같아 "상자 크기=답" 단서가 생기지 않음 */
 .wdots{ --d:7.4mm; --g:1.8mm; display:flex; flex-direction:column; gap:1.6mm; }
@@ -530,6 +531,7 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .weans{ font-size:16pt; font-weight:800; display:flex; align-items:center; gap:2.5mm; }
 .weans .bl, .wjudge .bl{ display:inline-block; width:14mm; height:10mm; }
 .weans .bl.w{ width:34mm; }
+.weans .bl.ul{ border-bottom:0.4mm solid #666; }   /* 문장제 식·답: 쓸 자리를 밑줄로 표시 */
 /* 모으기·가르기: 상자 2개+＋ 가 한 칸(88mm)에 들어가도록 동그라미를 작게 */
 .wgs{ display:flex; flex-direction:column; align-items:center; gap:1.6mm; }
 .wgs .wdots{ --d:5mm; --g:1.1mm; }
@@ -661,7 +663,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 45';
+const APP_VERSION = 'ver 46';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3117,6 +3119,7 @@ const WS_INST = {
   count: '※ 모두 몇 개인지 세어 보세요.',
   seq: '※ 빈칸에 알맞은 수를 쓰세요.',
   compare: '※ 더 많은 쪽에 ○ 하세요.',
+  judge: '※ 계산이 맞으면 ○, 틀리면 ×를 하세요.',
 };
 /* 동그라미: 한 줄에 정확히 per개(5 또는 10) — 겹치지 않도록 크기는 .wdots.pN 에서 지정 */
 const wsDots = (n, hollow, per) => {
@@ -3140,6 +3143,8 @@ function wsEarly(p, num, o) {
   if (p.type === 'seq')
     return `<div class="wpe"><div class="wdline">${N}<div class="wseq">${p.arr.map((v, i) => i === p.blank
       ? `<span class="wsbox ans">&nbsp;</span>` : `<span class="wsbox">${v}</span>`).join('<span class="wsarr">→</span>')}</div></div></div>`;
+  if (p.type === 'judge')   /* 지시문은 위에 한 번 — 문항은 식과 ( )만 */
+    return `<div class="wpe"><div class="wdline">${N}<div class="wjudge">${p.a} × ${p.b} = ${p.shown} &nbsp; ( &nbsp;&nbsp;&nbsp; )</div></div></div>`;
   if (p.type === 'put')   /* 색칠할 수가 문항마다 달라 문제는 그대로 두고, 그림만 상자 안에 */
     return `<div class="wpe"><div class="wpe-q">${N}${p.n}개만큼 색칠하세요.</div>
       <div class="wdline">${wsBox(wsDots(p.max, true))}</div></div>`;
@@ -3149,10 +3154,10 @@ function wsEarly(p, num, o) {
   } else if (p.type === 'split') {
     q = `${p.n}을 둘로 가르세요.`;
     body = `<div class="wgs"><div class="wgbox">${p.n}</div><div class="wgarr">↙ ↘</div><div class="wgrow"><div class="wgbox">${p.k}</div><div class="wgbox dash">&nbsp;</div></div></div>`;
-  } else if (p.type === 'word') {
+  } else {   /* word: 식·답은 쓸 자리가 보이게 밑줄(네모 상자는 쓰지 않음) */
     q = p.text;
-    body = `<div class="weans">식: <span class="bl w"></span> &nbsp; 답: ${B} 개</div>`;
-  } else { q = '계산이 맞으면 ○, 틀리면 ×를 하세요.'; body = `<div class="wjudge">${p.a} × ${p.b} = ${p.shown} &nbsp; ( &nbsp;&nbsp;&nbsp; )</div>`; }
+    body = `<div class="weans">식: <span class="bl w ul"></span> &nbsp; 답: <span class="bl ul"></span> 개</div>`;
+  }
   return `<div class="wpe"><div class="wpe-q"><span class="wnum">${num || ''}</span>${q}</div>${body}</div>`;
 }
 
