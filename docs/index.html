@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 60 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 61 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -708,7 +708,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 60';
+const APP_VERSION = 'ver 61';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1255,6 +1255,43 @@ function trKo(t) {
   if (m = t.match(/^스스로 다 풀었어요!/)) return T({ en: 'You solved it all by yourself! Great job!', zh: '你自己全做出来了！真棒！', vi: 'Con tự giải hết rồi! Giỏi lắm!', ja: 'ぜんぶ じぶんで とけたね！すごい！', ru: 'Ты решил всё сам! Молодец!' });
   if (m = t.match(/^모두 (.+?) 개\. 정답은 (\d+)/)) return T({ en: `${m[2]} in all. The answer is ${m[2]}.`, zh: `一共 ${m[2]} 个。答案是 ${m[2]}。`, vi: `Tất cả là ${m[2]}. Đáp án là ${m[2]}.`, ja: `ぜんぶで ${m[2]}こ。こたえは ${m[2]}。`, ru: `Всего ${m[2]}. Ответ: ${m[2]}.` });
   if (m = t.match(/정답은 (\d+)/)) return T({ en: `The answer is ${m[1]}.`, zh: `答案是 ${m[1]}。`, vi: `Đáp án là ${m[1]}.`, ja: `こたえは ${m[1]}。`, ru: `Ответ: ${m[1]}.` });
+  /* ---- 기초·확장 힌트(v40 이후 추가분) — 다국어 커버 ---- */
+  if (m = t.match(/^(.+?) 개를 담으면 돼요\.$/)) { const n = cntToNum(m[1]) || m[1]; return T({ en: `Just put ${n} in.`, zh: `放 ${n} 个就可以了。`, vi: `Chỉ cần đặt ${n} cái.`, ja: `${n}こ いれれば いいよ。`, ru: `Положи ${n} — и всё.` }); }
+  if (m = t.match(/^빈칸은 (\d+)(?:예요|이에요)\.$/)) return T({ en: `The blank is ${m[1]}.`, zh: `空格里是 ${m[1]}。`, vi: `Ô trống là ${m[1]}.`, ja: `あいた ますは ${m[1]}。`, ru: `В пропуске ${m[1]}.` });
+  if (m = t.match(/^(왼쪽|오른쪽)이 (.+?) 개 더 많아요\. 많은 쪽을 눌러요\.$/)) { const n = cntToNum(m[2]) || m[2], L = m[1] === '왼쪽';
+    return T({ en: `The ${L ? 'left' : 'right'} has ${n} more. Tap the bigger side.`, zh: `${L ? '左边' : '右边'}多 ${n} 个。请点多的一边。`, vi: `Bên ${L ? 'trái' : 'phải'} nhiều hơn ${n}. Chạm vào bên nhiều hơn.`, ja: `${L ? 'ひだり' : 'みぎ'}が ${n}こ おおいよ。おおい ほうを おしてね。`, ru: `${L ? 'Слева' : 'Справа'} на ${n} больше. Нажми, где больше.` }); }
+  if (m = t.match(/^(\d+)씩 (\d+)묶음이에요\. 모두 몇 개일까요\?$/)) return T({ en: `${m[2]} groups of ${m[1]}. How many in all?`, zh: `${m[2]} 组，每组 ${m[1]} 个。一共几个？`, vi: `${m[2]} nhóm, mỗi nhóm ${m[1]}. Tất cả mấy?`, ja: `${m[1]}ずつ ${m[2]}たば。ぜんぶで いくつ？`, ru: `${m[2]} групп по ${m[1]}. Сколько всего?` });
+  if (m = t.match(/^(\d+)씩 (\d+)번 뛰어 세어 볼까요\?$/)) return T({ en: `Skip count by ${m[1]}, ${m[2]} times.`, zh: `每次跳 ${m[1]}，跳 ${m[2]} 次。`, vi: `Đếm cách ${m[1]}, ${m[2]} lần.`, ja: `${m[1]}とびで ${m[2]}かい かぞえよう。`, ru: `Считай по ${m[1]}, ${m[2]} раз.` });
+  if (m = t.match(/^(\d+)개씩 묶어 봐요\. 몇 묶음일까요\?$/)) return T({ en: `Make groups of ${m[1]}. How many groups?`, zh: `每 ${m[1]} 个一组，分几组？`, vi: `Nhóm ${m[1]} cái. Được mấy nhóm?`, ja: `${m[1]}こずつ たばねよう。なんたば？`, ru: `Собери по ${m[1]}. Сколько групп?` });
+  if (m = t.match(/^(\d+) 곱하기 몇이 (\d+)[이가] 될까요\? 묶음을 세어 봐요\.$/)) return T({ en: `${m[1]} times what is ${m[2]}? Count the groups.`, zh: `${m[1]} 乘几等于 ${m[2]}？数一数组数。`, vi: `${m[1]} nhân mấy bằng ${m[2]}? Đếm số nhóm.`, ja: `${m[1]}かける いくつで ${m[2]}？たばを かぞえよう。`, ru: `${m[1]} умножить на сколько будет ${m[2]}? Посчитай группы.` });
+  if (m = t.match(/^(\d+)[을를] (\d+)[과와] (\d+)으?로 나눠요\. 먼저 (\d+) 곱하기 (\d+)[은는]\?$/)) return T({ en: `Break ${m[1]} into ${m[2]} and ${m[3]}. First, ${m[4]} times ${m[5]}?`, zh: `把 ${m[1]} 分成 ${m[2]} 和 ${m[3]}。先算 ${m[4]} 乘 ${m[5]}？`, vi: `Tách ${m[1]} thành ${m[2]} và ${m[3]}. Trước hết, ${m[4]} nhân ${m[5]}?`, ja: `${m[1]}を ${m[2]}と ${m[3]}に わけよう。まず ${m[4]}かける ${m[5]}は？`, ru: `Раздели ${m[1]} на ${m[2]} и ${m[3]}. Сначала ${m[4]} умножить на ${m[5]}?` });
+  if (m = t.match(/^(\d+)[을를] (\d+)으?로 나눠요\. 먼저 (\d+) 곱하기 (\d+)[은는]\?$/)) return T({ en: `Break ${m[1]} into tens. First, ${m[3]} times ${m[4]}?`, zh: `把 ${m[1]} 按位分开。先算 ${m[3]} 乘 ${m[4]}？`, vi: `Tách ${m[1]} theo hàng. Trước hết, ${m[3]} nhân ${m[4]}?`, ja: `${m[1]}を くらいで わけよう。まず ${m[3]}かける ${m[4]}は？`, ru: `Раздели ${m[1]} по разрядам. Сначала ${m[3]} умножить на ${m[4]}?` });
+  if (m = t.match(/^이제 (\d+) 곱하기 (\d+)[은는]\?$/)) return T({ en: `Now ${m[1]} times ${m[2]}?`, zh: `现在算 ${m[1]} 乘 ${m[2]}？`, vi: `Bây giờ ${m[1]} nhân ${m[2]}?`, ja: `つぎは ${m[1]}かける ${m[2]}は？`, ru: `Теперь ${m[1]} умножить на ${m[2]}?` });
+  if (m = t.match(/^(\d+) 곱하기 (\d+)[은는]\?$/)) return T({ en: `${m[1]} times ${m[2]}?`, zh: `${m[1]} 乘 ${m[2]}？`, vi: `${m[1]} nhân ${m[2]}?`, ja: `${m[1]}かける ${m[2]}は？`, ru: `${m[1]} умножить на ${m[2]}?` });
+  if (m = t.match(/^(\d+) 더하기 (\d+)[은는]\?$/)) return T({ en: `${m[1]} plus ${m[2]}?`, zh: `${m[1]} 加 ${m[2]}？`, vi: `${m[1]} cộng ${m[2]}?`, ja: `${m[1]}たす ${m[2]}は？`, ru: `${m[1]} плюс ${m[2]}?` });
+  if (t === '동그라미를 아래 상자에 모아요.') return T({ en: 'Gather the circles into the bottom box.', zh: '把圆圈聚到下面的盒子里。', vi: 'Gom các hình tròn vào ô dưới.', ja: 'まるを したの はこに あつめよう。', ru: 'Собери кружки в нижнюю коробку.' });
+  if (m = t.match(/^모으면 (.+?) 개가 돼요\.$/)) { const n = cntToNum(m[1]) || m[1]; return T({ en: `Together that makes ${n}.`, zh: `合起来是 ${n} 个。`, vi: `Gộp lại là ${n}.`, ja: `あわせると ${n}こに なるよ。`, ru: `Вместе получается ${n}.` }); }
+  if (m = t.match(/^연두색 (.+?) 개를 갈라 주면, 빨간 동그라미가 몇 개 남을까요\?$/)) { const n = cntToNum(m[1]) || m[1]; return T({ en: `If you split off ${n} green ones, how many red circles are left?`, zh: `分出 ${n} 个绿色的，红色圆圈还剩几个？`, vi: `Tách ra ${n} hình tròn xanh, còn lại mấy hình tròn đỏ?`, ja: `みどりの ${n}こを わけると、あかい まるは いくつ のこる？`, ru: `Если отделить ${n} зелёных, сколько красных останется?` }); }
+  if (t === '연두색은 왼쪽 상자에, 빨간색은 오른쪽 상자에 갈라요.') return T({ en: 'Green goes in the left box, red in the right box.', zh: '绿色放左边的盒子，红色放右边的盒子。', vi: 'Màu xanh vào ô trái, màu đỏ vào ô phải.', ja: 'みどりは ひだりの はこ、あかは みぎの はこに わけよう。', ru: 'Зелёные — в левую коробку, красные — в правую.' });
+  if (m = t.match(/^(\d+)[은는] (\d+)[과와] (\d+)으?로 가를 수 있어요\.$/)) return T({ en: `${m[1]} can be split into ${m[2]} and ${m[3]}.`, zh: `${m[1]} 可以分成 ${m[2]} 和 ${m[3]}。`, vi: `${m[1]} có thể tách thành ${m[2]} và ${m[3]}.`, ja: `${m[1]}は ${m[2]}と ${m[3]}に わけられるよ。`, ru: `${m[1]} можно разделить на ${m[2]} и ${m[3]}.` });
+  if (m = t.match(/^동그라미 (\d+)개를 아래 두 상자에 나누어 담아요\.$/)) return T({ en: `Split ${m[1]} circles into the two bottom boxes.`, zh: `把 ${m[1]} 个圆圈分到下面两个盒子里。`, vi: `Chia ${m[1]} hình tròn vào hai ô dưới.`, ja: `まる ${m[1]}こを したの ふたつの はこに わけよう。`, ru: `Раздели ${m[1]} кружков в две нижние коробки.` });
+  if (t === '동그라미를 아래 두 상자에 나누어 담아요. 어떻게 나눠도 좋아요.') return T({ en: 'Split the circles into the two boxes. Any way is fine.', zh: '把圆圈分到两个盒子里，怎么分都可以。', vi: 'Chia hình tròn vào hai ô. Chia thế nào cũng được.', ja: 'まるを ふたつの はこに わけよう。どう わけても いいよ。', ru: 'Раздели кружки в две коробки. Как угодно.' });
+  if (t === '양쪽에 나누어 담아요.') return T({ en: 'Put some in both boxes.', zh: '两边都要放一些。', vi: 'Đặt vào cả hai bên.', ja: 'りょうほうに わけて いれよう。', ru: 'Положи в обе коробки.' });
+  if (t === '동그라미가 모자라요. 십 막대 한 개는, 동그라미 열 개!') return T({ en: 'Not enough circles. One tens rod becomes ten circles!', zh: '圆圈不够了，一根十的小棒换成十个圆圈！', vi: 'Không đủ hình tròn. Một thanh chục đổi thành mười hình tròn!', ja: 'まるが たりないよ。10の ぼう 1ぽんは、まる 10こ！', ru: 'Кружков не хватает. Одна палочка-десяток — это десять кружков!' });
+  if (m = t.match(/^두 수를 먼저 (더해|빼) 볼까요\?$/)) { const add = m[1] === '더해'; return T({ en: `Let's ${add ? 'add' : 'subtract'} the two numbers first.`, zh: `先把两个数${add ? '加起来' : '减一减'}吧。`, vi: `Hãy ${add ? 'cộng' : 'trừ'} hai số trước.`, ja: `まず ふたつの かずを ${add ? 'たそう' : 'ひこう'}。`, ru: `Сначала ${add ? 'сложим' : 'вычтем'} два числа.` }); }
+  if (m = t.match(/^식으로 나타내면, (\d+) (더하기|빼기) (\d+)(?:이에요|예요)\.$/)) return T({ en: `As a number sentence, ${m[1]} ${m[2] === '더하기' ? 'plus' : 'minus'} ${m[3]}.`, zh: `写成算式就是 ${m[1]} ${m[2] === '더하기' ? '加' : '减'} ${m[3]}。`, vi: `Viết thành phép tính: ${m[1]} ${m[2] === '더하기' ? 'cộng' : 'trừ'} ${m[3]}.`, ja: `しきに すると、${m[1]} ${m[2] === '더하기' ? 'たす' : 'ひく'} ${m[3]}。`, ru: `В виде примера: ${m[1]} ${m[2] === '더하기' ? 'плюс' : 'минус'} ${m[3]}.` });
+  /* 수 배열·뛰어세기 안내(규칙 + 모형 설명이 붙어 있음) */
+  if (m = t.match(/^수가 (\d+)씩 커져요\. 뛰어 세어 봐요\.(?: (.+))?$/) || (m = t.match(/^수가 (1)씩 커져요\. 순서대로 세어 봐요\.(?: (.+))?$/))) {
+    const step = m[1], order = t.includes('순서대로');
+    const base = order
+      ? { en: 'The number grows by 1. Count in order.', zh: '数每次加 1，按顺序数。', vi: 'Số tăng thêm 1. Đếm theo thứ tự.', ja: 'かずは 1ずつ ふえるよ。じゅんばんに かぞえよう。', ru: 'Число растёт на 1. Считай по порядку.' }
+      : { en: `The number grows by ${step}. Skip count.`, zh: `数每次加 ${step}，跳着数。`, vi: `Số tăng thêm ${step}. Đếm cách.`, ja: `かずは ${step}ずつ ふえるよ。とびで かぞえよう。`, ru: `Число растёт на ${step}. Считай через ${step}.` };
+    const NOTE = {
+      '동그라미가 몇 개씩 늘어나는지 세어 보세요.': { en: 'See how many circles are added each time.', zh: '数一数每次增加几个圆圈。', vi: 'Xem mỗi lần thêm mấy hình tròn.', ja: 'まるが なんこずつ ふえるか みてね。', ru: 'Смотри, сколько кружков добавляется.' },
+      '파란 막대는 십, 빨간 동그라미는 일이에요.': { en: 'Blue rods are tens, red circles are ones.', zh: '蓝色小棒是十，红色圆圈是一。', vi: 'Thanh xanh là chục, hình tròn đỏ là đơn vị.', ja: 'あおい ぼうは 10、あかい まるは 1だよ。', ru: 'Синие палочки — десятки, красные кружки — единицы.' },
+    };
+    return T(base) + (m[2] && NOTE[m[2]] ? ' ' + T(NOTE[m[2]]) : '');
+  }
   return '';
 }
 
