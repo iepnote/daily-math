@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 61 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 62 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -708,7 +708,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 61';
+const APP_VERSION = 'ver 62';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -881,7 +881,9 @@ const lsDel = k => { try { localStorage.removeItem(LS + k); } catch (e) { } };
 
 /* ---- 기기 설정 (화면 모드·크기·소리, 마지막 교실) ---- */
 let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko' }, lsGet('prefs', {}));
-const savePrefs = () => lsSet('prefs', prefs);
+const loadPrefs = () => Object.assign(prefs, PREFS_DEFAULT, lsGet('prefs', {}));
+const PREFS_DEFAULT = { mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko' };
+const savePrefs = () => { if (typeof current !== 'undefined' && current && current.guest) return; lsSet('prefs', prefs); };   // 손님: 기기 설정 저장 안 함
 let device = Object.assign({ classCode: '', lastStudentId: '' }, lsGet('device', {}));
 const saveDevice = () => lsSet('device', device);
 
@@ -2895,10 +2897,12 @@ function startGuest() {
     level: (current && current.level) || LEVEL_ORDER[0], daily: DAILY_DEFAULT,
     completedDates: [], lastAccess: null, guest: true,
   };
+  prefs.lang = 'ko';   // 손님은 음성 언어 한국어 기본(기기에 외국어가 저장돼 있어도) — 저장 안 함이라 기기 설정은 그대로
   openLevelPicker();   // 어느 단계를 볼지 먼저 고르게(교사 확인 용도가 대부분)
 }
 function exitGuest() {
   current = null;
+  loadPrefs();         // 손님 세션 동안의 임시 설정 변경을 버리고 기기 저장 설정으로 복원
   if (klass) renderStudentPick(); else renderStart();
 }
 async function pickStudent(id) {
