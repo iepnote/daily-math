@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 74 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 75 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -429,12 +429,15 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .stat .k{ font-size:.9rem; color:var(--ink-soft); font-weight:700; }
 .stat .v{ font-size:1.5rem; font-weight:800; color:var(--accent-strong); }
 .stat .v.code{ letter-spacing:.25em; }
+/* 학생 상세 통일감(v75): 현재 단계·힌트 지원은 남은 폭을 균등 분배, 전략 박스는 한 줄 전체 */
+.stat.grow{ flex:1 1 0; min-width:260px; }
+.stat.full{ flex:1 1 100%; }
 /* 연산 전략 체크박스(v69) — 전역 label(display:block·큰 여백) 오버라이드 필수 */
 .stratset{ font-size:1.08rem; text-align:left; margin-top:.3rem; line-height:1.8; }
 .stratset b{ margin-right:.3rem; }
 .stratset label{ display:inline-block; font-weight:400; font-size:1.08rem; margin:0 .6rem 0 0; white-space:nowrap; cursor:pointer; }
 .stratset input{ vertical-align:middle; margin-right:.18rem; width:1.15rem; height:1.15rem; }
-.stratset .stratnote{ font-size:.78rem; line-height:1.4; margin-top:.15rem; max-width:420px; }
+.stratset .stratnote{ font-size:.78rem; line-height:1.4; margin-top:.15rem; }
 .code-big{ font-size:2.6rem; font-weight:900; letter-spacing:.3em; color:var(--accent-strong); background:var(--choice-bg);
   border:3px dashed var(--accent); border-radius:1rem; padding:.5rem 1rem; margin:.6rem auto; text-align:center; max-width:360px; }
 .sess{ border:2px solid #EFE2C6; border-radius:.9rem; padding:.4rem .8rem; margin:.4rem 0; text-align:left; }
@@ -861,7 +864,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 74';
+const APP_VERSION = 'ver 75';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3710,11 +3713,11 @@ async function renderDashboard() {
       <tbody>${rows}</tbody></table></div>
 
     <div class="read-sentence" style="font-size:1.2rem;margin-top:1.2rem">학생 추가</div>
-    <div class="frow"><div><label>이름 *</label><input id="d-name" type="text" placeholder="별명·이니셜 권장"></div>
+    <div class="frow" style="align-items:flex-end"><div><label>이름 *</label><input id="d-name" type="text" placeholder="별명·이니셜 권장"></div>
       <div><label>반/번호(선택)</label><input id="d-tag" type="text"></div>
       <div><label>시작 단계</label><select id="d-lvl">${lvlOpts(1)}</select></div>
-      <div><label>하루 문제 수</label><select id="d-num">${numOpts(DAILY_DEFAULT)}</select></div></div>
-    <div style="margin-top:.8rem;text-align:center"><button class="btn btn--teal btn-sm" onclick="addStudentT()">학생 추가하기</button></div>
+      <div><label>하루 문제 수</label><select id="d-num">${numOpts(DAILY_DEFAULT)}</select></div>
+      <div style="flex:0 0 auto"><button class="btn btn--teal" style="padding:.62rem 1.3rem;font-size:1.2rem" onclick="addStudentT()">추가</button></div></div>
     <div class="note">학생은 첫 화면에서 교실 코드 <b>${klass.code}</b>를 넣은 뒤, 자기 이름을 눌러 시작합니다.<br>
     <b>🔗 초대 링크</b>를 보내면 코드 입력 없이 이름만 누르면 돼요.<br>
     📈 단계는 <b>연속 2회 스스로(힌트 없이) 80% 이상</b> 맞히면 자동으로 올라갑니다. 표의 단계 선택으로 언제든 조정할 수 있어요.</div>
@@ -3803,13 +3806,13 @@ async function renderStudentDetail(id) {
     <div class="statrow" style="margin-top:.8rem">
       <div class="stat"><div class="k">누적 학습일</div><div class="v">${(s.completedDates || []).length}일</div></div>
       <div class="stat"><div class="k">정답률(7일)</div><div class="v">${rate7 === null ? '—' : rate7 + '%'}</div></div>
-      <div class="stat"><div class="k">현재 단계</div><div class="v" style="font-size:1.05rem;font-family:var(--font-btn)">${esc(levelById(s.level).name)}</div></div>
-      <div class="stat"><div class="k">힌트 지원 (개별화)</div>
+      <div class="stat grow"><div class="k">현재 단계</div><div class="v" style="font-family:var(--font-btn)">${esc(levelById(s.level).name)}</div></div>
+      <div class="stat grow"><div class="k">힌트 지원 (개별화)</div>
         <select onchange="setHintLvT('${s.id}',this.value)" style="font-size:1rem;padding:.3rem .4rem;margin-top:.2rem">
           ${[['normal', '기본: 1차 단서 → 2차 자세히'], ['strong', '강한 지원: 처음부터 자세히'], ['off', '힌트 끄기(스스로 재시도)']]
       .map(([v, l]) => `<option value="${v}" ${(s.hintLv || 'normal') === v ? 'selected' : ''}>${l}</option>`).join('')}
         </select></div>
-      <div class="stat"><div class="k">연산 전략 (개별화)</div>
+      <div class="stat full"><div class="k">연산 전략 (개별화)</div>
         <div class="stratset">
           ${(() => {
       const chk = (k, v) => ((s.strat && s.strat[k]) || []).includes(v) ? 'checked' : '';
