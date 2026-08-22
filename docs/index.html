@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 68 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 69 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -403,6 +403,12 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .stat .k{ font-size:.9rem; color:var(--ink-soft); font-weight:700; }
 .stat .v{ font-size:1.5rem; font-weight:800; color:var(--accent-strong); }
 .stat .v.code{ letter-spacing:.25em; }
+/* 연산 전략 체크박스(v69) */
+.stratset{ font-size:.95rem; text-align:left; margin-top:.3rem; line-height:1.7; }
+.stratset b{ margin-right:.3rem; }
+.stratset label{ margin-right:.55rem; white-space:nowrap; cursor:pointer; }
+.stratset input{ vertical-align:middle; margin-right:.15rem; width:1.05rem; height:1.05rem; }
+.stratset .stratnote{ font-size:.78rem; line-height:1.4; margin-top:.15rem; }
 .code-big{ font-size:2.6rem; font-weight:900; letter-spacing:.3em; color:var(--accent-strong); background:var(--choice-bg);
   border:3px dashed var(--accent); border-radius:1rem; padding:.5rem 1rem; margin:.6rem auto; text-align:center; max-width:360px; }
 .sess{ border:2px solid #EFE2C6; border-radius:.9rem; padding:.4rem .8rem; margin:.4rem 0; text-align:left; }
@@ -829,7 +835,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 68';
+const APP_VERSION = 'ver 69';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1073,14 +1079,18 @@ async function sbFetch(method, path, body, code) {
 /* 행 ↔ 앱 객체 변환 */
 const rowToClass = r => r && { code: r.code, school: r.school, name: r.name, teacher: r.teacher, pinHash: r.pin_hash, createdAt: r.created_at };
 const classToRow = k => ({ code: k.code, school: k.school, name: k.name, teacher: k.teacher, pin_hash: k.pinHash });
-const rowToStudent = r => r && { id: r.id, classCode: r.class_code, name: r.name, tag: r.tag || '', level: r.level, daily: r.daily, hintLv: r.hint_lv || 'normal', completedDates: r.completed_dates || [], lastAccess: r.last_access, createdAt: r.created_at };
-const studentToRow = s => { const row = { id: s.id, class_code: s.classCode, name: s.name, tag: s.tag || '', level: s.level, daily: s.daily, completed_dates: s.completedDates || [], last_access: s.lastAccess }; if (HINTLV_OK) row.hint_lv = s.hintLv || 'normal'; return row; };
-/* hint_lv 컬럼이 DB에 있는지 감지 — 없으면(구 스키마) 페이로드에서 제외해 쓰기 실패 방지 */
-let HINTLV_OK = true;
+/* 연산 전략(개별화, v69): {add:['on','ten'], sub:['back','ten']} — DB엔 JSON 문자열(text 컬럼) */
+const parseStrat = v => { if (!v) return null; if (typeof v === 'object') return v; try { return JSON.parse(v); } catch (e) { return null; } };
+const rowToStudent = r => r && { id: r.id, classCode: r.class_code, name: r.name, tag: r.tag || '', level: r.level, daily: r.daily, hintLv: r.hint_lv || 'normal', strat: parseStrat(r.strat), completedDates: r.completed_dates || [], lastAccess: r.last_access, createdAt: r.created_at };
+const studentToRow = s => { const row = { id: s.id, class_code: s.classCode, name: s.name, tag: s.tag || '', level: s.level, daily: s.daily, completed_dates: s.completedDates || [], last_access: s.lastAccess }; if (HINTLV_OK) row.hint_lv = s.hintLv || 'normal'; if (STRAT_OK) row.strat = s.strat ? JSON.stringify(s.strat) : null; return row; };
+/* hint_lv·strat 컬럼이 DB에 있는지 감지 — 없으면(구 스키마) 페이로드에서 제외해 쓰기 실패 방지 */
+let HINTLV_OK = true, STRAT_OK = true;
 async function probeHintLv() {
   if (!IS_REMOTE() || !navigator.onLine) return;
   try { await sbFetch('GET', 'students?select=hint_lv&limit=1'); HINTLV_OK = true; }
   catch (e) { HINTLV_OK = false; }
+  try { await sbFetch('GET', 'students?select=strat&limit=1'); STRAT_OK = true; }
+  catch (e) { STRAT_OK = false; }
 }
 const rowToSession = r => r && { id: r.id, classCode: r.class_code, studentId: r.student_id, sdate: r.sdate, levelId: r.level_id, levelName: r.level_name, total: r.total, firstTry: r.first_try, hintUsed: r.hint_used, durationMs: r.duration_ms, items: r.items || [], finishedAt: r.finished_at };
 const sessionToRow = s => ({ id: s.id, class_code: s.classCode, student_id: s.studentId, sdate: s.sdate, level_id: s.levelId, level_name: s.levelName, total: s.total, first_try: s.firstTry, hint_used: s.hintUsed, duration_ms: s.durationMs, items: s.items, finished_at: s.finishedAt });
@@ -1352,6 +1362,8 @@ const TRX = {
   '파란 막대는 십, 빨간 동그라미는 일이에요. 막대부터 세어 봐요.': { en: 'Blue rods are tens, red circles are ones. Count the rods first.', zh: '蓝色小棒是十，红色圆圈是一。先数小棒。', vi: 'Thanh xanh là chục, hình tròn đỏ là đơn vị. Đếm thanh trước.', ja: 'あおい ぼうは 10、あかい まるは 1だよ。ぼうから かぞえよう。', ru: 'Синие палочки — десятки, красные кружки — единицы. Сначала посчитай палочки.' },
   '윗줄은 다섯 개예요.': { en: 'The top row is five.', zh: '上面一行是五个。', vi: 'Hàng trên là năm cái.', ja: 'うえの だんは 5こだよ。', ru: 'В верхнем ряду пять.' },
   '윗줄이 딱 다섯 개예요. 정답은 5예요.': { en: 'The top row is exactly five. The answer is 5.', zh: '上面一行正好五个。答案是 5。', vi: 'Hàng trên đúng năm cái. Đáp án là 5.', ja: 'うえの だんが ちょうど 5こ。こたえは 5。', ru: 'В верхнем ряду ровно пять. Ответ: 5.' },
+  /* ---- 연산 전략 힌트(v69: 10 만들기·10에서 빼기) ---- */
+  '십 막대 한 개는, 동그라미 열 개!': { en: 'One tens rod is ten circles!', zh: '一根十的小棒是十个圆圈！', vi: 'Một thanh chục là mười hình tròn!', ja: '10の ぼう 1ぽんは、まる 10こ！', ru: 'Одна палочка-десяток — это десять кружков!' },
 };
 /* hintTwo 단서(더해/빼 × 세로/가로) */
 [['더해', { en: 'add', zh: '加一加', vi: 'cộng lại', ja: 'たしてみよう', ru: 'сложи' }], ['빼', { en: 'subtract', zh: '减一减', vi: 'trừ đi', ja: 'ひいてみよう', ru: 'вычти' }]].forEach(([k, w]) => {
@@ -1409,6 +1421,15 @@ function trKo(t) {
     return T({ en: `Count back from ${m[1]}, taking away ${m[2]} one by one.`, zh: `从 ${m[1]} 开始倒着数，一个一个减去 ${m[2]} 个。`, vi: `Đếm ngược từ ${m[1]}, bớt từng cái một trong ${m[2]} cái.`, ja: `${m[1]}から さかさまに かぞえて、${m[2]}こ ひとつずつ ひこう。`, ru: `Считай назад от ${m[1]}, убирая по одному ${m[2]} раз.` });
   if (m = t.match(/^(\d+)부터 (\d+)만큼 더해 봐요\.?$/))
     return T({ en: `Start at ${m[1]} and count on ${m[2]}.`, zh: `从 ${m[1]} 开始，再数 ${m[2]} 个。`, vi: `Từ ${m[1]}, đếm thêm ${m[2]}.`, ja: `${m[1]}から ${m[2]}こ すすめよう。`, ru: `От ${m[1]} посчитай ещё ${m[2]}.` });
+  /* 연산 전략 힌트(v69: 10 만들기·10에서 빼기) — '정답은' 일반 패턴보다 먼저 매칭 */
+  if (m = t.match(/^10을 만들어 봐요\. (\d+)[과와] 몇이 만나면 10이 될까요\?$/))
+    return T({ en: `Let's make 10. ${m[1]} and what make 10?`, zh: `我们来凑十。${m[1]} 和几凑成 10？`, vi: `Cùng tạo số 10. ${m[1]} với mấy thành 10?`, ja: `10を つくろう。${m[1]}と いくつで 10？`, ru: `Составим 10. ${m[1]} и сколько будет 10?` });
+  if (m = t.match(/^(\d+)[과와] (\d+)[이가] 만나면, 10!$/))
+    return T({ en: `${m[1]} and ${m[2]} make 10!`, zh: `${m[1]} 和 ${m[2]} 凑成 10！`, vi: `${m[1]} và ${m[2]} thành 10!`, ja: `${m[1]}と ${m[2]}で 10！`, ru: `${m[1]} и ${m[2]} — это 10!` });
+  if (m = t.match(/^(\d+)[은는] 10과 (\d+)(?:이에요|예요)\. 10에서 (\d+)[을를] 빼 봐요\.$/))
+    return T({ en: `${m[1]} is 10 and ${m[2]}. Take ${m[3]} away from the 10.`, zh: `${m[1]} 是 10 和 ${m[2]}。从 10 里减去 ${m[3]}。`, vi: `${m[1]} là 10 và ${m[2]}. Bớt ${m[3]} từ 10.`, ja: `${m[1]}は 10と ${m[2]}。10から ${m[3]}を ひこう。`, ru: `${m[1]} — это 10 и ${m[2]}. Вычти ${m[3]} из 10.` });
+  if (m = t.match(/^(\d+)[과와] (\d+)[을를] 모으면 (\d+)\. 정답은/))
+    return T({ en: `${m[1]} and ${m[2]} together make ${m[3]}. The answer is ${m[3]}.`, zh: `${m[1]} 和 ${m[2]} 合起来是 ${m[3]}。答案是 ${m[3]}。`, vi: `${m[1]} và ${m[2]} gộp lại là ${m[3]}. Đáp án là ${m[3]}.`, ja: `${m[1]}と ${m[2]}を あわせて ${m[3]}。こたえは ${m[3]}。`, ru: `${m[1]} и ${m[2]} вместе — ${m[3]}. Ответ: ${m[3]}.` });
   if (m = t.match(/^(다섯|열) 개를 한 번에 묶어요\./)) { const n = cntToNum(m[1]);
     return T({ en: `Circle ${n} at once. ${n}.`, zh: `把 ${n} 个圈在一起。${n}。`, vi: `Khoanh ${n} cái một lần. ${n}.`, ja: `${n}こを ひとまとめに しよう。${n}。`, ru: `Обведи сразу ${n}. ${n}.` }); }
   if (m = t.match(/^접시에 자리가 (.+?) 개 생겼어요\./)) { const n = cntToNum(m[1]) || m[1];
@@ -1963,14 +1984,14 @@ function routeHint(stage) {
   if (p.op === '÷') { hintDiv(p, h, stage); return; }
   const twoDig = p.a < 100 && p.b < 100;                         // 단계 상한은 hintTwo 안에서(받아내림은 3단계)
   if (p.op === '+') {
-    if (p.ans <= 20) { combineAdd(p, h, stage); return; }        // 한 자리: 동그라미 합치기(10 만들기)
+    if (p.ans <= 20) { addStratHint(p, h, stage); return; }      // 한 자리: 학생별 전략(이어 세기/10 만들기)
     /* 다자릿수 덧셈 공통(두·세·네 자리…): 1차=자릿값 단서 → 2차=자리별 직접 입력(일→십→…) */
     if (twoDig) { if (stage >= 2) startColumn(p); else hintTwo(p, h, 1); return; }
     if (stage <= 1) { hintPlace(p, h, 1); placeIcons(); return; }   // 세 자리+: 색 띠 + 자릿값 아이콘
     startColumn(p); return;
   }
   /* '-' 다자릿수 뺄셈도 동일 문법: 1차=자릿값 단서 → 2차=자리별 직접 입력(일의 자리부터, 빌림 포함) */
-  if (p.a <= 20) { combineSub(p, h, stage); return; }
+  if (p.a <= 20) { subStratHint(p, h, stage); return; }
   if (twoDig) { if (stage >= 2) startColumn(p); else hintTwo(p, h, 1); return; }
   if (stage <= 1) { hintPlace(p, h, 1); placeIcons(); return; }
   startColumn(p);
@@ -2540,6 +2561,25 @@ function popAt(el) {
   s.animate([{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 1 }, { transform: 'translate(-50%,-50%) scale(1.9)', opacity: 0 }], { duration: 480, easing: 'ease-out' });
   setTimeout(() => s.remove(), 500);
 }
+/* =========================================================
+   학생별 연산 전략 디스패처 (v69, 교사 설정 student.strat)
+   선택 없음 = 자동(현행). 복수 선택 시 규칙 분기:
+   작은(빼는) 수 2 이하 = 세기 전략, 그 외 10을 넘나들면 10 구조 전략.
+   10 전략이 안 맞는 문제(10을 안 넘음 등)는 세기 전략으로 자동 대체.
+   ========================================================= */
+function addStratHint(p, h, stage) {
+  const st = current && current.strat && current.strat.add;
+  const small = Math.min(p.a, p.b);
+  const canTen = p.a < 10 && p.b < 10 && p.a + p.b > 10;           // 10 만들기가 의미 있는 문제
+  const ten = Array.isArray(st) && st.includes('ten') && canTen && (!st.includes('on') || small > 2);
+  ten ? make10Add(p, h, stage) : combineAdd(p, h, stage);
+}
+function subStratHint(p, h, stage) {
+  const st = current && current.strat && current.strat.sub;
+  const canTen = p.a > 10 && p.a < 20 && p.b < 10 && p.b > p.a % 10;   // 받아내림(십몇−한 자리)에서만
+  const ten = Array.isArray(st) && st.includes('ten') && canTen && (!st.includes('back') || p.b > 2);
+  ten ? subViaTen(p, h, stage) : combineSub(p, h, stage);
+}
 /* 한 자리·십몇 덧셈(답≤20) — 십의 자리는 수 막대, 일의 자리는 동그라미(두 자리와 동일 표현).
    stage 1 = 단서: "큰 수를 찾아요…" + 숫자 아래 모형
    stage 2 = 큰 수(순서 무관)에 빨간 동그라미 → 작은 수의 동그라미가 날아와 이어 세기.
@@ -2587,6 +2627,55 @@ function combineAdd(p, h, stage) {
     items.push({ text: String(v), action: () => { const s = srcRods[j], d = rodSlots[j]; if (s && d) flyMove(s, d, () => { s.style.visibility = 'hidden'; d.style.visibility = 'visible'; }); } });
   }
   items.push({ text: sum > 10 ? `십하고 ${koCnt(sum - 10)}. 정답은 ${sum}${josaYeyo(sum)}.` : `정답은 ${sum}${josaYeyo(sum)}.` });
+  speakSequence(items);
+}
+/* 한 자리 덧셈 '10 만들기(10의 보수)' 전략 힌트 — 교사 설정 strat.add에 'ten' (v69).
+   작은 수를 갈라 큰 수를 10으로: 9+4 → 4는 1과 3, 9와 1이 만나 10, 십하고 3.
+   stage 1 = 단서("몇이 만나면 10?") / stage 2 = 가르기→합체→십 막대 변신→정답 시퀀스 */
+function make10Add(p, h, stage) {
+  const a = p.a, b = p.b, sum = a + b;
+  curCirc = null; paintFace(false);
+  const bigIdx = a >= b ? 0 : 1, big = Math.max(a, b), small = Math.min(a, b);
+  const take = 10 - big, rest = small - take;
+  const { ma, mb, fit } = hangTwoModels(p, true);
+  const mBig = bigIdx === 0 ? ma : mb, mSmall = bigIdx === 0 ? mb : ma;
+  const cue = `10을 만들어 봐요. ${big}${josaGwa(big)} 몇이 만나면 10이 될까요?`;
+  h.innerHTML = `<div class="tip">${stage >= 2 ? '10을 만들고, 남은 수를 붙여요' : cue}</div>`;
+  if (stage < 2) { speak(cue); return; }
+  const stackBig = mBig.querySelector('.cstack'), rowBig = mBig.querySelector('.rodrow');
+  const addRow = stack => { const rowsL = stack.querySelectorAll('.crow5'); let row = rowsL.length ? rowsL[rowsL.length - 1] : null; if (!row || row.children.length >= 5) { row = document.createElement('div'); row.className = 'crow5'; stack.appendChild(row); } return row; };
+  /* 착지 자리(숨김)·변신 대상 10개 사전 확정 — 실행 시 검색 금지 규칙 */
+  const bigDots = [...stackBig.querySelectorAll('.cdot')];
+  const slots = [];
+  for (let i = 0; i < take; i++) { const d = document.createElement('div'); d.className = 'cdot red'; d.style.visibility = 'hidden'; addRow(stackBig).appendChild(d); slots.push(d); }
+  fit();
+  const fuseTargets = bigDots.concat(slots);   // big + take = 10개
+  const srcDots = [...mSmall.querySelectorAll('.cdot')];
+  const items = [];
+  items.push({
+    text: `${small}${josaEun(small)} ${take}${josaGwa(take)} ${rest}${josaRo(rest)} 가를 수 있어요.`, action: () => {
+      const nb = document.querySelector(`#qface [data-t="n${bigIdx}"]`); if (nb) nb.classList.add('oring');
+      srcDots.slice(0, take).forEach(d => d.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 320 }));
+    }
+  });
+  items.push({
+    text: `${big}${josaGwa(big)} ${take}${josaIga(take)} 만나면, 10!`, action: () => {
+      srcDots.slice(0, take).forEach((s, i) => setTimeout(() => flyMove(s, slots[i], () => { s.style.visibility = 'hidden'; slots[i].style.visibility = 'visible'; }), i * 180));
+    }
+  });
+  items.push({
+    text: '동그라미 열 개는, 십 막대 한 개로 바뀌어요!', action: () => {
+      /* 비행이 늦게 끝나도 어긋나지 않게: 착지를 먼저 확정(멱등)한 뒤 사전 확정된 10개를 변신 */
+      srcDots.slice(0, take).forEach((s, i) => { s.style.visibility = 'hidden'; slots[i].style.visibility = 'visible'; });
+      fuseTargets.forEach(x => { x.classList.add('fuse'); setTimeout(() => { x.style.visibility = 'hidden'; }, 520); });
+      const nr = document.createElement('div'); nr.className = 'rod new'; rowBig.appendChild(nr);
+    }
+  });
+  items.push({
+    text: `십하고 ${koCnt(rest)}. 정답은 ${sum}${josaYeyo(sum)}.`, action: () => {
+      [...mSmall.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden').forEach(x => x.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 300 }));
+    }
+  });
   speakSequence(items);
 }
 function countSub(p, h) {
@@ -2656,6 +2745,43 @@ function combineSub(p, h, stage) {
     items.push({ text: String(v), action: () => { if (s && m) killPop(s, m); } });
   }
   items.push({ text: `${a}에서 ${b}${josaEul(b)} 빼면 ${koCnt(a - b)} 개가 남아요. 정답은 ${a - b}${josaYeyo(a - b)}.` });
+  speakSequence(items);
+}
+/* 십몇−한 자리 '10에서 빼기' 전략 힌트 — 교사 설정 strat.sub에 'ten', 받아내림 상황에서 (v69).
+   13−5 → 13은 10과 3, 십 막대를 동그라미 열 개로 바꿔 10에서 5를 빼면 5, 5와 3을 모으면 8.
+   stage 1 = 단서 / stage 2 = 가르기→막대 변신→10에서 세며 빼기→모으기 시퀀스 */
+function subViaTen(p, h, stage) {
+  const a = p.a, b = p.b, aU = a % 10, keep = 10 - b, ans = a - b;
+  curCirc = null; paintFace(false);
+  const { ma, mb, fit } = hangTwoModels(p, true);   // 빼는 수(mb)는 sub-src(빗금) 자동
+  const cue = `${a}${josaEun(a)} 10과 ${aU}${josaYeyo(aU)}. 10에서 ${b}${josaEul(b)} 빼 봐요.`;
+  h.innerHTML = `<div class="tip">${stage >= 2 ? '10에서 빼고, 남은 수를 모아요' : cue}</div>`;
+  if (stage < 2) { speak(cue); return; }
+  const rowA = ma.querySelector('.rodrow'), stackA = ma.querySelector('.cstack');
+  const addRow = stack => { const rowsL = stack.querySelectorAll('.crow5'); let row = rowsL.length ? rowsL[rowsL.length - 1] : null; if (!row || row.children.length >= 5) { row = document.createElement('div'); row.className = 'crow5'; stack.appendChild(row); } return row; };
+  /* 십 막대 → 동그라미 10개 (착지·소멸 타깃 사전 확정) */
+  const born = [];
+  for (let i = 0; i < 10; i++) { const d = document.createElement('div'); d.className = 'cdot red'; d.style.visibility = 'hidden'; addRow(stackA).appendChild(d); born.push(d); }
+  fit();
+  const bDots = [...mb.querySelectorAll('.cdot')];
+  const items = [];
+  items.push({ text: `${a}${josaEun(a)} 10과 ${aU}${josaRo(aU)} 가를 수 있어요.`, action: () => { const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring'); } });
+  items.push({
+    text: '십 막대 한 개는, 동그라미 열 개!', action: () => {
+      const r = rowA.querySelector('.rod'); if (r) { r.classList.add('melt'); setTimeout(() => { r.style.visibility = 'hidden'; }, 620); }
+      born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
+    }
+  });
+  for (let k = 0; k < b; k++) {
+    const v = 10 - (k + 1), s = bDots[k], m = born[9 - k];
+    items.push({ text: String(v), action: () => { if (s && m) killPop(s, m); } });
+  }
+  items.push({ text: `10에서 ${b}${josaEul(b)} 빼면 ${koCnt(keep)} 개가 남아요.` });
+  items.push({
+    text: `${keep}${josaGwa(keep)} ${aU}${josaEul(aU)} 모으면 ${ans}. 정답은 ${ans}${josaYeyo(ans)}.`, action: () => {
+      [...stackA.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden').forEach(x => x.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 300 }));
+    }
+  });
   speakSequence(items);
 }
 
@@ -3320,6 +3446,16 @@ async function copyInvite() {
 }
 async function setLevelT(id, v) { const s = dash.students.find(x => x.id === id); if (s) { s.level = parseInt(v, 10); await Store.updateStudent(s); } }
 async function setHintLvT(id, v) { const s = dash.students.find(x => x.id === id); if (s) { s.hintLv = v; await Store.updateStudent(s); } }
+/* 연산 전략 체크박스(v69) — 복수 선택 가능, 선택 없음 = 자동(현행) */
+async function setStratT(id, kind, key, on) {
+  const s = dash.students.find(x => x.id === id); if (!s) return;
+  const st = s.strat || (s.strat = {});
+  const arr = st[kind] || (st[kind] = []);
+  const i = arr.indexOf(key);
+  if (on && i < 0) arr.push(key);
+  if (!on && i >= 0) arr.splice(i, 1);
+  await Store.updateStudent(s);
+}
 async function setDailyT(id, v) { const s = dash.students.find(x => x.id === id); if (s) { s.daily = parseInt(v, 10); await Store.updateStudent(s); } }
 async function delStudentT(id) {
   const s = dash.students.find(x => x.id === id);
@@ -3375,9 +3511,21 @@ async function renderStudentDetail(id) {
           ${[['normal', '기본: 1차 단서 → 2차 자세히'], ['strong', '강한 지원: 처음부터 자세히'], ['off', '힌트 끄기(스스로 재시도)']]
       .map(([v, l]) => `<option value="${v}" ${(s.hintLv || 'normal') === v ? 'selected' : ''}>${l}</option>`).join('')}
         </select></div>
+      <div class="stat"><div class="k">연산 전략 (개별화)</div>
+        <div class="stratset">
+          ${(() => {
+      const chk = (k, v) => ((s.strat && s.strat[k]) || []).includes(v) ? 'checked' : '';
+      const box = (k, v, l) => `<label><input type="checkbox" ${chk(k, v)} onchange="setStratT('${s.id}','${k}','${v}',this.checked)">${l}</label>`;
+      return `<div><b>덧셈</b> ${box('add', 'on', '이어 세기')} ${box('add', 'ten', '10 만들기')}</div>
+          <div><b>뺄셈</b> ${box('sub', 'back', '거꾸로 세기')} ${box('sub', 'ten', '10에서 빼기')}</div>`;
+    })()}
+          <div class="dim stratnote">선택 없음 = 자동 · 둘 다 선택하면 작은 수 2 이하는 세기, 그 외 10 만들기로 힌트</div>
+        </div></div>
     </div>
     ${(Store.mode() === 'remote' && typeof HINTLV_OK !== 'undefined' && !HINTLV_OK) ? `<div class="note">⚠ 힌트 지원 설정을 다른 기기와 동기화하려면 Supabase SQL Editor에서
       <b>supabase/migration_hint.sql</b>의 한 줄을 실행해 주세요. 실행 전에는 이 기기에만 적용됩니다.</div>` : ''}
+    ${(Store.mode() === 'remote' && typeof STRAT_OK !== 'undefined' && !STRAT_OK) ? `<div class="note">⚠ 연산 전략 설정을 다른 기기와 동기화하려면 Supabase SQL Editor에서
+      <b>supabase/migration_strat.sql</b>의 한 줄을 실행해 주세요. 실행 전에는 이 기기에만 적용됩니다.</div>` : ''}
     <div class="read-sentence" style="font-size:1.15rem;margin-top:1rem">학습 기록 <span class="dim">(누르면 문제별로 펼쳐져요)</span></div>
     ${rows}
   </div>`;
