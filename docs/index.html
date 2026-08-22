@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 76 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 77 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -865,7 +865,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 76';
+const APP_VERSION = 'ver 77';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3845,10 +3845,10 @@ function renderClassSettings() {
     <label>학교</label><input id="s-school" type="text" value="${esc(klass.school)}">
     <label>학급 이름</label><input id="s-name" type="text" value="${esc(klass.name)}">
     <label>선생님 이름</label><input id="s-teacher" type="text" value="${esc(klass.teacher)}">
-    <div style="display:flex;gap:.8rem;justify-content:center;margin-top:1.2rem;flex-wrap:wrap">
-      <button class="btn btn--teal" style="font-weight:800" onclick="saveClassSettings()">저장</button>
-      <button class="btn btn--purple" style="font-weight:800" onclick="changeClassPin()">비밀번호 바꾸기</button>
-      <button class="btn btn--gray" style="font-weight:800" onclick="copyInvite()">🔗 초대 링크</button>
+    <div style="display:flex;gap:.7rem;justify-content:center;margin-top:1rem">
+      <button class="btn btn--teal btn-sm" style="font-weight:800" onclick="saveClassSettings()">저장</button>
+      <button class="btn btn--purple btn-sm" style="font-weight:800" onclick="changeClassPin()">비밀번호 바꾸기</button>
+      <button class="btn btn--gray btn-sm" style="font-weight:800" onclick="copyInvite()">🔗 초대 링크</button>
     </div>
     <p class="note">저장 방식: <b>${Store.mode() === 'remote' ? '온라인(Supabase) — 모든 기기에서 함께 보여요' : '이 기기에만 저장 — 온라인 설정은 설계.md 6장 참고'}</b><br>
     민감한 개인정보(주민번호·연락처 등)는 절대 입력하지 마세요.</p>
