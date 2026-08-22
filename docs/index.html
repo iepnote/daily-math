@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 72 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 73 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -55,8 +55,12 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .nav-student{ display:flex; align-items:center; gap:.35rem; margin-right:auto; padding-left:.5rem;
   font-size:1.3rem; font-weight:800; color:var(--accent-strong); white-space:nowrap; }
 
+/* 세로 가운데는 justify-content:center 대신 auto 마진 — center는 내용이 720을 넘치면
+   위쪽이 스크롤 불가 영역으로 잘림(교사 화면 상단 잘림의 원인, v73) */
 .wrap{ flex:1 1 auto; min-height:0; width:100%; max-width:1240px; margin:0 auto;
-  padding:.5rem clamp(.8rem,2vw,1.6rem); overflow:auto; display:flex; flex-direction:column; justify-content:center; }
+  padding:.5rem clamp(.8rem,2vw,1.6rem); overflow:auto; display:flex; flex-direction:column; }
+.wrap > :first-child{ margin-top:auto; }
+.wrap > :last-child{ margin-bottom:auto; }
 
 .card{ background:var(--card-bg); border-radius:var(--r-card); padding:clamp(.9rem,2.2vw,1.4rem);
   border:2px solid #F1E7D2; box-shadow:var(--shadow-card); margin-bottom:.6rem; text-align:center; }
@@ -857,7 +861,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 72';
+const APP_VERSION = 'ver 73';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3707,8 +3711,8 @@ async function renderDashboard() {
 
     <div class="read-sentence" style="font-size:1.2rem;margin-top:1.2rem">학생 추가</div>
     <div class="frow"><div><label>이름 *</label><input id="d-name" type="text" placeholder="별명·이니셜 권장"></div>
-      <div><label>반/번호(선택)</label><input id="d-tag" type="text"></div></div>
-    <div class="frow"><div><label>시작 단계</label><select id="d-lvl">${lvlOpts(1)}</select></div>
+      <div><label>반/번호(선택)</label><input id="d-tag" type="text"></div>
+      <div><label>시작 단계</label><select id="d-lvl">${lvlOpts(1)}</select></div>
       <div><label>하루 문제 수</label><select id="d-num">${numOpts(DAILY_DEFAULT)}</select></div></div>
     <div style="margin-top:.8rem;text-align:center"><button class="btn btn--teal" onclick="addStudentT()">학생 추가하기</button></div>
     <div class="note">학생은 첫 화면에서 교실 코드 <b>${klass.code}</b>를 넣은 뒤, 자기 이름을 눌러 시작합니다.<br>
