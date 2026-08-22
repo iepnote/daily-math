@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 71 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 72 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -372,6 +372,27 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .mgrp,.dgrp{ border:3px dashed #c9c9c9; border-radius:.8rem; padding:.4rem .5rem; transition:border-color .3s, background .3s; }
 .dgrp.on,.mgrp.on{ border-color:var(--accent-strong); border-style:solid; background:var(--choice-bg); }
 .dgrp.rm{ opacity:.25; filter:grayscale(1); transition:opacity .4s, filter .4s; }   /* 나눗셈 덜어내기: 덜어낸 묶음 */
+/* 수직선 점프 힌트(v72) — nlwrap 부품 재사용 + 점프 호·방향 라벨 */
+.nlwrap.jump{ height:170px; }
+.nltick.sm{ top:93px; height:16px; width:3px; opacity:.45; }
+.nlflag.trav{ transition:left .35s ease; }
+.jarc{ position:absolute; top:62px; height:30px; border:4px solid var(--accent-strong); border-bottom:none;
+  border-radius:50% 50% 0 0 / 100% 100% 0 0; transform:translateY(6px); opacity:0; transition:opacity .3s, transform .3s; }
+.jarc.show{ opacity:1; transform:translateY(0); }
+.jdirlab{ position:absolute; top:28px; transform:translateX(-50%); font-size:1.35rem; font-weight:800; color:var(--ink-soft); white-space:nowrap; }
+/* 곱셈 4분면(v72) */
+.quad{ display:grid; grid-template-columns:1fr 1fr; gap:.55rem; width:min(780px,94%); margin:.2rem auto; }
+.qcell{ position:relative; border:3px dashed #c9c9c9; border-radius:.9rem; padding:1.5rem .6rem .6rem; min-height:100px;
+  display:flex; align-items:center; justify-content:center; transition:border-color .3s, background .3s; }
+.qcell.on{ border-color:var(--accent-strong); border-style:solid; background:var(--choice-bg); }
+.qtag{ position:absolute; top:.3rem; left:.65rem; font-size:.9rem; font-weight:800; color:var(--ink-soft); }
+.qbig{ font-size:2rem; font-weight:800; }
+.qans{ font-size:2.7rem; color:var(--accent-strong); }
+.qeq{ font-size:1.4rem; font-weight:800; line-height:1.4; word-break:keep-all; text-align:center; }
+.quad .mulrow{ gap:.4rem; margin:0; }
+.quad .mgrp{ padding:.25rem .3rem; }
+.quad .cdot{ width:20px; height:20px; }
+.quad .crow5{ gap:3px; }
 .skiprow{ display:flex; justify-content:center; gap:.55rem; flex-wrap:wrap; margin:.3rem 0; }
 .skipbox{ min-width:2.1em; padding:.15em .35em; border:4px solid var(--choice-border); border-radius:.6em;
   font-size:1.7rem; font-weight:800; color:var(--accent-strong); background:var(--choice-bg);
@@ -836,7 +857,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 71';
+const APP_VERSION = 'ver 72';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1369,6 +1390,7 @@ const TRX = {
   '동그라미를 처음부터 모두 세어 봐요.': { en: 'Count all the circles from the beginning.', zh: '从头把圆圈全部数一遍。', vi: 'Đếm tất cả hình tròn từ đầu.', ja: 'まるを はじめから ぜんぶ かぞえよう。', ru: 'Посчитай все кружки с самого начала.' },
   '빼는 만큼 지우고, 남은 것을 세어 봐요.': { en: 'Cross out that many, then count what is left.', zh: '划掉要减的数量，再数剩下的。', vi: 'Gạch bỏ số cần bớt, rồi đếm phần còn lại.', ja: 'ひく ぶんだけ けして、のこりを かぞえよう。', ru: 'Зачеркни столько, сколько вычитаешь, и посчитай остаток.' },
   '두 수가 똑같아요. 더블!': { en: 'The two numbers are the same. Doubles!', zh: '两个数一样，是双倍！', vi: 'Hai số giống nhau. Gấp đôi!', ja: 'ふたつの かずが おなじ。ダブル！', ru: 'Два одинаковых числа. Дубль!' },
+  '그림으로 나타내 봐요.': { en: 'Show it with a picture.', zh: '用图画表示出来。', vi: 'Hãy thể hiện bằng hình vẽ.', ja: 'えで あらわしてみよう。', ru: 'Покажи это картинкой.' },
 };
 /* hintTwo 단서(더해/빼 × 세로/가로) */
 [['더해', { en: 'add', zh: '加一加', vi: 'cộng lại', ja: 'たしてみよう', ru: 'сложи' }], ['빼', { en: 'subtract', zh: '减一减', vi: 'trừ đi', ja: 'ひいてみよう', ru: 'вычти' }]].forEach(([k, w]) => {
@@ -1458,6 +1480,19 @@ function trKo(t) {
     return T({ en: `Take away ${m[2]} at a time from ${m[1]}. How many times can you?`, zh: `从 ${m[1]} 里每次拿走 ${m[2]}。能拿几次？`, vi: `Bớt ${m[2]} mỗi lần từ ${m[1]}. Bớt được mấy lần?`, ja: `${m[1]}から ${m[2]}ずつ とっていこう。なんかい とれるかな？`, ru: `Убирай по ${m[2]} из ${m[1]}. Сколько раз получится?` });
   if (m = t.match(/^(\d+)[을를] (.+?) 번 덜어냈어요\. 정답은 (\d+)/)) { const n = cntToNum(m[2]) || m[2];
     return T({ en: `Took away ${m[1]}, ${n} times. The answer is ${m[3]}.`, zh: `拿走了 ${n} 次 ${m[1]}。答案是 ${m[3]}。`, vi: `Đã bớt ${m[1]}, ${n} lần. Đáp án là ${m[3]}.`, ja: `${m[1]}を ${n}かい とったよ。こたえは ${m[3]}。`, ru: `Убрали ${m[1]} ${n} раз(а). Ответ: ${m[3]}.` }); }
+  /* 연산 전략 힌트(v72: 수직선 점프·곱셈 4분면) */
+  if (m = t.match(/^(\d+)에서 출발해서, (\d+)만큼 (앞으로|뒤로) 뛰어 봐요\.$/)) { const fw = m[3] === '앞으로';
+    return T({ en: `Start at ${m[1]} and jump ${fw ? 'forward' : 'back'} ${m[2]}.`, zh: `从 ${m[1]} 出发，向${fw ? '前' : '后'}跳 ${m[2]} 格。`, vi: `Bắt đầu từ ${m[1]}, nhảy ${fw ? 'tới' : 'lùi'} ${m[2]} bước.`, ja: `${m[1]}から しゅっぱつして、${m[2]}こ ${fw ? 'まえに' : 'うしろに'} とぼう。`, ru: `Начни с ${m[1]} и прыгай ${fw ? 'вперёд' : 'назад'} на ${m[2]}.` }); }
+  if (m = t.match(/^(\d+)에서 출발!$/))
+    return T({ en: `Start at ${m[1]}!`, zh: `从 ${m[1]} 出发！`, vi: `Bắt đầu từ ${m[1]}!`, ja: `${m[1]}から しゅっぱつ！`, ru: `Старт с ${m[1]}!` });
+  if (m = t.match(/^(\d+)만큼 (앞으로|뒤로) 뛰었어요\. 정답은 (\d+)/)) { const fw = m[2] === '앞으로';
+    return T({ en: `Jumped ${fw ? 'forward' : 'back'} ${m[1]}. The answer is ${m[3]}.`, zh: `向${fw ? '前' : '后'}跳了 ${m[1]} 格。答案是 ${m[3]}。`, vi: `Đã nhảy ${fw ? 'tới' : 'lùi'} ${m[1]} bước. Đáp án là ${m[3]}.`, ja: `${m[1]}こ ${fw ? 'まえに' : 'うしろに'} とんだよ。こたえは ${m[3]}。`, ru: `Прыгнули ${fw ? 'вперёд' : 'назад'} на ${m[1]}. Ответ: ${m[3]}.` }); }
+  if (m = t.match(/^(\d+) 곱하기 (\d+)[은는] 어떤 뜻일까요\? (\d+)개씩 (\d+)묶음이에요\.$/))
+    return T({ en: `What does ${m[1]} times ${m[2]} mean? It is ${m[4]} groups of ${m[3]}.`, zh: `${m[1]} 乘 ${m[2]} 是什么意思？就是 ${m[4]} 组，每组 ${m[3]} 个。`, vi: `${m[1]} nhân ${m[2]} nghĩa là gì? Là ${m[4]} nhóm, mỗi nhóm ${m[3]}.`, ja: `${m[1]}かける${m[2]}は どういう いみかな？ ${m[3]}こずつ ${m[4]}たばだよ。`, ru: `Что значит ${m[1]} умножить на ${m[2]}? Это ${m[4]} групп по ${m[3]}.` });
+  if (m = t.match(/^(\d+)개씩 (\d+)묶음이에요\.$/))
+    return T({ en: `${m[2]} groups of ${m[1]}.`, zh: `${m[2]} 组，每组 ${m[1]} 个。`, vi: `${m[2]} nhóm, mỗi nhóm ${m[1]}.`, ja: `${m[1]}こずつ ${m[2]}たばだよ。`, ru: `${m[2]} групп по ${m[1]}.` });
+  if (m = t.match(/^덧셈식으로 쓰면, (\d+)[을를] (.+?) 번 더해요\.$/)) { const n = cntToNum(m[2]) || m[2];
+    return T({ en: `As an addition sentence, add ${m[1]} ${n} times.`, zh: `写成加法算式，就是把 ${m[1]} 加 ${n} 次。`, vi: `Viết thành phép cộng: cộng ${m[1]} ${n} lần.`, ja: `たしざんの しきに すると、${m[1]}を ${n}かい たすよ。`, ru: `В виде сложения: сложи ${m[1]} ${n} раз(а).` }); }
   if (m = t.match(/^(다섯|열) 개를 한 번에 묶어요\./)) { const n = cntToNum(m[1]);
     return T({ en: `Circle ${n} at once. ${n}.`, zh: `把 ${n} 个圈在一起。${n}。`, vi: `Khoanh ${n} cái một lần. ${n}.`, ja: `${n}こを ひとまとめに しよう。${n}。`, ru: `Обведи сразу ${n}. ${n}.` }); }
   if (m = t.match(/^접시에 자리가 (.+?) 개 생겼어요\./)) { const n = cntToNum(m[1]) || m[1];
@@ -2607,6 +2642,7 @@ function addStratHint(p, h, stage) {
   if (has('all') && sum <= 5) return countAllAdd(p, h, stage);
   if (has('on') && small <= 2) return combineAdd(p, h, stage);
   if (has('ten') && a < 10 && b < 10 && sum > 10) return make10Add(p, h, stage);
+  if (has('jump')) return jumpHint(p, h, stage);   // 수직선 점프: 조건 없는 범용 표상(v72)
   if (has('all')) return countAllAdd(p, h, stage);
   return combineAdd(p, h, stage);
 }
@@ -2618,6 +2654,7 @@ function subStratHint(p, h, stage) {
   if (has('back') && b <= 2) return combineSub(p, h, stage);
   if (has('bridge') && borrow) return bridgeSub(p, h, stage);
   if (has('ten') && borrow) return subViaTen(p, h, stage);
+  if (has('jump')) return jumpHint(p, h, stage);   // 수직선 점프: 조건 없는 범용 표상(v72)
   if (has('take')) return takeAwaySub(p, h, stage);
   return combineSub(p, h, stage);
 }
@@ -2629,7 +2666,8 @@ function mulStratHint(p, h, stage) {
     pre = `${p.a} 곱하기 ${p.b}${josaEun(p.b)}, ${p.b} 곱하기 ${p.a}${josaGwa(p.a)} 같아요.`;
   }
   const mode = has('group') === has('skip') ? undefined : has('group') ? 'group' : 'skip';
-  const run = () => hintMul(q, h, stage, mode);
+  /* 4분면(v72)은 묶음 세기보다 우선(묶음 그림을 포함) — 큰 곱은 그림이 안 담겨 자동 대체 */
+  const run = () => (has('quad') && q.a * q.b <= 30) ? quadMul(q, h, stage) : hintMul(q, h, stage, mode);
   if (pre) { let s = false; const go = () => { if (s) return; s = true; run(); }; speak(pre, go); setTimeout(go, 3000); }
   else run();
 }
@@ -2959,6 +2997,41 @@ function bridgeSub(p, h, stage) {
   items.push({ text: `10에서 ${second}${josaEul(second)} 빼면 ${koCnt(ans)} 개가 남아요. 정답은 ${ans}${josaYeyo(ans)}.` });
   speakSequence(items);
 }
+/* 수직선 점프(0~20) — 덧셈·뺄셈 공용 표상 (v72, strat 'jump').
+   시작 깃발이 한 칸씩 호를 그리며 이동, 방향 라벨로 방향 혼동 교정(절차수행형 자료) */
+function jumpHint(p, h, stage) {
+  const add = p.op === '+', a = p.a, b = p.b, ans = p.ans, MAX = 20;
+  const pos = v => (v / MAX * 100).toFixed(1);
+  let ticks = ''; for (let v = 0; v <= MAX; v++) ticks += `<div class="nltick${v % 5 ? ' sm' : ''}" style="left:${pos(v)}%"></div>`;
+  let labs = ''; [0, 5, 10, 15, 20].forEach(v => labs += `<div class="nllab" style="left:${pos(v)}%">${v}</div>`);
+  h.innerHTML = `<div class="nlwrap jump" id="jwrap"><div class="nltrack"></div>${ticks}${labs}
+    <div class="jdirlab" style="left:${pos((a + ans) / 2)}%">${add ? '앞으로 ▶' : '◀ 뒤로'}</div>
+    <div class="nlflag trav" id="jflag" style="left:${pos(a)}%"><span class="nlhead" id="jhead">${a}</span><i class="nlstem"></i></div>
+  </div><div class="tip">${a}에서 출발해서, ${b}만큼 ${add ? '앞으로' : '뒤로'} 뛰어 봐요</div>`;
+  const cue = `${a}에서 출발해서, ${b}만큼 ${add ? '앞으로' : '뒤로'} 뛰어 봐요.`;
+  if (stage < 2) { speak(cue); return; }
+  const wrap = $('jwrap'), flag = $('jflag'), head = $('jhead');
+  const items = [{ text: `${a}에서 출발!`, action: () => flag.animate([{ transform: 'translateX(-50%) scale(1.25)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 300 }) }];
+  for (let k = 1; k <= b; k++) {
+    const from = add ? a + k - 1 : a - k + 1, to = add ? a + k : a - k;
+    items.push({
+      text: String(to), action: () => {
+        const arc = document.createElement('div'); arc.className = 'jarc';
+        arc.style.left = pos(Math.min(from, to)) + '%'; arc.style.width = (100 / MAX) + '%';
+        wrap.appendChild(arc); requestAnimationFrame(() => arc.classList.add('show'));
+        flag.style.left = pos(to) + '%'; head.textContent = to;
+      }
+    });
+  }
+  items.push({
+    text: `${b}만큼 ${add ? '앞으로' : '뒤로'} 뛰었어요. 정답은 ${ans}${josaYeyo(ans)}.`, action: () => {
+      const ok = document.createElement('div'); ok.className = 'nlflag ok';
+      ok.style.left = pos(ans) + '%'; ok.innerHTML = `<span class="nlhead">${ans}</span><i class="nlstem"></i>`;
+      wrap.appendChild(ok);
+    }
+  });
+  speakSequence(items);
+}
 
 /* =========================================================
    힌트 — 텐프레임 (10의 보수 3형제 공통: partner·addToTen·subFromTen)
@@ -3039,6 +3112,26 @@ function repeatSubDiv(p, h, stage) {
     items.push({ text: `${from} 빼기 ${b}${josaEun(b)} ${v}.`, action: () => { setC(v); const e = $('rg' + k); if (e) e.classList.add('rm'); } });
   }
   items.push({ text: `${b}${josaEul(b)} ${koCnt(q)} 번 덜어냈어요. 정답은 ${q}${josaYeyo(q)}.` });
+  speakSequence(items);
+}
+/* 곱셈 4분면 표상 — 한 식을 말·그림·덧셈식·답 네 방식으로 (v72, strat.mul='quad', 최윤경 연수자료 p25) */
+function quadMul(p, h, stage) {
+  const a = p.a, b = p.b, prod = a * b;
+  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp" id="qg${k}">${circleStack(a, k % 2 ? 'b' : '')}</div>`;
+  const word = `${a}개씩 ${b}묶음`;
+  h.innerHTML = `<div class="quad">
+    <div class="qcell" id="qc0"><div class="qtag">말</div><div class="qbig" id="qw">${stage < 2 ? word : ''}</div></div>
+    <div class="qcell" id="qc1"><div class="qtag">그림</div><div class="mulrow hidden" id="qpic">${g}</div></div>
+    <div class="qcell" id="qc2"><div class="qtag">덧셈식</div><div class="qeq hidden" id="qeq">${Array(b).fill(a).join(' + ')}</div></div>
+    <div class="qcell" id="qc3"><div class="qtag">답</div><div class="qbig qans hidden" id="qa">${prod}</div></div>
+  </div>`;
+  if (stage < 2) { $('qc0').classList.add('on'); speak(`${a} 곱하기 ${b}${josaEun(b)} 어떤 뜻일까요? ${word}이에요.`); return; }
+  const items = [];
+  items.push({ text: `${a}개씩 ${b}묶음이에요.`, action: () => { $('qw').textContent = word; $('qc0').classList.add('on'); } });
+  items.push({ text: '그림으로 나타내 봐요.', action: () => { $('qpic').classList.remove('hidden'); $('qc1').classList.add('on'); } });
+  items.push({ text: `덧셈식으로 쓰면, ${a}${josaEul(a)} ${koCnt(b)} 번 더해요.`, action: () => { $('qeq').classList.remove('hidden'); $('qc2').classList.add('on'); } });
+  for (let k = 0; k < b; k++) { const v = a * (k + 1); items.push({ text: String(v), action: () => { const e = $('qg' + k); if (e) e.classList.add('on'); } }); }
+  items.push({ text: `정답은 ${prod}${josaYeyo(prod)}.`, action: () => { $('qa').classList.remove('hidden'); $('qc3').classList.add('on'); } });
   speakSequence(items);
 }
 
@@ -3711,9 +3804,9 @@ async function renderStudentDetail(id) {
           ${(() => {
       const chk = (k, v) => ((s.strat && s.strat[k]) || []).includes(v) ? 'checked' : '';
       const box = (k, v, l) => `<label><input type="checkbox" ${chk(k, v)} onchange="setStratT('${s.id}','${k}','${v}',this.checked)">${l}</label>`;
-      return `<div><b>덧셈</b> ${box('add', 'all', '모두 세기')} ${box('add', 'on', '이어 세기')} ${box('add', 'double', '더블')} ${box('add', 'near', '더블+1')} ${box('add', 'ten', '10 만들기')}</div>
-          <div><b>뺄셈</b> ${box('sub', 'take', '덜어내기')} ${box('sub', 'back', '거꾸로 세기')} ${box('sub', 'bridge', '빼는 수 가르기')} ${box('sub', 'ten', '10에서 빼기')}</div>
-          <div><b>곱셈</b> ${box('mul', 'group', '묶음 세기')} ${box('mul', 'skip', '뛰어 세기')} ${box('mul', 'swap', '교환')}</div>
+      return `<div><b>덧셈</b> ${box('add', 'all', '모두 세기')} ${box('add', 'on', '이어 세기')} ${box('add', 'double', '더블')} ${box('add', 'near', '더블+1')} ${box('add', 'ten', '10 만들기')} ${box('add', 'jump', '수직선 점프')}</div>
+          <div><b>뺄셈</b> ${box('sub', 'take', '덜어내기')} ${box('sub', 'back', '거꾸로 세기')} ${box('sub', 'bridge', '빼는 수 가르기')} ${box('sub', 'ten', '10에서 빼기')} ${box('sub', 'jump', '수직선 점프')}</div>
+          <div><b>곱셈</b> ${box('mul', 'group', '묶음 세기')} ${box('mul', 'skip', '뛰어 세기')} ${box('mul', 'quad', '몇씩 몇묶음(4분면)')} ${box('mul', 'swap', '교환')}</div>
           <div><b>나눗셈</b> ${box('div', 'fact', '묶어 세기·구구')} ${box('div', 'take', '덜어내기')}</div>`;
     })()}
           <div class="dim stratnote">선택 없음 = 자동 · 복수 선택 시 문제에 맞는 전략으로 자동 분기 · 세기 전략은 임시 발판이에요 — 10 구조가 익숙해지면 세기 체크를 꺼 주세요</div>
