@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 81 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 82 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -424,6 +424,10 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 /* 10 만들기 1차 직접 조작(v81): 옮길 동그라미는 크게, 드는 동안 맨 위 */
 .m10src .cdot{ width:42px; height:42px; cursor:grab; touch-action:none; }
 .m10src .cdot.lift{ position:relative; z-index:9; cursor:grabbing; }
+/* 이어 세기 1차 탭 조작(v82): 누르면 누적 수가 찍힌다 */
+.contap .cdot{ width:42px; height:42px; cursor:pointer; touch-action:manipulation;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.05rem; }
+.contap .cdot.cnt{ box-shadow:0 0 0 4px var(--amber); }
 /* 곱셈 4분면(v72) */
 .quad{ display:grid; grid-template-columns:1fr 1fr; gap:.55rem; width:min(780px,94%); margin:.2rem auto; }
 .qcell{ position:relative; border:3px dashed #c9c9c9; border-radius:.9rem; padding:1.5rem .6rem .6rem; min-height:100px;
@@ -914,7 +918,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 81';
+const APP_VERSION = 'ver 82';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1557,6 +1561,11 @@ function trKo(t) {
     return T({ en: `Take away ${m[2]} at a time from ${m[1]}. How many times can you?`, zh: `从 ${m[1]} 里每次拿走 ${m[2]}。能拿几次？`, vi: `Bớt ${m[2]} mỗi lần từ ${m[1]}. Bớt được mấy lần?`, ja: `${m[1]}から ${m[2]}ずつ とっていこう。なんかい とれるかな？`, ru: `Убирай по ${m[2]} из ${m[1]}. Сколько раз получится?` });
   if (m = t.match(/^(\d+)[을를] (.+?) 번 덜어냈어요\. 정답은 (\d+)/)) { const n = cntToNum(m[2]) || m[2];
     return T({ en: `Took away ${m[1]}, ${n} times. The answer is ${m[3]}.`, zh: `拿走了 ${n} 次 ${m[1]}。答案是 ${m[3]}。`, vi: `Đã bớt ${m[1]}, ${n} lần. Đáp án là ${m[3]}.`, ja: `${m[1]}を ${n}かい とったよ。こたえは ${m[3]}。`, ru: `Убрали ${m[1]} ${n} раз(а). Ответ: ${m[3]}.` }); }
+  /* 이어 세기 탭 조작(v82) */
+  if (m = t.match(/^큰 수 (\d+)부터! 동그라미를 하나씩 누르면서 이어 세어 보세요\.$/))
+    return T({ en: `Start at the bigger number, ${m[1]}! Tap the circles one by one and count on.`, zh: `从大的数 ${m[1]} 开始！一个一个点圆圈接着数。`, vi: `Bắt đầu từ số lớn ${m[1]}! Chạm từng hình tròn và đếm tiếp.`, ja: `おおきい かず ${m[1]}から！まるを ひとつずつ おして つづけて かぞえてね。`, ru: `Начни с большего числа, ${m[1]}! Нажимай кружки по одному и считай дальше.` });
+  if (m = t.match(/^(\d+)부터 이어 세었어요\. 모두 몇일까요\?$/))
+    return T({ en: `We counted on from ${m[1]}. How many in all?`, zh: `从 ${m[1]} 接着数完了。一共是几？`, vi: `Đã đếm tiếp từ ${m[1]}. Tất cả là mấy?`, ja: `${m[1]}から つづけて かぞえたね。ぜんぶで いくつ？`, ru: `Мы досчитали от ${m[1]}. Сколько всего?` });
   /* 연산 전략 힌트(v72: 수직선 점프·곱셈 4분면) */
   if (m = t.match(/^(\d+)에서 출발해서, (\d+)만큼 (앞으로|뒤로) 뛰어 봐요\.$/)) { const fw = m[3] === '앞으로';
     return T({ en: `Start at ${m[1]} and jump ${fw ? 'forward' : 'back'} ${m[2]}.`, zh: `从 ${m[1]} 出发，向${fw ? '前' : '后'}跳 ${m[2]} 格。`, vi: `Bắt đầu từ ${m[1]}, nhảy ${fw ? 'tới' : 'lùi'} ${m[2]} bước.`, ja: `${m[1]}から しゅっぱつして、${m[2]}こ ${fw ? 'まえに' : 'うしろに'} とぼう。`, ru: `Начни с ${m[1]} и прыгай ${fw ? 'вперёд' : 'назад'} на ${m[2]}.` }); }
@@ -2729,7 +2738,33 @@ function pickAddStrat(p) {
 }
 function addStratHint(p, h, stage) {
   const k = pickAddStrat(p);
-  ({ double: doubleAdd, near: doublePlusAdd, all: countAllAdd, on: combineAdd, ten: make10Add, jump: jumpHint }[k] || combineAdd)(p, h, stage);
+  ({ double: doubleAdd, near: doublePlusAdd, all: countAllAdd, on: countOnAdd, ten: make10Add, jump: jumpHint }[k] || combineAdd)(p, h, stage);
+}
+/* 이어 세기 전략 선택 시: 1차=학생이 직접 탭하며 세기(v82), 2차=기존 자동 시연.
+   자동(전략 미선택)은 combineAdd 그대로 */
+function countOnAdd(p, h, stage) {
+  if (stage < 2 && Math.min(p.a, p.b) < 10) return countOnTap(p, h);
+  combineAdd(p, h, stage);
+}
+function countOnTap(p, h) {
+  const a = p.a, b = p.b, bigIdx = a >= b ? 0 : 1, big = Math.max(a, b);
+  curCirc = null; paintFace(false);
+  const { ma, mb } = hangTwoModels(p, true);
+  const mSmall = bigIdx === 0 ? mb : ma;
+  mSmall.classList.add('contap');
+  const nb = document.querySelector(`#qface [data-t="n${bigIdx}"]`); if (nb) nb.classList.add('oring');
+  h.innerHTML = `<div class="tip">동그라미를 하나씩 누르면서 이어 세어 봐요</div>`;
+  speak(`큰 수 ${big}부터! 동그라미를 하나씩 누르면서 이어 세어 보세요.`);
+  let n = 0; const dots = [...mSmall.querySelectorAll('.cdot')];
+  dots.forEach(d => {
+    d.addEventListener('pointerdown', () => {
+      if (d.classList.contains('cnt')) return;
+      d.classList.add('cnt'); n++;
+      d.textContent = big + n; pulseDot(d);
+      speakFast(String(big + n));
+      if (n === dots.length) setTimeout(() => speak(`${big}부터 이어 세었어요. 모두 몇일까요?`), 400);
+    });
+  });
 }
 function pickSubStrat(p) {
   const st = stratOf('sub'), has = k => st.includes(k);
