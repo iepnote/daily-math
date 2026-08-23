@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 77 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 78 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -101,6 +101,37 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .btn-name .tg{ font-size:1rem; color:var(--ink-soft); }
 .btn-name .ok{ font-size:.95rem; color:var(--ok); font-weight:800; }
 .btn-name.done{ border-color:var(--teal); background:#E9F7F5; }
+
+/* ===== 학생 이름 선택 B안 분할형 (v78) ===== */
+.pickwrap{ position:relative; width:min(1200px,100%); height:640px; margin:auto; display:flex;
+  border-radius:var(--r-card); overflow:hidden; background:#fff; box-shadow:var(--shadow-card); }
+.pickhero{ flex:0 0 430px; background:var(--accent-strong); color:#fff; display:flex; flex-direction:column;
+  justify-content:center; gap:1rem; padding:2.4rem 2.8rem; }
+.ph-school{ font-size:1.15rem; font-weight:800; color:#BBDEFB; }
+.ph-title{ font-size:3.5rem; font-weight:800; line-height:1.15; }
+.ph-sub{ font-size:1.15rem; color:#E3F2FD; }
+.ph-stlabel{ font-size:.95rem; font-weight:800; color:#BBDEFB; margin-top:.7rem; }
+.ph-stamps{ display:flex; gap:.55rem; }
+.ph-stamps .st{ width:42px; height:42px; border-radius:50%; border:3px dashed #90CAF9;
+  display:flex; align-items:center; justify-content:center; }
+.ph-stamps .st.on{ border:none; background:var(--amber); box-shadow:0 4px 0 rgba(0,0,0,.15); }
+.ph-ops{ display:flex; gap:.8rem; font-size:2.1rem; font-weight:800; color:#64B5F6; margin-top:.5rem; }
+.pickside{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:1rem; padding:1.4rem 2.4rem; }
+.pk-head{ font-size:1.85rem; font-weight:800; }
+.pickgrid{ display:grid; grid-template-columns:minmax(320px,380px); gap:.9rem; justify-content:center; }
+.pickgrid.two{ grid-template-columns:repeat(2, minmax(280px,330px)); }
+.btn-name.pk{ flex-direction:row; justify-content:flex-start; gap:.9rem; padding:.75rem 1.2rem; min-width:0;
+  box-shadow:0 5px 0 var(--choice-border); }
+.btn-name.pk.done{ box-shadow:0 5px 0 var(--teal); }
+.btn-name.pk .face{ width:58px; height:58px; border-radius:50%; flex:0 0 auto;
+  background:var(--accent) center/cover no-repeat; color:#fff; font-size:1.7rem; font-weight:800;
+  display:flex; align-items:center; justify-content:center; }
+.btn-name.pk .col{ display:flex; flex-direction:column; align-items:flex-start; gap:.05rem; min-width:0; }
+.btn-name.pk .nm{ font-size:1.8rem; }
+.btn-name.pkguest{ flex-direction:row; gap:.7rem; padding:.7rem 1.6rem; border-style:dashed; border-color:var(--teal); background:#fff; }
+.btn-name.pkguest .nm{ color:var(--teal); font-size:1.5rem; }
+.credit{ position:absolute; right:18px; bottom:10px; font-size:.78rem; color:#9aa4ab; }
 
 /* ===== 학습 화면 배치 — 카드가 무대를 채우고, 수식 영역이 남는 공간을 모두 차지 ===== */
 .study{ width:100%; max-width:1120px; margin:0 auto; flex:1; display:flex; flex-direction:column; min-height:0; }
@@ -865,7 +896,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 77';
+const APP_VERSION = 'ver 78';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3403,14 +3434,16 @@ function setPref(group, v) {
    07 달력 (학생 홈 화면) + 점수 팝업
    ========================================================= */
 let calY = null, calM = null;
-/* 학생 사진: 한글놀이터와 저장소 공유(hubPhotos, 같은 오리진) → 없으면 같은 Supabase의 hangul_students에서 */
-async function photoFor(name) {
+/* 학생 사진: 한글놀이터와 저장소 공유(hubPhotos, 같은 오리진) → 없으면 같은 Supabase의 hangul_students에서.
+   code 생략 시 current 기준(달력) — 이름 선택 화면(v78)은 로그인 전이라 klass.code를 넘긴다 */
+async function photoFor(name, code) {
   try { const ph = JSON.parse(localStorage.getItem('hubPhotos') || '{}'); if (ph[name]) return ph[name]; } catch (e) { }
-  if (!IS_REMOTE() || !navigator.onLine || !current) return null;
+  code = code || (current && current.classCode);
+  if (!IS_REMOTE() || !navigator.onLine || !code) return null;
   try {
-    const r = await fetch(REMOTE.url + '/rest/v1/hangul_students?class_code=eq.' + current.classCode
+    const r = await fetch(REMOTE.url + '/rest/v1/hangul_students?class_code=eq.' + code
       + '&name=eq.' + encodeURIComponent(name) + '&select=photo',
-      { headers: { 'apikey': REMOTE.anonKey, 'x-class-code': current.classCode } });
+      { headers: { 'apikey': REMOTE.anonKey, 'x-class-code': code } });
     const rows = await r.json();
     const p = rows && rows[0] && rows[0].photo;
     if (p) { try { const ph = JSON.parse(localStorage.getItem('hubPhotos') || '{}'); ph[name] = p; localStorage.setItem('hubPhotos', JSON.stringify(ph)); } catch (e) { } }
@@ -3526,29 +3559,49 @@ async function enterClass() {
   renderStudentPick();
 }
 
-/* ---- 학생 이름 선택 ---- */
+/* ---- 학생 이름 선택 (v78: B안 분할형 — 파랑 패널 + 우리 반 도장 + 얼굴 버튼) ---- */
 async function renderStudentPick() {
   if (!klass) { klass = await Store.getClass(device.classCode); if (!klass) { renderStart(); return; } }
-  setNav(`<button class="brand">${esc(klass.school)} ${esc(klass.name)}</button>
-    <button class="quit" onclick="changeClass()">교실 바꾸기</button>
+  setNav(`<button class="quit" onclick="changeClass()">교실 바꾸기</button>
     <button class="set" onclick="renderTeacherLogin()">👩‍🏫 선생님</button>`);
   $('wrap').innerHTML = `<div class="card card--accent" style="max-width:760px;margin:0 auto;"><div class="read-sentence">불러오는 중…</div></div>`;
   const students = await Store.listStudents(klass.code);
   const t = todayStr();
+  /* 이번 주 우리 반 도장: 지난 7일 중 반에서 한 명이라도 완료한 날(실데이터, 장식용 가짜 도장 금지) */
+  const check = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12.5 10 18 20 6" stroke="#FFFFFF" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+  const stamps = [...Array(7)].map((_, i) => {
+    const d = daysAgoStr(6 - i);
+    return students.some(s => (s.completedDates || []).includes(d)) ? `<i class="st on">${check}</i>` : '<i class="st"></i>';
+  }).join('');
   const btns = students.length ? students.map(s => {
     const done = (s.completedDates || []).includes(t);
-    return `<button class="btn-name ${done ? 'done' : ''}" onclick="pickStudent('${s.id}')">
-      <span class="nm">${esc(s.name)}</span>${s.tag ? `<span class="tg">${esc(s.tag)}</span>` : ''}${done ? '<span class="ok">✔ 오늘 완료</span>' : ''}
+    return `<button class="btn-name pk ${done ? 'done' : ''}" onclick="pickStudent('${s.id}')">
+      <span class="face" id="pf-${s.id}">${esc(s.name.charAt(0))}</span>
+      <span class="col"><span class="nm">${esc(s.name)}</span>${s.tag ? `<span class="tg">${esc(s.tag)}</span>` : ''}${done ? '<span class="ok">✔ 오늘 완료</span>' : ''}</span>
     </button>`;
   }).join('') : `<div class="note" style="padding:2rem">아직 학생이 없어요.<br>선생님 모드에서 학생을 추가해 주세요.</div>`;
-  $('wrap').innerHTML = `<div class="card card--accent" style="max-width:820px;margin:0 auto;">
-    <div class="mascot-imgs"><img src="${IMG_ADD}" alt=""><img src="${IMG_SUB}" alt=""></div>
-    <div class="read-sentence">내 이름을 눌러 주세요</div>
-    <div class="name-grid">${btns}
-      <button class="btn-name guest" onclick="startGuest()"><span class="nm">🎈 손님</span><span class="tg">기록 저장 안 함</span></button>
+  $('wrap').innerHTML = `<div class="pickwrap">
+    <div class="pickhero">
+      <div class="ph-school">${esc(klass.school)} ${esc(klass.name)}</div>
+      <div class="ph-title">매일매일<br>수학</div>
+      <div class="ph-sub">하루 한 번, 나의 연산 연습</div>
+      <div class="ph-stlabel">이번 주 우리 반 도장</div>
+      <div class="ph-stamps">${stamps}</div>
+      <div class="ph-ops"><span>+</span><span>−</span><span>×</span><span>÷</span></div>
     </div>
-    <div class="ver">${APP_VERSION}</div>
+    <div class="pickside">
+      <div class="pk-head">내 이름을 눌러 주세요</div>
+      <div class="pickgrid ${students.length > 3 ? 'two' : ''}">${btns}</div>
+      <button class="btn-name pkguest" onclick="startGuest()"><span class="nm">🎈 손님</span><span class="tg">기록 저장 안 함</span></button>
+      <div class="ver">${APP_VERSION}</div>
+    </div>
+    <div class="credit">민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다.</div>
   </div>`;
+  /* 얼굴 사진(한글놀이터 공유) — 있으면 이니셜 원을 사진으로 교체 */
+  students.forEach(s => photoFor(s.name, klass.code).then(p => {
+    const el = $('pf-' + s.id);
+    if (p && el) { el.style.backgroundImage = `url(${p})`; el.textContent = ''; }
+  }));
 }
 function changeClass() { klass = null; device.classCode = ''; saveDevice(); renderStart(); }
 
