@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 78 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 79 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -896,7 +896,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 78';
+const APP_VERSION = 'ver 79';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3533,20 +3533,27 @@ function renderGuestHome(justFinished) {
    - 학생은 큰 이름 버튼을 눌러 시작 (글 읽기 부담 최소화)
    ========================================================= */
 function renderStart() {
-  setNav(`<button class="brand">매일매일 수학 공부해봐요.</button>`);
-  $('wrap').innerHTML = `<div class="card card--accent" style="max-width:560px;margin:0 auto;">
-    <div class="mascot-imgs"><img src="${IMG_ADD}" alt="덧셈"><img src="${IMG_SUB}" alt="뺄셈"></div>
-    <div class="read-sentence">우리 교실 코드를 넣어 주세요</div>
-    <input id="in-code" type="text" placeholder="예) ABC234" maxlength="6" autocomplete="off"
-      style="text-align:center;font-size:1.6rem;letter-spacing:.35em;text-transform:uppercase" onkeydown="if(event.key==='Enter')enterClass()">
-    <div style="display:flex;gap:.8rem;justify-content:center;margin-top:1.2rem">
-      <button class="btn btn--orange" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" onclick="enterClass()">들어가기</button>
-      <button class="btn btn--gray" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" onclick="renderTeacherLogin()">선생님 모드</button>
+  setNav('');
+  $('wrap').innerHTML = `<div class="pickwrap">
+    <div class="pickhero">
+      <div class="ph-school">어서 와요!</div>
+      <div class="ph-title">매일매일<br>수학</div>
+      <div class="ph-sub">하루 한 번, 나의 연산 연습</div>
+      <div class="ph-ops"><span>+</span><span>−</span><span>×</span><span>÷</span></div>
     </div>
-    <div style="margin-top:.9rem"><button class="btn btn--teal" style="font-size:1.1rem;padding:.5rem 1.2rem;font-weight:800" onclick="startGuest()">🎈 손님으로 해보기</button></div>
-    <div class="note" style="margin-top:1rem">교실 코드는 선생님이 알려 줘요.<br>처음이라면 선생님 모드에서 [새 교실 만들기]를 눌러 주세요.<br>
-    <b>🎈 손님</b>은 코드 없이 바로 해볼 수 있어요(기록은 저장되지 않아요).</div>
-    <div class="ver">${APP_VERSION} · ${Store.mode() === 'remote' ? '온라인 저장' : '이 기기에만 저장'}</div>
+    <div class="pickside" style="text-align:center">
+      <div class="pk-head">우리 교실 코드를 넣어 주세요</div>
+      <input id="in-code" type="text" placeholder="예) ABC234" maxlength="6" autocomplete="off"
+        style="max-width:380px;text-align:center;font-size:1.7rem;letter-spacing:.35em;text-transform:uppercase" onkeydown="if(event.key==='Enter')enterClass()">
+      <div style="display:flex;gap:.8rem;justify-content:center">
+        <button class="btn btn--orange" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" onclick="enterClass()">들어가기</button>
+        <button class="btn btn--gray" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" onclick="renderTeacherLogin()">선생님 모드</button>
+      </div>
+      <button class="btn-name pkguest" onclick="startGuest()"><span class="nm">🎈 손님으로 해보기</span><span class="tg">기록 저장 안 함</span></button>
+      <div class="note" style="max-width:430px">교실 코드는 선생님이 알려 줘요.<br>처음이라면 선생님 모드에서 [새 교실 만들기]를 눌러 주세요.</div>
+      <div class="ver">${APP_VERSION} · ${Store.mode() === 'remote' ? '온라인 저장' : '이 기기에만 저장'}</div>
+    </div>
+    <div class="credit">민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다.</div>
   </div>`;
   setTimeout(() => { const e = $('in-code'); if (e) e.focus(); }, 50);
 }
