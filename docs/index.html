@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 79 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 80 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -118,6 +118,12 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .ph-ops{ display:flex; gap:.8rem; font-size:2.1rem; font-weight:800; color:#64B5F6; margin-top:.5rem; }
 .pickside{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:1rem; padding:1.4rem 2.4rem; }
+.pk-top{ display:flex; gap:.5rem; justify-content:flex-end; width:100%; }
+.pkbtn{ font-family:var(--font-btn); cursor:pointer; border:none; border-radius:var(--r-pill); padding:.45rem .95rem;
+  font-size:1.1rem; font-weight:800; color:#fff; box-shadow:0 3px 0 rgba(0,0,0,.18); transition:transform .08s; }
+.pkbtn:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.18); }
+.pkbtn.quitc{ background:#EF5350; } .pkbtn.setc{ background:#7E57C2; } .pkbtn.guestc{ background:var(--teal); }
+.pk-body{ flex:1; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; }
 .pk-head{ font-size:1.85rem; font-weight:800; }
 .pickgrid{ display:grid; grid-template-columns:minmax(320px,380px); gap:.9rem; justify-content:center; }
 .pickgrid.two{ grid-template-columns:repeat(2, minmax(280px,330px)); }
@@ -896,7 +902,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 79';
+const APP_VERSION = 'ver 80';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3551,9 +3557,8 @@ function renderStart() {
       </div>
       <button class="btn-name pkguest" onclick="startGuest()"><span class="nm">🎈 손님으로 해보기</span><span class="tg">기록 저장 안 함</span></button>
       <div class="note" style="max-width:430px">교실 코드는 선생님이 알려 줘요.<br>처음이라면 선생님 모드에서 [새 교실 만들기]를 눌러 주세요.</div>
-      <div class="ver">${APP_VERSION} · ${Store.mode() === 'remote' ? '온라인 저장' : '이 기기에만 저장'}</div>
     </div>
-    <div class="credit">민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다.</div>
+    <div class="credit">${APP_VERSION} · ${Store.mode() === 'remote' ? '온라인 저장' : '이 기기에만 저장'} · 민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다.</div>
   </div>`;
   setTimeout(() => { const e = $('in-code'); if (e) e.focus(); }, 50);
 }
@@ -3569,8 +3574,7 @@ async function enterClass() {
 /* ---- 학생 이름 선택 (v78: B안 분할형 — 파랑 패널 + 우리 반 도장 + 얼굴 버튼) ---- */
 async function renderStudentPick() {
   if (!klass) { klass = await Store.getClass(device.classCode); if (!klass) { renderStart(); return; } }
-  setNav(`<button class="quit" onclick="changeClass()">교실 바꾸기</button>
-    <button class="set" onclick="renderTeacherLogin()">👩‍🏫 선생님</button>`);
+  setNav('');
   $('wrap').innerHTML = `<div class="card card--accent" style="max-width:760px;margin:0 auto;"><div class="read-sentence">불러오는 중…</div></div>`;
   const students = await Store.listStudents(klass.code);
   const t = todayStr();
@@ -3597,12 +3601,17 @@ async function renderStudentPick() {
       <div class="ph-ops"><span>+</span><span>−</span><span>×</span><span>÷</span></div>
     </div>
     <div class="pickside">
-      <div class="pk-head">내 이름을 눌러 주세요</div>
-      <div class="pickgrid ${students.length > 3 ? 'two' : ''}">${btns}</div>
-      <button class="btn-name pkguest" onclick="startGuest()"><span class="nm">🎈 손님</span><span class="tg">기록 저장 안 함</span></button>
-      <div class="ver">${APP_VERSION}</div>
+      <div class="pk-top">
+        <button class="pkbtn quitc" onclick="changeClass()">교실 바꾸기</button>
+        <button class="pkbtn setc" onclick="renderTeacherLogin()">👩‍🏫 선생님</button>
+        <button class="pkbtn guestc" title="기록 저장 안 함" onclick="startGuest()">🎈 손님</button>
+      </div>
+      <div class="pk-body">
+        <div class="pk-head">내 이름을 눌러 주세요</div>
+        <div class="pickgrid ${students.length > 3 ? 'two' : ''}">${btns}</div>
+      </div>
     </div>
-    <div class="credit">민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다.</div>
+    <div class="credit">${APP_VERSION} · 민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다.</div>
   </div>`;
   /* 얼굴 사진(한글놀이터 공유) — 있으면 이니셜 원을 사진으로 교체 */
   students.forEach(s => photoFor(s.name, klass.code).then(p => {
