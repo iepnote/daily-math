@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 83 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 84 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -428,6 +428,14 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .contap .cdot{ width:42px; height:42px; cursor:pointer; touch-action:manipulation;
   display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.05rem; }
 .contap .cdot.cnt{ box-shadow:0 0 0 4px var(--amber); }
+/* 전략 1차 직접 조작(v84): 덜어내기 탭·수직선 점프 드래그·곱셈 묶음 탭 */
+.taketap .cdot{ cursor:pointer; touch-action:manipulation; }
+.taketap .cdot.cnt{ box-shadow:0 0 0 4px var(--amber); }
+.nlwrap.jump .nlflag.trav{ cursor:grab; touch-action:none; }
+.nlflag.trav.drag{ transition:none; cursor:grabbing; z-index:9; }
+.mgrp.tapg{ cursor:pointer; touch-action:manipulation; position:relative; }
+.gcnt{ position:absolute; right:-12px; top:-16px; background:var(--amber); color:#fff; font-weight:800; font-size:1.1rem;
+  border-radius:1em; padding:.05em .45em; box-shadow:0 2px 4px rgba(0,0,0,.25); }
 /* 곱셈 4분면(v72) */
 .quad{ display:grid; grid-template-columns:1fr 1fr; gap:.55rem; width:min(780px,94%); margin:.2rem auto; }
 .qcell{ position:relative; border:3px dashed #c9c9c9; border-radius:.9rem; padding:1.5rem .6rem .6rem; min-height:100px;
@@ -918,7 +926,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 83';
+const APP_VERSION = 'ver 84';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1470,6 +1478,20 @@ const TRX = {
   '몇 번 덜어낼 수 있을까요?': { en: 'How many times can we take it away?', zh: '能拿走几次呢？', vi: 'Bớt được mấy lần nhỉ?', ja: 'なんかい とれるかな？', ru: 'Сколько раз можно убрать?' },
   '곱셈구구로 생각해 볼까요?': { en: 'Shall we think with the times table?', zh: '用乘法口诀想一想好吗？', vi: 'Nghĩ bằng bảng cửu chương nhé?', ja: 'かけざんの くくで かんがえてみようか？', ru: 'Подумаем через таблицу умножения?' },
   '동그라미를 옮겨서 10을 만들어 보세요.': { en: 'Move the circles to make 10.', zh: '把圆圈移过去，凑成 10。', vi: 'Kéo hình tròn sang để tạo thành 10.', ja: 'まるを うごかして 10を つくってね。', ru: 'Передвинь кружки и составь 10.' },
+  /* ---- 전략 1차 직접 조작(v84: 모두 세기·더블·더블+1·점프·덜어내기·거꾸로·가르기·묶음) ---- */
+  '동그라미를 하나씩 누르면서 처음부터 모두 세어 보세요.': { en: 'Tap the circles one by one and count them all from the start.', zh: '一个一个点圆圈，从头全部数一遍。', vi: 'Chạm từng hình tròn và đếm tất cả từ đầu.', ja: 'まるを ひとつずつ おして、はじめから ぜんぶ かぞえてね。', ru: 'Нажимай кружки по одному и посчитай все с начала.' },
+  '모두 세었어요. 모두 몇일까요?': { en: 'We counted them all. How many in all?', zh: '全都数完了。一共是几？', vi: 'Đã đếm hết rồi. Tất cả là mấy?', ja: 'ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы всё посчитали. Сколько всего?' },
+  '동그라미를 누르면 짝도 같이 세어져요. 둘씩 세어 보세요.': { en: 'Tap a circle and its partner counts too. Count by twos.', zh: '点一个圆圈，它的搭档也一起数。两个两个地数。', vi: 'Chạm một hình tròn, bạn cặp cũng được đếm. Đếm từng đôi nhé.', ja: 'まるを おすと、ペアも いっしょに かぞえるよ。2ずつ かぞえてね。', ru: 'Нажми кружок — его пара тоже считается. Считай по два.' },
+  '둘씩 세었어요. 모두 몇일까요?': { en: 'We counted by twos. How many in all?', zh: '两个两个数完了。一共是几？', vi: 'Đã đếm từng đôi. Tất cả là mấy?', ja: '2ずつ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали по два. Сколько всего?' },
+  '동그라미를 누르면서 더블을 먼저 세어 보세요.': { en: 'Tap the circles and count the double first.', zh: '点圆圈，先数双倍的部分。', vi: 'Chạm hình tròn và đếm phần gấp đôi trước.', ja: 'まるを おして、まず ダブルを かぞえてね。', ru: 'Нажимай кружки и сначала посчитай дубль.' },
+  '더블을 다 세었어요. 이제 하나 더!': { en: 'The double is done. Now one more!', zh: '双倍数完了。再来一个！', vi: 'Đếm xong gấp đôi rồi. Giờ thêm một!', ja: 'ダブルは かぞえたね。あと ひとつ！', ru: 'Дубль посчитан. Теперь ещё один!' },
+  '하나 더 세었어요. 모두 몇일까요?': { en: 'We counted one more. How many in all?', zh: '又数了一个。一共是几？', vi: 'Đã đếm thêm một. Tất cả là mấy?', ja: 'もう ひとつ かぞえたね。ぜんぶで いくつ？', ru: 'Посчитали ещё один. Сколько всего?' },
+  '한 칸씩 뛰어요.': { en: 'Jump one step at a time.', zh: '一格一格地跳。', vi: 'Nhảy từng bước một.', ja: '1こずつ とぼう。', ru: 'Прыгай по одному шагу.' },
+  '모두 몇일까요?': { en: 'How many in all?', zh: '一共是几？', vi: 'Tất cả là mấy?', ja: 'ぜんぶで いくつ？', ru: 'Сколько всего?' },
+  '다 지웠어요. 몇 개가 남았나요?': { en: 'All crossed out. How many are left?', zh: '全划掉了。还剩几个？', vi: 'Đã gạch hết. Còn lại mấy cái?', ja: 'ぜんぶ けしたね。いくつ のこった？', ru: 'Всё зачеркнули. Сколько осталось?' },
+  '빗금 동그라미를 끌어서 하나씩 빼 보세요. 먼저 10을 만들어요.': { en: 'Drag the crossed circles to take them away one by one. Make 10 first.', zh: '把画线的圆圈拖过去一个一个减。先凑成 10。', vi: 'Kéo hình tròn gạch chéo để bớt từng cái. Tạo số 10 trước.', ja: 'せんの まるを ドラッグして ひとつずつ ひこう。まず 10を つくるよ。', ru: 'Перетаскивай зачёркнутые кружки по одному. Сначала сделай 10.' },
+  '10이 되었어요! 십 막대 한 개는, 동그라미 열 개! 남은 것도 끌어서 빼 보세요.': { en: 'We made 10! One tens rod becomes ten circles! Now drag the rest to take them away.', zh: '凑成 10 了！一根十的小棒变成十个圆圈！把剩下的也拖过去减。', vi: 'Đã thành 10! Một thanh chục đổi thành mười hình tròn! Kéo phần còn lại để bớt tiếp.', ja: '10に なったよ！10の ぼう 1ぽんは、まる 10こ！のこりも ドラッグして ひこう。', ru: 'Получилось 10! Одна палочка-десяток — это десять кружков! Перетащи остальные.' },
+  '묶음을 다 세었어요. 모두 몇일까요?': { en: 'We counted all the groups. How many in all?', zh: '所有的组都数完了。一共是几？', vi: 'Đã đếm hết các nhóm. Tất cả là mấy?', ja: 'たばを ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали все группы. Сколько всего?' },
 };
 /* hintTwo 단서(더해/빼 × 세로/가로) */
 [['더해', { en: 'add', zh: '加一加', vi: 'cộng lại', ja: 'たしてみよう', ru: 'сложи' }], ['빼', { en: 'subtract', zh: '减一减', vi: 'trừ đi', ja: 'ひいてみよう', ru: 'вычти' }]].forEach(([k, w]) => {
@@ -1566,6 +1588,21 @@ function trKo(t) {
     return T({ en: `Start at the bigger number, ${m[1]}! Tap the circles one by one and count on.`, zh: `从大的数 ${m[1]} 开始！一个一个点圆圈接着数。`, vi: `Bắt đầu từ số lớn ${m[1]}! Chạm từng hình tròn và đếm tiếp.`, ja: `おおきい かず ${m[1]}から！まるを ひとつずつ おして つづけて かぞえてね。`, ru: `Начни с большего числа, ${m[1]}! Нажимай кружки по одному и считай дальше.` });
   if (m = t.match(/^(\d+)부터 이어 세었어요\. 모두 몇일까요\?$/))
     return T({ en: `We counted on from ${m[1]}. How many in all?`, zh: `从 ${m[1]} 接着数完了。一共是几？`, vi: `Đã đếm tiếp từ ${m[1]}. Tất cả là mấy?`, ja: `${m[1]}から つづけて かぞえたね。ぜんぶで いくつ？`, ru: `Мы досчитали от ${m[1]}. Сколько всего?` });
+  /* 전략 1차 직접 조작 패턴(v84) */
+  if (m = t.match(/^깃발을 끌어서 (\d+)만큼 (앞으로|뒤로) 한 칸씩 뛰어 보세요\.$/)) { const fw = m[2] === '앞으로';
+    return T({ en: `Drag the flag and jump ${fw ? 'forward' : 'back'} ${m[1]}, one step at a time.`, zh: `拖动小旗，向${fw ? '前' : '后'}一格一格跳 ${m[1]} 格。`, vi: `Kéo lá cờ và nhảy ${fw ? 'tới' : 'lùi'} ${m[1]} bước, từng bước một.`, ja: `はたを ドラッグして、${m[1]}こ ${fw ? 'まえに' : 'うしろに'} 1こずつ とんでね。`, ru: `Тяни флажок и прыгай ${fw ? 'вперёд' : 'назад'} на ${m[1]}, по одному шагу.` }); }
+  if (m = t.match(/^(\d+)만큼 (앞으로|뒤로) 뛰었어요\. 어디에 도착했나요\?$/)) { const fw = m[2] === '앞으로';
+    return T({ en: `We jumped ${fw ? 'forward' : 'back'} ${m[1]}. Where did we land?`, zh: `向${fw ? '前' : '后'}跳了 ${m[1]} 格。到了哪里？`, vi: `Đã nhảy ${fw ? 'tới' : 'lùi'} ${m[1]} bước. Đến số mấy rồi?`, ja: `${m[1]}こ ${fw ? 'まえに' : 'うしろに'} とんだね。どこに ついたかな？`, ru: `Мы прыгнули ${fw ? 'вперёд' : 'назад'} на ${m[1]}. Где мы оказались?` }); }
+  if (m = t.match(/^동그라미를 눌러서 (\d+)개를 지워 보세요\.$/))
+    return T({ en: `Tap the circles to cross out ${m[1]}.`, zh: `点圆圈，划掉 ${m[1]} 个。`, vi: `Chạm hình tròn để gạch bỏ ${m[1]} cái.`, ja: `まるを おして、${m[1]}こ けしてね。`, ru: `Нажимай кружки и зачеркни ${m[1]}.` });
+  if (m = t.match(/^(\d+)부터! 빗금 동그라미를 하나씩 누르면서 거꾸로 세어 보세요\.$/))
+    return T({ en: `Start at ${m[1]}! Tap the crossed circles one by one and count back.`, zh: `从 ${m[1]} 开始！一个一个点画线的圆圈，倒着数。`, vi: `Bắt đầu từ ${m[1]}! Chạm từng hình tròn gạch chéo và đếm ngược.`, ja: `${m[1]}から！せんの まるを ひとつずつ おして、さかさまに かぞえてね。`, ru: `Начни с ${m[1]}! Нажимай зачёркнутые кружки и считай назад.` });
+  if (m = t.match(/^(\d+)부터 거꾸로 세었어요\. 어디에 도착했나요\?$/))
+    return T({ en: `We counted back from ${m[1]}. Where did we land?`, zh: `从 ${m[1]} 倒着数完了。到了哪里？`, vi: `Đã đếm ngược từ ${m[1]}. Đến số mấy rồi?`, ja: `${m[1]}から さかさまに かぞえたね。どこに ついたかな？`, ru: `Мы посчитали назад от ${m[1]}. Где мы оказались?` });
+  if (m = t.match(/^10에서 (\d+)[을를] 뺐어요\. 몇이 남았나요\?$/))
+    return T({ en: `We took ${m[1]} away from 10. How many are left?`, zh: `从 10 里减去了 ${m[1]}。还剩几个？`, vi: `Đã bớt ${m[1]} từ 10. Còn lại mấy?`, ja: `10から ${m[1]}を ひいたね。いくつ のこった？`, ru: `Мы вычли ${m[1]} из 10. Сколько осталось?` });
+  if (m = t.match(/^묶음을 하나씩 누르면서 (\d+)씩 세어 보세요\.$/))
+    return T({ en: `Tap the groups one by one and count by ${m[1]}s.`, zh: `一组一组地点，${m[1]} 个 ${m[1]} 个地数。`, vi: `Chạm từng nhóm và đếm cách ${m[1]}.`, ja: `たばを ひとつずつ おして、${m[1]}ずつ かぞえてね。`, ru: `Нажимай группы по одной и считай по ${m[1]}.` });
   /* 연산 전략 힌트(v72: 수직선 점프·곱셈 4분면) */
   if (m = t.match(/^(\d+)에서 출발해서, (\d+)만큼 (앞으로|뒤로) 뛰어 봐요\.$/)) { const fw = m[3] === '앞으로';
     return T({ en: `Start at ${m[1]} and jump ${fw ? 'forward' : 'back'} ${m[2]}.`, zh: `从 ${m[1]} 出发，向${fw ? '前' : '后'}跳 ${m[2]} 格。`, vi: `Bắt đầu từ ${m[1]}, nhảy ${fw ? 'tới' : 'lùi'} ${m[2]} bước.`, ja: `${m[1]}から しゅっぱつして、${m[2]}こ ${fw ? 'まえに' : 'うしろに'} とぼう。`, ru: `Начни с ${m[1]} и прыгай ${fw ? 'вперёд' : 'назад'} на ${m[2]}.` }); }
@@ -2781,7 +2818,32 @@ function pickSubStrat(p) {
 }
 function subStratHint(p, h, stage) {
   const k = pickSubStrat(p);
-  ({ take: takeAwaySub, back: combineSub, bridge: bridgeSub, ten: subViaTen, jump: jumpHint }[k] || combineSub)(p, h, stage);
+  ({ take: takeAwaySub, back: countBackSub, bridge: bridgeSub, ten: subViaTen, jump: jumpHint }[k] || combineSub)(p, h, stage);
+}
+/* 거꾸로 세기 전략 선택 시: 1차=학생이 직접 탭하며 거꾸로 세기(v84), 2차=기존 자동 시연.
+   자동(전략 미선택)은 combineSub 그대로 */
+function countBackSub(p, h, stage) {
+  if (stage < 2 && p.b < 10) return backTap(p, h);
+  combineSub(p, h, stage);
+}
+function backTap(p, h) {
+  const a = p.a;
+  curCirc = null; paintFace(false);
+  const { ma, mb } = hangTwoModels(p, true);      // 빼는 수(mb)는 sub-src(빗금) 자동
+  mb.classList.add('contap');
+  const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring');
+  h.innerHTML = `<div class="tip">동그라미를 하나씩 누르면서 거꾸로 세어 봐요</div>`;
+  speak(`${a}부터! 빗금 동그라미를 하나씩 누르면서 거꾸로 세어 보세요.`);
+  let n = 0; const dots = [...mb.querySelectorAll('.cdot')];
+  dots.forEach(d => {
+    d.addEventListener('pointerdown', () => {
+      if (d.classList.contains('cnt')) return;
+      d.classList.add('cnt'); n++;
+      d.textContent = a - n; pulseDot(d);
+      speakFast(String(a - n));
+      if (n === dots.length) setTimeout(() => speak(`${a}부터 거꾸로 세었어요. 어디에 도착했나요?`), 400);
+    });
+  });
 }
 /* 곱셈·나눗셈은 발문용 경로만 뽑는다(실행은 기존 mulStratHint/divStratHint 그대로) */
 function pickMulStrat(p) {
@@ -2823,7 +2885,11 @@ function mulStratHint(p, h, stage) {
   }
   const mode = has('group') === has('skip') ? undefined : has('group') ? 'group' : 'skip';
   /* 4분면(v72)은 묶음 세기보다 우선(묶음 그림을 포함) — 큰 곱은 그림이 안 담겨 자동 대체 */
-  const run = () => (has('quad') && q.a * q.b <= 30) ? quadMul(q, h, stage) : hintMul(q, h, stage, mode);
+  const run = () => {
+    if (has('quad') && q.a * q.b <= 30) return quadMul(q, h, stage);
+    if (stage < 2 && mode === 'group' && q.a * q.b <= 30) return groupTapMul(q, h);   // 1차: 묶음을 직접 탭하며 세기(v84)
+    hintMul(q, h, stage, mode);
+  };
   if (pre) { let s = false; const go = () => { if (s) return; s = true; run(); }; speak(pre, go); setTimeout(go, 3000); }
   else run();
 }
@@ -2979,6 +3045,7 @@ function make10Drag(p, h) {
 }
 /* 모두 세기 — 두 수를 전부 동그라미로 놓고 1부터 끝까지 센다 (v71, strat.add='all') */
 function countAllAdd(p, h, stage) {
+  if (stage < 2 && p.a < 10 && p.b < 10) return countAllTap(p, h);   // 1차: 학생이 직접 탭하며 세기(v84)
   curCirc = [{ n: p.a, cls: '' }, { n: p.b, cls: 'b' }]; paintFace(true);
   h.innerHTML = `<div class="tip">동그라미를 처음부터 모두 세어 봐요</div>`;
   if (stage < 2) { speak('동그라미를 처음부터 모두 세어 봐요.'); return; }
@@ -2987,9 +3054,28 @@ function countAllAdd(p, h, stage) {
   items.push({ text: `모두 ${koCnt(p.ans)} 개. 정답은 ${p.ans}${josaYeyo(p.ans)}.` });
   speakSequence(items);
 }
+/* 모두 세기 1차(v84) — 학생이 동그라미를 하나씩 누르며 1부터 모두 센다 (조작 문법: 세기=탭) */
+function countAllTap(p, h) {
+  curCirc = null; paintFace(false);
+  const { ma, mb } = hangTwoModels(p, true);
+  [ma, mb].forEach(m => m.classList.add('contap'));
+  h.innerHTML = `<div class="tip">동그라미를 하나씩 누르면서 모두 세어 봐요</div>`;
+  speak('동그라미를 하나씩 누르면서 처음부터 모두 세어 보세요.');
+  let n = 0; const total = p.a + p.b;
+  [...ma.querySelectorAll('.cdot'), ...mb.querySelectorAll('.cdot')].forEach(d => {
+    d.addEventListener('pointerdown', () => {
+      if (d.classList.contains('cnt')) return;
+      d.classList.add('cnt'); n++;
+      d.textContent = n; pulseDot(d);
+      speakFast(String(n));
+      if (n === total) setTimeout(() => speak('모두 세었어요. 모두 몇일까요?'), 400);
+    });
+  });
+}
 /* 더블 — 같은 수 덧셈: 두 모형에서 짝을 지어 2씩 센다 (v71, strat.add='double', a===b) */
 function doubleAdd(p, h, stage) {
   const a = p.a;
+  if (stage < 2 && a < 10) return doubleTap(p, h);   // 1차: 학생이 짝과 함께 둘씩 탭(v84)
   curCirc = null; paintFace(false);
   const { ma, mb } = hangTwoModels(p, true);
   const cue = `두 수가 똑같아요. 더블이에요! ${a} 더하기 ${a}${josaEun(a)}?`;
@@ -3008,9 +3094,32 @@ function doubleAdd(p, h, stage) {
   items.push({ text: `${a} 더하기 ${a}${josaEun(a)} ${p.ans}. 정답은 ${p.ans}${josaYeyo(p.ans)}.` });
   speakSequence(items);
 }
+/* 더블 1차(v84) — 탭하면 짝도 같이 세어져 둘씩 늘어난다 (조작 문법: 세기=탭) */
+function doubleTap(p, h) {
+  const a = p.a;
+  curCirc = null; paintFace(false);
+  const { ma, mb } = hangTwoModels(p, true);
+  [ma, mb].forEach(m => m.classList.add('contap'));
+  ['n0', 'n1'].forEach(t => { const n = document.querySelector(`#qface [data-t="${t}"]`); if (n) n.classList.add('oring'); });
+  h.innerHTML = `<div class="tip">짝과 함께 둘씩 세어 봐요</div>`;
+  speak('동그라미를 누르면 짝도 같이 세어져요. 둘씩 세어 보세요.');
+  const da = [...ma.querySelectorAll('.cdot')], db = [...mb.querySelectorAll('.cdot')];
+  let k = 0;
+  const tap = i => {
+    const x = da[i], y = db[i];
+    if (!x || !y || x.classList.contains('cnt')) return;
+    k++; const v = 2 * k;
+    [x, y].forEach(d => { d.classList.add('cnt'); d.textContent = v; pulseDot(d); });
+    speakFast(String(v));
+    if (k === a) setTimeout(() => speak('둘씩 세었어요. 모두 몇일까요?'), 400);
+  };
+  da.forEach((d, i) => d.addEventListener('pointerdown', () => tap(i)));
+  db.forEach((d, i) => d.addEventListener('pointerdown', () => tap(i)));
+}
 /* 더블+1 — 6+7: 6+6 더블을 먼저 떠올리고 하나 더 (v71, strat.add='near', 차이 1) */
 function doublePlusAdd(p, h, stage) {
   const big = Math.max(p.a, p.b), small = Math.min(p.a, p.b), bigIdx = p.a >= p.b ? 0 : 1;
+  if (stage < 2 && big < 10) return nearTap(p, h);   // 1차: 더블 짝 탭 + 하나 더(v84)
   curCirc = null; paintFace(false);
   const { ma, mb } = hangTwoModels(p, true);
   const mBig = bigIdx === 0 ? ma : mb, mSmall = bigIdx === 0 ? mb : ma;
@@ -3037,6 +3146,36 @@ function doublePlusAdd(p, h, stage) {
     }
   });
   speakSequence(items);
+}
+/* 더블+1 1차(v84) — 더블 짝을 탭으로 먼저 세고, 남은 '하나 더'를 눌러 마무리 (조작 문법: 세기=탭) */
+function nearTap(p, h) {
+  const big = Math.max(p.a, p.b), small = Math.min(p.a, p.b), bigIdx = p.a >= p.b ? 0 : 1;
+  curCirc = null; paintFace(false);
+  const { ma, mb } = hangTwoModels(p, true);
+  const mBig = bigIdx === 0 ? ma : mb, mSmall = bigIdx === 0 ? mb : ma;
+  [ma, mb].forEach(m => m.classList.add('contap'));
+  const dBig = [...mBig.querySelectorAll('.cdot')], dSmall = [...mSmall.querySelectorAll('.cdot')];
+  const extra = dBig[dBig.length - 1];               // 큰 수의 '하나 더' 동그라미 (사전 확정)
+  if (extra) extra.classList.add('gray');
+  h.innerHTML = `<div class="tip">더블을 먼저 세고, 하나 더!</div>`;
+  speak('동그라미를 누르면서 더블을 먼저 세어 보세요.');
+  let k = 0;
+  const tapPair = i => {
+    const x = dSmall[i], y = dBig[i];
+    if (i >= small || !x || !y || x.classList.contains('cnt')) return;
+    k++; const v = 2 * k;
+    [x, y].forEach(d => { d.classList.add('cnt'); d.textContent = v; pulseDot(d); });
+    speakFast(String(v));
+    if (k === small) setTimeout(() => speak('더블을 다 세었어요. 이제 하나 더!'), 400);
+  };
+  dSmall.forEach((d, i) => d.addEventListener('pointerdown', () => tapPair(i)));
+  dBig.forEach((d, i) => { if (i < small) d.addEventListener('pointerdown', () => tapPair(i)); });
+  if (extra) extra.addEventListener('pointerdown', () => {
+    if (k < small || extra.classList.contains('cnt')) return;
+    extra.classList.remove('gray'); extra.classList.add('cnt'); extra.textContent = p.ans; pulseDot(extra);
+    speakFast(String(p.ans));
+    setTimeout(() => speak('하나 더 세었어요. 모두 몇일까요?'), 400);
+  });
 }
 function countSub(p, h) {
   const a = p.a, b = p.b;
@@ -3144,8 +3283,35 @@ function subViaTen(p, h, stage) {
   });
   speakSequence(items);
 }
+/* 덜어내기 1차(v84) — 학생이 동그라미를 눌러 빼는 만큼 지우고, 남은 것을 눌러 센다 (조작 문법: 지우기·세기=탭) */
+function takeTap(p, h) {
+  curCirc = [{ n: p.a, cls: 'sky' }]; paintFace(true);
+  $('qface').classList.add('taketap');
+  h.innerHTML = `<div class="tip">동그라미를 눌러서 ${p.b}개를 지워 봐요</div>`;
+  speak(`동그라미를 눌러서 ${p.b}개를 지워 보세요.`);
+  const dots = [...$('qface').querySelectorAll('.cdot')];
+  let erased = 0, counted = 0;
+  dots.forEach(d => {
+    d.addEventListener('pointerdown', () => {
+      if (erased < p.b) {                             // ① 지우기 단계 — 하나, 둘 … 세며 지움
+        if (d.classList.contains('slash')) return;
+        d.classList.add('slash', 'gray'); erased++;
+        speakFast(KO_NUM[erased] || String(erased));
+        if (erased === p.b) setTimeout(() => speak(p.ans === 0
+          ? '다 지웠어요. 몇 개가 남았나요?'
+          : `${koCnt(p.b)} 개를 지웠어요. 남은 것을 세어 봐요.`), 400);
+      } else {                                        // ② 남은 것 세기 단계
+        if (d.classList.contains('slash') || d.classList.contains('cnt')) return;
+        d.classList.add('cnt'); counted++; pulseDot(d);
+        speakFast(String(counted));
+        if (counted === p.ans) setTimeout(() => speak('모두 몇일까요?'), 400);
+      }
+    });
+  });
+}
 /* 덜어내기(모두 세기) — 전부 놓고, 빼는 만큼 지우고, 남은 것을 처음부터 다시 센다 (v71, strat.sub='take') */
 function takeAwaySub(p, h, stage) {
+  if (stage < 2) return takeTap(p, h);   // 1차: 학생이 직접 탭으로 지우고 세기(v84)
   curCirc = [{ n: p.a, cls: 'sky' }]; paintFace(true);
   h.innerHTML = `<div class="tip">빼는 만큼 지우고, 남은 것을 세어 봐요</div>`;
   if (stage < 2) { speak('빼는 만큼 지우고, 남은 것을 세어 봐요.'); return; }
@@ -3157,10 +3323,61 @@ function takeAwaySub(p, h, stage) {
   items.push({ text: `모두 ${koCnt(p.ans)} 개. 정답은 ${p.ans}${josaYeyo(p.ans)}.` });
   speakSequence(items);
 }
+/* 빼는 수 가르기 1차(v84) — 학생이 빗금 동그라미를 직접 끌어 하나씩 뺀다: 먼저 10 만들기 → 10에서 빼기 (조작 문법: 옮기기=드래그) */
+function bridgeDrag(p, h) {
+  const a = p.a, b = p.b, aU = a % 10, first = aU, second = b - aU;
+  curCirc = null; paintFace(false);
+  const { ma, mb, fit } = hangTwoModels(p, true);
+  mb.classList.add('m10src');
+  const rowA = ma.querySelector('.rodrow'), stackA = ma.querySelector('.cstack');
+  const addRow = stack => { const rowsL = stack.querySelectorAll('.crow5'); let row = rowsL.length ? rowsL[rowsL.length - 1] : null; if (!row || row.children.length >= 5) { row = document.createElement('div'); row.className = 'crow5'; stack.appendChild(row); } return row; };
+  const aDots = [...stackA.querySelectorAll('.cdot')].slice(0, aU);
+  const born = [];
+  for (let i = 0; i < 10; i++) { const d = document.createElement('div'); d.className = 'cdot red'; d.style.visibility = 'hidden'; addRow(stackA).appendChild(d); born.push(d); }
+  fit();
+  const bDots = [...mb.querySelectorAll('.cdot')];
+  /* 소멸 타깃 사전 확정: 앞 first개=낱개 뒤에서부터, 나머지=born 뒤에서부터 */
+  const targets = [];
+  for (let k = 0; k < first; k++) targets.push(aDots[aU - 1 - k]);
+  for (let j = 0; j < second; j++) targets.push(born[9 - j]);
+  h.innerHTML = `<div class="tip">빗금 동그라미를 끌어서 하나씩 빼 봐요</div>`;
+  speak('빗금 동그라미를 끌어서 하나씩 빼 보세요. 먼저 10을 만들어요.');
+  let moved = 0, ready2 = false;
+  bDots.forEach(d => {
+    d.addEventListener('pointerdown', ev => {
+      if (moved >= b || d.style.visibility === 'hidden') return;
+      if (moved >= first && !ready2) return;          // 막대 변신이 끝나야 2단계(10에서 빼기)
+      ev.preventDefault();
+      try { d.setPointerCapture(ev.pointerId); } catch (e) { }
+      const sc = window._sc || 1, sx = ev.clientX, sy = ev.clientY;
+      d.classList.add('lift');
+      const mv = e => { d.style.transform = `translate(${(e.clientX - sx) / sc}px,${(e.clientY - sy) / sc}px)`; };
+      const up = e => {
+        d.removeEventListener('pointermove', mv); d.removeEventListener('pointerup', up); d.removeEventListener('pointercancel', up);
+        d.classList.remove('lift'); d.style.transform = '';
+        const r = ma.getBoundingClientRect();
+        const ok = e.clientX > r.left - 50 && e.clientX < r.right + 50 && e.clientY > r.top - 50 && e.clientY < r.bottom + 70;
+        if (!ok) return;                              // 빗나가면 제자리(무한 재시도)
+        const m = targets[moved]; moved++;
+        speakFast(String(a - moved));                 // 11, 10 … 거꾸로 세며 빼기
+        if (m) killPop(d, m);
+        if (moved === first) setTimeout(() => {
+          speak('10이 되었어요! 십 막대 한 개는, 동그라미 열 개! 남은 것도 끌어서 빼 보세요.');
+          const rod = rowA.querySelector('.rod'); if (rod) { rod.classList.add('melt'); setTimeout(() => { rod.style.visibility = 'hidden'; }, 620); }
+          born.forEach(x => { x.style.visibility = 'visible'; x.classList.add('born'); });
+          ready2 = true;
+        }, 500);
+        if (moved === b) setTimeout(() => speak(`10에서 ${second}${josaEul(second)} 뺐어요. 몇이 남았나요?`), 900);
+      };
+      d.addEventListener('pointermove', mv); d.addEventListener('pointerup', up); d.addEventListener('pointercancel', up);
+    });
+  });
+}
 /* 빼는 수 가르기(10의 다리) — 12−5: 5를 2와 3으로 갈라, 12−2=10 → 10−3=7 (v71, strat.sub='bridge').
    받아내림(십몇−한 자리) 전용. 소멸 타깃 사전 확정 규칙 준수 */
 function bridgeSub(p, h, stage) {
   const a = p.a, b = p.b, aU = a % 10, first = aU, second = b - aU, ans = a - b;
+  if (stage < 2) return bridgeDrag(p, h);   // 1차: 학생이 직접 끌어 빼기(v84)
   curCirc = null; paintFace(false);
   const { ma, mb, fit } = hangTwoModels(p, true);
   const cue = `${b}${josaEul(b)} ${first}${josaGwa(first)} ${second}${josaRo(second)} 갈라 봐요. 먼저 10을 만들어요.`;
@@ -3209,8 +3426,7 @@ function jumpHint(p, h, stage) {
     <div class="jdirlab" style="left:${pos((a + ans) / 2)}%">${add ? '앞으로 ▶' : '◀ 뒤로'}</div>
     <div class="nlflag trav" id="jflag" style="left:${pos(a)}%"><span class="nlhead" id="jhead">${a}</span><i class="nlstem"></i></div>
   </div><div class="tip">${a}에서 출발해서, ${b}만큼 ${add ? '앞으로' : '뒤로'} 뛰어 봐요</div>`;
-  const cue = `${a}에서 출발해서, ${b}만큼 ${add ? '앞으로' : '뒤로'} 뛰어 봐요.`;
-  if (stage < 2) { speak(cue); return; }
+  if (stage < 2) return initJumpDrag(p);   // 1차: 학생이 깃발을 직접 끌어 한 칸씩 점프(v84)
   const wrap = $('jwrap'), flag = $('jflag'), head = $('jhead');
   const items = [{ text: `${a}에서 출발!`, action: () => flag.animate([{ transform: 'translateX(-50%) scale(1.25)' }, { transform: 'translateX(-50%) scale(1)' }], { duration: 300 }) }];
   for (let k = 1; k <= b; k++) {
@@ -3232,6 +3448,38 @@ function jumpHint(p, h, stage) {
     }
   });
   speakSequence(items);
+}
+/* 수직선 점프 1차(v84) — 학생이 깃발을 직접 끌어 한 칸씩 뛴다 (조작 문법: 옮기기=드래그).
+   한 번에 한 칸(다음 눈금)만 인정 — 빗나가면 제자리 스냅(무한 재시도) */
+function initJumpDrag(p) {
+  const add = p.op === '+', b = p.b, MAX = 20;
+  const wrap = $('jwrap'), flag = $('jflag'), head = $('jhead');
+  const pos = v => (v / MAX * 100).toFixed(1);
+  let cur = p.a, jumps = 0;
+  speak(`깃발을 끌어서 ${b}만큼 ${add ? '앞으로' : '뒤로'} 한 칸씩 뛰어 보세요.`);
+  flag.addEventListener('pointerdown', ev => {
+    if (jumps >= b) return;
+    ev.preventDefault();
+    try { flag.setPointerCapture(ev.pointerId); } catch (e) { }
+    flag.classList.add('drag');
+    const r = wrap.getBoundingClientRect();
+    const mv = e => { const x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); flag.style.left = (x * 100).toFixed(2) + '%'; };
+    const up = e => {
+      flag.removeEventListener('pointermove', mv); flag.removeEventListener('pointerup', up); flag.removeEventListener('pointercancel', up);
+      flag.classList.remove('drag');
+      const x = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+      const v = Math.round(x * MAX), want = add ? cur + 1 : cur - 1;
+      if (v !== want) { flag.style.left = pos(cur) + '%'; if (v !== cur) speak('한 칸씩 뛰어요.'); return; }
+      const arc = document.createElement('div'); arc.className = 'jarc';
+      arc.style.left = pos(Math.min(cur, want)) + '%'; arc.style.width = (100 / MAX) + '%';
+      wrap.appendChild(arc); requestAnimationFrame(() => arc.classList.add('show'));
+      cur = want; jumps++;
+      flag.style.left = pos(cur) + '%'; head.textContent = cur;
+      speakFast(String(cur));
+      if (jumps === b) setTimeout(() => speak(`${b}만큼 ${add ? '앞으로' : '뒤로'} 뛰었어요. 어디에 도착했나요?`), 400);
+    };
+    flag.addEventListener('pointermove', mv); flag.addEventListener('pointerup', up); flag.addEventListener('pointercancel', up);
+  });
 }
 
 /* =========================================================
@@ -3289,6 +3537,23 @@ function hintMul(p, h, stage, mode) {
   for (let k = 0; k < b; k++) { const v = a * (k + 1); items.push({ text: String(v), action: () => { setC(v); const e = $('sk' + k); if (e) { e.textContent = v; e.classList.add('on'); } } }); }
   items.push({ text: `정답은 ${a * b}${josaYeyo(a * b)}.`, action: () => setC(a * b) });
   speakSequence(items);
+}
+/* 곱셈 묶음 세기 1차(v84) — 학생이 묶음을 하나씩 누르며 a씩 센다 (조작 문법: 세기=탭) */
+function groupTapMul(p, h) {
+  const a = p.a, b = p.b;
+  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp tapg">${circleStack(a, k % 2 ? 'b' : '')}</div>`;
+  h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">묶음을 하나씩 누르면서 ${a}씩 세어 봐요</div>`;
+  speak(`묶음을 하나씩 누르면서 ${a}씩 세어 보세요.`);
+  let n = 0;
+  [...h.querySelectorAll('.mgrp')].forEach(e => {
+    e.addEventListener('pointerdown', () => {
+      if (e.classList.contains('on')) return;
+      e.classList.add('on'); n++;
+      const bd = document.createElement('span'); bd.className = 'gcnt'; bd.textContent = a * n; e.appendChild(bd);
+      speakFast(String(a * n));
+      if (n === b) setTimeout(() => speak('묶음을 다 세었어요. 모두 몇일까요?'), 400);
+    });
+  });
 }
 /* a÷b: a개를 b개씩 묶어 몫(묶음 수) 찾기. 2차: 묶음 세기 + 곱셈구구 역연산 연결(단계명 "곱셈구구로 나눗셈") */
 function hintDiv(p, h, stage) {
