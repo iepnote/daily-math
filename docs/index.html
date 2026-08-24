@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 92 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 93 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -758,6 +758,9 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .wordq{ max-width:960px; gap:.55rem; }
 .wtext{ font-size:1.5rem; font-weight:700; line-height:1.55; background:#fff; border:4px solid var(--accent);
   border-radius:1.1rem; padding:.7rem 1.2rem; }
+/* SEM 문장제 대형(v93): 큰 글자 + 수 강조 */
+.wtext-big{ font-size:2rem; line-height:1.6; }
+.wnum{ color:var(--accent-strong); font-weight:800; }
 .wpic{ display:flex; align-items:center; gap:1.1rem; justify-content:center; }
 .wplus{ font-size:2rem; font-weight:800; color:var(--accent-strong); }
 .estack{ display:flex; flex-direction:column; gap:.15rem; }
@@ -941,7 +944,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 92';
+const APP_VERSION = 'ver 93';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -4858,7 +4861,9 @@ function earlyFace(p) {
     const pic = p.op === '+'
       ? `<div class="wpic">${emojiRows(p.emoji, p.a)}<span class="wplus">＋</span>${emojiRows(p.emoji, p.b)}</div>`
       : `<div class="wpic">${emojiRows(p.emoji, p.a)}</div>`;
-    return `<div class="early wordq"><div class="wtext">${p.text}</div>${pic}
+    /* SEM ⑧ 문장제 대형(v93): 큰 글자 + 문장 속 수(N개) 강조 — 핵심 정보 시각 지원 */
+    const big = p.text.replace(/(\d+)개/g, '<b class="wnum">$1개</b>');
+    return `<div class="early wordq"><div class="wtext wtext-big">${big}</div>${pic}
       <div class="early-q">답: <span class="qblank" id="qslot">?</span> 개</div></div>`;
   }
   /* judge: 채점 놀이 — 적힌 답이 맞는지 판단 */
