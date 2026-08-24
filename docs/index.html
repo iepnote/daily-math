@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 87 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 88 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -926,7 +926,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 87';
+const APP_VERSION = 'ver 88';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -4133,6 +4133,9 @@ const lvlOpts = (sel, list) => {
 };
 const numOpts = n => [3, 5, 10, 15, 20].map(v => `<option value="${v}" ${v === n ? 'selected' : ''}>${v}문제</option>`).join('');
 const pct = (a, b) => b ? Math.round(a * 100 / b) : null;
+/* SEM ③(v88): 정확하지만 유창하지 않은 문제 판별 — 첫 시도 정답인데 15초 이상 걸림 */
+const SLOW_MS = 15000;
+const isSlowItem = it => it && it.wrongs === 0 && (it.ms || 0) >= SLOW_MS;
 const fmtDur = ms => { if (!ms) return '—'; const s = Math.round(ms / 1000); return Math.floor(s / 60) + '분 ' + (s % 60) + '초'; };
 const daysAgoStr = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 
@@ -4319,13 +4322,14 @@ async function renderStudentDetail(id) {
   const mkSess = x => {
     const items = (x.items || []).map(it =>
       `<tr class="itemrow"><td>${esc(it.q)} = ${it.ans}</td>
-        <td>${it.wrongs === 0 ? '<span class="tag on">한 번에 정답</span>' : `<span class="tag low">오답 ${it.wrongs}회</span>`}</td>
+        <td>${it.wrongs === 0 ? (isSlowItem(it) ? '<span class="tag mid">🐢 맞았지만 느림</span>' : '<span class="tag on">한 번에 정답</span>') : `<span class="tag low">오답 ${it.wrongs}회</span>`}</td>
         <td>${it.hint ? (it.hint >= 2 ? '세어 읽기 힌트' : '동그라미 힌트') : '—'}</td>
         <td>${it.ms ? Math.round(it.ms / 1000) + '초' : '—'}</td></tr>`).join('');
+    const nSlow = (x.items || []).filter(isSlowItem).length;
     return `<details class="sess">
       <summary><b>${x.sdate}</b> · ${esc(x.levelName || ('단계 ' + x.levelId))} ·
         <span class="tag ${x.firstTry === x.total ? 'on' : 'mid'}">⭐ ${x.firstTry} / ${x.total}</span> ·
-        힌트 ${x.hintUsed || 0}문제 · ${fmtDur(x.durationMs)}</summary>
+        힌트 ${x.hintUsed || 0}문제${nSlow ? ` · <span class="tag mid">🐢 느림 ${nSlow}</span>` : ''} · ${fmtDur(x.durationMs)}</summary>
       <table class="itemtbl"><thead><tr><th>문제</th><th>결과</th><th>힌트</th><th>시간</th></tr></thead><tbody>${items}</tbody></table>
     </details>`;
   };
@@ -4345,6 +4349,7 @@ async function renderStudentDetail(id) {
     <div class="statrow" style="margin-top:.8rem">
       <div class="stat"><div class="k">누적 학습일</div><div class="v">${(s.completedDates || []).length}일</div></div>
       <div class="stat"><div class="k">정답률(7일)</div><div class="v">${rate7 === null ? '—' : rate7 + '%'}</div></div>
+      <div class="stat"><div class="k">🐢 맞았지만 느림(7일)</div><div class="v">${sw.reduce((a, x) => a + (x.items || []).filter(isSlowItem).length, 0)}문제</div></div>
       <div class="stat grow"><div class="k">현재 단계</div><div class="v" style="font-family:var(--font-btn)">${esc(levelById(s.level).name)}</div></div>
       <div class="stat grow"><div class="k">힌트 지원 (개별화)</div>
         <select onchange="setHintLvT('${s.id}',this.value)" style="font-size:1rem;padding:.3rem .4rem;margin-top:.2rem">
@@ -4368,7 +4373,7 @@ async function renderStudentDetail(id) {
       <b>supabase/migration_hint.sql</b>의 한 줄을 실행해 주세요. 실행 전에는 이 기기에만 적용됩니다.</div>` : ''}
     ${(Store.mode() === 'remote' && typeof STRAT_OK !== 'undefined' && !STRAT_OK) ? `<div class="note">⚠ 연산 전략 설정을 다른 기기와 동기화하려면 Supabase SQL Editor에서
       <b>supabase/migration_strat.sql</b>의 한 줄을 실행해 주세요. 실행 전에는 이 기기에만 적용됩니다.</div>` : ''}
-    <div class="read-sentence" style="font-size:1.15rem;margin-top:1rem">학습 기록 <span class="dim">(누르면 문제별로 펼쳐져요)</span></div>
+    <div class="read-sentence" style="font-size:1.15rem;margin-top:1rem">학습 기록 <span class="dim">(누르면 문제별로 펼쳐져요 · 🐢 = 첫 시도 정답인데 ${SLOW_MS / 1000}초 이상 — 정확하지만 유창성 연습이 필요한 문제)</span></div>
     ${rows}
   </div>`;
 }
