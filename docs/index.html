@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 90 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 91 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -937,7 +937,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 90';
+const APP_VERSION = 'ver 91';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2277,7 +2277,9 @@ function answer(btn, ans) {
     const lv = (current && current.hintLv) || 'normal';   // 학생별 힌트 수준(IEP 개별화)
     if (lv === 'off') { speak('다시 한 번 해 볼까요?'); return; }
     /* 힌트가 곧바로 speak/speakSequence를 부르면 이 안내가 잘림 → 발화가 끝난 뒤 힌트 시작(보루 타이머 병행) */
-    const stage = wrongCount + (lv === 'strong' ? 1 : 0);   // 강한 지원은 한 단계 앞당김
+    /* SEM ⑥ 힌트 fading(v91): 'fade'=지원 점감 — 한 단계 늦춤(1차 오답은 발문만 듣고 스스로, 2차부터 단서) */
+    const stage = lv === 'fade' ? wrongCount - 1 : wrongCount + (lv === 'strong' ? 1 : 0);
+    if (stage < 1) { speak(diagnoseWrong(p, parseInt(btn.dataset.v, 10)) || hintCueFor(p) || '다시 한 번 해 볼까요?'); return; }
     let started = false;
     const go = () => { if (started) return; started = true; routeHint(stage); };
     /* 오류 유형 판정(v86) > 전략 발문(v81) > 공통 멘트 순 — 오답값이 알려진 오류 패턴이면 특정 피드백 */
@@ -4469,7 +4471,7 @@ async function renderStudentDetail(id) {
       <div class="stat grow"><div class="k">현재 단계</div><div class="v" style="font-family:var(--font-btn)">${esc(levelById(s.level).name)}</div></div>
       <div class="stat grow"><div class="k">힌트 지원 (개별화)</div>
         <select onchange="setHintLvT('${s.id}',this.value)" style="font-size:1rem;padding:.3rem .4rem;margin-top:.2rem">
-          ${[['normal', '기본: 1차 단서 → 2차 자세히'], ['strong', '강한 지원: 처음부터 자세히'], ['off', '힌트 끄기(스스로 재시도)']]
+          ${[['normal', '기본: 1차 단서 → 2차 자세히'], ['fade', '점점 줄이기: 첫 오답은 스스로, 2차부터 단서'], ['strong', '강한 지원: 처음부터 자세히'], ['off', '힌트 끄기(스스로 재시도)']]
       .map(([v, l]) => `<option value="${v}" ${(s.hintLv || 'normal') === v ? 'selected' : ''}>${l}</option>`).join('')}
         </select></div>
       <div class="stat full"><div class="k">연산 전략 (개별화)</div>
