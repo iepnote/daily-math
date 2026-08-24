@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 91 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 92 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -224,8 +224,12 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .tenlab{ position:absolute; left:-2.3rem; top:.45rem; background:var(--teal); color:#fff;
   font-size:.85rem; font-weight:800; padding:.04rem .5rem; border-radius:.55rem; z-index:2; }
 /* 텐프레임 (10의 보수 3형제 공통 · 작은 크기) */
-.tenframe{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; max-width:280px; margin:.3rem auto; }
+.tenframe{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; max-width:280px; margin:.3rem auto; position:relative; }
 .tenframe.tf-sm{ max-width:140px; gap:3px; }
+/* SEM 십틀 5구분선(v92): 윗줄(5)과 아랫줄 사이 구분선 — '5와 몇' 구조 직산 지원(연수자료 ⑦) */
+.tenframe::after{ content:''; position:absolute; left:-5px; right:-5px; top:50%; height:3px; transform:translateY(-50%);
+  background:var(--accent); opacity:.55; border-radius:2px; pointer-events:none; }
+.tenframe.tf-sm::after{ height:2px; left:-3px; right:-3px; }
 .tf{ aspect-ratio:1; border-radius:50%; border:3px solid var(--accent);
   display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; line-height:1; }
 .tenframe.tf-sm .tf{ border-width:2px; font-size:.9rem; }
@@ -937,7 +941,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 91';
+const APP_VERSION = 'ver 92';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
