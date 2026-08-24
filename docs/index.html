@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 88 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 89 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -436,6 +436,14 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .mgrp.tapg{ cursor:pointer; touch-action:manipulation; position:relative; }
 .gcnt{ position:absolute; right:-12px; top:-16px; background:var(--amber); color:#fff; font-weight:800; font-size:1.1rem;
   border-radius:1em; padding:.05em .45em; box-shadow:0 2px 4px rgba(0,0,0,.25); }
+/* SEM 가림판(v89): ㄱ자 반투명 판 — 끌어서 이동, 문제 일부를 가리고 집중 */
+.maskpad{ position:absolute; z-index:40; cursor:grab; touch-action:none; filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+.maskpad:active{ cursor:grabbing; }
+.mk-h{ width:520px; height:96px; background:rgba(38,60,84,.88); border-radius:14px 14px 0 14px;
+  color:#cfe3f5; font-weight:800; font-size:1.1rem; display:flex; align-items:center; justify-content:center; user-select:none; }
+.mk-v{ width:96px; height:300px; background:rgba(38,60,84,.88); border-radius:0 0 14px 14px; margin-left:auto; }
+.mk-x{ position:absolute; top:6px; right:6px; width:34px; height:34px; border:none; border-radius:50%;
+  background:rgba(255,255,255,.18); color:#fff; font-size:1rem; font-weight:800; cursor:pointer; }
 /* 곱셈 4분면(v72) */
 .quad{ display:grid; grid-template-columns:1fr 1fr; gap:.55rem; width:min(780px,94%); margin:.2rem auto; }
 .qcell{ position:relative; border:3px dashed #c9c9c9; border-radius:.9rem; padding:1.5rem .6rem .6rem; min-height:100px;
@@ -926,7 +934,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 88';
+const APP_VERSION = 'ver 89';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1121,9 +1129,9 @@ const lsSet = (k, v) => { try { localStorage.setItem(LS + k, JSON.stringify(v));
 const lsDel = k => { try { localStorage.removeItem(LS + k); } catch (e) { } };
 
 /* ---- 기기 설정 (화면 모드·크기·소리, 마지막 교실) ---- */
-let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2 }, lsGet('prefs', {}));
+let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false }, lsGet('prefs', {}));
 const loadPrefs = () => Object.assign(prefs, PREFS_DEFAULT, lsGet('prefs', {}));
-const PREFS_DEFAULT = { mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2 };
+const PREFS_DEFAULT = { mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false };
 const savePrefs = () => { if (typeof current !== 'undefined' && current && current.guest) return; lsSet('prefs', prefs); };   // 손님: 기기 설정 저장 안 함
 let device = Object.assign({ classCode: '', lastStudentId: '' }, lsGet('device', {}));
 const saveDevice = () => lsSet('device', device);
@@ -1755,7 +1763,10 @@ function toggleFull() {
   if (!document.fullscreenElement) { document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
   else { document.exitFullscreen && document.exitFullscreen(); }
 }
-function setNav(html) { $('nav').innerHTML = html + `<span id="syncbadge" class="syncbadge"></span>`; syncBadge(); }
+function setNav(html) {
+  $('nav').innerHTML = html + `<span id="syncbadge" class="syncbadge"></span>`; syncBadge();
+  const mp = $('maskpad'); if (mp) mp.remove();   // 가림판(v89)은 학습 화면 전용 — 화면 전환마다 제거(renderProblem이 다시 붙임)
+}
 function closeModal() { const m = $('modal'); if (m) m.remove(); }
 function openModal(inner, maxW) {
   closeModal();
@@ -2010,7 +2021,32 @@ function renderProblem() {
   </div>`;
   paintFace(false);
   paintChoices();
+  if (prefs.mask) addMask();               // SEM 가림판(v89) — setNav가 지우므로 문제마다 다시 붙임
   speakProblem();
+}
+/* SEM ④ 가림판(v89, 설정 prefs.mask·기기별) — ㄱ자 반투명 판을 끌어 문제 일부를 가리고 집중.
+   위치는 문제 사이에도 유지(maskPos). 학습 화면에만 표시(setNav가 화면 전환마다 제거) */
+let maskPos = null;
+function removeMask() { const m = $('maskpad'); if (m) m.remove(); }
+function addMask() {
+  removeMask();
+  const stage = $('stage'); if (!stage || !$('study')) return;
+  const m = document.createElement('div'); m.id = 'maskpad'; m.className = 'maskpad';
+  m.innerHTML = `<div class="mk-h">✋ 가림판</div><div class="mk-v"></div><button class="mk-x" aria-label="가림판 닫기">✕</button>`;
+  stage.appendChild(m);
+  if (!maskPos) maskPos = { x: 360, y: 330 };
+  m.style.left = maskPos.x + 'px'; m.style.top = maskPos.y + 'px';
+  const x = m.querySelector('.mk-x');
+  x.addEventListener('pointerdown', e => e.stopPropagation());
+  x.addEventListener('click', () => { prefs.mask = false; savePrefs(); removeMask(); });
+  m.addEventListener('pointerdown', ev => {
+    ev.preventDefault();
+    try { m.setPointerCapture(ev.pointerId); } catch (e) { }
+    const sc = window._sc || 1, sx = ev.clientX, sy = ev.clientY, ox = maskPos.x, oy = maskPos.y;
+    const mv = e => { maskPos.x = ox + (e.clientX - sx) / sc; maskPos.y = oy + (e.clientY - sy) / sc; m.style.left = maskPos.x + 'px'; m.style.top = maskPos.y + 'px'; };
+    const up = () => { m.removeEventListener('pointermove', mv); m.removeEventListener('pointerup', up); m.removeEventListener('pointercancel', up); };
+    m.addEventListener('pointermove', mv); m.addEventListener('pointerup', up); m.addEventListener('pointercancel', up);
+  });
 }
 /* 숫자 아래 매달린 동그라미 묶음(circleStack)이 서로 겹치지 않게 가로셈 간격을 넓힘
    — 절대배치라 묶음 폭이 레이아웃에 반영되지 않아 5-5처럼 개수가 많으면 붙어 버림(힌트의 fitModels와 같은 원리) */
@@ -3887,6 +3923,8 @@ function openSettings() {
     <div class="optrow">${opt('calm', 'off', prefs.calm ? 'on' : 'off', '반짝임 켜기')}${opt('calm', 'on', prefs.calm ? 'on' : 'off', '저자극(반짝임 끄기)')}</div>
     <div style="font-weight:700">번쩍 보기 시간 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— 번쩍 보고 알기에서 보여 주는 시간</span></div>
     <div class="optrow">${['0.5', '1', '2', '3'].map(s => opt('flash', s, String(prefs.flashSec || 2), s + '초')).join('')}</div>
+    <div style="font-weight:700">가림판 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— ㄱ자 판을 끌어 문제 일부를 가리고 지금 보는 곳에 집중해요</span></div>
+    <div class="optrow">${opt('mask', 'off', prefs.mask ? 'on' : 'off', '끄기')}${opt('mask', 'on', prefs.mask ? 'on' : 'off', '켜기')}</div>
     <button class="btn btn--orange" onclick="closeModal()">닫기</button>`);
 }
 function setPref(group, v) {
@@ -3896,6 +3934,7 @@ function setPref(group, v) {
   else if (group === 'calm') prefs.calm = v === 'on';
   else if (group === 'lang') prefs.lang = v;
   else if (group === 'flash') prefs.flashSec = parseFloat(v);
+  else if (group === 'mask') { prefs.mask = v === 'on'; if ($('study')) { if (prefs.mask) addMask(); else removeMask(); } }
   savePrefs(); openSettings();
   if (group === 'sound') speak('이렇게 들려요.');
   if (group === 'rate') speak('이 빠르기로 말해요.');
