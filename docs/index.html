@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 86 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 87 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -926,7 +926,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 86';
+const APP_VERSION = 'ver 87';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1490,7 +1490,13 @@ const TRX = {
   '모두 몇일까요?': { en: 'How many in all?', zh: '一共是几？', vi: 'Tất cả là mấy?', ja: 'ぜんぶで いくつ？', ru: 'Сколько всего?' },
   '다 지웠어요. 몇 개가 남았나요?': { en: 'All crossed out. How many are left?', zh: '全划掉了。还剩几个？', vi: 'Đã gạch hết. Còn lại mấy cái?', ja: 'ぜんぶ けしたね。いくつ のこった？', ru: 'Всё зачеркнули. Сколько осталось?' },
   '빗금 동그라미를 끌어서 하나씩 빼 보세요. 먼저 10을 만들어요.': { en: 'Drag the crossed circles to take them away one by one. Make 10 first.', zh: '把画线的圆圈拖过去一个一个减。先凑成 10。', vi: 'Kéo hình tròn gạch chéo để bớt từng cái. Tạo số 10 trước.', ja: 'せんの まるを ドラッグして ひとつずつ ひこう。まず 10を つくるよ。', ru: 'Перетаскивай зачёркнутые кружки по одному. Сначала сделай 10.' },
-  '10이 되었어요! 십 막대 한 개는, 동그라미 열 개! 남은 것도 끌어서 빼 보세요.': { en: 'We made 10! One tens rod becomes ten circles! Now drag the rest to take them away.', zh: '凑成 10 了！一根十的小棒变成十个圆圈！把剩下的也拖过去减。', vi: 'Đã thành 10! Một thanh chục đổi thành mười hình tròn! Kéo phần còn lại để bớt tiếp.', ja: '10に なったよ！10の ぼう 1ぽんは、まる 10こ！のこりも ドラッグして ひこう。', ru: 'Получилось 10! Одна палочка-десяток — это десять кружков! Перетащи остальные.' },
+  '10이 되었어요! 십 막대 한 개는 동그라미 몇 개일까요? 열 개! 남은 것도 끌어서 빼 보세요.': { en: 'We made 10! How many circles is one tens rod? Ten! Now drag the rest to take them away.', zh: '凑成 10 了！一根十的小棒是几个圆圈？十个！把剩下的也拖过去减。', vi: 'Đã thành 10! Một thanh chục là mấy hình tròn? Mười! Kéo phần còn lại để bớt tiếp.', ja: '10に なったよ！10の ぼう 1ぽんは まる なんこかな？ 10こ！のこりも ドラッグして ひこう。', ru: 'Получилось 10! Сколько кружков в палочке-десятке? Десять! Перетащи остальные.' },
+  /* ---- 발문형 교체(v87: 변신 내레이션을 묻고-답하기로) ---- */
+  '동그라미 열 개는 무엇으로 바꿀 수 있을까요?': { en: 'What can ten circles change into?', zh: '十个圆圈可以变成什么？', vi: 'Mười hình tròn có thể đổi thành gì?', ja: 'まる 10こは なにに かえられるかな？', ru: 'Во что можно превратить десять кружков?' },
+  '십 막대 한 개!': { en: 'One tens rod!', zh: '一根十的小棒！', vi: 'Một thanh chục!', ja: '10の ぼう 1ぽん！', ru: 'Одна палочка-десяток!' },
+  '동그라미가 모자라요. 십 막대 한 개는 동그라미 몇 개일까요?': { en: 'Not enough circles. How many circles is one tens rod?', zh: '圆圈不够了。一根十的小棒是几个圆圈？', vi: 'Không đủ hình tròn. Một thanh chục là mấy hình tròn?', ja: 'まるが たりないよ。10の ぼう 1ぽんは まる なんこかな？', ru: 'Кружков не хватает. Сколько кружков в палочке-десятке?' },
+  '십 막대 한 개는 동그라미 몇 개일까요?': { en: 'How many circles is one tens rod?', zh: '一根十的小棒是几个圆圈？', vi: 'Một thanh chục là mấy hình tròn?', ja: '10の ぼう 1ぽんは まる なんこかな？', ru: 'Сколько кружков в палочке-десятке?' },
+  '열 개!': { en: 'Ten!', zh: '十个！', vi: 'Mười!', ja: '10こ！', ru: 'Десять!' },
   '묶음을 다 세었어요. 모두 몇일까요?': { en: 'We counted all the groups. How many in all?', zh: '所有的组都数完了。一共是几？', vi: 'Đã đếm hết các nhóm. Tất cả là mấy?', ja: 'たばを ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали все группы. Сколько всего?' },
   /* ---- SEM 오류 유형 판정(v86) ---- */
   '빼기를 했나요? 더하기 기호를 잘 봐요.': { en: 'Did you subtract? Look at the plus sign.', zh: '是不是做了减法？看清加号。', vi: 'Con trừ rồi à? Nhìn kỹ dấu cộng nhé.', ja: 'ひきざんを したかな？ たすの きごうを よく みてね。', ru: 'Ты вычел? Посмотри на знак плюс.' },
@@ -2964,10 +2970,11 @@ function combineAdd(p, h, stage) {
         flyMove(s, d, () => { s.style.visibility = 'hidden'; d.style.visibility = 'visible'; d.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 170 }); });
       }
     });
-    /* 동그라미 10개 → 십 막대 변신 (동그라미 10개는 이 순간에만) */
+    /* 동그라미 10개 → 십 막대 변신 (동그라미 10개는 이 순간에만) — 발문형(v87): 묻고 나서 답과 함께 변신 */
     if (bigU + i + 1 === 10) {
+      items.push({ text: '동그라미 열 개는 무엇으로 바꿀 수 있을까요?' });
       items.push({
-        text: '동그라미 열 개는, 십 막대 한 개로 바뀌어요!', action: () => {
+        text: '십 막대 한 개!', action: () => {
           const vis = [...stackBig.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden');
           vis.slice(0, 10).forEach(x => { x.classList.add('fuse'); setTimeout(() => { x.style.visibility = 'hidden'; }, 520); });
           const nr = document.createElement('div'); nr.className = 'rod new'; rowBig.insertBefore(nr, rodSlots[0] || null);
@@ -3015,8 +3022,9 @@ function make10Add(p, h, stage) {
       srcDots.slice(0, take).forEach((s, i) => setTimeout(() => flyMove(s, slots[i], () => { s.style.visibility = 'hidden'; slots[i].style.visibility = 'visible'; }), i * 180));
     }
   });
+  items.push({ text: '동그라미 열 개는 무엇으로 바꿀 수 있을까요?' });   // 발문형(v87)
   items.push({
-    text: '동그라미 열 개는, 십 막대 한 개로 바뀌어요!', action: () => {
+    text: '십 막대 한 개!', action: () => {
       /* 비행이 늦게 끝나도 어긋나지 않게: 착지를 먼저 확정(멱등)한 뒤 사전 확정된 10개를 변신 */
       srcDots.slice(0, take).forEach((s, i) => { s.style.visibility = 'hidden'; slots[i].style.visibility = 'visible'; });
       fuseTargets.forEach(x => { x.classList.add('fuse'); setTimeout(() => { x.style.visibility = 'hidden'; }, 520); });
@@ -3261,8 +3269,9 @@ function combineSub(p, h, stage) {
   items.push({ text: String(a), action: () => { const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring'); } });
   for (let k = 0; k < bU; k++) {
     if (needBreak && k === aU) {   /* 낱개 소진 → 막대 1개를 동그라미 10개로 */
+      items.push({ text: '동그라미가 모자라요. 십 막대 한 개는 동그라미 몇 개일까요?' });   // 발문형(v87)
       items.push({
-        text: '동그라미가 모자라요. 십 막대 한 개는, 동그라미 열 개!', action: () => {
+        text: '열 개!', action: () => {
           const r = aRods[aT - 1]; if (r) { r.classList.add('melt'); setTimeout(() => { r.style.visibility = 'hidden'; }, 620); }
           born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
         }
@@ -3300,8 +3309,9 @@ function subViaTen(p, h, stage) {
   const bDots = [...mb.querySelectorAll('.cdot')];
   const items = [];
   items.push({ text: `${a}${josaEun(a)} 10과 ${aU}${josaRo(aU)} 가를 수 있어요.`, action: () => { const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring'); } });
+  items.push({ text: '십 막대 한 개는 동그라미 몇 개일까요?' });   // 발문형(v87)
   items.push({
-    text: '십 막대 한 개는, 동그라미 열 개!', action: () => {
+    text: '열 개!', action: () => {
       const r = rowA.querySelector('.rod'); if (r) { r.classList.add('melt'); setTimeout(() => { r.style.visibility = 'hidden'; }, 620); }
       born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
     }
@@ -3397,7 +3407,7 @@ function bridgeDrag(p, h) {
         speakFast(String(a - moved));                 // 11, 10 … 거꾸로 세며 빼기
         if (m) killPop(d, m);
         if (moved === first) setTimeout(() => {
-          speak('10이 되었어요! 십 막대 한 개는, 동그라미 열 개! 남은 것도 끌어서 빼 보세요.');
+          speak('10이 되었어요! 십 막대 한 개는 동그라미 몇 개일까요? 열 개! 남은 것도 끌어서 빼 보세요.');   // 발문형(v87)
           const rod = rowA.querySelector('.rod'); if (rod) { rod.classList.add('melt'); setTimeout(() => { rod.style.visibility = 'hidden'; }, 620); }
           born.forEach(x => { x.style.visibility = 'visible'; x.classList.add('born'); });
           ready2 = true;
@@ -3437,8 +3447,9 @@ function bridgeSub(p, h, stage) {
     items.push({ text: String(v), action: () => { if (s && m) killPop(s, m); } });
   }
   items.push({ text: `${a}에서 ${first}${josaEul(first)} 빼면 ${koCnt(10)} 개가 남아요.` });
+  items.push({ text: '십 막대 한 개는 동그라미 몇 개일까요?' });   // 발문형(v87)
   items.push({
-    text: '십 막대 한 개는, 동그라미 열 개!', action: () => {
+    text: '열 개!', action: () => {
       const r = rowA.querySelector('.rod'); if (r) { r.classList.add('melt'); setTimeout(() => { r.style.visibility = 'hidden'; }, 620); }
       born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
     }
