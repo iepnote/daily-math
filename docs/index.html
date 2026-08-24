@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 93 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 94 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -902,6 +902,16 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .pvglab.t{ color:var(--accent-shadow); }
 .pvglab.u{ color:#C62828; }
 .pvrq .early-q .qblank{ min-width:2.2em; }
+/* 자리값 블록 만들기(61, v94) — 읽기(59) 상자 재사용 + 목표 수·추가 버튼, 놓인 조각은 눌러서 지움 */
+.pvbq{ gap:1.1rem; }
+.pvbq .pvgrp{ justify-content:flex-start; }
+.pvbq .pvrods{ min-height:134px; }
+.pvbq .rod{ width:34px; height:130px; cursor:pointer; touch-action:manipulation; }
+.pvbq .cstack{ min-height:64px; justify-content:center; }
+.pvbq .cdot{ width:58px; height:58px; cursor:pointer; touch-action:manipulation; }
+.pvtarget{ font-size:2.2rem; color:var(--accent-strong); }
+/* 십틀 10 만들기(60, v94): 미리 채워진 칸은 고정 표시 */
+.tf.pre{ cursor:default; box-shadow:inset 0 0 0 3px rgba(255,255,255,.55); }
 /* 크기 비교(42) 같아요 버튼 — 두 접시 사이 점선 */
 .cmp.samebtn{ width:150px; height:210px; flex-direction:column; align-items:center; justify-content:center; gap:.3rem;
   font-weight:800; font-size:1.5rem; color:var(--accent-strong); border-style:dashed; padding:0; }
@@ -944,7 +954,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 93';
+const APP_VERSION = 'ver 94';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -991,9 +1001,11 @@ function gatherSplit(max) {
   const n = R(3, max), k = R(1, n - 1); return { type: 'split', n, k, ans: n - k };
 }
 function seqGen(steps) {
-  const step = steps[R(0, steps.length - 1)];
-  const start = step === 1 ? R(1, 16) : step * R(1, 5);
-  const len = step === 1 ? 5 : 4;              // 1씩 수 배열(43)은 수직선 여행형(수감각도구) — 5칸 + 0~20 수직선
+  let step = steps[R(0, steps.length - 1)];
+  /* 수 배열 거꾸로 세기(v94, 수감각도구 잔여): 1씩 배열의 30%는 내림차순(step −1) — 거꾸로 세기 연습 */
+  if (step === 1 && Math.random() < .3) step = -1;
+  const start = step === 1 ? R(1, 16) : step === -1 ? R(5, 20) : step * R(1, 5);
+  const len = Math.abs(step) === 1 ? 5 : 4;    // 1씩 수 배열(43)은 수직선 여행형(수감각도구) — 5칸 + 0~20 수직선
   const arr = Array.from({ length: len }, (_, i) => start + i * step);
   const blank = R(1, 3);                       // 첫 칸은 항상 보여줌
   return { type: 'seq', arr, blank, ans: arr[blank], step };
@@ -1059,6 +1071,8 @@ const LEVELS = [
  { id: 45, g: "1학년 · 문장제", name: "덧셈·뺄셈 문장제", gen: wordGen },
  /* 59: 자리값 블록 읽기 — 두 자리 수 진입 전 다리(십 모형·일 모형 → 수). 61↔16 전사 오류를 보기·힌트에서 직접 다룸 */
  { id: 59, g: "기초 · 자리값", name: "자리값 블록 읽기", gen: () => { const t = R(1, 9), o = R(0, 9); return { type: 'pvread', t, o, ans: t * 10 + o }; } },
+ /* 61: 자리값 블록 만들기(v94, 수감각도구 잔여) — 읽기(59)의 역방향: 수를 보고 십 막대·낱개로 직접 구성(각 9개 상한 = 유일해) */
+ { id: 61, g: "기초 · 자리값", name: "자리값 블록 만들기", gen: () => { const t = R(1, 9), o = R(0, 9); return { type: 'pvbuild', t, o, ans: t * 10 + o }; } },
  { id: 5, g: "1학년 · 받아올림 없는 덧셈", name: "몇십 + 몇", gen: () => { const a = R(1, 9) * 10, b = R(1, 9); return { type: 'binary', a, b, op: '+', ans: a + b }; } },
  { id: 6, g: "1학년 · 받아올림 없는 덧셈", name: "몇십 + 몇십", gen: () => { const ta = R(1, 8), tb = R(1, 9 - ta); return { type: 'binary', a: ta * 10, b: tb * 10, op: '+', ans: (ta + tb) * 10 }; } },
  { id: 7, g: "1학년 · 받아올림 없는 덧셈", name: "몇십몇 + 몇십몇", gen: () => { const ta = R(1, 8), tb = R(1, 9 - ta), ua = R(0, 9), ub = R(0, 9 - ua); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '+', ans: a + b }; } },
@@ -1075,6 +1089,8 @@ const LEVELS = [
  { id: 15, g: "1학년 · 받아올림·받아내림", name: "받아내림 있는 뺄셈", gen: () => { const ta = R(2, 9), ua = R(0, 8), tb = R(1, ta - 1), ub = R(ua + 1, 9); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '-', ans: a - b }; } },
  /* 58: 십틀 채우기 — 10의 보수(16~18) 진입 전에 십틀 조작 자체를 익힘(수감각도구 이식: 힌트에서만 보던 십틀을 본 활동으로) */
  { id: 58, g: "기초 · 10의 구조", name: "십틀 채우기", gen: () => { const n = R(1, 10); return { type: 'tenfill', n, ans: n }; } },
+ /* 60: 십틀 10 만들기(v94, 수감각도구 잔여) — k개가 미리 채워진 십틀을 10이 되게 채움(10의 보수 직전 다리) */
+ { id: 60, g: "기초 · 10의 구조", name: "십틀 10 만들기", gen: () => { const k = R(1, 9); return { type: 'tenfill', n: 10, pre: k, ans: 10 - k }; } },
  { id: 16, g: "1학년 · 10의 보수", name: "10 짝꿍수 찾기", gen: () => { const k = R(1, 9); return { type: 'missing', form: 'partner', k, result: 10, ans: 10 - k }; } },
  { id: 17, g: "1학년 · 10의 보수", name: "10이 되는 더하기", gen: () => { const k = R(1, 9); return { type: 'missing', form: 'addToTen', k, result: 10, ans: 10 - k }; } },
  { id: 18, g: "1학년 · 10의 보수", name: "10에서 빼기", gen: () => { const x = R(1, 9); return { type: 'missing', form: 'subFromTen', k: 10, result: 10 - x, ans: x }; } },
@@ -1099,7 +1115,7 @@ const LEVELS = [
 const levelById = id => LEVELS.find(l => l.id === id) || LEVELS[0];
 /* 진급 순서(교육과정 순) — id 번호와 다름: 10의 보수(16~18)와 다리 단계(32~33)가 두 자리 받아올림·내림(14~15)의 선수 기능.
    id 1~18은 저장된 진도 때문에 번호 변경 금지 → 순서표로 해결 */
-const LEVEL_ORDER = [50, 51, 52, 53, 54, 36, 37, 38, 39, 47, 57, 48, 43, 42, 55, 56, 40, 41, 49, 1, 2, 3, 34, 35, 4, 45, 59, 5, 6, 7, 8, 9, 10, 11, 12, 13, 58, 16, 17, 18, 32, 33, 14, 15, 19, 20, 21, 22, 44, 23, 24, 25, 26, 27, 46, 28, 29, 30, 31];
+const LEVEL_ORDER = [50, 51, 52, 53, 54, 36, 37, 38, 39, 47, 57, 48, 43, 42, 55, 56, 40, 41, 49, 1, 2, 3, 34, 35, 4, 45, 59, 61, 5, 6, 7, 8, 9, 10, 11, 12, 13, 58, 60, 16, 17, 18, 32, 33, 14, 15, 19, 20, 21, 22, 44, 23, 24, 25, 26, 27, 46, 28, 29, 30, 31];
 /* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) — 저장·내부 참조는 여전히 id (id 1~18 변경 금지 원칙 유지) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
@@ -1108,14 +1124,15 @@ const LEVEL_BANDS = [
   /* 수 감각 활동 탭 배치(사용자 지정): 크기 비교(42)는 수 기초 탭의 수 배열(43) 옆 — 진급 순서도 수 배열 바로 다음 */
   { name: '수 감각', ids: [50, 51, 52, 53, 54, 57, 55, 56] },
   /* 십틀(58)·자리값 블록(59)은 수 기초 탭에(사용자 지정) — 진급 순서상 위치(10의 보수 앞·두 자리 앞)는 유지 */
-  { name: '수 기초', ids: [36, 37, 38, 39, 47, 48, 43, 42, 40, 41, 49, 58, 59] },
+  { name: '수 기초', ids: [36, 37, 38, 39, 47, 48, 43, 42, 40, 41, 49, 58, 60, 59, 61] },
   { name: '한 자리 수 덧셈·뺄셈', ids: [1, 2, 3, 34, 35, 4, 45, 11, 12, 13, 16, 17, 18, 32, 33] },
   { name: '두 자리 수 덧셈·뺄셈', ids: [5, 6, 7, 8, 9, 10, 14, 15] },
   { name: '세 자리 수 덧셈·뺄셈', ids: [19, 20, 21, 22, 31] },
   { name: '곱셈·나눗셈', ids: [44, 23, 24, 25, 26, 27, 46, 28, 29, 30] },
 ];
-/* 학습지 인쇄 비지원 유형 — 번쩍 보기(54·57)는 잠깐 보여주는 화면 전용 활동이라 지필 불가 */
-const NO_PRINT_IDS = new Set([54, 57]);
+/* 학습지 인쇄 비지원 유형 — 번쩍 보기(54·57)는 잠깐 보여주는 화면 전용 활동이라 지필 불가.
+   십틀 10 만들기(60)·자리값 블록 만들기(61)는 조작 활동이라 지면 미지원(v94 규칙: 신규 유형은 NO_PRINT) */
+const NO_PRINT_IDS = new Set([54, 57, 60, 61]);
 const nextLevel = id => { const i = LEVEL_ORDER.indexOf(id); return i >= 0 && i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : 0; };
 
 /* =========================================================
@@ -1516,6 +1533,16 @@ const TRX = {
   '십 막대 한 개는 동그라미 몇 개일까요?': { en: 'How many circles is one tens rod?', zh: '一根十的小棒是几个圆圈？', vi: 'Một thanh chục là mấy hình tròn?', ja: '10の ぼう 1ぽんは まる なんこかな？', ru: 'Сколько кружков в палочке-десятке?' },
   '열 개!': { en: 'Ten!', zh: '十个！', vi: 'Mười!', ja: '10こ！', ru: 'Десять!' },
   '묶음을 다 세었어요. 모두 몇일까요?': { en: 'We counted all the groups. How many in all?', zh: '所有的组都数完了。一共是几？', vi: 'Đã đếm hết các nhóm. Tất cả là mấy?', ja: 'たばを ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали все группы. Сколько всего?' },
+  /* ---- 수감각도구 잔여 3건(v94: 십틀 10 만들기·자리값 만들기·거꾸로 세기) ---- */
+  '십틀이 10이 되도록 빈칸을 채워요.': { en: 'Fill the empty cells to make 10.', zh: '把空格填满，凑成 10。', vi: 'Tô các ô trống để thành 10.', ja: 'あいた ますを うめて 10に しよう。', ru: 'Заполни пустые клетки, чтобы получилось 10.' },
+  '빈칸을 채워서 10을 만들어 봐요.': { en: "Fill the empty cells and make 10.", zh: '填满空格，凑成 10。', vi: 'Tô ô trống để tạo thành 10.', ja: 'あいた ますを うめて 10を つくろう。', ru: 'Заполни пустые клетки и составь 10.' },
+  '앞 숫자만큼 십 막대를, 뒷 숫자만큼 동그라미를 놓아요.': { en: 'Place tens rods for the first digit, circles for the last digit.', zh: '前面的数字放小棒，后面的数字放圆圈。', vi: 'Đặt thanh chục theo chữ số đầu, hình tròn theo chữ số cuối.', ja: 'まえの すうじの ぶん 10の ぼうを、うしろの すうじの ぶん まるを おこう。', ru: 'Первая цифра — палочки-десятки, последняя — кружки.' },
+  '아홉 개까지만 놓을 수 있어요.': { en: 'You can place up to nine.', zh: '最多只能放九个。', vi: 'Chỉ đặt được tối đa chín cái.', ja: '9こまでしか おけないよ。', ru: 'Можно положить не больше девяти.' },
+  '십 막대가 너무 많아요.': { en: 'Too many tens rods.', zh: '十的小棒太多了。', vi: 'Quá nhiều thanh chục.', ja: '10の ぼうが おおすぎるよ。', ru: 'Слишком много палочек-десятков.' },
+  '십 막대가 모자라요.': { en: 'Not enough tens rods.', zh: '十的小棒不够。', vi: 'Chưa đủ thanh chục.', ja: '10の ぼうが たりないよ。', ru: 'Палочек-десятков не хватает.' },
+  '동그라미가 너무 많아요.': { en: 'Too many circles.', zh: '圆圈太多了。', vi: 'Quá nhiều hình tròn.', ja: 'まるが おおすぎるよ。', ru: 'Слишком много кружков.' },
+  '동그라미가 모자라요.': { en: 'Not enough circles.', zh: '圆圈不够。', vi: 'Chưa đủ hình tròn.', ja: 'まるが たりないよ。', ru: 'Кружков не хватает.' },
+  '거꾸로 세어요. 빈칸의 수는 무엇일까요?': { en: 'Count backwards. What number goes in the blank?', zh: '倒着数。空格里应该填几？', vi: 'Đếm ngược. Số nào điền vào ô trống?', ja: 'さかさまに かぞえよう。あいた ますの かずは？', ru: 'Считай назад. Какое число пропущено?' },
   /* ---- SEM 타임어택 워밍업(v90) ---- */
   '빨리 풀기! 아는 문제를 빠르게 풀어 봐요. 시작!': { en: "Speed round! Solve the ones you know, fast. Go!", zh: '快速挑战！把会的题快快做完。开始！', vi: 'Vòng nhanh! Giải nhanh các bài đã biết. Bắt đầu!', ja: 'はやとき！しっている もんだいを はやく とこう。スタート！', ru: 'Скоростной раунд! Решай знакомые примеры быстро. Старт!' },
   /* ---- SEM 오류 유형 판정(v86) ---- */
@@ -1622,6 +1649,21 @@ function trKo(t) {
     return T({ en: `Start at the bigger number, ${m[1]}! Tap the circles one by one and count on.`, zh: `从大的数 ${m[1]} 开始！一个一个点圆圈接着数。`, vi: `Bắt đầu từ số lớn ${m[1]}! Chạm từng hình tròn và đếm tiếp.`, ja: `おおきい かず ${m[1]}から！まるを ひとつずつ おして つづけて かぞえてね。`, ru: `Начни с большего числа, ${m[1]}! Нажимай кружки по одному и считай дальше.` });
   if (m = t.match(/^(\d+)부터 이어 세었어요\. 모두 몇일까요\?$/))
     return T({ en: `We counted on from ${m[1]}. How many in all?`, zh: `从 ${m[1]} 接着数完了。一共是几？`, vi: `Đã đếm tiếp từ ${m[1]}. Tất cả là mấy?`, ja: `${m[1]}から つづけて かぞえたね。ぜんぶで いくつ？`, ru: `Мы досчитали от ${m[1]}. Сколько всего?` });
+  /* 수감각도구 잔여 3건 패턴(v94) */
+  if (m = t.match(/^(\d+)[을를] 십 모형과 일 모형으로 만들어요\.$/))
+    return T({ en: `Build ${m[1]} with tens and ones blocks.`, zh: `用十的模型和一的模型摆出 ${m[1]}。`, vi: `Xếp số ${m[1]} bằng khối chục và khối đơn vị.`, ja: `${m[1]}を 10の もけいと 1の もけいで つくろう。`, ru: `Составь ${m[1]} из десятков и единиц.` });
+  if (m = t.match(/^(\d+)[은는] 십 (\d+)개와 일 (\d+)개예요\.$/))
+    return T({ en: `${m[1]} is ${m[2]} tens and ${m[3]} ones.`, zh: `${m[1]} 是 ${m[2]} 个十和 ${m[3]} 个一。`, vi: `${m[1]} là ${m[2]} chục và ${m[3]} đơn vị.`, ja: `${m[1]}は 10が ${m[2]}こと 1が ${m[3]}こ。`, ru: `${m[1]} — это ${m[2]} десятков и ${m[3]} единиц.` });
+  if (m = t.match(/^(.+?) 개가 채워져 있어요\.$/)) { const n = cntToNum(m[1]) || m[1];
+    return T({ en: `${n} are already filled.`, zh: `已经填了 ${n} 个。`, vi: `Đã tô sẵn ${n} ô.`, ja: `${n}こは もう うまっているよ。`, ru: `${n} уже заполнено.` }); }
+  if (m = t.match(/^수가 1씩 작아져요\. 거꾸로 세어 봐요\.(?: (.+))?$/)) {
+    const base = { en: 'The number gets smaller by 1. Count backwards.', zh: '数每次减 1，倒着数。', vi: 'Số giảm đi 1. Đếm ngược nhé.', ja: 'かずは 1ずつ へるよ。さかさまに かぞえよう。', ru: 'Число уменьшается на 1. Считай назад.' };
+    const NOTE2 = {
+      '동그라미가 몇 개씩 줄어드는지 세어 보세요.': { en: 'See how many circles are taken away each time.', zh: '数一数每次减少几个圆圈。', vi: 'Xem mỗi lần bớt mấy hình tròn.', ja: 'まるが なんこずつ へるか みてね。', ru: 'Смотри, на сколько кружков меньше.' },
+      '파란 막대는 십, 빨간 동그라미는 일이에요.': { en: 'Blue rods are tens, red circles are ones.', zh: '蓝色小棒是十，红色圆圈是一。', vi: 'Thanh xanh là chục, hình tròn đỏ là đơn vị.', ja: 'あおい ぼうは 10、あかい まるは 1だよ。', ru: 'Синие палочки — десятки, красные кружки — единицы.' },
+    };
+    return T(base) + (m[1] && NOTE2[m[1]] ? ' ' + T(NOTE2[m[1]]) : '');
+  }
   /* 타임어택 워밍업 종료(v90) */
   if (m = t.match(/^빨리 풀기 끝! (\d+)문제를 (\d+)초에 풀었어요\.$/))
     return T({ en: `Speed round done! ${m[1]} problems in ${m[2]} seconds.`, zh: `快速挑战结束！${m[2]} 秒做完 ${m[1]} 道题。`, vi: `Xong vòng nhanh! ${m[1]} bài trong ${m[2]} giây.`, ja: `はやとき おわり！${m[1]}もんを ${m[2]}びょうで といたよ。`, ru: `Скоростной раунд окончен! ${m[1]} примеров за ${m[2]} секунд.` });
@@ -1970,6 +2012,7 @@ const qStr = p => {
   if (p.type === 'nle') return `수직선 ${p.ans} (0~${p.max})`;
   if (p.type === 'tenfill') return `십틀 채우기 (${p.n})`;
   if (p.type === 'pvread') return `자리값 읽기 ${p.ans}`;
+  if (p.type === 'pvbuild') return `자리값 만들기 ${p.ans}`;
   if (p.type === 'seq') return p.arr.map((v, i) => i === p.blank ? '☐' : v).join(', ');
   if (p.type === 'word') return `문장제 ${p.a} ${sgn(p.op)} ${p.b}`;
   if (p.type === 'judge') return `${p.a} × ${p.b} = ${p.shown} 채점`;
@@ -2172,6 +2215,7 @@ function paintChoices() {
   if (p.type === 'put') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="putSubmit()">다 담았어요 ✓</button>`; return; }
   if (p.type === 'nle') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="nleSubmit()">여기예요 ✓</button>`; return; }
   if (p.type === 'tenfill') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="tfSubmit()">다 채웠어요 ✓</button>`; return; }
+  if (p.type === 'pvbuild') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="pvbSubmit()">다 만들었어요 ✓</button>`; return; }
   if (['compare', 'freesplit', 'bigpick', 'more', 'samepick', 'onemap'].includes(p.type)) { $('choices').innerHTML = ''; return; }   // 접시·상자 자체가 조작 대상
   if (p.type === 'flash') {                        // 직산: 보기는 1~5(주사위) / 정답 ±2 근처(십틀 5~10)
     const mx = p.tf ? 10 : 5;
@@ -2227,13 +2271,14 @@ function speakProblem() {
   else if (p.type === 'compare') t = '어느 쪽이 더 많을까요? 똑같으면 같아요를 눌러요.';
   else if (p.type === 'more') t = '어느 쪽이 더 많을까요? 많은 쪽을 눌러 주세요.';
   else if (p.type === 'nle') t = `${p.ans}${josaEun(p.ans)} 수직선 어디쯤일까요? 선을 눌러 봐요.`;
-  else if (p.type === 'tenfill') t = `십틀에 동그라미를 ${p.n}개 채워요.`;
+  else if (p.type === 'tenfill') t = p.pre ? '십틀이 10이 되도록 빈칸을 채워요.' : `십틀에 동그라미를 ${p.n}개 채워요.`;
   else if (p.type === 'pvread') t = '십 모형과 일 모형을 보고, 모두 얼마인지 골라요.';
+  else if (p.type === 'pvbuild') t = `${p.ans}${josaEul(p.ans)} 십 모형과 일 모형으로 만들어요.`;
   else if (p.type === 'bigpick') t = '둘 중에서 더 큰 것을 눌러 주세요.';
   else if (p.type === 'onemap') t = '접시마다 하나씩 놓아 주세요.';
   else if (p.type === 'samepick') t = '위 상자와 개수가 같은 쪽을 눌러 주세요.';
   else if (p.type === 'flash') t = '동그라미가 몇 개인지 번쩍 보고 알아맞혀요.';
-  else if (p.type === 'seq') t = p.step === 1 ? '빈칸에 알맞은 수는 무엇일까요?' : `${p.step}씩 뛰어 세어요. 빈칸의 수는 무엇일까요?`;
+  else if (p.type === 'seq') t = p.step === -1 ? '거꾸로 세어요. 빈칸의 수는 무엇일까요?' : p.step === 1 ? '빈칸에 알맞은 수는 무엇일까요?' : `${p.step}씩 뛰어 세어요. 빈칸의 수는 무엇일까요?`;
   else if (p.type === 'word') t = p.text;
   else if (p.type === 'judge') t = `${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.shown}. 맞으면 동그라미, 틀리면 엑스를 눌러요.`;
   else if (p.form === 'addToTen') t = `${p.k}에 얼마를 더하면 10이 될까요?`;
@@ -4738,7 +4783,7 @@ function wsProblemH(p, num) {
    ========================================================= */
 const EARLY_TYPES = new Set(['count', 'put', 'gather', 'split', 'compare', 'seq', 'word', 'judge', 'freesplit',
   'bigpick', 'more', 'onemap', 'samepick', 'flash',   // 수감각(50~54)
-  'nle', 'tenfill', 'pvread']);                       // 수감각도구 이식(55~59): 수직선 추정·십틀 채우기·자리값 읽기
+  'nle', 'tenfill', 'pvread', 'pvbuild']);            // 수감각도구 이식(55~61): 수직선 추정·십틀 채우기/10 만들기·자리값 읽기/만들기
 
 /* 주사위 눈 배치(1~6) — 직산·같은 수 찾기: 줄 세기와 다른 배열로 '양이 같음'을 보게 함 */
 const DICE_POS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
@@ -4829,10 +4874,10 @@ function earlyFace(p) {
         <div class="nlflag ok hidden" id="nlans" style="left:${(p.ans / p.max * 100).toFixed(1)}%"><span class="nlhead">${p.ans}</span><i class="nlstem"></i></div>
         <div class="nlhit" id="nlhit"></div>
       </div></div>`;
-  if (p.type === 'tenfill')   /* 십틀 채우기 — 칸을 눌러 숫자만큼 채움(연속 채움: i번째 칸 = 1~i 채움) */
+  if (p.type === 'tenfill')   /* 십틀 채우기 — 칸을 눌러 숫자만큼 채움(연속 채움: i번째 칸 = 1~i 채움). pre=미리 채워진 칸(10 만들기, v94) */
     return `<div class="early tfq">
-      <div class="early-q"><b class="putn">${p.n}</b>개만큼 채워요</div>
-      <div class="tenframe tf-big" id="tfgrid">${'<div class="tf tap"></div>'.repeat(10)}</div></div>`;
+      <div class="early-q">${p.pre ? `<b class="putn">10</b>이 되도록 채워요` : `<b class="putn">${p.n}</b>개만큼 채워요`}</div>
+      <div class="tenframe tf-big" id="tfgrid">${'<div class="tf fill pre"></div>'.repeat(p.pre || 0)}${'<div class="tf tap"></div>'.repeat(10 - (p.pre || 0))}</div></div>`;
   if (p.type === 'pvread')   /* 자리값 블록 읽기 — 자리 색 약속: 십=파란 막대, 일=빨간 동그라미 */
     return `<div class="early pvrq">
       <div class="pvbrow">
@@ -4840,10 +4885,19 @@ function earlyFace(p) {
         <div class="pvgrp" id="pvU">${circleStack(p.o, 'red')}<div class="pvglab u">일 모형 ${p.o}개</div></div>
       </div>
       <div class="early-q">모두 <span class="qblank" id="qslot">?</span></div></div>`;
+  if (p.type === 'pvbuild')   /* 자리값 블록 만들기(v94) — 수를 보고 십 막대·낱개를 직접 놓아 구성(읽기 59의 역방향) */
+    return `<div class="early pvbq">
+      <div class="early-q">수 <b class="pvtarget">${p.ans}</b>${josaEul(p.ans)} 모형으로 만들어요</div>
+      <div class="pvbrow">
+        <div class="pvgrp" id="pbT"><div class="pvrods" id="pbTr"></div><div class="pvglab t">십 모형</div>
+          <button class="btn btn--teal btn-sm pvadd" onclick="pvbAdd('t')">＋ 십 막대</button></div>
+        <div class="pvgrp" id="pbU"><div class="cstack" id="pbUr"></div><div class="pvglab u">일 모형</div>
+          <button class="btn btn--orange btn-sm pvadd" onclick="pvbAdd('o')">＋ 동그라미</button></div>
+      </div></div>`;
   if (p.type === 'seq') {
     const boxes = p.arr.map((v, i) => i === p.blank
       ? `<span class="seqbox qblank" id="qslot">?</span>` : `<span class="seqbox">${v}</span>`);
-    if (p.step === 1) {   /* 수 배열(43): 수직선 여행형(수감각도구 이식) — 상자 밑 0~20 수직선에 위치 연동 */
+    if (Math.abs(p.step) === 1) {   /* 수 배열(43): 수직선 여행형(수감각도구 이식) — 상자 밑 0~20 수직선에 위치 연동. step −1=거꾸로(v94) */
       const MAX = 20, pos = v => (v / MAX * 100).toFixed(1);
       return `<div class="early seqtrip">
         <div class="seqrow">${boxes.join('')}</div>
@@ -4853,7 +4907,7 @@ function earlyFace(p) {
           <div class="nllab" style="left:0%">0</div><div class="nllab" style="left:100%">${MAX}</div>
           <div class="nlflag" style="left:${pos(p.arr[p.blank])}%"><span class="nlhead">?</span><i class="nlstem"></i></div>
         </div>
-        <div class="seqcap">앞으로 세어 빈칸을 찾아 보세요</div></div>`;
+        <div class="seqcap">${p.step === -1 ? '거꾸로 세어 빈칸을 찾아 보세요' : '앞으로 세어 빈칸을 찾아 보세요'}</div></div>`;
     }
     return `<div class="early seqrow">${boxes.join('<span class="seqarrow">→</span>')}</div>`;
   }
@@ -4967,6 +5021,7 @@ function routeEarlyHint(p, h, stage) {
   if (p.type === 'nle') return hintNle(p, h, stage);
   if (p.type === 'tenfill') return hintTenFill(p, h, stage);
   if (p.type === 'pvread') return hintPvRead(p, h, stage);
+  if (p.type === 'pvbuild') return hintPvBuild(p, h, stage);
   if (p.type === 'seq') return hintSeq(p, h, stage);
   if (p.type === 'word') return hintWord(p, h, stage);
   hintMul(p, h, stage);                                 // judge: 뛰어세기로 바른 값을 확인하고 스스로 판단
@@ -5162,7 +5217,26 @@ function hintNle(p, h, stage) {
 }
 /* 십틀 채우기 힌트 — 1차: 윗줄 5칸 강조 / 2차: 채울 자리에 번호를 붙이며 세기(학생이 눌러 채워야 정답) */
 function hintTenFill(p, h, stage) {
-  const cells = [...document.querySelectorAll('#tfgrid .tf')];
+  const cells = [...document.querySelectorAll('#tfgrid .tf')], base = p.pre || 0;
+  /* 10 만들기(60, pre) — 1차: 빈칸 강조 / 2차: pre 다음 수부터 이어 세며 번호(빈칸만) */
+  if (base) {
+    if (stage === 1) {
+      h.innerHTML = `<div class="tip"><b>빈칸</b>을 모두 채우면 10이 돼요</div>`;
+      cells.slice(base).forEach(c => c.classList.add('hl'));
+      speak('빈칸을 채워서 10을 만들어 봐요.');
+      return;
+    }
+    cells.slice(base).forEach(c => { c.classList.remove('fill', 'hl', 'slotn'); c.textContent = ''; });
+    h.innerHTML = `<div class="tip">채워진 ${koCnt(base)} 개에서 <b>이어 세며</b> 빈칸을 채워요</div>`;
+    const items = [{ text: `${koCnt(base)} 개가 채워져 있어요.` }];
+    for (let i = base; i < 10; i++) {
+      const c = cells[i];
+      items.push({ text: KO_NUM[i + 1] || String(i + 1), action: () => { c.classList.add('slotn'); c.textContent = i + 1; c.animate([{ transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 200 }); } });
+    }
+    items.push({ text: `${koCnt(10 - base)} 개를 채우면 돼요.` });
+    speakSequence(items);
+    return;
+  }
   if (stage === 1) {
     h.innerHTML = `<div class="tip">윗줄은 <b>다섯 칸</b>! 윗줄부터 차례로 채워 봐요</div>`;
     cells.slice(0, 5).forEach(c => c.classList.add('hl'));
@@ -5178,6 +5252,52 @@ function hintTenFill(p, h, stage) {
   }
   items.push({ text: `${koCnt(p.n)} 개를 채우면 돼요.` });
   speakSequence(items);
+}
+/* ---- 자리값 블록 만들기(61, v94): ＋버튼으로 십 막대·낱개를 놓고, 놓인 조각을 누르면 지움 — 각 9개 상한(유일해) ---- */
+function pvbAdd(kind) {
+  if (locked) return;
+  const host = kind === 't' ? $('pbTr') : $('pbUr'); if (!host) return;
+  const count = host.querySelectorAll(kind === 't' ? '.rod' : '.cdot').length;
+  if (count >= 9) { wiggle(host.parentNode); speak('아홉 개까지만 놓을 수 있어요.'); return; }
+  const d = document.createElement('div'); d.className = kind === 't' ? 'rod' : 'cdot red';
+  if (kind === 'o') {
+    let row = [...host.querySelectorAll('.crow5')].find(r => r.children.length < 5);
+    if (!row) { row = document.createElement('div'); row.className = 'crow5'; host.appendChild(row); }
+    row.appendChild(d);
+  } else host.appendChild(d);
+  d.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 200 });
+  d.onpointerdown = () => { if (!locked) { d.remove(); tick(); pvbSay(); } };   // 놓인 조각을 누르면 지움
+  pvbSay();
+}
+function pvbCounts() { return { t: document.querySelectorAll('#pbTr .rod').length, o: document.querySelectorAll('#pbUr .cdot').length }; }
+function pvbSay() { const { t, o } = pvbCounts(); const v = t * 10 + o; if (v) speakFast(String(v)); else tick(); }   // 놓을 때마다 현재 값 읽기(자리값 감각)
+function pvbSubmit() {
+  if (locked) return;
+  const p = session.items[session.idx], c = pvbCounts();
+  if (c.t === p.t && c.o === p.o) {
+    locked = true; chime(true); celebrate($('qface'));
+    speak(`십 ${c.t}개와 일 ${c.o}개는 ${p.ans}${josaYeyo(p.ans)}.`);
+    afterCorrect(2800);
+  } else {
+    chime(false); wrongCount++; wiggle($('qface'));
+    const msg = c.t > p.t ? '십 막대가 너무 많아요.' : c.t < p.t ? '십 막대가 모자라요.'
+      : c.o > p.o ? '동그라미가 너무 많아요.' : '동그라미가 모자라요.';
+    const lv = (current && current.hintLv) || 'normal';
+    if (lv === 'off') { speak(msg); return; }
+    const stage = wrongCount + (lv === 'strong' ? 1 : 0);
+    let started = false;
+    const go = () => { if (started) return; started = true; routeHint(stage); };
+    speak(msg, go);
+    setTimeout(go, foreignPraise() ? 5200 : 3200);
+  }
+}
+/* 자리값 블록 만들기 힌트 — 1차: 자리 역할 단서 / 2차: 목표 분해를 말로(십 t개·일 o개) */
+function hintPvBuild(p, h, stage) {
+  h.innerHTML = `<div class="tip"><b>앞 숫자</b>만큼 십 막대를, <b>뒷 숫자</b>만큼 동그라미를 놓아요</div>`;
+  if (stage === 1) { speak('앞 숫자만큼 십 막대를, 뒷 숫자만큼 동그라미를 놓아요.'); return; }
+  const tgt = document.querySelector('#qface .pvtarget');
+  if (tgt) tgt.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 700, iterations: 2 });
+  speak(`${p.ans}${josaEun(p.ans)} 십 ${p.t}개와 일 ${p.o}개예요.`);
 }
 /* 자리값 블록 읽기 힌트 — 1차: 자리 역할 단서(자리 바꿔 읽기 오류는 특정 피드백) / 2차: 10·20·… 이어 세기로 정답 */
 function hintPvRead(p, h, stage) {
@@ -5211,17 +5331,18 @@ function seqModel(n, dotsOnly) {
   return `<div class="seqmodel"><div class="rodwrap">${rows(T, 'rod', 'rodrow')}</div><div class="cstack">${rows(U, 'cdot red', 'crow5')}</div></div>`;
 }
 function hintSeq(p, h, stage) {
-  const rule = p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 ${p.step}씩 커져요. 뛰어 세어 봐요.`;
+  const rule = p.step === -1 ? '수가 1씩 작아져요. 거꾸로 세어 봐요.'
+    : p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 ${p.step}씩 커져요. 뛰어 세어 봐요.`;
   /* 1차: 채워진 수 아래에 수 모형 — 빈칸은 비워 두어 "얼마씩 늘어나는지" 규칙을 스스로 찾게.
      뛰어세기(최대 80)도 포함: 10씩=막대만 하나씩 / 5씩=막대+동그라미 5개가 번갈아 — 규칙이 눈에 보임 */
   const useModel = Math.max(...p.arr) <= 80;
   /* 10을 건너는 구간(예: 8·9·10·11)은 막대로 바뀌면 연속성이 끊겨 보임 → 전부 동그라미로.
      단 뛰어세기(step≠1)는 제외 — 5씩인데 20을 동그라미 20개로 그리면 "5씩"이 오히려 안 보임 */
-  const dotsOnly = p.step === 1 && Math.min(...p.arr) < 10 && Math.max(...p.arr) >= 10;
+  const dotsOnly = Math.abs(p.step) === 1 && Math.min(...p.arr) < 10 && Math.max(...p.arr) >= 10;
   if (useModel) {
     const row = document.querySelector('#qface .seqrow');
     /* 뛰어세기는 막대가 여러 개라 모형이 넓어짐 → 상자 간격을 더 벌림 */
-    if (row) row.classList.add('withmodel', ...(p.step === 1 ? [] : ['wide']));
+    if (row) row.classList.add('withmodel', ...(Math.abs(p.step) === 1 ? [] : ['wide']));
     const sl = document.querySelector('#qface .seqline');   // 수직선 여행형: 상자 아래 매달릴 모형 공간 확보
     if (sl) sl.classList.add('push');
     [...document.querySelectorAll('#qface .seqbox')].forEach((b, i) => {
@@ -5230,12 +5351,13 @@ function hintSeq(p, h, stage) {
   }
   /* 막대가 실제로 보일 때만 막대 설명 — 한 자리·10 건너기 구간은 동그라미만 나오므로 */
   const hasRod = !dotsOnly && Math.max(...p.arr) >= 10;
-  const mTip = hasRod ? '<b>파란 막대는 10</b>, <b>빨간 동그라미는 1</b>이에요. 얼마씩 늘어나는지 보세요.'
-    : '<b>동그라미가 몇 개씩</b> 늘어나는지 세어 보세요.';
-  h.innerHTML = `<div class="tip">${p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 <b>${p.step}씩</b> 커져요. 뛰어 세어 봐요.`}
+  const back = p.step === -1;
+  const mTip = hasRod ? '<b>파란 막대는 10</b>, <b>빨간 동그라미는 1</b>이에요. 얼마씩 ' + (back ? '줄어드는지' : '늘어나는지') + ' 보세요.'
+    : `<b>동그라미가 몇 개씩</b> ${back ? '줄어드는지' : '늘어나는지'} 세어 보세요.`;
+  h.innerHTML = `<div class="tip">${back ? '수가 1씩 작아져요. 거꾸로 세어 봐요.' : p.step === 1 ? '수가 1씩 커져요. 순서대로 세어 봐요.' : `수가 <b>${p.step}씩</b> 커져요. 뛰어 세어 봐요.`}
     ${useModel ? '<br>' + mTip : ''}</div>`;
   if (stage === 1) {
-    speak(rule + (useModel ? (hasRod ? ' 파란 막대는 십, 빨간 동그라미는 일이에요.' : ' 동그라미가 몇 개씩 늘어나는지 세어 보세요.') : ''));
+    speak(rule + (useModel ? (hasRod ? ' 파란 막대는 십, 빨간 동그라미는 일이에요.' : ` 동그라미가 몇 개씩 ${back ? '줄어드는지' : '늘어나는지'} 세어 보세요.`) : ''));
     return;
   }
   const boxes = [...document.querySelectorAll('#qface .seqbox')];
@@ -5440,15 +5562,19 @@ function nleSubmit() {
   }
 }
 
-/* ---- 십틀 채우기(58): i번째 칸을 누르면 1~i 연속 채움(빈틈 없는 채움), 마지막 칸 다시 누르면 하나 지움 ---- */
+/* ---- 십틀 채우기(58)·10 만들기(60): i번째 칸을 누르면 1~i 연속 채움(빈틈 없는 채움), 마지막 칸 다시 누르면 하나 지움.
+   10 만들기(pre)는 앞 pre칸이 고정 — 학생은 빈칸만 채우고, 세기는 pre부터 이어 셈(v94) ---- */
 function initTenFill() {
+  const p = session.items[session.idx], base = p.pre || 0;
   const cells = [...document.querySelectorAll('#tfgrid .tf')];
-  cells.forEach((c, i) => c.onpointerdown = () => {
+  const free = cells.slice(base);                        // pre 칸은 고정(지울 수 없음)
+  cells.slice(0, base).forEach(c => c.onpointerdown = () => { if (!locked) tick(); });
+  free.forEach((c, i) => c.onpointerdown = () => {
     if (locked) return;
-    const filled = cells.filter(x => x.classList.contains('fill')).length;
+    const filled = free.filter(x => x.classList.contains('fill')).length;
     const k = (i + 1 === filled) ? i : i + 1;
-    cells.forEach((x, j) => x.classList.toggle('fill', j < k));
-    if (k) speakFast(koCnt(k) + ' 개'); else tick();
+    free.forEach((x, j) => x.classList.toggle('fill', j < k));
+    if (k) speakFast(koCnt(base + k) + ' 개'); else tick();   // pre가 있으면 이어 세기(예: 7부터 여덟, 아홉…)
   });
 }
 function tfSubmit() {
@@ -5456,7 +5582,9 @@ function tfSubmit() {
   const p = session.items[session.idx];
   const c = document.querySelectorAll('#tfgrid .tf.fill').length;
   if (c === p.n) {
-    locked = true; chime(true); celebrate($('tfgrid')); speak(praise());
+    locked = true; chime(true); celebrate($('tfgrid'));
+    /* 10 만들기: 보수 관계를 말로 정리 — "7과 3이 만나면, 10!" */
+    speak(p.pre ? `${p.pre}${josaGwa(p.pre)} ${10 - p.pre}${josaIga(10 - p.pre)} 만나면, 10!` : praise());
     afterCorrect(foreignPraise() ? 2800 : undefined);
   } else {
     chime(false); wrongCount++; wiggle($('tfgrid'));
