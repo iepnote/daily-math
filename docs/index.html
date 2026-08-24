@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 84 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 85 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -926,7 +926,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 84';
+const APP_VERSION = 'ver 85';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -5121,7 +5121,7 @@ function freeUpdate() {
   $('fa').textContent = a; $('fb').textContent = b;
   $('fsent').innerHTML = `${p.n}${josaEun(p.n)} <b class="ga">${a}</b>${josaGwa(a)} <b class="gb">${b}</b>${josaRo(b)} 가를 수 있어요.`;
   if (locked || $('gC').querySelectorAll('.fdot').length) return;     // 위가 비어야 완료
-  if (!a || !b) { speakFast('양쪽에 나누어 담아요.'); return; }        // 한쪽이 0이면 가르기가 아님
+  /* 한쪽 0도 가르기로 인정(v85, 사용자 결정) — "5는 0과 5로 가를 수 있어요" (0 개념 포함) */
   locked = true;
   chime(true); celebrate($('gA'));
   logItem(); session.idx++; saveResume();
