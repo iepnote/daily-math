@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 89 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 90 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -436,6 +436,9 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .mgrp.tapg{ cursor:pointer; touch-action:manipulation; position:relative; }
 .gcnt{ position:absolute; right:-12px; top:-16px; background:var(--amber); color:#fff; font-weight:800; font-size:1.1rem;
   border-radius:1em; padding:.05em .45em; box-shadow:0 2px 4px rgba(0,0,0,.25); }
+/* SEM 타임어택 워밍업(v90): 진행 배지·타이머 */
+.warmbadge{ background:var(--amber); color:#fff; font-weight:800; font-size:1.15rem; border-radius:1em; padding:.1em .6em; }
+.warmtimer{ font-weight:800; font-size:1.15rem; color:var(--ink-soft); min-width:4.5em; text-align:left; }
 /* SEM 가림판(v89): ㄱ자 반투명 판 — 끌어서 이동, 문제 일부를 가리고 집중 */
 .maskpad{ position:absolute; z-index:40; cursor:grab; touch-action:none; filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
 .maskpad:active{ cursor:grabbing; }
@@ -934,7 +937,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 89';
+const APP_VERSION = 'ver 90';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1129,9 +1132,9 @@ const lsSet = (k, v) => { try { localStorage.setItem(LS + k, JSON.stringify(v));
 const lsDel = k => { try { localStorage.removeItem(LS + k); } catch (e) { } };
 
 /* ---- 기기 설정 (화면 모드·크기·소리, 마지막 교실) ---- */
-let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false }, lsGet('prefs', {}));
+let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false, warmup: false }, lsGet('prefs', {}));
 const loadPrefs = () => Object.assign(prefs, PREFS_DEFAULT, lsGet('prefs', {}));
-const PREFS_DEFAULT = { mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false };
+const PREFS_DEFAULT = { mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false, warmup: false };
 const savePrefs = () => { if (typeof current !== 'undefined' && current && current.guest) return; lsSet('prefs', prefs); };   // 손님: 기기 설정 저장 안 함
 let device = Object.assign({ classCode: '', lastStudentId: '' }, lsGet('device', {}));
 const saveDevice = () => lsSet('device', device);
@@ -1506,6 +1509,8 @@ const TRX = {
   '십 막대 한 개는 동그라미 몇 개일까요?': { en: 'How many circles is one tens rod?', zh: '一根十的小棒是几个圆圈？', vi: 'Một thanh chục là mấy hình tròn?', ja: '10の ぼう 1ぽんは まる なんこかな？', ru: 'Сколько кружков в палочке-десятке?' },
   '열 개!': { en: 'Ten!', zh: '十个！', vi: 'Mười!', ja: '10こ！', ru: 'Десять!' },
   '묶음을 다 세었어요. 모두 몇일까요?': { en: 'We counted all the groups. How many in all?', zh: '所有的组都数完了。一共是几？', vi: 'Đã đếm hết các nhóm. Tất cả là mấy?', ja: 'たばを ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали все группы. Сколько всего?' },
+  /* ---- SEM 타임어택 워밍업(v90) ---- */
+  '빨리 풀기! 아는 문제를 빠르게 풀어 봐요. 시작!': { en: "Speed round! Solve the ones you know, fast. Go!", zh: '快速挑战！把会的题快快做完。开始！', vi: 'Vòng nhanh! Giải nhanh các bài đã biết. Bắt đầu!', ja: 'はやとき！しっている もんだいを はやく とこう。スタート！', ru: 'Скоростной раунд! Решай знакомые примеры быстро. Старт!' },
   /* ---- SEM 오류 유형 판정(v86) ---- */
   '빼기를 했나요? 더하기 기호를 잘 봐요.': { en: 'Did you subtract? Look at the plus sign.', zh: '是不是做了减法？看清加号。', vi: 'Con trừ rồi à? Nhìn kỹ dấu cộng nhé.', ja: 'ひきざんを したかな？ たすの きごうを よく みてね。', ru: 'Ты вычел? Посмотри на знак плюс.' },
   '더하기를 했나요? 빼기 기호를 잘 봐요.': { en: 'Did you add? Look at the minus sign.', zh: '是不是做了加法？看清减号。', vi: 'Con cộng rồi à? Nhìn kỹ dấu trừ nhé.', ja: 'たしざんを したかな？ ひくの きごうを よく みてね。', ru: 'Ты сложил? Посмотри на знак минус.' },
@@ -1610,6 +1615,9 @@ function trKo(t) {
     return T({ en: `Start at the bigger number, ${m[1]}! Tap the circles one by one and count on.`, zh: `从大的数 ${m[1]} 开始！一个一个点圆圈接着数。`, vi: `Bắt đầu từ số lớn ${m[1]}! Chạm từng hình tròn và đếm tiếp.`, ja: `おおきい かず ${m[1]}から！まるを ひとつずつ おして つづけて かぞえてね。`, ru: `Начни с большего числа, ${m[1]}! Нажимай кружки по одному и считай дальше.` });
   if (m = t.match(/^(\d+)부터 이어 세었어요\. 모두 몇일까요\?$/))
     return T({ en: `We counted on from ${m[1]}. How many in all?`, zh: `从 ${m[1]} 接着数完了。一共是几？`, vi: `Đã đếm tiếp từ ${m[1]}. Tất cả là mấy?`, ja: `${m[1]}から つづけて かぞえたね。ぜんぶで いくつ？`, ru: `Мы досчитали от ${m[1]}. Сколько всего?` });
+  /* 타임어택 워밍업 종료(v90) */
+  if (m = t.match(/^빨리 풀기 끝! (\d+)문제를 (\d+)초에 풀었어요\.$/))
+    return T({ en: `Speed round done! ${m[1]} problems in ${m[2]} seconds.`, zh: `快速挑战结束！${m[2]} 秒做完 ${m[1]} 道题。`, vi: `Xong vòng nhanh! ${m[1]} bài trong ${m[2]} giây.`, ja: `はやとき おわり！${m[1]}もんを ${m[2]}びょうで といたよ。`, ru: `Скоростной раунд окончен! ${m[1]} примеров за ${m[2]} секунд.` });
   /* 전략 1차 직접 조작 패턴(v84) */
   if (m = t.match(/^깃발을 끌어서 (\d+)만큼 (앞으로|뒤로) 한 칸씩 뛰어 보세요\.$/)) { const fw = m[2] === '앞으로';
     return T({ en: `Drag the flag and jump ${fw ? 'forward' : 'back'} ${m[1]}, one step at a time.`, zh: `拖动小旗，向${fw ? '前' : '后'}一格一格跳 ${m[1]} 格。`, vi: `Kéo lá cờ và nhảy ${fw ? 'tới' : 'lùi'} ${m[1]} bước, từng bước một.`, ja: `はたを ドラッグして、${m[1]}こ ${fw ? 'まえに' : 'うしろに'} 1こずつ とんでね。`, ru: `Тяни флажок и прыгай ${fw ? 'вперёд' : 'назад'} на ${m[1]}, по одному шагу.` }); }
@@ -1964,9 +1972,75 @@ const qStr = p => {
 
 /* ---- 세션 시작·이어하기 ---- */
 function startSession() {
+  /* SEM ⑤ 타임어택 워밍업(v90): 켜져 있으면 오늘 첫 세션 앞에 숙달 단계 빨리 풀기 */
+  if (prefs.warmup && !warmedUp && !(current && current.guest) && startWarmup()) return;
   const lvl = levelById(current.level), n = current.daily || DAILY_DEFAULT;
   session = { items: Array.from({ length: n }, () => lvl.gen()), idx: 0, levelId: lvl.id, levelName: lvl.name, log: [], startAt: Date.now() };
   renderProblem();
+}
+/* =========================================================
+   SEM ⑤ 타임어택 워밍업 (v90, 설정 prefs.warmup·기기별)
+   본 학습 전에 '이미 숙달한'(진급 순서상 이전) 단계의 객관식 문제 5개를
+   타이머와 함께 빠르게 풀어 유창성을 데움. 기록·진급·달력에 영향 없음(로그 미저장).
+   한 번 켜진 화면(페이지 로드)당 1회만. 힌트 없음 — 틀리면 다른 보기 재시도.
+   ========================================================= */
+let warm = null, warmedUp = false;
+function startWarmup() {
+  /* 진급 순서상 이전 단계 중 객관식(binary·missing) 단계를 뒤에서부터 탐색 — 없으면 워밍업 생략 */
+  const i = LEVEL_ORDER.indexOf(current.level);
+  let src = null;
+  for (let j = i - 1; j >= 0; j--) {
+    const l = levelById(LEVEL_ORDER[j]);
+    if (l && ['binary', 'missing'].includes(l.gen().type)) { src = l; break; }
+  }
+  if (!src) return false;
+  warmedUp = true;
+  warm = { items: Array.from({ length: 5 }, () => src.gen()), idx: 0, t0: Date.now(), timer: null };
+  renderWarmProblem(true);
+  speak('빨리 풀기! 아는 문제를 빠르게 풀어 봐요. 시작!');
+  return true;
+}
+function endWarmup(skip) {
+  if (warm && warm.timer) clearInterval(warm.timer);
+  const secs = warm ? Math.round((Date.now() - warm.t0) / 1000) : 0;
+  warm = null;
+  if (!skip) speak(`빨리 풀기 끝! 5문제를 ${secs}초에 풀었어요.`);
+  startSession();
+}
+function renderWarmProblem(first) {
+  const p = warm.items[warm.idx];
+  setNav(`<span class="nav-student">⚡ 빨리 풀기 (워밍업)</span>
+    <button class="home" onclick="if(warm&&warm.timer)clearInterval(warm.timer);warm=null;goHome()">🏠 홈</button>
+    <button class="quit" onclick="endWarmup(true)">건너뛰기 ▶</button>`);
+  $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
+    <div class="card card--accent study-card">
+      <div style="display:flex;align-items:center;justify-content:center;gap:.9rem;margin-bottom:.2rem">
+        <span class="warmbadge">⚡ ${warm.idx + 1} / ${warm.items.length}</span>
+        <span class="warmtimer" id="warmtimer">⏱ 0초</span>
+      </div>
+      <div class="qface" id="qface"></div>
+      <div class="choice-row" id="choices"></div>
+    </div>
+  </div>`;
+  $('qface').innerHTML = buildFace(p, null);
+  $('choices').innerHTML = makeChoices(p.ans, 3).map(c => `<button class="btn-choice" data-v="${c}" onclick="warmAnswer(this,${p.ans})">${c}</button>`).join('');
+  if (first) {
+    warm.timer = setInterval(() => {
+      const t = $('warmtimer');
+      if (!t) { if (warm && warm.timer) clearInterval(warm.timer); return; }   // 화면 이탈 보루
+      t.textContent = `⏱ ${Math.round((Date.now() - warm.t0) / 1000)}초`;
+    }, 500);
+  }
+}
+function warmAnswer(btn, ans) {
+  if (!warm) return;
+  if (parseInt(btn.dataset.v, 10) === ans) {
+    btn.classList.add('correct'); tick();
+    const slot = $('qslot'); if (slot) fillSlot(slot, ans);
+    warm.idx++;
+    if (warm.idx >= warm.items.length) setTimeout(() => endWarmup(false), 350);
+    else setTimeout(() => warm && renderWarmProblem(false), 350);
+  } else { btn.classList.add('wrong'); btn.disabled = true; chime(false); }   // 힌트 없이 재시도(타임어택)
 }
 function saveResume() {
   if (!current || !session || current.guest) return;   // 손님: 기록 저장 안 함
@@ -3925,6 +3999,8 @@ function openSettings() {
     <div class="optrow">${['0.5', '1', '2', '3'].map(s => opt('flash', s, String(prefs.flashSec || 2), s + '초')).join('')}</div>
     <div style="font-weight:700">가림판 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— ㄱ자 판을 끌어 문제 일부를 가리고 지금 보는 곳에 집중해요</span></div>
     <div class="optrow">${opt('mask', 'off', prefs.mask ? 'on' : 'off', '끄기')}${opt('mask', 'on', prefs.mask ? 'on' : 'off', '켜기')}</div>
+    <div style="font-weight:700">타임어택 워밍업 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— 학습 전에 아는 단계 문제 5개를 시간 재며 빠르게(기록 안 남음)</span></div>
+    <div class="optrow">${opt('warmup', 'off', prefs.warmup ? 'on' : 'off', '끄기')}${opt('warmup', 'on', prefs.warmup ? 'on' : 'off', '켜기')}</div>
     <button class="btn btn--orange" onclick="closeModal()">닫기</button>`);
 }
 function setPref(group, v) {
@@ -3935,6 +4011,7 @@ function setPref(group, v) {
   else if (group === 'lang') prefs.lang = v;
   else if (group === 'flash') prefs.flashSec = parseFloat(v);
   else if (group === 'mask') { prefs.mask = v === 'on'; if ($('study')) { if (prefs.mask) addMask(); else removeMask(); } }
+  else if (group === 'warmup') { prefs.warmup = v === 'on'; if (prefs.warmup) warmedUp = false; }   // 켜면 다음 세션에 바로 적용
   savePrefs(); openSettings();
   if (group === 'sound') speak('이렇게 들려요.');
   if (group === 'rate') speak('이 빠르기로 말해요.');
