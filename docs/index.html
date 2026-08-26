@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 94 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 95 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -893,6 +893,10 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .pvgrp{ min-width:240px; min-height:220px; background:#fff; border:5px solid var(--accent); border-radius:1.3rem;
   padding:1rem 1.2rem .7rem; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.7rem; }   /* 모형·라벨 상자 가운데 정렬 */
 .pvrods{ display:flex; gap:10px; align-items:flex-end; min-height:130px; }
+/* 십 막대 눈금 = 정확히 10칸: 기본 .rod 눈금은 9.2px 주기(높이 92px 기준 10칸)라 130px 막대에선 14칸으로 보임 → 13px 주기로 재정의 */
+.pvrq .rod, .pvbq .rod{
+  background-image:repeating-linear-gradient(to bottom, transparent 0 12px, rgba(255,255,255,.5) 12px 13px),
+                   linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.08) 45%, rgba(0,0,0,.22) 100%); }
 .pvrq .rod{ width:34px; height:130px; display:flex; align-items:center; justify-content:center;
   color:#fff; font-weight:800; font-size:1.15rem; cursor:pointer; }
 .pvrq .cstack{ min-height:64px; justify-content:center; }
@@ -954,7 +958,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 94';
+const APP_VERSION = 'ver 95';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2054,8 +2058,11 @@ function endWarmup(skip) {
   if (warm && warm.timer) clearInterval(warm.timer);
   const secs = warm ? Math.round((Date.now() - warm.t0) / 1000) : 0;
   warm = null;
-  if (!skip) speak(`빨리 풀기 끝! 5문제를 ${secs}초에 풀었어요.`);
-  startSession();
+  if (skip) { startSession(); return; }
+  /* 요약 멘트가 끝난 뒤 본 세션 시작 — 바로 시작하면 첫 문제 낭독의 cancel()이 요약을 끊음 */
+  let moved = false; const go = () => { if (moved) return; moved = true; startSession(); };
+  speak(`빨리 풀기 끝! 5문제를 ${secs}초에 풀었어요.`, () => setTimeout(go, 600));
+  setTimeout(go, foreignPraise() ? 9000 : 6000);   // 보루(발화 끝 이벤트가 안 올 때만)
 }
 function renderWarmProblem(first) {
   const p = warm.items[warm.idx];
@@ -2307,6 +2314,16 @@ function afterCorrect(ms) {
   logItem(); session.idx++; saveResume();
   setTimeout(() => { if (session.idx >= session.items.length) finishSession(); else renderProblem(); }, ms || 1100);
 }
+/* 성공 멘트가 긴 유형용: 발화가 끝난 뒤 다음 문제로. 고정 타이머는 온라인 음성의 1~3초 지연에
+   다음 문제 speakProblem()의 cancel()이 멘트를 끊고 먼저 재생됨(pvbuild·tenfill·judge에서 발생).
+   음성 이벤트 유실 대비 보루 병행(finishColumnAdd와 같은 문법). */
+function afterCorrectSpeak(msg, gapMs) {
+  logItem(); session.idx++; saveResume();
+  const next = () => { if (session.idx >= session.items.length) finishSession(); else renderProblem(); };
+  let moved = false; const go = () => { if (moved) return; moved = true; setTimeout(next, gapMs || 800); };
+  speak(msg, go);
+  setTimeout(go, foreignPraise() ? 9000 : 6000);
+}
 function answer(btn, ans) {
   if (locked) return;
   const p = session.items[session.idx];
@@ -2318,8 +2335,7 @@ function answer(btn, ans) {
     /* 채점 놀이: 틀린 식을 잘 찾았으면 바르게 고쳐서 보여주고 읽어 줌(토도 G7 문법) */
     if (p.type === 'judge' && p.ans === 0) {
       const j = $('jshown'); if (j) { j.innerHTML = `<s>${p.shown}</s> ${p.a * p.b}`; j.classList.add('jfix'); }
-      speak(`잘 찾았어요! 바르게 고치면, ${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.a * p.b}${josaYeyo(p.a * p.b)}.`);
-      afterCorrect(3200);                          // 고친 식을 보고 들을 시간
+      afterCorrectSpeak(`잘 찾았어요! 바르게 고치면, ${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.a * p.b}${josaYeyo(p.a * p.b)}.`);   // 고친 식을 보고 들을 시간(발화 종료 기반)
       return;
     } else speak(praise());
     afterCorrect(foreignPraise() ? 2800 : undefined);   // 외국어 칭찬이 이어질 땐 여유 있게
@@ -5276,8 +5292,7 @@ function pvbSubmit() {
   const p = session.items[session.idx], c = pvbCounts();
   if (c.t === p.t && c.o === p.o) {
     locked = true; chime(true); celebrate($('qface'));
-    speak(`십 ${c.t}개와 일 ${c.o}개는 ${p.ans}${josaYeyo(p.ans)}.`);
-    afterCorrect(2800);
+    afterCorrectSpeak(`십 ${c.t}개와 일 ${c.o}개는 ${p.ans}${josaYeyo(p.ans)}.`);   // 발화 종료 기반(고정 타이머는 멘트가 끊기고 다음 문제가 먼저 재생됨)
   } else {
     chime(false); wrongCount++; wiggle($('qface'));
     const msg = c.t > p.t ? '십 막대가 너무 많아요.' : c.t < p.t ? '십 막대가 모자라요.'
@@ -5583,9 +5598,8 @@ function tfSubmit() {
   const c = document.querySelectorAll('#tfgrid .tf.fill').length;
   if (c === p.n) {
     locked = true; chime(true); celebrate($('tfgrid'));
-    /* 10 만들기: 보수 관계를 말로 정리 — "7과 3이 만나면, 10!" */
-    speak(p.pre ? `${p.pre}${josaGwa(p.pre)} ${10 - p.pre}${josaIga(10 - p.pre)} 만나면, 10!` : praise());
-    afterCorrect(foreignPraise() ? 2800 : undefined);
+    /* 10 만들기: 보수 관계를 말로 정리 — "7과 3이 만나면, 10!" (발화 종료 기반 — 긴 멘트 잘림 방지) */
+    afterCorrectSpeak(p.pre ? `${p.pre}${josaGwa(p.pre)} ${10 - p.pre}${josaIga(10 - p.pre)} 만나면, 10!` : praise());
   } else {
     chime(false); wrongCount++; wiggle($('tfgrid'));
     const msg = c < p.n ? `아직 모자라요. ${p.n}개를 채워요.` : `너무 많아요. ${p.n}개만 채워요.`;
