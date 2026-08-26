@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 95 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 96 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -909,9 +909,10 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* 자리값 블록 만들기(61, v94) — 읽기(59) 상자 재사용 + 목표 수·추가 버튼, 놓인 조각은 눌러서 지움 */
 .pvbq{ gap:1.1rem; }
 .pvbq .pvgrp{ justify-content:flex-start; }
-.pvbq .pvrods{ min-height:134px; }
+/* 라벨·＋버튼은 두 상자 모두 바닥 정렬로 통일(사용자 지정) — 모형 영역이 남은 공간을 흡수(flex:1)하고 모형은 그 가운데 */
+.pvbq .pvrods{ min-height:134px; flex:1; align-items:center; }
 .pvbq .rod{ width:34px; height:130px; cursor:pointer; touch-action:manipulation; }
-.pvbq .cstack{ min-height:64px; justify-content:center; }
+.pvbq .cstack{ min-height:64px; flex:1; justify-content:center; }
 .pvbq .cdot{ width:58px; height:58px; cursor:pointer; touch-action:manipulation; }
 .pvtarget{ font-size:2.2rem; color:var(--accent-strong); }
 /* 십틀 10 만들기(60, v94): 미리 채워진 칸은 고정 표시 */
@@ -958,7 +959,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 95';
+const APP_VERSION = 'ver 96';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
