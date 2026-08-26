@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 96 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 97 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -872,6 +872,11 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .nltick.mid{ background:var(--amber); }
 .nlmlab{ position:absolute; top:118px; transform:translateX(-50%); font-weight:800; font-size:1.5rem; color:#B45309; }
 .nllab{ position:absolute; top:118px; transform:translateX(-50%); font-weight:800; font-size:1.8rem; }
+.nllab.sq{ font-size:1.45rem; color:var(--accent-strong); top:56px; }   /* 수 배열 기준 숫자(처음·끝 값) — 안내 문장과 안 겹치게 수직선 위 */
+/* 수 배열 2차 힌트: 뛰어 세기 초록 깃발 */
+.nlflag.jumpgo{ transition:left .5s ease; z-index:4; }
+.nlflag.jumpgo .nlhead{ background:var(--ok); }
+.nlflag.jumpgo .nlstem{ background:var(--ok); }
 .nlband{ position:absolute; top:90px; height:22px; background:rgba(76,175,80,.32); border-radius:5px; }
 .nlflag{ position:absolute; top:8px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; pointer-events:none; z-index:3; }
 .nlhead{ min-width:54px; text-align:center; font-size:1.8rem; font-weight:800; color:#fff; background:var(--accent-strong); border-radius:.8rem; padding:.1rem .5rem; }
@@ -944,6 +949,48 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .wrods{ display:flex; gap:1.5mm; align-items:flex-end; }
 .wrod{ width:3mm; height:15mm; background:#1E88E5; border-radius:.8mm; display:inline-block; }
 
+/* ===== ⚡ 도전 모드 (v97) ===== */
+.pkbtn.chalc{ background:var(--amber); }
+/* 설정 화면 — 전역 label 블록 규칙 오버라이드(v70 교훈) */
+.chalset{ max-width:660px; margin:0 auto; text-align:center; }
+.chalset .chrow{ display:flex; align-items:center; justify-content:center; gap:.8rem; margin:.7rem 0; }
+.chalset .chrow>label:first-child{ display:inline-block; margin:0; flex:0 0 6.2em; text-align:right; font-weight:800; }
+.chalset select{ width:auto; min-width:9.5em; }
+.chalset label.chk{ display:inline-flex; align-items:center; gap:.35rem; margin:0; font-size:1.15rem; white-space:nowrap; cursor:pointer; }
+.chalset .chk input{ width:1.35rem; height:1.35rem; }
+/* 풀이 화면 — 숫자패드(화면 중앙 하단)·커서·타이머 */
+.chalcard .qface{ min-height:150px; }
+/* 숫자패드: 10% 축소(104→94px·56→50px), 테두리는 흐리게 + 아래 그림자로 입체감(.btn 문법) */
+.chalpad{ display:grid; grid-template-columns:repeat(3, 94px); gap:.55rem; justify-content:center; margin-top:.7rem; }
+.chk-key{ font-family:var(--font-btn); font-size:1.7rem; font-weight:800; height:50px; border-radius:.85rem;
+  background:var(--choice-bg); border:2px solid #C7E3FA; color:var(--ink); cursor:pointer; transition:transform .08s;
+  box-shadow:0 4px 0 #C7E3FA; }
+.chk-key:active{ transform:translateY(3px); box-shadow:0 1px 0 #C7E3FA; }
+.chk-del{ background:#FFF3E0; border-color:#FFDFB0; box-shadow:0 4px 0 #FFDFB0; }
+.chk-del:active{ box-shadow:0 1px 0 #FFDFB0; }
+.chk-ok{ background:var(--ok-bg); border-color:#A5D6A7; box-shadow:0 4px 0 #A5D6A7; font-size:1.9rem; }
+.chk-ok:active{ box-shadow:0 1px 0 #A5D6A7; }
+.chalq{ padding:.05em .35em; }                     /* 입력칸 세로 10% 확대(글자 1em 기준 위아래 .05em) */
+/* 수 배열: 빈칸도 숫자 상자와 완전히 같은 크기·점선 유지(위 .chalq 패딩이 .seqbox 패딩을 덮지 않게) */
+.chalq.seqbox{ padding:.45rem .6rem; border-style:dashed; }
+.chalq.seqbox .chcur{ height:1em; }
+.chalq.answered{ color:#E53935; }                  /* 정답 확정 시 숫자 빨간색(수 배열 포함 전 유형) */
+/* 정답·오답 알약 동일 크기 — 이모지 대신 글자 기호(○·✕), ✕ 글리프가 커서 높이도 고정 */
+.ctag{ display:inline-flex; align-items:center; justify-content:center; min-width:6.8em; height:1.7em; line-height:1; }
+.chalq #chd:empty + .chcur{ margin-left:0; }
+.chalq .chcur{ display:inline-block; width:.055em; min-width:3px; height:.95em; background:var(--accent-strong);
+  margin-left:.06em; animation:chblink 1s steps(1) infinite; }
+@keyframes chblink{ 50%{ opacity:0; } }
+.chalq.answered .chcur{ display:none; }
+.chtimer{ font-weight:800; font-size:1.25rem; color:var(--ink-soft); }
+.chtimer.low{ color:#E53935; }
+/* 결과 화면 */
+.chalres{ max-width:880px; margin:0 auto; text-align:center; }
+.chal-score{ font-size:4rem; font-weight:900; color:var(--accent-strong); line-height:1.1; }
+.chal-score small{ font-size:1.8rem; color:var(--ink-soft); font-weight:800; }
+.chal-list{ max-height:290px; overflow-y:auto; margin-top:.6rem; }
+.chal-list .itemtbl{ width:100%; }
+
 </style>
 </head>
 <body>
@@ -959,7 +1006,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 96';
+const APP_VERSION = 'ver 97';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1468,6 +1515,9 @@ const TRX = {
   '좋아요': { en: 'Good!', zh: '很好！', vi: 'Tốt lắm!', ja: 'いいね！', ru: 'Хорошо!' },
   '다시 한 번 세어 볼까요?': { en: "Let's count again!", zh: '再数一次吧！', vi: 'Đếm lại lần nữa nhé!', ja: 'もういちど かぞえてみよう！', ru: 'Давай посчитаем ещё раз!' },
   '다시 한 번 해 볼까요?': { en: "Let's try again!", zh: '再试一次吧！', vi: 'Thử lại lần nữa nhé!', ja: 'もういちど やってみよう！', ru: 'Попробуй ещё раз!' },
+  '시간이 다 되었어요.': { en: "Time's up!", zh: '时间到了！', vi: 'Hết giờ rồi!', ja: 'じかんに なりました！', ru: 'Время вышло!' },
+  '빈칸에 도착했어요. 빈칸의 수를 써 보세요.': { en: 'We reached the blank. Write the number.', zh: '到空格了。写出这个数吧。', vi: 'Đến ô trống rồi. Hãy viết số đó.', ja: 'あいた ますに ついたよ。かずを かいてみよう。', ru: 'Мы дошли до пропуска. Напиши это число.' },
+  '도전 끝! 잘했어요.': { en: 'Challenge complete! Great job!', zh: '挑战结束！做得好！', vi: 'Thử thách kết thúc! Giỏi lắm!', ja: 'チャレンジ おわり！よくできました！', ru: 'Задание выполнено! Молодец!' },
   '십이 넘어요. 1을 위 자리로 올려요.': { en: 'It goes over ten. Carry the 1.', zh: '满十了，向前一位进 1。', vi: 'Quá mười rồi, nhớ 1 sang hàng trên.', ja: '10を こえたよ。1を うえの くらいに あげよう。', ru: 'Больше десяти. Перенеси 1 в старший разряд.' },
   '큰 수를 찾아요. 큰 수부터 작은 수만큼 이어서 세요.': { en: 'Find the bigger number and count on from it.', zh: '找出大的数，从它接着数。', vi: 'Tìm số lớn hơn rồi đếm tiếp từ đó.', ja: 'おおきい かずを みつけて、つづけて かぞえよう。', ru: 'Найди большее число и считай дальше от него.' },
   '동그라미를 세어 봐요. 그리고 빗금 친 것만큼 빼요.': { en: 'Count the circles, then take away the crossed ones.', zh: '数一数圆圈，再去掉画线的。', vi: 'Đếm hình tròn rồi bớt đi phần gạch chéo.', ja: 'まるを かぞえて、せんの ぶんだけ ひこう。', ru: 'Сосчитай кружки и убери зачёркнутые.' },
@@ -3991,7 +4041,7 @@ async function checkPromotion() {
   const nx = nextLevel(current.level);
   if (!nx) return 0;
   const ss = (await Store.listSessions(current.classCode, { studentId: current.id }))
-    .filter(s => s.levelId === current.level && (s.total || 0) >= 3)
+    .filter(s => s.levelId === current.level && (s.total || 0) >= 3 && !/^⚡/.test(s.levelName || ''))   // ⚡도전(형성평가)은 진급 판정 제외
     .sort((a, b) => (b.finishedAt || '').localeCompare(a.finishedAt || ''));
   const ok = s => s && (s.firstTry / s.total) >= .8;
   if (ok(ss[0]) && ok(ss[1])) { current.level = nx; await Store.updateStudent(current); return 2; }
@@ -4261,6 +4311,7 @@ async function renderStudentPick() {
         <button class="pkbtn quitc" onclick="changeClass()">교실 바꾸기</button>
         <button class="pkbtn setc" onclick="renderTeacherLogin()">👩‍🏫 선생님</button>
         <button class="pkbtn guestc" title="기록 저장 안 함" onclick="startGuest()">🎈 손님</button>
+        <button class="pkbtn chalc" title="연산 연습·형성평가 (보기 없는 주관식)" onclick="renderChalSetup()">⚡ 도전</button>
       </div>
       <div class="pk-body">
         <div class="pk-head">내 이름을 눌러 주세요</div>
@@ -4922,6 +4973,8 @@ function earlyFace(p) {
           <div class="nltrack"></div>
           ${p.arr.map(v => `<div class="nltick" style="left:${pos(v)}%"></div>`).join('')}
           <div class="nllab" style="left:0%">0</div><div class="nllab" style="left:100%">${MAX}</div>
+          ${[p.arr[0], p.arr[p.arr.length - 1]].filter(v => v > 0 && v < MAX).map(v =>
+            `<div class="nllab sq" style="left:${pos(v)}%">${v}</div>`).join('')}
           <div class="nlflag" style="left:${pos(p.arr[p.blank])}%"><span class="nlhead">?</span><i class="nlstem"></i></div>
         </div>
         <div class="seqcap">${p.step === -1 ? '거꾸로 세어 빈칸을 찾아 보세요' : '앞으로 세어 빈칸을 찾아 보세요'}</div></div>`;
@@ -5692,6 +5745,240 @@ function hintFlash(p, h, stage) {
   const items = ds.map((d, i) => ({ text: KO_NUM[i + 1] || String(i + 1), action: () => mark(d, i + 1) }));
   items.push({ text: `모두 ${koCnt(p.n)} 개. 정답은 ${p.n}${josaYeyo(p.n)}.` });
   speakSequence(items);
+}
+
+/* =========================================================
+   12 ⚡ 도전 모드 (v97) — 연산 연습·형성평가
+   보기 없는 주관식: 숫자패드로 입력, 힌트 없음.
+   설정: 학습자(선택/미선택)·제한시간(1~40분)·단계·문항 수(1~50)·오답 허용(0~5)·오답 피드백.
+   기록: 학습자 선택 시 세션 저장(levelName 앞 ⚡ 접두사) — 진급·달력 도장 영향 없음.
+   문제 렌더·낭독은 06/11의 paintFace·speakProblem 재사용(세션 미러 주입).
+   ========================================================= */
+/* 숫자 답 단계만 도전 가능 — 조작형(세기·담기·비교·십틀·자리값·수직선·번쩍 등) 제외 */
+const CHAL_TYPES = new Set(['binary', 'triple', 'missing', 'gather', 'split', 'seq', 'word']);
+const chalLevels = () => orderedLevels().filter(l => CHAL_TYPES.has(l.gen().type));
+let chal = null;
+
+/* ---- 설정 화면 ---- */
+async function renderChalSetup() {
+  if (!klass) { renderStart(); return; }
+  const students = await Store.listStudents(klass.code);
+  const lvls = chalLevels();
+  const prev = chal || {};                                    // 다시 열면 직전 설정 유지
+  const opt = (v, label, sel) => `<option value="${v}" ${v === sel ? 'selected' : ''}>${label}</option>`;
+  const range = (a, b, sel, suffix) => Array.from({ length: b - a + 1 }, (_, i) => opt(a + i, (a + i) + (suffix || ''), sel)).join('');
+  setNav(`<button class="home" onclick="renderStudentPick()">← 돌아가기</button>`);
+  $('wrap').innerHTML = `<div class="card card--accent chalset">
+    <h2 style="margin:.2rem 0 1rem">⚡ 도전 모드</h2>
+    <div class="note" style="margin-bottom:1rem">보기 없이 숫자패드로 답을 입력해요. 힌트가 없어요.</div>
+    <div class="chrow"><label>학습자</label>
+      <select id="ch-stu" onchange="chalStuLevel()"><option value="">선택 안 함 (기록 저장 안 함)</option>
+        ${students.map(s => opt(s.id, s.name, prev.stuId)).join('')}</select></div>
+    <div class="chrow"><label>제한시간</label>
+      <label class="chk"><input type="checkbox" id="ch-tlon" onchange="$('ch-tmin').disabled=!this.checked" ${prev.limitMin ? 'checked' : ''}> 설정</label>
+      <select id="ch-tmin" ${prev.limitMin ? '' : 'disabled'}>${range(1, 40, prev.limitMin || 5, '분')}</select></div>
+    <div class="chrow"><label>단계</label>
+      <select id="ch-lvl">${lvls.map(l => opt(l.id, `${lvlNo(l.id)}. ${l.name}`, prev.lvlId || lvls[0].id)).join('')}</select></div>
+    <div class="chrow"><label>문항 수</label>
+      <select id="ch-cnt">${range(1, 50, prev.count || 10, '문제')}</select></div>
+    <div class="chrow"><label>오답 허용</label>
+      <select id="ch-allow">${range(0, 5, prev.allow !== undefined ? prev.allow : 1, '번')}</select>
+      <label class="chk"><input type="checkbox" id="ch-fb" ${prev.fb === false ? '' : 'checked'}> 오답 시 피드백</label></div>
+    <div style="margin-top:1.4rem"><button class="btn btn--orange" style="font-size:1.4rem;padding:.7rem 2.4rem" onclick="startChallenge()">⚡ 시작하기</button></div>
+  </div>`;
+  chalStuLevel._students = students;
+  if (!prev.lvlId) chalStuLevel();                            // 처음 열 때 선택된 학생 없음 → 그대로
+}
+/* 학습자를 고르면 그 학생의 현재 단계를 기본값으로 (도전 가능 단계일 때만) */
+function chalStuLevel() {
+  const s = (chalStuLevel._students || []).find(x => x.id === $('ch-stu').value);
+  if (s && chalLevels().some(l => l.id === s.level)) $('ch-lvl').value = s.level;
+}
+
+/* ---- 시작·문제 진행 ---- */
+function startChallenge() {
+  const stu = (chalStuLevel._students || []).find(x => x.id === $('ch-stu').value) || null;
+  const lvl = levelById(+$('ch-lvl').value);
+  const count = +$('ch-cnt').value, allow = +$('ch-allow').value;
+  const limitMin = $('ch-tlon').checked ? +$('ch-tmin').value : 0;
+  chal = {
+    stu, stuId: stu && stu.id, lvl, lvlId: lvl.id, count, allow, limitMin,
+    fb: $('ch-fb').checked,
+    items: Array.from({ length: count }, () => lvl.gen()),
+    idx: 0, wrongs: 0, typed: '', log: [], timer: null,
+    startAt: Date.now(), itemStart: 0,
+    deadline: limitMin ? Date.now() + limitMin * 60000 : 0,
+  };
+  if (chal.deadline) chal.timer = setInterval(chalTick, 500);
+  renderChalProblem();
+}
+function chalNav() {
+  const who = chal.stu ? esc(chal.stu.name) : '기록 저장 안 함';
+  return `<span class="nav-student">⚡ 도전 · ${who}</span>
+    <button class="home" onclick="chalQuit()">🏠 그만하기</button>
+    <button class="full" onclick="toggleFull()">⛶</button>`;
+}
+function renderChalProblem() {
+  chal.wrongs = 0; chal.typed = ''; locked = false; curCirc = null; chal.itemStart = Date.now();
+  /* 06/11의 렌더러·낭독이 읽는 세션 미러 — 도전은 answer()·힌트 경로를 쓰지 않아 저장에 영향 없음 */
+  session = { items: chal.items, idx: chal.idx, levelId: chal.lvl.id, levelName: chal.lvl.name, log: [], startAt: chal.startAt };
+  setNav(chalNav());
+  const pad = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'del', 0, 'ok'].map(k =>
+    k === 'del' ? `<button class="chk-key chk-del" onclick="chalDel()">⌫</button>`
+      : k === 'ok' ? `<button class="chk-key chk-ok" onclick="chalOk()">✓</button>`
+        : `<button class="chk-key" onclick="chalKey(${k})">${k}</button>`).join('');
+  $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
+    <div class="card card--accent study-card chalcard">
+      <div style="display:flex;align-items:center;justify-content:center;gap:.7rem;margin-bottom:.2rem">
+        <span class="speak-icon" onclick="speakProblem()" style="font-size:1.6rem">🔊</span>
+        <div class="counter" style="margin:0">${chal.idx + 1} / ${chal.items.length} · ⚡ ${esc(chal.lvl.name)}</div>
+        ${chal.deadline ? '<span class="chtimer" id="chtimer"></span>' : ''}
+      </div>
+      <div class="qface" id="qface"></div>
+      <div class="chalpad">${pad}</div>
+    </div>
+  </div>`;
+  paintFace(false);
+  chalSlot();
+  /* 수 배열(수직선 여행형): 수직선은 처음엔 숨기고 1차 오답 힌트로 공개(기준 숫자 포함) */
+  const sl = document.querySelector('#qface .seqline');
+  if (sl) sl.classList.add('hidden');
+  chalTick();
+  speakProblem();
+}
+/* 정답칸의 ? 를 지우고 입력 표시 + 깜빡이는 커서로 교체 */
+function chalSlot() {
+  const s = $('qslot'); if (!s) return;
+  s.classList.remove('qblank-cells', 'vans-cells');
+  s.classList.add('qblank', 'chalq');
+  s.style.width = 'auto';
+  s.innerHTML = `<span id="chd"></span><i class="chcur"></i>`;
+}
+function chalPaint() { const d = $('chd'); if (d) d.textContent = chal.typed; }
+function chalKey(k) { if (locked || chal.typed.length >= 4) return; chal.typed += k; chalPaint(); }
+function chalDel() { if (locked) return; chal.typed = chal.typed.slice(0, -1); chalPaint(); }
+function chalOk() {
+  if (locked) return;
+  const p = chal.items[chal.idx];
+  if (!chal.typed) { wiggle($('qslot')); return; }
+  const v = parseInt(chal.typed, 10);
+  if (v === p.ans) {
+    locked = true;
+    chalLog(true, v);
+    const s = $('qslot'); if (s) { s.classList.add('answered'); celebrate(s); }
+    chime(true); speak(praise());
+    setTimeout(chalNext, foreignPraise() ? 2800 : 1100);
+    return;
+  }
+  chal.wrongs++;
+  if (chal.wrongs > chal.allow) {                             // 허용 초과 → 오답 처리, 정답 비공개로 다음 문제
+    locked = true;
+    chalLog(false, v);
+    if (chal.fb) { chime(false); wiggle($('qface')); }
+    setTimeout(chalNext, chal.fb ? 900 : 250);
+    return;
+  }
+  if (chal.fb) {
+    chime(false); wiggle($('qface'));
+    /* 수 배열: 1차=수직선 공개(기준 숫자 표시), 2차=기준 숫자에서 뛰어 세며 빈칸까지 시연 */
+    const sl = p.type === 'seq' && Math.abs(p.step) === 1 && document.querySelector('#qface .seqline');
+    if (sl && chal.wrongs === 1) {
+      sl.classList.remove('hidden');
+      speak(p.step === -1 ? '수가 1씩 작아져요. 거꾸로 세어 봐요.' : '수가 1씩 커져요. 순서대로 세어 봐요.');
+    } else if (sl && chal.wrongs >= 2) chalSeqJump(p, sl);
+    else speak('다시 한 번 해 볼까요?');
+  }
+  chal.typed = ''; chalPaint();                               // 피드백 꺼도 입력은 지워짐 → 재시도
+}
+/* 수 배열 2차 힌트: 초록 깃발이 배열 첫 수에서 한 칸씩 뛰며 세고(speakFast) 빈칸 값까지 감 */
+function chalSeqJump(p, sl) {
+  sl.classList.remove('hidden');
+  const MAX = 20, pos = v => (v / MAX * 100).toFixed(1);
+  let j = sl.querySelector('.nlflag.jumpgo');
+  if (!j) { j = document.createElement('div'); j.className = 'nlflag jumpgo';
+    j.innerHTML = '<span class="nlhead"></span><i class="nlstem"></i>'; sl.appendChild(j); }
+  const seqv = []; for (let v = p.arr[0], n = 0; n < 8; v += p.step, n++) { seqv.push(v); if (v === p.arr[p.blank]) break; }
+  const show = v => { j.style.left = pos(v) + '%'; j.querySelector('.nlhead').textContent = v; speakFast(String(v)); };
+  show(seqv[0]);
+  seqv.slice(1).forEach((v, i) => setTimeout(() => {
+    if (!j.isConnected) return;                               // 시연 중 문제 전환·종료 대비
+    show(v);
+    if (v === p.arr[p.blank]) setTimeout(() => { if (j.isConnected) speak('빈칸에 도착했어요. 빈칸의 수를 써 보세요.'); }, 650);
+  }, 750 * (i + 1)));
+}
+function chalLog(ok, given) {
+  const p = chal.items[chal.idx];
+  chal.log[chal.idx] = { q: qStr(p), ans: p.ans, given, ok, wrongs: chal.wrongs, ms: Date.now() - chal.itemStart, chal: 1 };
+}
+function chalNext() {
+  if (!chal || chal.done) return;                             // 전환 대기 중 시간 종료·그만하기와의 경합 방지
+  chal.idx++;
+  if (chal.idx >= chal.items.length) finishChallenge(false);
+  else renderChalProblem();
+}
+function chalQuit() { if (chal) { chal.done = true; if (chal.timer) clearInterval(chal.timer); chal.timer = null; } renderStudentPick(); }
+
+/* ---- 제한시간 ---- */
+function chalTick() {
+  if (!chal || !chal.deadline) return;
+  const left = chal.deadline - Date.now();
+  const el = $('chtimer');
+  if (el) {
+    const s = Math.max(0, Math.ceil(left / 1000));
+    el.textContent = `⏱ ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    el.classList.toggle('low', left < 60000);
+  }
+  if (left <= 0) finishChallenge(true);
+}
+
+/* ---- 종료·결과 ---- */
+async function finishChallenge(timeup) {
+  if (chal.done) return;                                      // 타이머 틱·마지막 문제 전환 이중 호출 방지(이중 저장 금지)
+  chal.done = true;
+  if (chal.timer) { clearInterval(chal.timer); chal.timer = null; }
+  locked = true;
+  const log = chal.log.filter(Boolean);
+  const ok = log.filter(it => it.ok).length;
+  const elapsed = Date.now() - chal.startAt;
+  /* 학습자 선택 시에만 저장 — levelName ⚡ 접두사로 구분(스키마 변경 없음), 달력·진급 영향 없음 */
+  if (chal.stu && log.length) {
+    try {
+      await Store.saveSession({
+        id: uid(), classCode: klass.code, studentId: chal.stu.id, sdate: todayStr(),
+        levelId: chal.lvl.id, levelName: '⚡' + chal.lvl.name,
+        total: chal.items.length, firstTry: log.filter(it => it.ok && it.wrongs === 0).length,
+        hintUsed: 0, durationMs: elapsed, items: log, finishedAt: new Date().toISOString(),
+      });
+    } catch (e) { }
+  }
+  const rows = chal.items.map((p, i) => {
+    const it = chal.log[i];
+    return `<tr><td>${i + 1}</td><td>${esc(qStr(p))}</td>
+      <td>${it ? it.given : '—'}</td>
+      <td>${!it ? '<span class="tag mid ctag">─ 미풀이</span>' : it.ok ? (it.wrongs ? `<span class="tag mid ctag">○ 정답 · 오답 ${it.wrongs}회</span>` : '<span class="tag on ctag">○ 정답</span>') : '<span class="tag low ctag">✕ 오답</span>'}</td></tr>`;
+  }).join('');
+  const min = Math.floor(elapsed / 60000), sec = Math.round(elapsed % 60000 / 1000);
+  setNav(chalNav());
+  $('wrap').innerHTML = `<div class="card card--accent chalres">
+    <h2 style="margin:.2rem 0 .4rem">⚡ 도전 ${timeup ? '— 시간 종료' : '끝!'}</h2>
+    <div class="chal-score">${ok} <small>/ ${chal.items.length}</small></div>
+    <div class="note">${chal.stu ? esc(chal.stu.name) : '기록 저장 안 함'} · ${lvlNo(chal.lvl.id)}. ${esc(chal.lvl.name)} · ⏱ ${min ? min + '분 ' : ''}${sec}초${chal.stu && log.length ? ' · 기록 저장됨(⚡)' : ''}</div>
+    <div class="chal-list"><table class="itemtbl"><thead><tr><th>번호</th><th>문제</th><th>내 답</th><th>결과</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div style="display:flex;gap:.8rem;justify-content:center;margin-top:1rem">
+      <button class="btn btn--orange" onclick="chalRetry()">🔄 다시 도전</button>
+      <button class="btn" onclick="renderChalSetup()">⚙ 설정 바꾸기</button>
+      <button class="btn" onclick="chalQuit()">🏠 처음으로</button>
+    </div>
+  </div>`;
+  speak(timeup ? '시간이 다 되었어요.' : '도전 끝! 잘했어요.');
+}
+function chalRetry() {                                        // 같은 설정, 새 문제
+  chal.items = Array.from({ length: chal.count }, () => chal.lvl.gen());
+  chal.idx = 0; chal.log = []; chal.typed = ''; chal.wrongs = 0; chal.done = false;
+  chal.startAt = Date.now();
+  chal.deadline = chal.limitMin ? Date.now() + chal.limitMin * 60000 : 0;
+  if (chal.deadline) chal.timer = setInterval(chalTick, 500);
+  renderChalProblem();
 }
 
 /* 내장 이미지 (v3에서 이관) */
