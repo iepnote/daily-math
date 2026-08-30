@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 104 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 105 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -284,59 +284,20 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .hangmodel.big.compact .cdot{ width:20px; height:20px; }
 .hangmodel.big.compact .rod{ width:11px; height:60px; }
 /* 빼는 수(뒷수) 모형: 빗금 단서만(테두리 없음) — 자리 색 약속 유지하면서 "없어질 쪽" 구분 */
-.sub-src .rod, .sub-src .cdot, .sub-src .bunit, .sub-src .brod, .sub-src .bflat{
+.sub-src .rod, .sub-src .cdot, .sub-src .bflat{
   background-image:repeating-linear-gradient(45deg, rgba(255,255,255,.8) 0 2px, transparent 2px 6px) !important; }
-/* 받아올림: '10'에서 십의 자리로 날아가는 작은 1 */
-.flyone{ position:absolute; left:50%; top:-.2em; font-size:1.15rem; font-weight:800; color:#E53935; z-index:3; }
 
 /* ===== 두 자리: 한 줄 배치 — 십 칸(파랑)·일 칸(빨강) 같은 자리끼리 + 진행 카운터 ===== */
 .pvwrap{ display:flex; align-items:center; justify-content:center; gap:1.6rem; flex-wrap:wrap; margin:.25rem 0; }
-.pvline{ display:flex; align-items:stretch; gap:1.1rem; }
-.pvcell{ border-radius:.85rem; padding:.4rem .7rem .5rem; display:flex; flex-direction:column; align-items:center;
-  justify-content:flex-end; gap:.3rem; min-width:80px; }
-.pvcell.tens{ background:#E3F2FD; }
-.pvcell.ones{ background:#FDECEA; }
-.pvvals{ display:flex; align-items:center; gap:.3rem; }
-.bplus{ font-weight:800; color:var(--ink-soft); }
-.bminus{ font-weight:800; color:#C62828; }
-.pvgap{ width:16px; flex:0 0 16px; }
-.dotpair{ display:flex; align-items:flex-end; }
-.will-rm{ outline:3px dashed #E53935; outline-offset:2px; }
 .pvcounter{ font-size:3rem; font-weight:900; color:var(--accent-strong); min-width:2.4em; text-align:center;
   background:var(--choice-bg); border:5px solid var(--choice-border); border-radius:1.1rem; padding:.15rem .5rem; align-self:center; }
 
-/* ===== 수 모형 블록 (백판·십막대·낱개) ===== */
-.blockrow{ display:flex; justify-content:center; align-items:flex-end; gap:1.4rem; flex-wrap:wrap; margin:.2rem 0; }
-.bset{ display:flex; flex-direction:column; align-items:center; gap:.35rem; }
-.bnum{ font-size:1.5rem; font-weight:800; color:var(--accent-strong); }
-.bnum.b{ color:#B26A00; } .bnum.sky{ color:#0277BD; }
-.brow{ display:flex; align-items:flex-end; gap:.55rem; }
-.bcol{ display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:.25rem; min-width:34px; }
-.bval{ font-size:1.05rem; font-weight:800; color:var(--accent-strong); }
-.bval.ph{ color:#2E7D32; } .bval.pt{ color:#1565C0; } .bval.po{ color:#C62828; }   /* 백=초록 십=파랑 일=빨강 */
-.blbl{ font-size:.82rem; font-weight:800; color:var(--ink-soft); }
-.bstack{ display:flex; align-items:flex-end; justify-content:center; }
-.bflats{ flex-wrap:wrap; gap:4px; max-width:104px; }        /* 백판: 3개씩 줄바꿈 */
-.brods{ gap:4px; }
-.bunits{ flex-direction:column-reverse; gap:3px; flex-wrap:wrap-reverse; max-height:102px; align-items:flex-end; }  /* 낱개: 아래부터, 9개 넘으면(빌림 +10) 옆 줄로 */
-/* 이어 세기 애니메이션용 — 변신/소멸/등장 (hangmodel의 .fuse/.melt/.born 문법을 블록에도) */
-.brod.melt,.bflat.melt{ animation:fadeShrink .6s ease forwards; }
-.bunit.born,.brod.born{ animation:popIn .45s cubic-bezier(.2,1.5,.4,1); }
-.brod.new,.bflat.new{ animation:popIn .55s cubic-bezier(.2,1.5,.4,1); }
-.bunit.fuse,.brod.fuse{ animation:fadeShrink .5s ease forwards; }
+/* ===== 백판 모형(.bflat) — 자릿값 아이콘(plIconHtml)·sub-src 빗금에서 사용 ===== */
 .bflat{ width:30px; height:30px; border-radius:3px; background-color:#43A047;   /* 백=초록 */
   background-image:repeating-linear-gradient(0deg,transparent 0 5.4px,rgba(255,255,255,.55) 5.4px 6.4px),
                    repeating-linear-gradient(90deg,transparent 0 5.4px,rgba(255,255,255,.55) 5.4px 6.4px),
                    linear-gradient(135deg, rgba(255,255,255,.4), rgba(0,0,0,.15));
   box-shadow:0 2px 3px rgba(0,0,0,.25), inset 0 -2px 2px rgba(0,0,0,.15); }
-.brod{ width:8px; height:30px; border-radius:2px; background-color:var(--accent-strong);
-  background-image:repeating-linear-gradient(0deg,transparent 0 5.4px,rgba(255,255,255,.5) 5.4px 6.4px),
-                   linear-gradient(90deg, rgba(255,255,255,.5), rgba(0,0,0,.18));
-  box-shadow:0 2px 3px rgba(0,0,0,.25); }
-.bunit{ width:8px; height:8px; border-radius:2px; background-color:#E53935;   /* 일=빨강 */
-  background-image:linear-gradient(135deg, rgba(255,255,255,.5), rgba(0,0,0,.18));
-  box-shadow:0 1px 2px rgba(0,0,0,.25); }
-.bsign{ font-size:2rem; font-weight:800; color:var(--accent-strong); align-self:center; }
 
 /* ===== 세 자리 자리값 색 띠 (자리 색 약속: 일=빨강·십=파랑·백=초록·천=주황) ===== */
 .vd{ position:relative; border-radius:.12em; flex:0 0 auto; }
@@ -469,6 +430,9 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .nlwrap.jump .nlflag.trav{ cursor:grab; touch-action:none; pointer-events:auto; }   /* 기본 .nlflag의 pointer-events:none 복구 — 없으면 점프 드래그가 아예 죽는다(v100 실사고) */
 .nlflag.trav.drag{ transition:none; cursor:grabbing; z-index:9; }
 .mgrp.tapg{ cursor:pointer; touch-action:manipulation; position:relative; }
+/* 4차(v105) 조작형 보강 — 나눗셈 묶음 탭·뛰어 세기 칸 탭·십틀 칸 탭 */
+.dgrp.tapg{ cursor:pointer; touch-action:manipulation; }
+.tapbox{ cursor:pointer; touch-action:manipulation; }
 .gcnt{ position:absolute; right:-12px; top:-16px; background:var(--amber); color:#fff; font-weight:800; font-size:1.1rem;
   border-radius:1em; padding:.05em .45em; box-shadow:0 2px 4px rgba(0,0,0,.25); }
 /* SEM 타임어택 워밍업(v90): 진행 배지·타이머 */
@@ -1057,7 +1021,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 104';
+const APP_VERSION = 'ver 105';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1537,6 +1501,9 @@ const KO_CNT = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '�
 const koCnt = n => n <= 10 ? KO_CNT[n] : (n < 20 ? '열' + KO_CNT[n - 10] : (n === 20 ? '스무' : String(n)));
 const PRAISES = ['잘했어요!', '참 잘했어요!', '최고예요!', '딩동댕! 맞았어요!', '멋져요!', '천재예요!'];
 const praise = () => PRAISES[Math.floor(Math.random() * PRAISES.length)];
+/* 5차(v105) 과정 칭찬 — 힌트를 받고 맞힌 경우: 결과가 아니라 전략 사용·끈기를 칭찬(자기효능감·전략 전이) */
+const PRAISE_HELP = ['같이 해내서 맞혔어요! 다음엔 혼자 해 봐요.', '힌트를 잘 따라와서 맞혔어요!', '포기하지 않고 끝까지 해냈어요!'];
+const praiseFor = w => w > 0 ? PRAISE_HELP[Math.floor(Math.random() * PRAISE_HELP.length)] : praise();
 
 /* ================= 다국어 음성(낱말놀이 문법 이식) =================
    화면·기본 발화는 항상 한국어. 설정 언어(prefs.lang)가 있으면 같은 내용을
@@ -1695,6 +1662,19 @@ const TRX = {
   '천천히 다시 세어 볼까요?': { en: 'Shall we count again slowly?', zh: '慢慢地再数一次好吗？', vi: 'Đếm lại chậm rãi nhé?', ja: 'ゆっくり もういちど かぞえてみようか？', ru: 'Посчитаем ещё раз, не спеша?' },
   '잘 따라 눌렀어요!': { en: 'You followed along nicely!', zh: '跟着按得真好！', vi: 'Con bấm theo giỏi lắm!', ja: 'じょうずに ついて おせたね！', ru: 'Ты отлично повторил!' },
   '남은 동그라미는 일의 자리로.': { en: 'The leftover circles go to the ones place.', zh: '剩下的圆圈放到个位。', vi: 'Hình tròn còn lại về hàng đơn vị.', ja: 'のこりの まるは いちの くらいへ。', ru: 'Оставшиеся кружки — в разряд единиц.' },
+  /* ---- 4차 조작형 보강(v105: 10에서 빼기·뛰어 세기·나눗셈·십틀 탭) ---- */
+  '십 막대를 눌러 보세요. 열 개로 바뀌어요.': { en: 'Tap the tens rod. It turns into ten circles.', zh: '点一下十的小棒，会变成十个圆圈。', vi: 'Chạm thanh chục. Nó đổi thành mười hình tròn.', ja: '10の ぼうを おしてね。まる 10こに かわるよ。', ru: 'Нажми на палочку-десяток — она станет десятью кружками.' },
+  '끝까지 뛰었어요. 모두 몇일까요?': { en: 'We jumped to the end. How many in all?', zh: '跳到最后了。一共是几？', vi: 'Đã nhảy đến cuối. Tất cả là mấy?', ja: 'さいごまで とんだね。ぜんぶで いくつ？', ru: 'Мы допрыгали до конца. Сколько всего?' },
+  '묶음을 하나씩 누르면서 몇 묶음인지 세어 보세요.': { en: 'Tap the groups one by one and count how many groups.', zh: '一组一组点，数一数有几组。', vi: 'Chạm từng nhóm và đếm xem có mấy nhóm.', ja: 'たばを ひとつずつ おして、なんたばか かぞえてね。', ru: 'Нажимай группы по одной и считай, сколько групп.' },
+  '묶음을 다 세었어요. 몇 묶음일까요?': { en: 'We counted all the groups. How many groups?', zh: '所有的组都数完了。有几组？', vi: 'Đã đếm hết các nhóm. Có mấy nhóm?', ja: 'たばを ぜんぶ かぞえたね。なんたばかな？', ru: 'Мы посчитали все группы. Сколько групп?' },
+  '점선 동그라미를 눌러서 빼 보세요.': { en: 'Tap the dotted circles to take them away.', zh: '点虚线圆圈，把它们减掉。', vi: 'Chạm hình tròn chấm chấm để bớt đi.', ja: 'てんせんの まるを おして ひいてみよう。', ru: 'Нажимай пунктирные кружки, чтобы убрать их.' },
+  '빈칸을 눌러서 채워 보세요.': { en: 'Tap the empty cells to fill them.', zh: '点空格，把它填满。', vi: 'Chạm ô trống để tô vào.', ja: 'あいた ますを おして うめてみよう。', ru: 'Нажимай пустые клетки и заполняй их.' },
+  '다 지웠어요. 몇 개를 뺐나요?': { en: 'All crossed out. How many did we take away?', zh: '都划掉了。减了几个？', vi: 'Đã gạch hết. Bớt đi mấy cái?', ja: 'ぜんぶ けしたね。なんこ ひいたかな？', ru: 'Всё зачеркнули. Сколько мы убрали?' },
+  '십틀을 다 채웠어요. 몇 개를 더했나요?': { en: 'The ten-frame is full. How many did we add?', zh: '十格都填满了。加了几个？', vi: 'Khung mười đã đầy. Đã thêm mấy cái?', ja: '10わくが いっぱいに なったね。なんこ たしたかな？', ru: 'Десятиклеточная рамка полна. Сколько мы добавили?' },
+  /* ---- 5차 과정 칭찬(v105) ---- */
+  '같이 해내서 맞혔어요! 다음엔 혼자 해 봐요.': { en: 'We did it together! Next time, try it by yourself.', zh: '我们一起做对了！下次自己试试。', vi: 'Cùng nhau làm đúng rồi! Lần sau con tự làm nhé.', ja: 'いっしょに できたね！つぎは ひとりで やってみよう。', ru: 'Мы справились вместе! В следующий раз попробуй сам.' },
+  '힌트를 잘 따라와서 맞혔어요!': { en: 'You followed the hint and got it right!', zh: '跟着提示做对了！', vi: 'Con theo gợi ý và làm đúng rồi!', ja: 'ヒントに そって できたね！', ru: 'Ты следовал подсказке и решил правильно!' },
+  '포기하지 않고 끝까지 해냈어요!': { en: "You didn't give up and made it to the end!", zh: '没有放弃，坚持到最后了！', vi: 'Con không bỏ cuộc và làm đến cùng!', ja: 'あきらめずに さいごまで やりとげたね！', ru: 'Ты не сдался и дошёл до конца!' },
 };
 /* hintTwo 단서(더해/빼 × 세로/가로) */
 [['더해', { en: 'add', zh: '加一加', vi: 'cộng lại', ja: 'たしてみよう', ru: 'сложи' }], ['빼', { en: 'subtract', zh: '减一减', vi: 'trừ đi', ja: 'ひいてみよう', ru: 'вычти' }]].forEach(([k, w]) => {
@@ -1883,6 +1863,17 @@ function trKo(t) {
   /* '5와 몇' 직산(57) — 정답은 패턴보다 먼저 매칭해야 묶음 설명이 살아남음 */
   if (m = t.match(/^다섯하고 (.+?) 개\. 정답은 (\d+)(?:이에요|예요)\.$/)) { const x = cntToNum(m[1]) || m[1];
     return T({ en: `Five and ${x} more. The answer is ${m[2]}.`, zh: `五加 ${x} 个。答案是 ${m[2]}。`, vi: `Năm và thêm ${x}. Đáp án là ${m[2]}.`, ja: `5と ${x}こ。こたえは ${m[2]}。`, ru: `Пять и ещё ${x}. Ответ: ${m[2]}.` }); }
+  /* 4차 조작형(v105) — 수가 들어가는 안내 */
+  if (m = t.match(/^10에서 (\d+)[을를] 뺐어요\. 남은 동그라미를 모두 세어 봐요\.$/))
+    return T({ en: `We took ${m[1]} from 10. Count all the circles that are left.`, zh: `从 10 里减了 ${m[1]}。数一数剩下的圆圈。`, vi: `Đã bớt ${m[1]} từ 10. Đếm tất cả hình tròn còn lại.`, ja: `10から ${m[1]}を ひいたよ。のこりの まるを ぜんぶ かぞえよう。`, ru: `Мы вычли ${m[1]} из 10. Посчитай оставшиеся кружки.` });
+  if (m = t.match(/^10이 되었어요\. 동그라미를 눌러서 (\d+)개를 지워 보세요\.$/))
+    return T({ en: `We made 10. Tap the circles to cross out ${m[1]}.`, zh: `变成 10 了。点圆圈，划掉 ${m[1]} 个。`, vi: `Đã thành 10. Chạm hình tròn để gạch ${m[1]} cái.`, ja: `10に なったよ。まるを おして ${m[1]}こ けしてね。`, ru: `Получилось 10. Нажимай кружки и зачеркни ${m[1]}.` });
+  if (m = t.match(/^칸을 순서대로 누르면서 (\d+)씩 뛰어 세어 보세요\.$/))
+    return T({ en: `Tap the boxes in order and skip count by ${m[1]}.`, zh: `按顺序点格子，${m[1]} 个 ${m[1]} 个地数。`, vi: `Chạm các ô theo thứ tự và đếm cách ${m[1]}.`, ja: `ますを じゅんばんに おして、${m[1]}とびで かぞえてね。`, ru: `Нажимай клетки по порядку и считай по ${m[1]}.` });
+  if (m = t.match(/^묶음을 하나씩 누르면서 (\d+)씩 덜어내 보세요\.$/))
+    return T({ en: `Tap the groups one by one and take away ${m[1]} each time.`, zh: `一组一组点，每次拿走 ${m[1]}。`, vi: `Chạm từng nhóm, mỗi lần bớt ${m[1]}.`, ja: `たばを ひとつずつ おして、${m[1]}ずつ とっていこう。`, ru: `Нажимай группы по одной и убирай по ${m[1]}.` });
+  if (m = t.match(/^0이 되었어요\. (\d+)[을를] 몇 번 덜어냈나요\?$/))
+    return T({ en: `We reached 0. How many times did we take ${m[1]} away?`, zh: `到 0 了。一共拿走了几次 ${m[1]}？`, vi: `Về 0 rồi. Đã bớt ${m[1]} mấy lần?`, ja: `0に なったよ。${m[1]}を なんかい とったかな？`, ru: `Дошли до 0. Сколько раз мы убрали ${m[1]}?` });
   /* 재도전(v100) — '정답은' 일반 패턴보다 먼저 */
   if (m = t.match(/^오늘 문제를 다 풀었어요! 아까 문제를 한 번 더 풀어 봐요\. (\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/))
     return T({ en: `All done for today! Let's try that problem one more time. ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, zh: `今天的题都做完了！刚才的题再来一次。${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, vi: `Xong bài hôm nay rồi! Làm lại bài lúc nãy một lần nữa nhé. ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, ja: `きょうの もんだいは おわり！さっきの もんだいを もういちど。${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, ru: `На сегодня всё! Решим ту задачу ещё раз. ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}` });
@@ -2547,7 +2538,7 @@ function answer(btn, ans) {
       const j = $('jshown'); if (j) { j.innerHTML = `<s>${p.shown}</s> ${p.a * p.b}`; j.classList.add('jfix'); }
       afterCorrectSpeak(`잘 찾았어요! 바르게 고치면, ${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.a * p.b}${josaYeyo(p.a * p.b)}.`);   // 고친 식을 보고 들을 시간(발화 종료 기반)
       return;
-    } else speak(praise());
+    } else speak(praiseFor(wrongCount));   // 5차(v105): 힌트 뒤 정답은 과정 칭찬(전략 사용 언급 — 자기효능감·전이)
     afterCorrect();   // 대기 시간은 칭찬 발화 길이에 맞춰 자동(afterCorrect)
   } else {
     btn.classList.add('wrong'); btn.disabled = true;
@@ -2750,12 +2741,8 @@ function routeHint(stage) {
   if (stage <= 1) { hintPlace(p, h, 1); placeIcons(); return; }
   startColumn(p);
 }
-function showHint() { routeHint(1); }
-function showHintCount() { routeHint(2); }
-function hintAdd(p, h) { curCirc = [{ n: p.a, cls: '' }, { n: p.b, cls: 'b' }]; paintFace(true); h.innerHTML = `<div class="tip">동그라미를 모아서 세어 봐요</div>`; }
-function hintSub(p, h) { curCirc = [{ n: p.a, cls: 'sky' }]; paintFace(true); h.innerHTML = `<div class="tip">하늘색 동그라미 ${p.a}개에서 ${p.b}개를 빼 봐요</div>`; }
 
-/* ---- 힌트 공통: 진행 카운터·비행 이동/소멸 (hintTwo·hintBlocks 공용, _sc는 호출 시점에 읽음) ---- */
+/* ---- 힌트 공통: 진행 카운터·비행 이동/소멸 (_sc는 호출 시점에 읽음) ---- */
 const setC = v => { const c = $('pvcounter'); if (!c) return; c.classList.remove('hidden'); c.textContent = v; c.animate([{ transform: 'scale(1.28)' }, { transform: 'scale(1)' }], { duration: 220 }); };
 const flyMove = (s, d, after) => {
   const sc = window._sc || 1, sr = s.getBoundingClientRect(), dr = d.getBoundingClientRect();
@@ -2868,200 +2855,8 @@ function hintTwo(p, h, stage) {
     <div class="tip">${lead}${extra}</div></div>`;
   speak(`${skipModels ? '숫자 위에 자리 이름이 있어요.' : '파란 막대는 십, 빨간 동그라미는 일이에요.'} 각 자릿값의 수를 세어 ${plus ? '더해' : '빼'} 봐요.`);
   return;
-  /* ---- 이하 미사용(구 애니메이션, 필요 시 복원용) ---- */
-  if (stage === 1) { return; }
-  const sc = window._sc || 1, items = [];
-  const fillPl = pl => fillAnsCell(pl, dg(p.ans, pl));
-  const hasCells = !!document.querySelector('#qslot .ansbox');
-  const addRow = stack => { const rowsL = stack.querySelectorAll('.crow5'); let row = rowsL.length ? rowsL[rowsL.length - 1] : null; if (!row || row.children.length >= 5) { row = document.createElement('div'); row.className = 'crow5'; stack.appendChild(row); } return row; };
-  /* 이어 세기 시작: 앞수에 동그라미 */
-  items.push({ text: String(p.a), action: () => { const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring'); setC(p.a); } });
-  const rowA = ma.querySelector('.rodrow'), stackA = ma.querySelector('.cstack');
-  if (plus) {
-    /* 착지 자리(숨김) 준비 */
-    const rodSlots = [], unitSlots = [];
-    for (let i = 0; i < bT; i++) { const d = document.createElement('div'); d.className = 'rod'; d.style.visibility = 'hidden'; rowA.appendChild(d); rodSlots.push(d); }
-    for (let i = 0; i < bU; i++) { const d = document.createElement('div'); d.className = 'cdot red'; d.style.visibility = 'hidden'; addRow(stackA).appendChild(d); unitSlots.push(d); }
-    const bRods = [...mb.querySelectorAll('.rod')], bDots = [...mb.querySelectorAll('.cdot')];
-    /* ① 일의 자리 먼저: 낱개가 하나씩 날아와 +1 */
-    bDots.forEach((d, j) => { const v = p.a + j + 1; items.push({ text: String(v), action: () => { setC(v); flyMove(d, unitSlots[j], () => { d.style.visibility = 'hidden'; unitSlots[j].style.visibility = 'visible'; }); } }); });
-    /* ② 받아올림 표준 표기: 낱개 10개 '10' 표시 → 작은 1이 십의 자리 위로 비행 → 막대 1개 변신 */
-    if (carry) {
-      /* 착지 타깃(앞수 십의 자리 숫자 칸)은 시퀀스 생성 시 사전 확정 */
-      const tenEl = document.querySelector('#qface .facev .vrow:first-child .vd:nth-last-child(2), #qface .faceh .fnum[data-t="n0"] .hd:nth-last-child(2)');
-      items.push({ text: '낱개 열 개가 모여, 10이 되었어요!', action: () => markTen(stackA) });
-      items.push({
-        text: '10의 1을 십의 자리 위에 작게 써요.', action: () => {
-          if (!tenEl) return;
-          const f = document.createElement('span'); f.className = 'flyone'; f.textContent = '1'; stackA.appendChild(f);
-          const fr = f.getBoundingClientRect(), tr = tenEl.getBoundingClientRect();
-          const dx = (tr.left + tr.width / 2 - (fr.left + fr.width / 2)) / sc, dy = (tr.top - fr.bottom) / sc;
-          f.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${dx}px,${dy}px) scale(.7)` }], { duration: 650, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'forwards' });
-          setTimeout(() => { f.remove(); tenEl.classList.add('cmark'); }, 660);
-        }
-      });
-      items.push({
-        text: '낱개 열 개는, 십 막대 한 개로 바뀌어요!', action: () => {
-          const vis = [...stackA.querySelectorAll('.cdot')].filter(d => d.style.visibility !== 'hidden');
-          vis.slice(0, 10).forEach(d => { d.classList.add('fuse'); setTimeout(() => { d.style.visibility = 'hidden'; }, 520); });
-          const tl = stackA.querySelector('.tenlab'); if (tl) tl.remove(); stackA.classList.remove('tenfill');
-          const nr = document.createElement('div'); nr.className = 'rod new'; rowA.insertBefore(nr, rodSlots[0] || null);
-        }
-      });
-    }
-    if (hasCells) items.push({ text: `일의 자리는 ${dg(p.ans, 0)}.`, action: () => fillPl(0) });
-    /* ③ 십의 자리: 막대가 날아와 +10 */
-    const base = p.a + bU;
-    bRods.forEach((r, j) => { const v = base + (j + 1) * 10; items.push({ text: String(v), action: () => { setC(v); flyMove(r, rodSlots[j], () => { r.style.visibility = 'hidden'; rodSlots[j].style.visibility = 'visible'; }); } }); });
-    if (hasCells && p.ans >= 10) items.push({ text: `십의 자리는 ${dg(p.ans, 1)}.`, action: () => fillPl(1) });
-  } else {
-    const aRods = [...ma.querySelectorAll('.rod')];
-    const bRods = [...mb.querySelectorAll('.rod')], bDots = [...mb.querySelectorAll('.cdot')];
-    /* 빌림 낱개 10개는 미리(숨김) 만들어 두고 변신 때 나타나게 — 소멸 타깃을 사전 확정하기 위함 */
-    const born = [];
-    if (borrow) for (let i = 0; i < 10; i++) { const d = document.createElement('div'); d.className = 'cdot red'; d.style.visibility = 'hidden'; addRow(stackA).appendChild(d); born.push(d); }
-    const aDots = [...ma.querySelectorAll('.cdot')];   // 원본 + born(숨김)
-    /* 받아내림 2차: 빌림 변신만 천천히 — 막대가 일의 자리로 이동 후 팡! 낱개 10개.
-       막대는 transform으로만 이동(레이아웃 불변)·소멸도 visibility — 뒷수 모형과 세로 균형 유지 */
-    if (borrow && stage === 2) {
-      const r = aRods[aT - 1];
-      let fdx = 0, fdy = 0;   // 이동량 보관 — 팡 연출이 같은 transform 위에서 이어지도록(CSS melt는 translate를 덮어씀)
-      fitModels();   // born 10개로 커진 폭 반영
-      speakSequence([
-        { text: `낱개 ${aU}개에서 ${bU}개를 뺄 수 없어요.` },
-        {
-          text: '십 막대 한 개가 일의 자리로 천천히 가요.', action: () => {
-            if (!r) return;
-            const scn = window._sc || 1, sr = r.getBoundingClientRect(), tr = stackA.getBoundingClientRect();
-            fdx = (tr.left + tr.width / 2 - (sr.left + sr.width / 2)) / scn; fdy = (tr.bottom - sr.bottom) / scn;
-            r.animate([{ transform: 'translate(0,0)' }, { transform: `translate(${fdx}px,${fdy}px)` }], { duration: 1300, easing: 'ease-in-out', fill: 'forwards' });
-          }
-        },
-        {
-          text: '팡! 낱개 열 개로 변했어요!', action: () => {
-            if (r) {
-              r.animate([
-                { transform: `translate(${fdx}px,${fdy}px) scale(1)`, opacity: 1 },
-                { transform: `translate(${fdx}px,${fdy}px) scale(1.6)`, opacity: 1, offset: .35 },
-                { transform: `translate(${fdx}px,${fdy}px) scale(0)`, opacity: 0 },
-              ], { duration: 500, easing: 'ease-in', fill: 'forwards' });
-              setTimeout(() => { r.style.visibility = 'hidden'; }, 510);
-            }
-            born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
-          }
-        },
-        { text: `이제 낱개가 ${aU + 10}개예요. 다시 세어 볼까요?` },
-      ]);
-      return;
-    }
-    /* ① 받아내림: 낱개가 모자라면 막대 1개 → 낱개 10개 */
-    if (borrow) {
-      items.push({
-        text: `낱개 ${aU}개에서 ${bU}개를 뺄 수 없어요. 십 막대 한 개는, 낱개 열 개!`, action: () => {
-          const r = aRods[aT - 1]; if (r) { r.classList.add('melt'); setTimeout(() => { r.style.visibility = 'hidden'; }, 620); }
-          born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
-        }
-      });
-    }
-    /* ② 일의 자리 먼저: 뒷수 낱개가 날아가 짝과 소멸 (타깃: 뒤에서부터, 사전 확정) */
-    const totDots = aU + (borrow ? 10 : 0);
-    bDots.forEach((d, k) => {
-      const v = p.a - (k + 1), m = aDots[totDots - 1 - k];
-      items.push({ text: String(v), action: () => { setC(v); d && m && flyKill(d, m); } });
-    });
-    if (hasCells) items.push({ text: `일의 자리는 ${dg(p.ans, 0)}.`, action: () => fillPl(0) });
-    /* ③ 십의 자리: 뒷수 막대가 날아가 짝과 소멸 */
-    const usableRods = borrow ? aT - 1 : aT;
-    bRods.forEach((r, j) => {
-      const v = p.a - bU - (j + 1) * 10, m = aRods[usableRods - 1 - j];
-      items.push({ text: String(v), action: () => { setC(v); r && m && flyKill(r, m); } });
-    });
-    if (hasCells && p.ans >= 10) items.push({ text: `십의 자리는 ${dg(p.ans, 1)}.`, action: () => fillPl(1) });
-  }
-  items.push({ text: `정답은 ${p.ans}${josaYeyo(p.ans)}.`, action: () => setC(p.ans) });
-  fitModels();   // 착지 슬롯 추가로 커진 최종 폭 기준 재조정
-  speakSequence(items);
 }
-/* 19~22·31단계: 세 자리 — 세로셈 자리값 색 띠 + 자리별 계산 안내 */
-/* 세 자리 2차: 수 모형(백판·십막대·낱개)으로 두 수를 나타냄 — 색은 자리 의미 고정 */
-function blockSet(n) {
-  const H = Math.floor(n / 100), T = Math.floor(n / 10) % 10, O = n % 10;
-  /* 자리 색 통일(교실 약속): 백=초록, 십=파랑, 일=빨강 */
-  const col = (cnt, kind, label, value, vc) => `<div class="bcol"><div class="bval ${vc}">${value}</div><div class="bstack ${kind}s">${(`<div class="${kind}"></div>`).repeat(cnt)}</div><span class="blbl">${label}</span></div>`;
-  return `<div class="bset"><div class="bnum">${n}</div><div class="brow">${col(H, 'bflat', '백', H * 100, 'ph')}${col(T, 'brod', '십', T * 10, 'pt')}${col(O, 'bunit', '일', O, 'po')}</div></div>`;
-}
-/* 세 자리 2차: 이어 세기 문법(두 자리에서 확립) — 뒷수 블록이 앞수로 날아가며 +1/+10/+100 카운터,
-   올림=10개→윗자리 1개 변신+표준 표기(cmark), 내림=윗자리 1개→10개(born)+bmark, 자리 끝날 때마다 정답칸 채움. 일→십→백 순서 */
-function hintBlocks(p, h) {
-  markPlaceColors();
-  const plus = p.op === '+';
-  h.innerHTML = `<div class="pvwrap"><div class="pvcounter hidden" id="pvcounter"></div>
-    <div class="blockrow">${blockSet(p.a)}<span class="bsign">${plus ? '＋' : '−'}</span>${blockSet(p.b)}</div></div>
-    <div class="tip">백판은 100, 십 막대는 10, 낱개는 1이에요. <b>일의 자리부터</b> 같은 자리끼리 ${plus ? '모아요' : '덜어내요'}.</div>`;
-  const [A, B] = h.querySelectorAll('.bset');
-  if (!plus) B.classList.add('sub-src');   // 빼는 수 블록: 빗금+점선 형태 단서
-  const KIND = [['bunits', 'bunit', 1], ['brods', 'brod', 10], ['bflats', 'bflat', 100]];
-  const PIECE_KO = ['낱개', '십 막대', '백판'];
-  const stackOf = (s, pl) => s.querySelector('.' + KIND[pl][0]);
-  const ansPlaces = String(p.ans).length;
-  const items = [{ text: String(p.a), action: () => { A.querySelector('.bnum').classList.add('oring'); setC(p.a); } }];
-  let run = p.a, c = 0;
-  if (plus) {
-    for (let pl = 0; pl < 3; pl++) {
-      const cls = KIND[pl][1], unit = KIND[pl][2], db = dg(p.b, pl), sa = stackOf(A, pl);
-      /* 착지 자리(숨김) 사전 생성 — 타깃 사전 확정 */
-      const slots = [];
-      for (let i = 0; i < db; i++) { const d = document.createElement('div'); d.className = cls; d.style.visibility = 'hidden'; sa.appendChild(d); slots.push(d); }
-      [...stackOf(B, pl).querySelectorAll('.' + cls)].forEach((s, j) => {
-        run += unit; const v = run;
-        items.push({ text: String(v), action: () => { setC(v); flyMove(s, slots[j], () => { s.style.visibility = 'hidden'; slots[j].style.visibility = 'visible'; }); } });
-      });
-      /* 받아올림: 이 자리 10개 → 윗자리 1개 변신 + 표준 표기(작은 1) */
-      if (pl < 2 && dg(p.a, pl) + db + c >= 10) {
-        const up = stackOf(A, pl + 1), upCls = KIND[pl + 1][1], nxt = pl + 1;
-        items.push({
-          text: `${PIECE_KO[pl]} 열 개는, ${PIECE_KO[nxt]} 한 개로 바뀌어요! 1을 ${PLACE_KO[nxt]}의 자리 위에 작게 써요.`, action: () => {
-            const vis = [...sa.querySelectorAll('.' + cls)].filter(d => d.style.visibility !== 'hidden');
-            vis.slice(0, 10).forEach(d => { d.classList.add('fuse'); setTimeout(() => { d.style.visibility = 'hidden'; }, 520); });
-            const nr = document.createElement('div'); nr.className = upCls + ' new'; up.appendChild(nr);
-            markCol(nxt, 'cmark');
-          }
-        }); c = 1;
-      } else c = 0;
-      if (pl < ansPlaces) items.push({ text: `${PLACE_KO[pl]}의 자리는 ${dg(p.ans, pl)}.`, action: () => fillAnsCell(pl, dg(p.ans, pl)) });
-    }
-  } else {
-    /* 빌림 자리 사전 시뮬레이션 → born 10개(숨김)·소멸 타깃 사전 확정 */
-    const borrows = []; { let cc = 0; for (let pl = 0; pl < 3; pl++) { const d = dg(p.a, pl) - cc; if (d < dg(p.b, pl)) { borrows.push(pl); cc = 1; } else cc = 0; } }
-    const orig = KIND.map((k, pl) => [...stackOf(A, pl).querySelectorAll('.' + k[1])]);
-    const born = [[], [], []];
-    borrows.forEach(pl => { const sa = stackOf(A, pl), cls = KIND[pl][1]; for (let i = 0; i < 10; i++) { const d = document.createElement('div'); d.className = cls; d.style.visibility = 'hidden'; sa.appendChild(d); born[pl].push(d); } });
-    for (let pl = 0; pl < 3; pl++) {
-      const cls = KIND[pl][1], unit = KIND[pl][2], da = dg(p.a, pl), db = dg(p.b, pl);
-      /* 받아내림: 윗자리 1개(melt) → 이 자리 10개(born) + 표준 표기('10') */
-      if (borrows.includes(pl)) {
-        const melted = orig[pl + 1][orig[pl + 1].length - 1], d0 = da - (borrows.includes(pl - 1) ? 1 : 0);
-        items.push({
-          text: `${PIECE_KO[pl]} ${d0}개에서 ${db}개를 뺄 수 없어요. ${PIECE_KO[pl + 1]} 한 개는, ${PIECE_KO[pl]} 열 개!`, action: () => {
-            if (melted) { melted.classList.add('melt'); setTimeout(() => { melted.style.visibility = 'hidden'; }, 620); }
-            born[pl].forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
-            markCol(pl, 'bmark');
-          }
-        });
-      }
-      /* 뒷수 조각이 날아가 짝과 소멸 — 타깃: born 먼저, 그다음 원본 뒤에서부터(melt된 마지막 원본 제외) */
-      const meltedHere = borrows.includes(pl - 1) ? 1 : 0;
-      const pool = orig[pl].slice(0, orig[pl].length - meltedHere).concat(born[pl]);
-      [...stackOf(B, pl).querySelectorAll('.' + cls)].forEach((s, k) => {
-        run -= unit; const v = run, m = pool[pool.length - 1 - k];
-        items.push({ text: String(v), action: () => { setC(v); s && m && flyKill(s, m); } });
-      });
-      if (pl < ansPlaces) items.push({ text: `${PLACE_KO[pl]}의 자리는 ${dg(p.ans, pl)}.`, action: () => fillAnsCell(pl, dg(p.ans, pl)) });
-    }
-  }
-  items.push({ text: `정답은 ${p.ans}${josaYeyo(p.ans)}.`, action: () => setC(p.ans) });
-  speakSequence(items);
-}
+/* 세 자리 단계(150~153·164): 세로셈 자리값 색 띠 + 자리별 계산 안내 */
 const PLACE_KO = ['일', '십', '백', '천'];
 /* 자리(열) 하이라이트 / 받아올림·빌림 표시 — 가로·세로 공용 (현재 모드의 숫자 칸에 적용) */
 function litCol(pl) {
@@ -3356,16 +3151,6 @@ function finishColumnAdd() {
   setTimeout(go, lastSpeakMs + 1200);
 }
 
-function countAdd(p, h) {
-  curCirc = [{ n: p.a, cls: '' }, { n: p.b, cls: 'b' }]; paintFace(false);
-  h.innerHTML = `<div class="tip">하나씩 세어 볼까요?</div>`;
-  const dots = [...$('qface').querySelectorAll('.cdot')];
-  const items = dots.map((d, i) => ({ text: String(i + 1), action: () => d.classList.add('slash') }));
-  items.push({ text: `정답은 ${p.ans}${josaYeyo(p.ans)}.` });
-  speakSequence(items);
-}
-/* ---- 얼굴(숫자 아래)에 붙은 동그라미 스택 도우미 ---- */
-const faceStacks = () => [...$('qface').querySelectorAll('.cstack')];
 /* 10개가 되면 앞 두 줄(=10)에 옅은 배경 + '10' 라벨 */
 function markTen(stack) {
   if (!stack || stack.classList.contains('tenfill')) return;
@@ -4206,16 +3991,6 @@ function nearTap(p, h) {
     setTimeout(() => speak('하나 더 세었어요. 모두 몇일까요?'), lastSpeakMs + 150);
   });
 }
-function countSub(p, h) {
-  const a = p.a, b = p.b;
-  curCirc = [{ n: a, cls: 'sky' }]; paintFace(false);
-  h.innerHTML = `<div class="tip">빼는 만큼 지우고, 남은 것을 세어 봐요</div>`;
-  const dots = [...$('qface').querySelectorAll('.cdot')];
-  const items = [];
-  for (let k = 0; k < b; k++) { const idx = a - 1 - k, remain = a - 1 - k; items.push({ text: String(remain), action: () => dots[idx] && dots[idx].classList.add('slash', 'gray') }); }
-  items.push({ text: `정답은 ${a - b}${josaYeyo(a - b)}.` });
-  speakSequence(items);
-}
 /* 두 요소가 '만나서' 함께 팡! 하고 사라지는 소멸 — 한 자리·십몇 뺄셈용 */
 function killPop(s, m) {
   const sc = window._sc || 1;
@@ -4276,17 +4051,52 @@ function combineSub(p, h, stage) {
   items.push({ text: `${a}에서 ${b}${josaEul(b)} 빼면 ${koCnt(a - b)} 개가 남아요. 정답은 ${a - b}${josaYeyo(a - b)}.` });
   speakSequence(items);
 }
+/* 10에서 빼기 1차(v105, 4차 B) — 5전략 중 유일하게 조작이 없던 곳.
+   학생이 직접: ①십 막대 탭 → 열 개 변신(바꾸기=탭) ②열 개에서 빼는 수만큼 탭해 지우기(지우기=탭) */
+function tenTakeTap(p, h) {
+  const a = p.a, b = p.b, aU = a % 10;
+  curCirc = null; paintFace(false);
+  const { ma, fit } = hangTwoModels(p, true);
+  h.innerHTML = `<div class="tip">십 막대를 눌러 열 개로 바꾸고, 10에서 ${b}${josaEul(b)} 빼 봐요</div>`;
+  const rowA = ma && ma.querySelector('.rodrow'), stackA = ma && ma.querySelector('.cstack');
+  const rod = rowA && rowA.querySelector('.rod');
+  if (!rod || !stackA) {   // 모형 보루: 기존 말 단서로
+    speak(aU > 0 ? `${a}${josaEun(a)} 10과 ${aU}${josaYeyo(aU)}. 10에서 ${b}${josaEul(b)} 빼 봐요.` : `10에서 ${b}${josaEul(b)} 빼 봐요.`);
+    return;
+  }
+  const addRow = st => { const rs = st.querySelectorAll('.crow5'); let r = rs.length ? rs[rs.length - 1] : null; if (!r || r.children.length >= 5) { r = document.createElement('div'); r.className = 'crow5'; st.appendChild(r); } return r; };
+  const born = [];
+  for (let i = 0; i < 10; i++) { const d = document.createElement('div'); d.className = 'cdot red'; d.style.visibility = 'hidden'; addRow(stackA).appendChild(d); born.push(d); }
+  fit();
+  stackA.classList.add('taketap');
+  rod.classList.add('exch');                         // 반짝 유도(기존 스타일)
+  speak('십 막대를 눌러 보세요. 열 개로 바뀌어요.');
+  let swapped = false, erased = 0;
+  rod.addEventListener('pointerdown', () => {
+    if (swapped) return; swapped = true; tick();
+    rod.classList.remove('exch'); rod.classList.add('melt'); setTimeout(() => { rod.style.visibility = 'hidden'; }, 620);
+    born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
+    speak(`10이 되었어요. 동그라미를 눌러서 ${b}개를 지워 보세요.`);
+    born.forEach(d => d.addEventListener('pointerdown', () => {
+      if (erased >= b || d.classList.contains('slash')) return;
+      d.classList.add('slash', 'gray'); erased++;
+      speakFast(KO_NUM[erased] || String(erased));
+      if (erased === b) setTimeout(() => {
+        [...stackA.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden' && !x.classList.contains('slash')).forEach(pulseDot);
+        speak(aU > 0 ? `10에서 ${b}${josaEul(b)} 뺐어요. 남은 동그라미를 모두 세어 봐요.` : `10에서 ${b}${josaEul(b)} 뺐어요. 몇이 남았나요?`);
+      }, 250);
+    }));
+  });
+}
 /* 십몇−한 자리 '10에서 빼기' 전략 힌트 — 교사 설정 strat.sub에 'ten', 받아내림 상황에서 (v69).
    13−5 → 13은 10과 3, 십 막대를 동그라미 열 개로 바꿔 10에서 5를 빼면 5, 5와 3을 모으면 8.
-   stage 1 = 단서 / stage 2 = 가르기→막대 변신→10에서 세며 빼기→모으기 시퀀스 */
+   stage 1 = 단서(v105부터 직접 조작 tenTakeTap) / stage 2 = 가르기→막대 변신→10에서 세며 빼기→모으기 시퀀스 */
 function subViaTen(p, h, stage) {
+  if (stage < 2) return tenTakeTap(p, h);            // 1차: 학생이 직접(v105)
   const a = p.a, b = p.b, aU = a % 10, keep = 10 - b, ans = a - b;
   curCirc = null; paintFace(false);
   const { ma, mb, fit } = hangTwoModels(p, true);   // 빼는 수(mb)는 sub-src(빗금) 자동
-  /* a=10(v101 폴백)이면 '10은 10과 0' 같은 어색한 가르기 말이 없어야 한다 */
-  const cue = aU > 0 ? `${a}${josaEun(a)} 10과 ${aU}${josaYeyo(aU)}. 10에서 ${b}${josaEul(b)} 빼 봐요.` : `10에서 ${b}${josaEul(b)} 빼 봐요.`;
-  h.innerHTML = `<div class="tip">${stage >= 2 ? '10에서 빼고, 남은 수를 모아요' : cue}</div>`;
-  if (stage < 2) { speak(cue); return; }
+  h.innerHTML = `<div class="tip">10에서 빼고, 남은 수를 모아요</div>`;   // 1차는 tenTakeTap이 가로채므로 여기는 항상 2차
   const rowA = ma.querySelector('.rodrow'), stackA = ma.querySelector('.cstack');
   const addRow = stack => { const rowsL = stack.querySelectorAll('.crow5'); let row = rowsL.length ? rowsL[rowsL.length - 1] : null; if (!row || row.children.length >= 5) { row = document.createElement('div'); row.className = 'crow5'; stack.appendChild(row); } return row; };
   /* 십 막대 → 동그라미 10개 (착지·소멸 타깃 사전 확정) */
@@ -4540,7 +4350,23 @@ function hintTenFrame(p, h, stage) {
   if (stage === 2) {
     const cnt = (need >= 1 && need <= 9) ? KO_NUM.slice(1, need + 1).join(', ') : '';
     speak(cnt ? `${cnt}. 정답은 ${need}${josaYeyo(need)}.` : `정답은 ${need}${josaYeyo(need)}.`);
+    return;
   }
+  /* 1차(v105, 4차 E): 십틀을 직접 조작 — 채우기는 빈칸 탭, 빼기는 점선 동그라미 탭(58단계 십틀 채우기와 같은 문법) */
+  speak(isSub ? '점선 동그라미를 눌러서 빼 보세요.' : '빈칸을 눌러서 채워 보세요.');
+  let n = 0;
+  [...h.querySelectorAll('.tenframe .tf')].forEach(e => {
+    const target = isSub ? e.classList.contains('rm-line') : !e.classList.contains('fill');
+    if (!target) return;
+    e.classList.add('tapbox');
+    e.addEventListener('pointerdown', () => {
+      if (e.dataset.done) return;
+      e.dataset.done = 1; n++;
+      if (isSub) e.classList.add('rm'); else { e.classList.add('need'); e.textContent = n; }
+      speakFast(KO_NUM[n] || String(n));
+      if (n === need) setTimeout(() => speak(isSub ? '다 지웠어요. 몇 개를 뺐나요?' : '십틀을 다 채웠어요. 몇 개를 더했나요?'), 250);
+    });
+  });
 }
 
 /* =========================================================
@@ -4565,7 +4391,21 @@ function hintMul(p, h, stage, mode) {
   let boxes = ''; for (let k = 0; k < b; k++) boxes += `<span class="skipbox" id="sk${k}">${stage === 1 ? '?' : ''}</span>`;
   /* 진행 카운터(pvcounter) — 두 자리·세 자리 힌트와 디자인 통일 */
   h.innerHTML = `<div class="pvwrap"><div class="pvcounter hidden" id="pvcounter"></div><div class="skiprow">${boxes}</div></div><div class="tip">${a}씩 ${b}번 뛰어 세어 봐요</div>`;
-  if (stage === 1) { speak(`${a}씩 ${b}번 뛰어 세어 볼까요?`); return; }
+  if (stage === 1) {   /* 1차(v105, 4차 C): 학생이 칸을 순서대로 누르며 a씩 뛰어 센다 (조작 문법: 세기=탭) */
+    speak(`칸을 순서대로 누르면서 ${a}씩 뛰어 세어 보세요.`);
+    let n = 0;
+    for (let k = 0; k < b; k++) {
+      const e = $('sk' + k); if (!e) continue;
+      e.classList.add('tapbox');
+      e.addEventListener('pointerdown', () => {
+        if (k !== n) return;                          // 다음 칸만 인정(순서 강제)
+        n++; const v = a * (k + 1);
+        e.textContent = v; e.classList.add('on'); setC(v); speakFast(String(v));
+        if (n === b) setTimeout(() => speak('끝까지 뛰었어요. 모두 몇일까요?'), 250);
+      });
+    }
+    return;
+  }
   const items = [];
   for (let k = 0; k < b; k++) { const v = a * (k + 1); items.push({ text: String(v), action: () => { setC(v); const e = $('sk' + k); if (e) { e.textContent = v; e.classList.add('on'); } } }); }
   items.push({ text: `정답은 ${a * b}${josaYeyo(a * b)}.`, action: () => setC(a * b) });
@@ -4593,7 +4433,20 @@ function hintDiv(p, h, stage) {
   const q = p.ans, b = p.b;
   let g = ''; for (let k = 0; k < q; k++) g += `<div class="dgrp" id="dg${k}">${circleStack(b, 'sky')}</div>`;
   h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">${p.a}개를 ${b}개씩 묶었어요. 몇 묶음일까요?<br><b>${b} 곱하기 몇</b>이 ${p.a}${josaIga(p.a)} 될까요?</div>`;
-  if (stage === 1) { speak(`${b}개씩 묶어 봐요. 몇 묶음일까요?`); return; }
+  if (stage === 1) {   /* 1차(v105, 4차 D): 학생이 묶음을 누르며 몇 묶음인지 직접 센다 (조작 문법: 세기=탭) */
+    speak('묶음을 하나씩 누르면서 몇 묶음인지 세어 보세요.');
+    let n = 0;
+    [...h.querySelectorAll('.dgrp')].forEach(e => {
+      e.classList.add('tapg');
+      e.addEventListener('pointerdown', () => {
+        if (e.classList.contains('on')) return;
+        e.classList.add('on'); n++;
+        speakFast(KO_NUM[n] || String(n));
+        if (n === q) setTimeout(() => speak('묶음을 다 세었어요. 몇 묶음일까요?'), 250);
+      });
+    });
+    return;
+  }
   const items = [{ text: `${b} 곱하기 몇이 ${p.a}${josaIga(p.a)} 될까요? 묶음을 세어 봐요.` }];
   for (let k = 0; k < q; k++) items.push({ text: KO_NUM[k + 1] || String(k + 1), action: () => { const e = $('dg' + k); if (e) e.classList.add('on'); } });
   items.push({ text: `${b} 곱하기 ${q}${josaEun(q)} ${p.a}. 정답은 ${q}${josaYeyo(q)}.` });
@@ -4604,7 +4457,20 @@ function repeatSubDiv(p, h, stage) {
   const a = p.a, b = p.b, q = p.ans;
   let g = ''; for (let k = 0; k < q; k++) g += `<div class="dgrp" id="rg${k}">${circleStack(b, 'sky')}</div>`;
   h.innerHTML = `<div class="pvwrap"><div class="pvcounter hidden" id="pvcounter"></div><div class="mulrow">${g}</div></div><div class="tip">${b}씩 덜어내면서, 몇 번 덜어냈는지 세어 봐요</div>`;
-  if (stage < 2) { speak(`${a}에서 ${b}씩 덜어내 봐요. 몇 번 덜어낼 수 있을까요?`); return; }
+  if (stage < 2) {   /* 1차(v105, 4차 D): 묶음을 누를 때마다 b씩 덜어낸다 (조작 문법: 지우기=탭, 카운터=남은 수) */
+    speak(`묶음을 하나씩 누르면서 ${b}씩 덜어내 보세요.`);
+    let n = 0;
+    [...h.querySelectorAll('.dgrp')].forEach(e => {
+      e.classList.add('tapg');
+      e.addEventListener('pointerdown', () => {
+        if (e.classList.contains('rm')) return;
+        e.classList.add('rm'); n++;
+        const v = a - n * b; setC(v); speakFast(String(v));
+        if (n === q) setTimeout(() => speak(`0이 되었어요. ${b}${josaEul(b)} 몇 번 덜어냈나요?`), 250);
+      });
+    });
+    return;
+  }
   const items = [];
   for (let k = 0; k < q; k++) {
     const from = a - k * b, v = from - b;
@@ -4664,7 +4530,7 @@ function mulAnswer(btn, expected) {
     locked = true; btn.classList.add('correct');
     if (last) {
       const slot = $('qslot'); if (slot) { fillSlot(slot, mguide.p.ans); celebrate(slot); }
-      chime(true); speak(praise()); mguide = null; afterCorrect();
+      chime(true); speak(praiseFor(wrongCount)); mguide = null; afterCorrect();
     } else {
       chime(true); speak('좋아요');
       setTimeout(() => { if (!mguide) return; mguide.idx++; mguide.wrong = 0; renderMulStep(); }, lastSpeakMs + 150);
@@ -4751,7 +4617,7 @@ function guideAnswer(btn, expected) {
     } else {
       locked = true; btn.classList.add('correct');
       const slot = $('qslot'); if (slot) { fillSlot(slot, guide.p.ans); celebrate(slot); }
-      chime(true); speak(praise());
+      chime(true); speak(praiseFor(wrongCount));
       guide = null; afterCorrect();
     }
   } else {
