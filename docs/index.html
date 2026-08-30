@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 102 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 104 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -992,6 +992,18 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* 풀이 화면 — 숫자패드(화면 중앙 하단)·커서·타이머 */
 .chalcard .qface{ min-height:150px; }
 /* 숫자패드: 10% 축소(104→94px·56→50px), 테두리는 흐리게 + 아래 그림자로 입체감(.btn 문법) */
+/* 3차(v103) 오류 분석 — 학생 상세 박스(클릭)·상세 페이지 막대·좌절 신호 */
+.errstat{ cursor:pointer; }
+.errstat:hover{ filter:brightness(.96); }
+.errstat.warn .v{ color:#C62828; }
+.frustsig{ margin-top:.8rem; background:#FDECEA; border:2px solid #EF9A9A; border-radius:.6rem; padding:.6rem .9rem; font-size:1.02rem; }
+.ebar-row{ display:flex; align-items:center; gap:.6rem; margin:.35rem 0; }
+.ebar-name{ width:96px; flex:0 0 auto; text-align:right; font-weight:700; font-size:.98rem; }
+.ebar{ display:flex; height:22px; border-radius:5px; overflow:hidden; }
+.ebar i{ display:block; }
+.ebar-n{ font-weight:800; color:var(--ink-soft); }
+.erec{ margin:.45rem 0; }
+.erec .tag{ margin:.15rem .1rem; display:inline-block; }
 /* (A) 발문-시각 동기화(v102): 오답 직후 발문과 함께 관련 토큰 강조 — 정답 비노출, 2.3초 뒤 자동 해제 */
 .cueflash{ outline:4px solid var(--no); outline-offset:4px; border-radius:.35em; animation:pulseSoft 1.05s ease-in-out 2; }
 /* ②(v100) 듣고 시작 — 문제 읽기가 끝날 때까지 보기 잠금(회색) */
@@ -1045,7 +1057,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 102';
+const APP_VERSION = 'ver 104';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -5141,56 +5153,100 @@ const ERR_TXT = {
 /* 자리 이어붙임 오답 — 한 자리는 두 수를 그대로(7+8→78), 두 자리는 자리별 합을 이어 붙임(35+28→5와 13→513) */
 const catVal = (a, b) => { if (a < 10 && b < 10) return +('' + a + b); const t = Math.floor(a / 10) + Math.floor(b / 10), u = a % 10 + b % 10; return u >= 10 ? t * 100 + u : null; };
 const sflOf = (a, b) => { let v = 0, m = 1; for (let pl = 0; pl < String(a).length; pl++) { v += Math.abs(Math.floor(a / 10 ** pl) % 10 - Math.floor(b / 10 ** pl) % 10) * m; m *= 10; } return v; };
-function errSignal(sessions) {
-  const c = {}, add = k => { c[k] = (c[k] || 0) + 1; };
-  let seen = 0;
-  const win = sessions.slice(0, 20);
-  /* ④(v102) 부주의 보수화 — 빠른 오답은 '개념은 아는데 급했다'가 성립할 때만(첫 시도 정답률 70%↑) 부주의로 센다.
-     정확도가 낮은 학생의 빠른 오답은 충동 반응+개념 결손이 섞여 있어, 부주의로 단정하면 교사를 잘못 안심시킨다 */
+/* 3차(v103) — 분류기를 공용 함수로 분리: errSignal(한 문장)·errWeekly(4주 막대)가 같은 판정을 쓴다 */
+const ERR_NAME = { sense: '수 개념', count: '수 세기', fact: '사실 회상', place: '자리값', proc: '계산 절차', symbol: '기호 이해', careless: '충동·부주의', strategy: '연산 전략' };
+const ERR_COLOR = { sense: '#8E24AA', count: '#039BE5', fact: '#F4511E', place: '#3949AB', proc: '#00897B', symbol: '#E53935', careless: '#F9A825', strategy: '#6D4C41' };
+/* 신호 → 권장 단계(새 id) / 단계가 답이 아닌 유형은 지도 팁 */
+const ERR_REC = {
+  sense: [113, 114, 115], count: [108, 109, 110], fact: [143, 144, 145, 140],
+  place: [127, 128, 138], proc: [146, 147, 148, 149], symbol: [122, 125],
+};
+const ERR_TIP = {
+  careless: '앱의 듣고 시작·오답 잠금이 속도를 늦춰 줘요. ⚡도전 모드를 제한시간 없이 돌려 차분히 푸는 연습을 권해요.',
+  strategy: '학생 상세의 연산 전략 체크박스로 이 학생에게 맞는 전략을 지정해 주세요 — 힌트와 발문이 그 전략으로 통일돼요.',
+};
+/* ④(v102) 부주의 보수화 — 빠른 오답은 '개념은 아는데 급했다'가 성립할 때만(첫 시도 정답률 70%↑) 부주의로 센다 */
+function errAccuracy(win) {
   let ft = 0, tot = 0;
   win.forEach(ss => (ss.items || []).forEach(it => { if (!it) return; tot++; if (it.wrongs === 0) ft++; }));
-  const accurate = tot >= 10 && ft / tot >= 0.7;
+  return tot >= 10 && ft / tot >= 0.7;
+}
+/* 문항 1개 → 오류 유형 키 배열(오답 값마다 최대 1개) */
+function classifyItem(it, accurate) {
+  const out = [], add = k => out.push(k);
+  const q = String(it.q || ''), ans = it.ans, ms = it.ms || 0;
+  const m = q.match(/^(\d+)\s*([+−×÷-])\s*(\d+)$/);
+  if (it.wrongs === 0) {                                  // 정답인데 오래 걸림 = 인출·전략 신호
+    if (ms >= SLOW_MS) add(m && ans <= 20 ? 'fact' : 'strategy');
+    return out;
+  }
+  const gs = Array.isArray(it.given) ? it.given : (it.given != null ? [it.given] : []);
+  const fast = () => { if (accurate && ms > 0 && ms < 3000) add('careless'); };
+  if (m) {
+    const a = +m[1], op = m[2], b = +m[3], plus = op === '+';
+    gs.forEach(v => {
+      if (op === '×') {                                   /* ⑤(v102) 곱셈 — 이웃 구구=사실 회상, 덧셈 혼동=기호 */
+        if (v === a + b) return add('symbol');
+        if (v === a * (b - 1) || v === a * (b + 1) || v === (a - 1) * b || v === (a + 1) * b) return add('fact');
+        return fast();
+      }
+      if (op === '÷') {                                   /* 몫 ±1 = 구구 인출·묶음 세기 */
+        if (Math.abs(v - ans) === 1) return add('fact');
+        return fast();
+      }
+      if (!plus && v === a + b) return add('symbol');
+      if (plus && a !== b && v === Math.abs(a - b)) return add('symbol');
+      if (plus && v === catVal(a, b)) return add('place');
+      if (!plus && v === sflOf(a, b)) return add('place');
+      if (!plus && v === ans + 10) return add('proc');
+      if (plus && v === ans - 10) return add('proc');
+      if (plus && Math.min(a, b) > 1 && v === Math.max(a, b) + 1) return add('count');
+      if (!plus && b > 1 && v === a - 1) return add('count');
+      return fast();
+    });
+    return out;
+  }
+  if (/크기 비교|많은 쪽|큰 것 고르기|같은 수 찾기|수직선|모으기|가르기|☐/.test(q)) add('sense');
+  else if (/세기|담기|십틀|나눠 주기/.test(q)) add('count');
+  else if (/자리값/.test(q)) add('place');
+  return out;
+}
+function errSignal(sessions) {
+  const win = sessions.slice(0, 20), accurate = errAccuracy(win);
+  const c = {}; let seen = 0;
   win.forEach(ss => (ss.items || []).forEach(it => {
     if (!it) return; seen++;
-    const q = String(it.q || ''), ans = it.ans, ms = it.ms || 0;
-    const m = q.match(/^(\d+)\s*([+−×÷-])\s*(\d+)$/);
-    if (it.wrongs === 0) {                                  // 정답인데 오래 걸림 = 인출·전략 신호
-      if (ms >= SLOW_MS) add(m && ans <= 20 ? 'fact' : 'strategy');
-      return;
-    }
-    const gs = Array.isArray(it.given) ? it.given : (it.given != null ? [it.given] : []);
-    const fast = () => { if (accurate && ms > 0 && ms < 3000) add('careless'); };
-    if (m) {
-      const a = +m[1], op = m[2], b = +m[3], plus = op === '+';
-      gs.forEach(v => {
-        if (op === '×') {                                   /* ⑤(v102) 곱셈 — 이웃 구구=사실 회상, 덧셈 혼동=기호 */
-          if (v === a + b) return add('symbol');
-          if (v === a * (b - 1) || v === a * (b + 1) || v === (a - 1) * b || v === (a + 1) * b) return add('fact');
-          return fast();
-        }
-        if (op === '÷') {                                   /* 몫 ±1 = 구구 인출·묶음 세기 */
-          if (Math.abs(v - ans) === 1) return add('fact');
-          return fast();
-        }
-        if (!plus && v === a + b) return add('symbol');
-        if (plus && a !== b && v === Math.abs(a - b)) return add('symbol');
-        if (plus && v === catVal(a, b)) return add('place');
-        if (!plus && v === sflOf(a, b)) return add('place');
-        if (!plus && v === ans + 10) return add('proc');
-        if (plus && v === ans - 10) return add('proc');
-        if (plus && Math.min(a, b) > 1 && v === Math.max(a, b) + 1) return add('count');
-        if (!plus && b > 1 && v === a - 1) return add('count');
-        return fast();
-      });
-      return;
-    }
-    if (/크기 비교|많은 쪽|큰 것 고르기|같은 수 찾기|수직선|모으기|가르기|☐/.test(q)) add('sense');
-    else if (/세기|담기|십틀|나눠 주기/.test(q)) add('count');
-    else if (/자리값/.test(q)) add('place');
+    classifyItem(it, accurate).forEach(k => { c[k] = (c[k] || 0) + 1; });
   }));
   const top = Object.entries(c).sort((x, y) => y[1] - x[1])[0];
   if (!top || seen < 30 || top[1] < 3) return null;          // 표본이 적으면 말하지 않는다
   return { key: top[0], n: top[1], text: ERR_TXT[top[0]] };
+}
+/* 최근 4주 유형별 집계 — 주차 0=이번 주(오늘 포함 7일) … 3=3주 전 */
+function errWeekly(sessions) {
+  const cut = daysAgoStr(27);
+  const win = sessions.filter(x => (x.sdate || '') >= cut);
+  const accurate = errAccuracy(win);
+  const wk = [{}, {}, {}, {}], totals = {};
+  const now = Date.now();
+  win.forEach(ss => {
+    const w = Math.min(3, Math.max(0, Math.floor((now - new Date(ss.sdate).getTime()) / 864e5 / 7)));
+    (ss.items || []).forEach(it => {
+      if (!it) return;
+      classifyItem(it, accurate).forEach(k => { wk[w][k] = (wk[w][k] || 0) + 1; totals[k] = (totals[k] || 0) + 1; });
+    });
+  });
+  return { wk, totals };
+}
+/* ⑦(v103) 좌절 감지 — 최근 2세션(⚡ 제외·3문항↑) 모두 첫 시도 40% 미만이면 단계 하향 '검토' 신호(자동 하향은 안 함) */
+function frustSignal(sessions, s) {
+  const ss = sessions.filter(x => !/^⚡/.test(x.levelName || '') && (x.total || 0) >= 3)
+    .sort((a, b) => (b.finishedAt || '').localeCompare(a.finishedAt || ''));
+  if (ss.length < 2) return null;
+  const r = x => (x.firstTry || 0) / x.total;
+  if (r(ss[0]) >= .4 || r(ss[1]) >= .4) return null;
+  const i = LEVEL_ORDER.indexOf(migrateLv(s.level));
+  return { cur: levelById(s.level), prev: i > 0 ? levelById(LEVEL_ORDER[i - 1]) : null };
 }
 const fmtDur = ms => { if (!ms) return '—'; const s = Math.round(ms / 1000); return Math.floor(s / 60) + '분 ' + (s % 60) + '초'; };
 const daysAgoStr = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
@@ -5405,7 +5461,12 @@ async function renderStudentDetail(id) {
     <div class="statrow" style="margin-top:.8rem">
       <div class="stat"><div class="k">누적 학습일</div><div class="v">${(s.completedDates || []).length}일</div></div>
       <div class="stat"><div class="k">정답률(7일)</div><div class="v">${rate7 === null ? '—' : rate7 + '%'}</div></div>
-      <div class="stat"><div class="k">🐢 맞았지만 느림(7일)</div><div class="v">${sw.reduce((a, x) => a + (x.items || []).filter(isSlowItem).length, 0)}문제</div></div>
+      ${(() => { /* 3차(v103): 🐢 박스 → 오류 분석 박스(클릭=상세). 느림 정보는 상세 페이지·문제별 태그로 흡수. 좌절 신호가 있으면 최우선 표시 */
+      const e = errSignal(sessions), fr = frustSignal(sessions, s);
+      /* 라벨·값에 이모지를 넣지 않는다(v104, 사용자 지시) — 다른 stat 박스와 낱말 시작 정렬 통일 */
+      return `<div class="stat errstat ${fr ? 'warn' : ''}" onclick="renderErrDetail('${s.id}')" title="상세 오류 분석 보기">
+        <div class="k">오류 분석</div><div class="v">${fr ? '단계 조정 검토 ▸' : e ? ERR_NAME[e.key] + ' 오류 ▸' : '기록 쌓는 중 ▸'}</div></div>`;
+    })()}
       <div class="stat grow"><div class="k">현재 단계</div><div class="v" style="font-family:var(--font-btn)">${esc(levelById(s.level).name)}</div></div>
       <div class="stat grow"><div class="k">힌트 지원 (개별화)</div>
         <select onchange="setHintLvT('${s.id}',this.value)" style="font-size:1rem;padding:.3rem .4rem;margin-top:.2rem">
@@ -5430,8 +5491,50 @@ async function renderStudentDetail(id) {
     ${(Store.mode() === 'remote' && typeof STRAT_OK !== 'undefined' && !STRAT_OK) ? `<div class="note">⚠ 연산 전략 설정을 다른 기기와 동기화하려면 Supabase SQL Editor에서
       <b>supabase/migration_strat.sql</b>의 한 줄을 실행해 주세요. 실행 전에는 이 기기에만 적용됩니다.</div>` : ''}
     <div class="read-sentence" style="font-size:1.15rem;margin-top:1rem">학습 기록 <span class="dim">(누르면 문제별로 펼쳐져요 · 🐢 = 첫 시도 정답인데 ${SLOW_MS / 1000}초 이상 — 정확하지만 유창성 연습이 필요한 문제)</span></div>
-    ${(() => { const e = errSignal(sessions); return e ? `<div class="errsig">🔎 ${e.text} <span class="dim">(최근 기록에서 ${e.n}번)</span></div>` : ''; })()}
     ${rows}
+  </div>`;
+}
+
+/* ---- 상세 오류 분석 (3차, v103) — 1단계 신호 문장 · 2단계 4주 유형별 막대 · 3단계 유형→권장 단계 ---- */
+async function renderErrDetail(id) {
+  if (teacherOK !== klass.code) { renderTeacherLogin(); return; }
+  setNav(teacherNav('detail'));
+  const s = dash.students.find(x => x.id === id); if (!s) { renderDashboard(); return; }
+  const sessions = await Store.listSessions(klass.code, { studentId: id });
+  const e = errSignal(sessions);
+  const { wk, totals } = errWeekly(sessions);
+  const fr = frustSignal(sessions, s);
+  const nSlow = sessions.filter(x => x.sdate >= daysAgoStr(6)).reduce((a, x) => a + (x.items || []).filter(isSlowItem).length, 0);
+  const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+  const maxN = Math.max(1, ...sorted.map(([, n]) => n));
+  /* 유형별 가로 막대(4주 합) — 막대 안 세그먼트는 주차(짙을수록 최근) */
+  const bars = sorted.map(([k, n]) => {
+    const seg = [3, 2, 1, 0].map(w => { const c = wk[w][k] || 0; return c ? `<i style="flex:${c};background:${ERR_COLOR[k]};opacity:${1 - w * .2}"></i>` : ''; }).join('');
+    return `<div class="ebar-row"><span class="ebar-name">${ERR_NAME[k]}</span>
+      <div class="ebar" style="width:${Math.max(6, n / maxN * 62).toFixed(0)}%">${seg}</div><span class="ebar-n">${n}</span></div>`;
+  }).join('');
+  /* 상위 유형(3회↑) → 권장 단계·지도 팁 */
+  const recs = sorted.slice(0, 3).filter(([, n]) => n >= 3).map(([k]) => {
+    const body = ERR_REC[k]
+      ? ERR_REC[k].map(i2 => `<span class="tag on">${lvlNo(i2)}. ${esc(levelById(i2).name)}</span>`).join(' ')
+      : `<span class="dim">${ERR_TIP[k] || ''}</span>`;
+    return `<div class="erec"><b>${ERR_NAME[k]}</b> → ${body}</div>`;
+  }).join('');
+  $('wrap').innerHTML = `<div class="card" style="text-align:left">
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <button class="btn btn--gray btn-sm" onclick="renderStudentDetail('${s.id}')">← 학생 상세</button>
+      <span class="read-sentence" style="font-size:1.4rem;margin:0">🔎 오류 분석 — ${esc(s.name)}</span>
+    </div>
+    ${fr ? `<div class="frustsig">⚠ 최근 2회 학습의 첫 시도 정답률이 40% 미만이에요. <b>단계 낮추기</b>를 검토해 보세요${fr.prev ? ` (현재 ${lvlNo(fr.cur.id)}. ${esc(fr.cur.name)} → 검토 ${lvlNo(fr.prev.id)}. ${esc(fr.prev.name)})` : ''}.
+      <span class="dim">앱이 자동으로 낮추지는 않아요 — 변경은 학생 상세의 현재 단계에서.</span></div>` : ''}
+    <div class="errsig" style="margin-top:.8rem">🔎 ${e ? `${e.text} <span class="dim">(최근 기록에서 ${e.n}번)</span>`
+      : '아직 뚜렷한 오류 신호가 없어요. <span class="dim">(30문항·같은 신호 3회부터 표시)</span>'}
+      <span class="dim">— 임상 진단이 아니라 지도 참고용 신호예요.</span></div>
+    <div class="read-sentence" style="font-size:1.1rem;margin-top:1rem">최근 4주 오류 유형 <span class="dim">(막대 안 짙은 칸일수록 최근 주)</span></div>
+    ${bars || '<div class="note" style="padding:1rem">최근 4주 동안 잡힌 오류 신호가 없어요.</div>'}
+    <div class="read-sentence" style="font-size:1.1rem;margin-top:1rem">신호 → 권장 단계</div>
+    ${recs || '<div class="note" style="padding:1rem">권장을 낼 만큼 쌓인 신호(같은 유형 3회↑)가 아직 없어요.</div>'}
+    <div class="note" style="margin-top:.8rem">🐢 맞았지만 느림(7일): <b>${nSlow}문제</b> — 정확하지만 유창성 연습이 필요해요. ⚡도전 모드(제한시간 없이)를 추천해요.</div>
   </div>`;
 }
 
