@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 101 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 102 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -992,6 +992,8 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* 풀이 화면 — 숫자패드(화면 중앙 하단)·커서·타이머 */
 .chalcard .qface{ min-height:150px; }
 /* 숫자패드: 10% 축소(104→94px·56→50px), 테두리는 흐리게 + 아래 그림자로 입체감(.btn 문법) */
+/* (A) 발문-시각 동기화(v102): 오답 직후 발문과 함께 관련 토큰 강조 — 정답 비노출, 2.3초 뒤 자동 해제 */
+.cueflash{ outline:4px solid var(--no); outline-offset:4px; border-radius:.35em; animation:pulseSoft 1.05s ease-in-out 2; }
 /* ②(v100) 듣고 시작 — 문제 읽기가 끝날 때까지 보기 잠금(회색) */
 #choices.listen{ pointer-events:none; }
 #choices.listen .btn-choice{ opacity:.45; }
@@ -1043,7 +1045,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 101';
+const APP_VERSION = 'ver 102';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1670,6 +1672,12 @@ const TRX = {
   '한 칸만 세었어요. 빼는 수만큼 거꾸로 세어 봐요.': { en: 'You counted only one step. Count back by the number you take away.', zh: '只数了一格。要按减的数倒着数完。', vi: 'Con mới đếm một bước. Đếm ngược bằng số cần bớt nhé.', ja: '1こしか かぞえてないよ。ひく かずの ぶん さかさまに かぞえよう。', ru: 'Ты посчитал только один шаг. Отсчитай назад на вычитаемое.' },
   '위에 작은 1도 잊지 말고 함께 더해요.': { en: "Don't forget the little 1 on top — add it too.", zh: '别忘了上面的小 1，也要一起加。', vi: 'Đừng quên số 1 nhỏ ở trên — cộng cả nó nhé.', ja: 'うえの ちいさい 1も わすれずに いっしょに たそう。', ru: 'Не забудь маленькую 1 сверху — прибавь и её.' },
   '큰 수에서 작은 수를 뺐네요. 윗자리에서 10을 빌려와서 빼요.': { en: 'You took the smaller from the bigger. Borrow 10 from the next place instead.', zh: '你用大的减了小的。要向前一位借 10 再减。', vi: 'Con lấy số lớn trừ số nhỏ rồi. Phải mượn 10 từ hàng trên để trừ.', ja: 'おおきい かずから ちいさい かずを ひいちゃったね。うえの くらいから 10を かりて ひこう。', ru: 'Ты вычел меньшее из большего. Займи 10 из старшего разряда.' },
+  /* ---- 곱셈·나눗셈 오류 진단(v102) ---- */
+  '더하기를 했나요? 곱하기 기호를 잘 봐요.': { en: 'Did you add? Look at the times sign.', zh: '是不是做了加法？看清乘号。', vi: 'Con cộng rồi à? Nhìn kỹ dấu nhân nhé.', ja: 'たしざんを したかな？ かけるの きごうを よく みてね。', ru: 'Ты сложил? Посмотри на знак умножения.' },
+  '한 묶음이 모자라요. 몇씩 몇 묶음인지 세어 봐요.': { en: 'One group is missing. Count how many groups of how many.', zh: '少了一组。数一数是几组、每组几个。', vi: 'Thiếu một nhóm. Đếm xem mấy nhóm, mỗi nhóm mấy.', ja: 'ひとたば たりないよ。いくつずつ なんたばか かぞえよう。', ru: 'Не хватает одной группы. Посчитай, сколько групп и по сколько.' },
+  '한 묶음이 많아요. 몇씩 몇 묶음인지 세어 봐요.': { en: 'One group too many. Count how many groups of how many.', zh: '多了一组。数一数是几组、每组几个。', vi: 'Thừa một nhóm. Đếm xem mấy nhóm, mỗi nhóm mấy.', ja: 'ひとたば おおいよ。いくつずつ なんたばか かぞえよう。', ru: 'Одна группа лишняя. Посчитай, сколько групп и по сколько.' },
+  '한 묶음이 많아요. 몇 번 덜어낼 수 있는지 다시 세어 봐요.': { en: 'One group too many. Count again how many times you can take away.', zh: '多数了一次。再数一数能拿走几次。', vi: 'Thừa một lần. Đếm lại xem bớt được mấy lần.', ja: 'いっかい おおいよ。なんかい とれるか もういちど かぞえよう。', ru: 'Один раз лишний. Посчитай снова, сколько раз можно убрать.' },
+  '한 묶음이 모자라요. 몇 번 덜어낼 수 있는지 다시 세어 봐요.': { en: 'One group is missing. Count again how many times you can take away.', zh: '少数了一次。再数一数能拿走几次。', vi: 'Thiếu một lần. Đếm lại xem bớt được mấy lần.', ja: 'いっかい たりないよ。なんかい とれるか もういちど かぞえよう。', ru: 'Одного раза не хватает. Посчитай снова, сколько раз можно убрать.' },
   /* ---- 재도전(v100: 유도 후 숫자패드 동형 문제) ---- */
   '일의 자리부터 다시 볼까요?': { en: 'Shall we look at the ones place again?', zh: '从个位再看一次好吗？', vi: 'Nhìn lại từ hàng đơn vị nhé?', ja: 'いちの くらいから もういちど みてみようか？', ru: 'Посмотрим ещё раз с разряда единиц?' },
   '천천히 다시 세어 볼까요?': { en: 'Shall we count again slowly?', zh: '慢慢地再数一次好吗？', vi: 'Đếm lại chậm rãi nhé?', ja: 'ゆっくり もういちど かぞえてみようか？', ru: 'Посчитаем ещё раз, не спеша?' },
@@ -2418,6 +2426,14 @@ function diagDistractor(p) {
     for (const v of [sflVal(p.a, p.b), p.ans + 10, p.a + p.b]) if (v !== p.ans && v >= 0) return v;
     return null;
   }
+  if (p.op === '×') {   /* ⑤(v102) 이웃 구구·덧셈 혼동을 보기에 심어 진단 가능하게 */
+    for (const v of shuffle([p.a * (p.b - 1), p.a * (p.b + 1), p.a + p.b])) if (v > 0 && v !== p.ans) return v;
+    return null;
+  }
+  if (p.op === '÷') {   /* 몫 ±1 */
+    for (const v of shuffle([p.ans + 1, p.ans - 1])) if (v > 0 && v !== p.ans) return v;
+    return null;
+  }
   return null;
 }
 function makeChoices(ans, n, seed) {
@@ -2532,14 +2548,18 @@ function answer(btn, ans) {
     /* 힌트가 곧바로 speak/speakSequence를 부르면 이 안내가 잘림 → 발화가 끝난 뒤 힌트 시작(보루 타이머 병행) */
     /* SEM ⑥ 힌트 fading(v91): 'fade'=지원 점감 — 한 단계 늦춤(1차 오답은 발문만 듣고 스스로, 2차부터 단서) */
     const stage = lv === 'fade' ? wrongCount - 1 : wrongCount + (lv === 'strong' ? 1 : 0);
+    /* 오류 유형 판정(v86) > 전략 발문(v81) > 공통 멘트 순 — 오답값이 알려진 오류 패턴이면 특정 피드백.
+       (A, v102) 발문과 동시에 관련 토큰을 시각 강조(cueFlash) — 청각 단서만으로는 자폐 학생이 놓친다 */
+    const diag = diagnoseWrong(p, parseInt(btn.dataset.v, 10));
+    const cue = diag || hintCueFor(p) || '다시 한 번 해 볼까요?';
+    cueFlash(p, diag);
     if (stage < 1) {
-      speak(diagnoseWrong(p, parseInt(btn.dataset.v, 10)) || hintCueFor(p) || '다시 한 번 해 볼까요?', unlock);
+      speak(cue, unlock);
       setTimeout(unlock, lastSpeakMs + 800); return;
     }
     let started = false;
     const go = () => { if (started) return; started = true; locked = false; routeHint(stage); };
-    /* 오류 유형 판정(v86) > 전략 발문(v81) > 공통 멘트 순 — 오답값이 알려진 오류 패턴이면 특정 피드백 */
-    speak(diagnoseWrong(p, parseInt(btn.dataset.v, 10)) || hintCueFor(p) || '다시 한 번 해 볼까요?', go);
+    speak(cue, go);
     setTimeout(go, lastSpeakMs + 1200);
   }
 }
@@ -2548,6 +2568,17 @@ function answer(btn, ans) {
 function diagnoseWrong(p, v) {
   if (!p || p.type !== 'binary' || isNaN(v)) return null;
   const a = p.a, b = p.b, small = Math.min(a, b);
+  if (p.op === '×') {   /* ⑤(v102) 곱셈 오류 진단 — 이웃 구구(한 묶음 차이)·덧셈 혼동 */
+    if (v === a + b) return '더하기를 했나요? 곱하기 기호를 잘 봐요.';
+    if (v === a * (b - 1) || v === (a - 1) * b) return '한 묶음이 모자라요. 몇씩 몇 묶음인지 세어 봐요.';
+    if (v === a * (b + 1) || v === (a + 1) * b) return '한 묶음이 많아요. 몇씩 몇 묶음인지 세어 봐요.';
+    return null;
+  }
+  if (p.op === '÷') {   /* 몫 ±1 = 묶음 수 세기·구구 인출 오류 */
+    if (v === p.ans + 1) return '한 묶음이 많아요. 몇 번 덜어낼 수 있는지 다시 세어 봐요.';
+    if (v === p.ans - 1) return '한 묶음이 모자라요. 몇 번 덜어낼 수 있는지 다시 세어 봐요.';
+    return null;
+  }
   if (p.op === '+') {
     if (a !== b && v === Math.abs(a - b)) return '빼기를 했나요? 더하기 기호를 잘 봐요.';
     if (a < 10 && b < 10 && v === Number('' + a + b)) return '두 수를 이어 붙였어요. 같은 자리끼리 더해 봐요.';
@@ -3820,13 +3851,42 @@ const STRAT_CUES = {
   mul: { quad: '몇씩 몇 묶음인지 생각해 볼까요?', group: '몇씩 몇 묶음인지 생각해 볼까요?', skip: '뛰어 세어 볼까요?', swap: '순서를 바꾸어 생각해 볼까요?' },
   div: { take: '몇 번 덜어낼 수 있을까요?', fact: '곱셈구구로 생각해 볼까요?' },
 };
-function hintCueFor(p) {
+function cueKeyFor(p) {
   if (!p || p.type !== 'binary') return null;
-  if (p.op === '+' && p.ans <= 20) { const k = pickAddStrat(p); return k ? STRAT_CUES.add[k] : null; }
-  if (p.op === '-' && p.a <= 20) { const k = pickSubStrat(p); return k ? STRAT_CUES.sub[k] : null; }
-  if (p.op === '×' && p.a < 10) { const k = pickMulStrat(p); return k ? STRAT_CUES.mul[k] : null; }
-  if (p.op === '÷') { const k = pickDivStrat(p); return k ? STRAT_CUES.div[k] : null; }
+  if (p.op === '+' && p.ans <= 20) { const k = pickAddStrat(p); return k ? { g: 'add', k } : null; }
+  if (p.op === '-' && p.a <= 20) { const k = pickSubStrat(p); return k ? { g: 'sub', k } : null; }
+  if (p.op === '×' && p.a < 10) { const k = pickMulStrat(p); return k ? { g: 'mul', k } : null; }
+  if (p.op === '÷') { const k = pickDivStrat(p); return k ? { g: 'div', k } : null; }
   return null;
+}
+function hintCueFor(p) { const c = cueKeyFor(p); return c ? STRAT_CUES[c.g][c.k] : null; }
+/* (A) 발문-시각 동기화(v102) — 자폐 학생 시각 우세: 오답 직후 발문이 나가는 동안 관련 토큰을 잠깐 강조.
+   정답은 노출하지 않는다(fade의 '스스로 기회' 취지 유지). 2.3초 뒤 자동 해제.
+   공통 멘트('다시 한 번')는 강조 없음 — 특정 요소를 가리키면 오해를 만들 수 있어서 */
+function cueFlash(p, diag) {
+  document.querySelectorAll('#qface .cueflash').forEach(e => e.classList.remove('cueflash'));
+  const tok = t => document.querySelector(`#qface [data-t="${t}"]`);
+  let els = [];
+  if (diag) {
+    if (diag.includes('기호')) els = [tok('op0')];
+    else if (diag.includes('한 칸만')) els = [tok(p.op === '+' ? (p.a <= p.b ? 'n0' : 'n1') : 'n1')];   // 이어·거꾸로 셀 수
+    else if (diag.includes('묶음')) els = [tok('n1')];                                                  // 묶음 수를 다시 보게
+    else els = [tok('n0'), tok('n1')];                                                                  // 자리·이어붙임 등 — 두 수를 다시 보게
+  } else {
+    const ck = cueKeyFor(p);
+    if (!ck) return;
+    const bigT = p.a >= p.b ? 'n0' : 'n1';
+    const F = {
+      add: { on: [bigT], double: ['n0', 'n1'], near: ['n0', 'n1'], ten: ['n0', 'n1'], all: ['n0', 'n1'], jump: ['op0'] },
+      sub: { take: ['n1'], back: ['n1'], bridge: ['n1'], ten: ['n0'], jump: ['op0'] },
+      mul: { quad: ['n0', 'n1'], group: ['n0', 'n1'], skip: ['n1'], swap: ['n0', 'n1'] },
+      div: { take: ['n1'], fact: ['op0'] },
+    };
+    els = ((F[ck.g] || {})[ck.k] || []).map(tok);
+  }
+  els = els.filter(Boolean);
+  els.forEach(e => e.classList.add('cueflash'));
+  if (els.length) setTimeout(() => els.forEach(e => e.classList.remove('cueflash')), 2300);
 }
 function mulStratHint(p, h, stage) {
   const st = stratOf('mul'), has = k => st.includes(k);
@@ -5073,8 +5133,8 @@ const ERR_TXT = {
   fact: "주로 기본 연산 사실을 자동으로 떠올리지 못하는 '사실 회상 오류'를 보입니다.",
   place: "주로 십의 자리와 일의 자리를 혼동하는 '자리값 오류'를 보입니다.",
   proc: "주로 받아올림·받아내림 절차를 잘못 적용하는 '계산 절차 오류'를 보입니다.",
-  symbol: "주로 더하기와 빼기 기호를 혼동하는 '기호 이해 오류'를 보입니다.",
-  careless: "주로 개념은 알지만 집중이 흐트러져 실수하는 '부주의 오류'를 보입니다.",
+  symbol: "주로 연산 기호(더하기·빼기·곱하기)를 혼동하는 '기호 이해 오류'를 보입니다.",
+  careless: "주로 개념은 알지만 빠르게 눌러 틀리는 '충동적 반응·부주의 오류'를 보입니다.",
   strategy: "주로 비효율적인 전략을 계속 사용하는 '연산 전략 오류'를 보입니다.",
 };
 /* 자리마다 '큰 수 − 작은 수'(받아내림을 피해 뒤집어 뺀 값) — 06_study의 판정과 같은 식 */
@@ -5084,7 +5144,13 @@ const sflOf = (a, b) => { let v = 0, m = 1; for (let pl = 0; pl < String(a).leng
 function errSignal(sessions) {
   const c = {}, add = k => { c[k] = (c[k] || 0) + 1; };
   let seen = 0;
-  sessions.slice(0, 20).forEach(ss => (ss.items || []).forEach(it => {
+  const win = sessions.slice(0, 20);
+  /* ④(v102) 부주의 보수화 — 빠른 오답은 '개념은 아는데 급했다'가 성립할 때만(첫 시도 정답률 70%↑) 부주의로 센다.
+     정확도가 낮은 학생의 빠른 오답은 충동 반응+개념 결손이 섞여 있어, 부주의로 단정하면 교사를 잘못 안심시킨다 */
+  let ft = 0, tot = 0;
+  win.forEach(ss => (ss.items || []).forEach(it => { if (!it) return; tot++; if (it.wrongs === 0) ft++; }));
+  const accurate = tot >= 10 && ft / tot >= 0.7;
+  win.forEach(ss => (ss.items || []).forEach(it => {
     if (!it) return; seen++;
     const q = String(it.q || ''), ans = it.ans, ms = it.ms || 0;
     const m = q.match(/^(\d+)\s*([+−×÷-])\s*(\d+)$/);
@@ -5093,9 +5159,19 @@ function errSignal(sessions) {
       return;
     }
     const gs = Array.isArray(it.given) ? it.given : (it.given != null ? [it.given] : []);
+    const fast = () => { if (accurate && ms > 0 && ms < 3000) add('careless'); };
     if (m) {
       const a = +m[1], op = m[2], b = +m[3], plus = op === '+';
       gs.forEach(v => {
+        if (op === '×') {                                   /* ⑤(v102) 곱셈 — 이웃 구구=사실 회상, 덧셈 혼동=기호 */
+          if (v === a + b) return add('symbol');
+          if (v === a * (b - 1) || v === a * (b + 1) || v === (a - 1) * b || v === (a + 1) * b) return add('fact');
+          return fast();
+        }
+        if (op === '÷') {                                   /* 몫 ±1 = 구구 인출·묶음 세기 */
+          if (Math.abs(v - ans) === 1) return add('fact');
+          return fast();
+        }
         if (!plus && v === a + b) return add('symbol');
         if (plus && a !== b && v === Math.abs(a - b)) return add('symbol');
         if (plus && v === catVal(a, b)) return add('place');
@@ -5104,7 +5180,7 @@ function errSignal(sessions) {
         if (plus && v === ans - 10) return add('proc');
         if (plus && Math.min(a, b) > 1 && v === Math.max(a, b) + 1) return add('count');
         if (!plus && b > 1 && v === a - 1) return add('count');
-        if (ms > 0 && ms < 3000) return add('careless');
+        return fast();
       });
       return;
     }
