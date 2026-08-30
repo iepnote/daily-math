@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 100 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 101 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1043,7 +1043,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 100';
+const APP_VERSION = 'ver 101';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1128,100 +1128,109 @@ const senseItem = () => SENSE_ITEMS[R(0, SENSE_ITEMS.length - 1)];
 
 const LEVELS = [
  /* ---- 수감각(수 이전) — 크기·양 직관, 일대일 대응, 같은 양, 직산. 진급 순서상 수 기초보다 앞 ---- */
- { id: 50, g: "수감각 · 크기 비교", name: "큰 것 고르기", gen: () => { const [item, emoji] = senseItem(); return { type: 'bigpick', item, emoji, ans: R(0, 1) }; } },
- { id: 51, g: "수감각 · 많다 적다", name: "많은 쪽 고르기", gen: () => { const s = R(1, 3), l = R(s * 2 + 2, 9), flip = R(0, 1); const a = flip ? l : s, b = flip ? s : l; return { type: 'more', a, b, ans: a > b ? 0 : 1 }; } },   // 확연한 차이(2배 이상) — 세지 않고 직관 비교
- { id: 52, g: "수감각 · 하나씩 짝짓기", name: "하나씩 나눠 주기", gen: () => { const n = R(2, 4), [item, emoji] = senseItem(); return { type: 'onemap', n, item, emoji, ans: n }; } },
- { id: 53, g: "수감각 · 같은 수", name: "같은 수 찾기", gen: () => { const n = R(2, 5); let d = n + (R(0, 1) ? 1 : -1); if (d < 1) d = n + 1; return { type: 'samepick', n, d, ans: R(0, 1) }; } },   // 배열이 달라도 개수는 같음
- { id: 54, g: "수감각 · 번쩍 세기", name: "번쩍 보고 알기", gen: () => { const n = Math.random() < .3 ? 4 : R(1, 3); return { type: 'flash', n, ans: n }; } },   // 직산(subitizing) 1~4
+ { id: 101, g: "수감각 · 크기 비교", name: "큰 것 고르기", gen: () => { const [item, emoji] = senseItem(); return { type: 'bigpick', item, emoji, ans: R(0, 1) }; } },
+ { id: 102, g: "수감각 · 많다 적다", name: "많은 쪽 고르기", gen: () => { const s = R(1, 3), l = R(s * 2 + 2, 9), flip = R(0, 1); const a = flip ? l : s, b = flip ? s : l; return { type: 'more', a, b, ans: a > b ? 0 : 1 }; } },   // 확연한 차이(2배 이상) — 세지 않고 직관 비교
+ { id: 103, g: "수감각 · 하나씩 짝짓기", name: "하나씩 나눠 주기", gen: () => { const n = R(2, 4), [item, emoji] = senseItem(); return { type: 'onemap', n, item, emoji, ans: n }; } },
+ { id: 104, g: "수감각 · 같은 수", name: "같은 수 찾기", gen: () => { const n = R(2, 5); let d = n + (R(0, 1) ? 1 : -1); if (d < 1) d = n + 1; return { type: 'samepick', n, d, ans: R(0, 1) }; } },   // 배열이 달라도 개수는 같음
+ { id: 105, g: "수감각 · 번쩍 세기", name: "번쩍 보고 알기", gen: () => { const n = Math.random() < .3 ? 4 : R(1, 3); return { type: 'flash', n, ans: n }; } },   // 직산(subitizing) 1~4
  /* ---- 기초(수 이전~수 감각) — 진급 순서상 수감각 다음 ---- */
- { id: 36, g: "기초 · 수 세기", name: "다섯까지 세기", gen: () => { const n = R(1, 5); return { type: 'count', n, ans: n }; } },
- { id: 37, g: "기초 · 수 세기", name: "다섯까지 담기", gen: () => { const n = R(2, 5); return { type: 'put', n, max: 5, ans: n }; } },   // 5까지 활동 — 트레이도 5개만
- { id: 38, g: "기초 · 수 세기", name: "아홉까지 세기", gen: () => { const n = R(4, 9); return { type: 'count', n, ans: n }; } },
- { id: 39, g: "기초 · 수 세기", name: "아홉까지 담기", gen: () => { const n = R(4, 9); return { type: 'put', n, max: 10, ans: n }; } },
- { id: 47, g: "기초 · 수 세기", name: "열까지 세기", gen: () => { const n = R(5, 10); return { type: 'count', n, ans: n }; } },
- { id: 48, g: "기초 · 수 세기", name: "스물까지 세기", gen: () => { const n = R(11, 20); return { type: 'count', n, ans: n }; } },
- { id: 57, g: "수감각 · 번쩍 세기", name: "번쩍 보고 알기 (5와 몇)", gen: () => { const n = R(5, 10); return { type: 'flash', n, tf: 1, ans: n }; } },   // 개념적 직산 — 십틀 배열에서 5 기준으로 묶어 보기
- { id: 43, g: "기초 · 수 감각", name: "수 배열 (1~20)", gen: () => seqGen([1]) },
+ { id: 106, g: "기초 · 수 세기", name: "다섯까지 세기", gen: () => { const n = R(1, 5); return { type: 'count', n, ans: n }; } },
+ { id: 107, g: "기초 · 수 세기", name: "다섯까지 담기", gen: () => { const n = R(2, 5); return { type: 'put', n, max: 5, ans: n }; } },   // 5까지 활동 — 트레이도 5개만
+ { id: 108, g: "기초 · 수 세기", name: "아홉까지 세기", gen: () => { const n = R(4, 9); return { type: 'count', n, ans: n }; } },
+ { id: 109, g: "기초 · 수 세기", name: "아홉까지 담기", gen: () => { const n = R(4, 9); return { type: 'put', n, max: 10, ans: n }; } },
+ { id: 110, g: "기초 · 수 세기", name: "열까지 세기", gen: () => { const n = R(5, 10); return { type: 'count', n, ans: n }; } },
+ { id: 112, g: "기초 · 수 세기", name: "스물까지 세기", gen: () => { const n = R(11, 20); return { type: 'count', n, ans: n }; } },
+ { id: 111, g: "수감각 · 번쩍 세기", name: "번쩍 보고 알기 (5와 몇)", gen: () => { const n = R(5, 10); return { type: 'flash', n, tf: 1, ans: n }; } },   // 개념적 직산 — 십틀 배열에서 5 기준으로 묶어 보기
+ { id: 113, g: "기초 · 수 감각", name: "수 배열 (1~20)", gen: () => seqGen([1]) },
  /* 수직선 추정(NLE) — 위치시키기+즉시 피드백 반복이 수 표상을 선형으로 만듦(Booth & Siegler 2008, 수감각도구 이식) */
- { id: 55, g: "수감각 · 수직선", name: "수직선 위치 찾기 (0~10)", gen: () => ({ type: 'nle', max: 10, ans: R(1, 9) }) },
- { id: 56, g: "수감각 · 수직선", name: "수직선 위치 찾기 (0~20)", gen: () => ({ type: 'nle', max: 20, ans: R(1, 19) }) },
+ { id: 115, g: "수감각 · 수직선", name: "수직선 위치 찾기 (0~10)", gen: () => ({ type: 'nle', max: 10, ans: R(1, 9) }) },
+ { id: 116, g: "수감각 · 수직선", name: "수직선 위치 찾기 (0~20)", gen: () => ({ type: 'nle', max: 20, ans: R(1, 19) }) },
  /* 크기 비교 — 15%는 같은 수(같아요 보기), 45%는 차이 1~2(거리 효과 연습), 나머지는 무작위 */
- { id: 42, g: "기초 · 수 감각", name: "크기 비교", gen: () => { const r = Math.random(), a = R(1, 9); if (r < .15) return { type: 'compare', a, b: a, ans: 2 }; let b; if (r < .6) { do { b = a + (R(0, 1) ? 1 : -1) * R(1, 2); } while (b < 1 || b > 9); } else { do { b = R(1, 9); } while (b === a); } return { type: 'compare', a, b, ans: a > b ? 0 : 1 }; } },
- { id: 40, g: "기초 · 모으기와 가르기", name: "다섯까지 모으기·가르기", gen: () => gatherSplit(5) },
- { id: 41, g: "기초 · 모으기와 가르기", name: "아홉까지 모으기·가르기", gen: () => gatherSplit(9) },
- { id: 49, g: "기초 · 모으기와 가르기", name: "자유롭게 가르기", gen: () => { const n = R(3, 9); return { type: 'freesplit', n, ans: n }; } },
- { id: 1, g: "1학년 · 5까지의 수", name: "5 이하 덧셈", gen: () => bAdd(5) },
- { id: 2, g: "1학년 · 5까지의 수", name: "5 이하 뺄셈", gen: () => bSub(5) },
- { id: 3, g: "1학년 · 5까지의 수", name: "5 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(5) : bSub(5) },
- /* 34~35: 9 이하 덧셈·뺄셈 분리 단계 — 교육과정(합 9이하 덧셈/피감수 9이하 뺄셈)대로 혼합(4) 앞에 배치. id는 뒤 번호지만 LEVEL_ORDER상 3 다음 */
- { id: 34, g: "1학년 · 9까지의 수", name: "9 이하 덧셈", gen: () => bAdd(9) },
- { id: 35, g: "1학년 · 9까지의 수", name: "9 이하 뺄셈", gen: () => bSub(9) },
- { id: 4, g: "1학년 · 9까지의 수", name: "9 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(9) : bSub(9) },
- { id: 45, g: "1학년 · 문장제", name: "덧셈·뺄셈 문장제", gen: wordGen },
+ { id: 114, g: "기초 · 수 감각", name: "크기 비교", gen: () => { const r = Math.random(), a = R(1, 9); if (r < .15) return { type: 'compare', a, b: a, ans: 2 }; let b; if (r < .6) { do { b = a + (R(0, 1) ? 1 : -1) * R(1, 2); } while (b < 1 || b > 9); } else { do { b = R(1, 9); } while (b === a); } return { type: 'compare', a, b, ans: a > b ? 0 : 1 }; } },
+ { id: 117, g: "기초 · 모으기와 가르기", name: "다섯까지 모으기·가르기", gen: () => gatherSplit(5) },
+ { id: 118, g: "기초 · 모으기와 가르기", name: "아홉까지 모으기·가르기", gen: () => gatherSplit(9) },
+ { id: 119, g: "기초 · 모으기와 가르기", name: "자유롭게 가르기", gen: () => { const n = R(3, 9); return { type: 'freesplit', n, ans: n }; } },
+ { id: 120, g: "1학년 · 5까지의 수", name: "5 이하 덧셈", gen: () => bAdd(5) },
+ { id: 121, g: "1학년 · 5까지의 수", name: "5 이하 뺄셈", gen: () => bSub(5) },
+ { id: 122, g: "1학년 · 5까지의 수", name: "5 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(5) : bSub(5) },
+ /* 123~124: 9 이하 덧셈·뺄셈 분리 단계 — 교육과정(합 9이하 덧셈/피감수 9이하 뺄셈)대로 혼합(125) 앞에 배치 */
+ { id: 123, g: "1학년 · 9까지의 수", name: "9 이하 덧셈", gen: () => bAdd(9) },
+ { id: 124, g: "1학년 · 9까지의 수", name: "9 이하 뺄셈", gen: () => bSub(9) },
+ { id: 125, g: "1학년 · 9까지의 수", name: "9 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(9) : bSub(9) },
+ { id: 126, g: "1학년 · 문장제", name: "덧셈·뺄셈 문장제", gen: wordGen },
  /* 59: 자리값 블록 읽기 — 두 자리 수 진입 전 다리(십 모형·일 모형 → 수). 61↔16 전사 오류를 보기·힌트에서 직접 다룸 */
- { id: 59, g: "기초 · 자리값", name: "자리값 블록 읽기", gen: () => { const t = R(1, 9), o = R(0, 9); return { type: 'pvread', t, o, ans: t * 10 + o }; } },
+ { id: 127, g: "기초 · 자리값", name: "자리값 블록 읽기", gen: () => { const t = R(1, 9), o = R(0, 9); return { type: 'pvread', t, o, ans: t * 10 + o }; } },
  /* 61: 자리값 블록 만들기(v94, 수감각도구 잔여) — 읽기(59)의 역방향: 수를 보고 십 막대·낱개로 직접 구성(각 9개 상한 = 유일해) */
- { id: 61, g: "기초 · 자리값", name: "자리값 블록 만들기", gen: () => { const t = R(1, 9), o = R(0, 9); return { type: 'pvbuild', t, o, ans: t * 10 + o }; } },
- { id: 5, g: "1학년 · 받아올림 없는 덧셈", name: "몇십 + 몇", gen: () => { const a = R(1, 9) * 10, b = R(1, 9); return { type: 'binary', a, b, op: '+', ans: a + b }; } },
- { id: 6, g: "1학년 · 받아올림 없는 덧셈", name: "몇십 + 몇십", gen: () => { const ta = R(1, 8), tb = R(1, 9 - ta); return { type: 'binary', a: ta * 10, b: tb * 10, op: '+', ans: (ta + tb) * 10 }; } },
- { id: 7, g: "1학년 · 받아올림 없는 덧셈", name: "몇십몇 + 몇십몇", gen: () => { const ta = R(1, 8), tb = R(1, 9 - ta), ua = R(0, 9), ub = R(0, 9 - ua); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '+', ans: a + b }; } },
- { id: 8, g: "1학년 · 받아내림 없는 뺄셈", name: "몇십 − 몇십", gen: () => { const ta = R(2, 9), tb = R(1, ta - 1); return { type: 'binary', a: ta * 10, b: tb * 10, op: '-', ans: (ta - tb) * 10 }; } },
- { id: 9, g: "1학년 · 받아내림 없는 뺄셈", name: "몇십몇 − 몇", gen: () => { const ta = R(1, 9), ua = R(1, 9), a = ta * 10 + ua, b = R(1, ua); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
- { id: 10, g: "1학년 · 받아내림 없는 뺄셈", name: "몇십몇 − 몇십몇", gen: () => { let ta, tb, ua, ub, a, b; do { ta = R(2, 9); ua = R(0, 9); tb = R(1, ta); ub = R(0, ua); a = ta * 10 + ua; b = tb * 10 + ub; } while (a <= b); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
- { id: 11, g: "1학년 · 세 수", name: "세 수의 덧셈 (합 9 이하)", gen: () => { const a = R(1, 7), b = R(1, Math.max(1, 8 - a)), c = R(1, Math.max(1, 9 - a - b)); return { type: 'triple', a, b, c, op: '+', op2: '+', ans: a + b + c }; } },
- { id: 12, g: "1학년 · 세 수", name: "세 수의 뺄셈 (9 이하)", gen: () => { const a = R(4, 9), b = R(1, a - 2), c = R(1, a - b); return { type: 'triple', a, b, c, op: '-', op2: '-', ans: a - b - c }; } },
- { id: 13, g: "1학년 · 세 수", name: "세 수 덧셈·뺄셈 혼합", gen: () => { const a = R(1, 7), b = R(1, Math.max(1, 9 - a)), c = R(1, a + b); return { type: 'triple', a, b, c, op: '+', op2: '-', ans: a + b - c }; } },
- /* 32~33: 다리 단계 — 교과서의 "(몇)+(몇)=십몇 / 십몇−(몇)" 단원. id는 뒤 번호지만 진급 순서(LEVEL_ORDER)상 10의 보수 다음, 두 자리 받아올림(14) 앞 */
- { id: 32, g: "1학년 · 받아올림·받아내림", name: "(몇)+(몇) 십몇", gen: () => { const a = R(2, 9), b = R(Math.max(2, 11 - a), 9); return { type: 'binary', a, b, op: '+', ans: a + b }; } },
- { id: 33, g: "1학년 · 받아올림·받아내림", name: "십몇 − (몇) 받아내림", gen: () => { const a = R(11, 18), b = R(a % 10 + 1, 9); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
- { id: 14, g: "1학년 · 받아올림·받아내림", name: "받아올림 있는 덧셈", gen: () => { const ta = R(1, 7), tb = R(1, 8 - ta), ua = R(1, 9), ub = R(10 - ua, 9); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '+', ans: a + b }; } },
- { id: 15, g: "1학년 · 받아올림·받아내림", name: "받아내림 있는 뺄셈", gen: () => { const ta = R(2, 9), ua = R(0, 8), tb = R(1, ta - 1), ub = R(ua + 1, 9); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '-', ans: a - b }; } },
+ { id: 128, g: "기초 · 자리값", name: "자리값 블록 만들기", gen: () => { const t = R(1, 9), o = R(0, 9); return { type: 'pvbuild', t, o, ans: t * 10 + o }; } },
+ { id: 129, g: "1학년 · 받아올림 없는 덧셈", name: "몇십 + 몇", gen: () => { const a = R(1, 9) * 10, b = R(1, 9); return { type: 'binary', a, b, op: '+', ans: a + b }; } },
+ { id: 130, g: "1학년 · 받아올림 없는 덧셈", name: "몇십 + 몇십", gen: () => { const ta = R(1, 8), tb = R(1, 9 - ta); return { type: 'binary', a: ta * 10, b: tb * 10, op: '+', ans: (ta + tb) * 10 }; } },
+ { id: 131, g: "1학년 · 받아올림 없는 덧셈", name: "몇십몇 + 몇십몇", gen: () => { const ta = R(1, 8), tb = R(1, 9 - ta), ua = R(0, 9), ub = R(0, 9 - ua); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '+', ans: a + b }; } },
+ { id: 132, g: "1학년 · 받아내림 없는 뺄셈", name: "몇십 − 몇십", gen: () => { const ta = R(2, 9), tb = R(1, ta - 1); return { type: 'binary', a: ta * 10, b: tb * 10, op: '-', ans: (ta - tb) * 10 }; } },
+ { id: 133, g: "1학년 · 받아내림 없는 뺄셈", name: "몇십몇 − 몇", gen: () => { const ta = R(1, 9), ua = R(1, 9), a = ta * 10 + ua, b = R(1, ua); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
+ { id: 134, g: "1학년 · 받아내림 없는 뺄셈", name: "몇십몇 − 몇십몇", gen: () => { let ta, tb, ua, ub, a, b; do { ta = R(2, 9); ua = R(0, 9); tb = R(1, ta); ub = R(0, ua); a = ta * 10 + ua; b = tb * 10 + ub; } while (a <= b); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
+ { id: 135, g: "1학년 · 세 수", name: "세 수의 덧셈 (합 9 이하)", gen: () => { const a = R(1, 7), b = R(1, Math.max(1, 8 - a)), c = R(1, Math.max(1, 9 - a - b)); return { type: 'triple', a, b, c, op: '+', op2: '+', ans: a + b + c }; } },
+ { id: 136, g: "1학년 · 세 수", name: "세 수의 뺄셈 (9 이하)", gen: () => { const a = R(4, 9), b = R(1, a - 2), c = R(1, a - b); return { type: 'triple', a, b, c, op: '-', op2: '-', ans: a - b - c }; } },
+ { id: 137, g: "1학년 · 세 수", name: "세 수 덧셈·뺄셈 혼합", gen: () => { const a = R(1, 7), b = R(1, Math.max(1, 9 - a)), c = R(1, a + b); return { type: 'triple', a, b, c, op: '+', op2: '-', ans: a + b - c }; } },
+ /* 146~147: 다리 단계 — 교과서의 "(몇)+(몇)=십몇 / 십몇−(몇)" 단원. 덧셈 전략(143~145) 다음, 두 자리 받아올림(148) 앞 */
+ { id: 146, g: "1학년 · 받아올림·받아내림", name: "(몇)+(몇) 십몇", gen: () => { const a = R(2, 9), b = R(Math.max(2, 11 - a), 9); return { type: 'binary', a, b, op: '+', ans: a + b }; } },
+ { id: 147, g: "1학년 · 받아올림·받아내림", name: "십몇 − (몇) 받아내림", gen: () => { const a = R(11, 18), b = R(a % 10 + 1, 9); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
+ { id: 148, g: "1학년 · 받아올림·받아내림", name: "받아올림 있는 덧셈", gen: () => { const ta = R(1, 7), tb = R(1, 8 - ta), ua = R(1, 9), ub = R(10 - ua, 9); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '+', ans: a + b }; } },
+ { id: 149, g: "1학년 · 받아올림·받아내림", name: "받아내림 있는 뺄셈", gen: () => { const ta = R(2, 9), ua = R(0, 8), tb = R(1, ta - 1), ub = R(ua + 1, 9); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '-', ans: a - b }; } },
  /* 58: 십틀 채우기 — 10의 보수(16~18) 진입 전에 십틀 조작 자체를 익힘(수감각도구 이식: 힌트에서만 보던 십틀을 본 활동으로) */
- { id: 58, g: "기초 · 10의 구조", name: "십틀 채우기", gen: () => { const n = R(1, 10); return { type: 'tenfill', n, ans: n }; } },
+ { id: 138, g: "기초 · 10의 구조", name: "십틀 채우기", gen: () => { const n = R(1, 10); return { type: 'tenfill', n, ans: n }; } },
  /* 60: 십틀 10 만들기(v94, 수감각도구 잔여) — k개가 미리 채워진 십틀을 10이 되게 채움(10의 보수 직전 다리) */
- { id: 60, g: "기초 · 10의 구조", name: "십틀 10 만들기", gen: () => { const k = R(1, 9); return { type: 'tenfill', n: 10, pre: k, ans: 10 - k }; } },
- { id: 16, g: "1학년 · 10의 보수", name: "10 짝꿍수 찾기", gen: () => { const k = R(1, 9); return { type: 'missing', form: 'partner', k, result: 10, ans: 10 - k }; } },
- { id: 17, g: "1학년 · 10의 보수", name: "10이 되는 더하기", gen: () => { const k = R(1, 9); return { type: 'missing', form: 'addToTen', k, result: 10, ans: 10 - k }; } },
- { id: 18, g: "1학년 · 10의 보수", name: "10에서 빼기", gen: () => { const x = R(1, 9); return { type: 'missing', form: 'subFromTen', k: 10, result: 10 - x, ans: x }; } },
+ { id: 139, g: "기초 · 10의 구조", name: "십틀 10 만들기", gen: () => { const k = R(1, 9); return { type: 'tenfill', n: 10, pre: k, ans: 10 - k }; } },
+ { id: 140, g: "1학년 · 10의 보수", name: "10 짝꿍수 찾기", gen: () => { const k = R(1, 9); return { type: 'missing', form: 'partner', k, result: 10, ans: 10 - k }; } },
+ { id: 141, g: "1학년 · 10의 보수", name: "10이 되는 더하기", gen: () => { const k = R(1, 9); return { type: 'missing', form: 'addToTen', k, result: 10, ans: 10 - k }; } },
+ { id: 142, g: "1학년 · 10의 보수", name: "10에서 빼기", gen: () => { const x = R(1, 9); return { type: 'missing', form: 'subFromTen', k: 10, result: 10 - x, ans: x }; } },
+ /* 143~145: 덧셈 전략 단계(v101 신설) — 전략의 재료(같은 수 더하기·합10)를 사실로 학습. 보수 뒤·십몇(146) 앞 */
+ { id: 143, g: "1학년 · 덧셈 전략", name: "같은 수 더하기", gen: () => { const a = R(1, 9); return { type: 'binary', a, b: a, op: '+', ans: a + a }; } },
+ { id: 144, g: "1학년 · 덧셈 전략", name: "같은 수 더하고 하나 더", gen: () => { const a = R(1, 8), f = R(0, 1); return { type: 'binary', a: f ? a : a + 1, b: f ? a + 1 : a, op: '+', ans: a * 2 + 1 }; } },
+ { id: 145, g: "1학년 · 덧셈 전략", name: "합이 10이 되는 덧셈", gen: () => { const a = R(1, 9); return { type: 'binary', a, b: 10 - a, op: '+', ans: 10 }; } },
  /* ---- 2학년 (일일수학 진도 참고) ---- */
- { id: 19, g: "2학년 · 세 자리 수", name: "(세 자리)+(세 자리) 받아올림 없음", gen: add3NoCarry },
- { id: 20, g: "2학년 · 세 자리 수", name: "(세 자리)+(세 자리) 받아올림 1번", gen: add3OneCarry },
- { id: 21, g: "2학년 · 세 자리 수", name: "(세 자리)−(세 자리) 받아내림 없음", gen: sub3NoBorrow },
- { id: 22, g: "2학년 · 세 자리 수", name: "(세 자리)−(세 자리) 받아내림 1번", gen: sub3OneBorrow },
- { id: 44, g: "2학년 · 곱셈구구", name: "뛰어세기 (2·5·10씩)", gen: () => seqGen([2, 5, 10]) },
- { id: 23, g: "2학년 · 곱셈구구", name: "곱셈구구 2단·5단", gen: () => gugu([2, 5]) },
- { id: 24, g: "2학년 · 곱셈구구", name: "곱셈구구 3단·6단", gen: () => gugu([3, 6]) },
- { id: 25, g: "2학년 · 곱셈구구", name: "곱셈구구 4단·8단", gen: () => gugu([4, 8]) },
- { id: 26, g: "2학년 · 곱셈구구", name: "곱셈구구 7단·9단", gen: () => gugu([7, 9]) },
- { id: 27, g: "2학년 · 곱셈구구", name: "곱셈구구 종합", gen: () => gugu([2, 3, 4, 5, 6, 7, 8, 9]) },
- { id: 46, g: "2학년 · 곱셈구구", name: "곱셈구구 채점 놀이", gen: judgeGen },
+ { id: 150, g: "2학년 · 세 자리 수", name: "(세 자리)+(세 자리) 받아올림 없음", gen: add3NoCarry },
+ { id: 151, g: "2학년 · 세 자리 수", name: "(세 자리)+(세 자리) 받아올림 1번", gen: add3OneCarry },
+ { id: 152, g: "2학년 · 세 자리 수", name: "(세 자리)−(세 자리) 받아내림 없음", gen: sub3NoBorrow },
+ { id: 153, g: "2학년 · 세 자리 수", name: "(세 자리)−(세 자리) 받아내림 1번", gen: sub3OneBorrow },
+ { id: 154, g: "2학년 · 곱셈구구", name: "뛰어세기 (2·5·10씩)", gen: () => seqGen([2, 5, 10]) },
+ { id: 155, g: "2학년 · 곱셈구구", name: "곱셈구구 2단·5단", gen: () => gugu([2, 5]) },
+ { id: 156, g: "2학년 · 곱셈구구", name: "곱셈구구 3단·6단", gen: () => gugu([3, 6]) },
+ { id: 157, g: "2학년 · 곱셈구구", name: "곱셈구구 4단·8단", gen: () => gugu([4, 8]) },
+ { id: 158, g: "2학년 · 곱셈구구", name: "곱셈구구 7단·9단", gen: () => gugu([7, 9]) },
+ { id: 159, g: "2학년 · 곱셈구구", name: "곱셈구구 종합", gen: () => gugu([2, 3, 4, 5, 6, 7, 8, 9]) },
+ { id: 160, g: "2학년 · 곱셈구구", name: "곱셈구구 채점 놀이", gen: judgeGen },
  /* ---- 3학년 ---- */
- { id: 28, g: "3학년 · 곱셈과 나눗셈", name: "(두 자리)×(한 자리) 올림 없음", gen: () => { const b = R(2, 4), ta = R(1, Math.floor(9 / b)), ua = R(0, Math.floor(9 / b)); const a = ta * 10 + ua; return { type: 'binary', a, b, op: '×', ans: a * b }; } },
- { id: 29, g: "3학년 · 곱셈과 나눗셈", name: "(두 자리)×(한 자리) 올림 있음", gen: () => { let a, b; do { b = R(2, 9); a = R(11, 99); } while ((a % 10) * b < 10 && Math.floor(a / 10) * b < 10); return { type: 'binary', a, b, op: '×', ans: a * b }; } },
- { id: 30, g: "3학년 · 곱셈과 나눗셈", name: "곱셈구구로 나눗셈", gen: () => { const b = R(2, 9), q = R(2, 9); return { type: 'binary', a: b * q, b, op: '÷', ans: q }; } },
- { id: 31, g: "3학년 · 세 자리 수", name: "(세 자리)±(세 자리) 종합", gen: () => { if (Math.random() < .5) { const a = R(100, 899), b = R(100, 999 - a); return { type: 'binary', a, b, op: '+', ans: a + b }; } let a, b; do { a = R(200, 999); b = R(100, a - 1); } while (a === b); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
+ { id: 161, g: "3학년 · 곱셈과 나눗셈", name: "(두 자리)×(한 자리) 올림 없음", gen: () => { const b = R(2, 4), ta = R(1, Math.floor(9 / b)), ua = R(0, Math.floor(9 / b)); const a = ta * 10 + ua; return { type: 'binary', a, b, op: '×', ans: a * b }; } },
+ { id: 162, g: "3학년 · 곱셈과 나눗셈", name: "(두 자리)×(한 자리) 올림 있음", gen: () => { let a, b; do { b = R(2, 9); a = R(11, 99); } while ((a % 10) * b < 10 && Math.floor(a / 10) * b < 10); return { type: 'binary', a, b, op: '×', ans: a * b }; } },
+ { id: 163, g: "3학년 · 곱셈과 나눗셈", name: "곱셈구구로 나눗셈", gen: () => { const b = R(2, 9), q = R(2, 9); return { type: 'binary', a: b * q, b, op: '÷', ans: q }; } },
+ { id: 164, g: "3학년 · 세 자리 수", name: "(세 자리)±(세 자리) 종합", gen: () => { if (Math.random() < .5) { const a = R(100, 899), b = R(100, 999 - a); return { type: 'binary', a, b, op: '+', ans: a + b }; } let a, b; do { a = R(200, 999); b = R(100, a - 1); } while (a === b); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
 ];
-const levelById = id => LEVELS.find(l => l.id === id) || LEVELS[0];
-/* 진급 순서(교육과정 순) — id 번호와 다름: 10의 보수(16~18)와 다리 단계(32~33)가 두 자리 받아올림·내림(14~15)의 선수 기능.
-   id 1~18은 저장된 진도 때문에 번호 변경 금지 → 순서표로 해결 */
-const LEVEL_ORDER = [50, 51, 52, 53, 54, 36, 37, 38, 39, 47, 57, 48, 43, 42, 55, 56, 40, 41, 49, 1, 2, 3, 34, 35, 4, 45, 59, 61, 5, 6, 7, 8, 9, 10, 11, 12, 13, 58, 60, 16, 17, 18, 32, 33, 14, 15, 19, 20, 21, 22, 44, 23, 24, 25, 26, 27, 46, 28, 29, 30, 31];
-/* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) — 저장·내부 참조는 여전히 id (id 1~18 변경 금지 원칙 유지) */
+/* v101 id 재부여(2026-08-30, 사용자 지시): id = 101 + 교육과정 순.
+   구 id(1~61)와 겹치지 않는 오프셋이라 이관이 멱등 — 101 미만 값만 변환하면 되고, 이관 표시 플래그가 필요 없다.
+   구 id를 읽는 곳(저장된 student.level·이어하기)은 migrateLv를 거친다. OLD2NEW는 삭제 금지. */
+const OLD2NEW = { 1: 120, 2: 121, 3: 122, 4: 125, 5: 129, 6: 130, 7: 131, 8: 132, 9: 133, 10: 134, 11: 135, 12: 136, 13: 137, 14: 148, 15: 149, 16: 140, 17: 141, 18: 142, 19: 150, 20: 151, 21: 152, 22: 153, 23: 155, 24: 156, 25: 157, 26: 158, 27: 159, 28: 161, 29: 162, 30: 163, 31: 164, 32: 146, 33: 147, 34: 123, 35: 124, 36: 106, 37: 107, 38: 108, 39: 109, 40: 117, 41: 118, 42: 114, 43: 113, 44: 154, 45: 126, 46: 160, 47: 110, 48: 112, 49: 119, 50: 101, 51: 102, 52: 103, 53: 104, 54: 105, 55: 115, 56: 116, 57: 111, 58: 138, 59: 127, 60: 139, 61: 128 };
+const migrateLv = v => (v >= 101 ? v : (OLD2NEW[v] || LEVEL_ORDER[0]));
+const levelById = id => LEVELS.find(l => l.id === migrateLv(id)) || LEVELS[0];
+/* v101 재부여 후 id = 101 + 교육과정 순이라 지금은 오름차순과 같다.
+   새 단계는 165+ 번호로 만들고 이 배열의 원하는 위치에 삽입한다(기존 id 재부여 금지). */
+const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
+/* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
 /* 단계 선택 화면의 영역 탭 — 표시용 묶음(진급 순서는 LEVEL_ORDER 그대로) */
 const LEVEL_BANDS = [
-  /* 수 감각 활동 탭 배치(사용자 지정): 크기 비교(42)는 수 기초 탭의 수 배열(43) 옆 — 진급 순서도 수 배열 바로 다음 */
-  { name: '수 감각', ids: [50, 51, 52, 53, 54, 57, 55, 56] },
-  /* 십틀(58)·자리값 블록(59)은 수 기초 탭에(사용자 지정) — 진급 순서상 위치(10의 보수 앞·두 자리 앞)는 유지 */
-  { name: '수 기초', ids: [36, 37, 38, 39, 47, 48, 43, 42, 40, 41, 49, 58, 60, 59, 61] },
-  { name: '한 자리 수 덧셈·뺄셈', ids: [1, 2, 3, 34, 35, 4, 45, 11, 12, 13, 16, 17, 18, 32, 33] },
-  { name: '두 자리 수 덧셈·뺄셈', ids: [5, 6, 7, 8, 9, 10, 14, 15] },
-  { name: '세 자리 수 덧셈·뺄셈', ids: [19, 20, 21, 22, 31] },
-  { name: '곱셈·나눗셈', ids: [44, 23, 24, 25, 26, 27, 46, 28, 29, 30] },
+  /* 수 감각 활동 탭 배치(사용자 지정): 크기 비교(114)는 수 기초 탭의 수 배열(113) 옆 — 진급 순서도 수 배열 바로 다음 */
+  { name: '수 감각', ids: [101, 102, 103, 104, 105, 111, 115, 116] },
+  /* 십틀(138)·자리값 블록(127)은 수 기초 탭에(사용자 지정) — 진급 순서상 위치(10의 보수 앞·두 자리 앞)는 유지 */
+  { name: '수 기초', ids: [106, 107, 108, 109, 110, 112, 113, 114, 117, 118, 119, 138, 139, 127, 128] },
+  { name: '한 자리 수 덧셈·뺄셈', ids: [120, 121, 122, 123, 124, 125, 126, 135, 136, 137, 140, 141, 142, 143, 144, 145, 146, 147] },
+  { name: '두 자리 수 덧셈·뺄셈', ids: [129, 130, 131, 132, 133, 134, 148, 149] },
+  { name: '세 자리 수 덧셈·뺄셈', ids: [150, 151, 152, 153, 164] },
+  { name: '곱셈·나눗셈', ids: [154, 155, 156, 157, 158, 159, 160, 161, 162, 163] },
 ];
-/* 학습지 인쇄 비지원 유형 — 번쩍 보기(54·57)는 잠깐 보여주는 화면 전용 활동이라 지필 불가.
-   십틀 10 만들기(60)·자리값 블록 만들기(61)는 조작 활동이라 지면 미지원(v94 규칙: 신규 유형은 NO_PRINT) */
-const NO_PRINT_IDS = new Set([54, 57, 60, 61]);
+/* 학습지 인쇄 비지원 유형 — 번쩍 보기(105·111)는 잠깐 보여주는 화면 전용 활동이라 지필 불가.
+   십틀 10 만들기(139)·자리값 블록 만들기(128)는 조작 활동이라 지면 미지원(v94 규칙: 신규 유형은 NO_PRINT) */
+const NO_PRINT_IDS = new Set([105, 111, 139, 128]);
 const nextLevel = id => { const i = LEVEL_ORDER.indexOf(id); return i >= 0 && i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : 0; };
 
 /* =========================================================
@@ -1361,13 +1370,15 @@ const Store = {
   },
 
   async listStudents(code) {
+    /* v101 id 재부여 이관 — 저장된 구 단계 번호(1~61)를 새 번호(101+)로. 멱등이라 매번 통과시켜도 안전 */
+    const mig = arr => arr.map(s => { s.level = migrateLv(s.level); return s; });
     if (IS_REMOTE() && navigator.onLine) {
       try {
         const rows = await sbFetch('GET', 'students?class_code=eq.' + encodeURIComponent(code) + '&order=name', undefined, code);
-        const arr = (rows || []).map(rowToStudent); cache.setStudents(code, arr); return arr;
+        const arr = mig((rows || []).map(rowToStudent)); cache.setStudents(code, arr); return arr;
       } catch (e) { }
     }
-    return cache.students(code);
+    return mig(cache.students(code));
   },
   async addStudent(st) {
     const arr = cache.students(st.classCode); arr.push(st); cache.setStudents(st.classCode, arr);
@@ -1599,13 +1610,13 @@ const TRX = {
   /* ---- 연산 전략 힌트(v71: 모두 세기·더블·덜어내기 등) ---- */
   '동그라미를 처음부터 모두 세어 봐요.': { en: 'Count all the circles from the beginning.', zh: '从头把圆圈全部数一遍。', vi: 'Đếm tất cả hình tròn từ đầu.', ja: 'まるを はじめから ぜんぶ かぞえよう。', ru: 'Посчитай все кружки с самого начала.' },
   '빼는 만큼 지우고, 남은 것을 세어 봐요.': { en: 'Cross out that many, then count what is left.', zh: '划掉要减的数量，再数剩下的。', vi: 'Gạch bỏ số cần bớt, rồi đếm phần còn lại.', ja: 'ひく ぶんだけ けして、のこりを かぞえよう。', ru: 'Зачеркни столько, сколько вычитаешь, и посчитай остаток.' },
-  '두 수가 똑같아요. 더블!': { en: 'The two numbers are the same. Doubles!', zh: '两个数一样，是双倍！', vi: 'Hai số giống nhau. Gấp đôi!', ja: 'ふたつの かずが おなじ。ダブル！', ru: 'Два одинаковых числа. Дубль!' },
+  '두 수가 똑같아요. 같은 수 더하기!': { en: 'The two numbers are the same. Doubles!', zh: '两个数一样，是双倍！', vi: 'Hai số giống nhau. Gấp đôi!', ja: 'ふたつの かずが おなじ。ダブル！', ru: 'Два одинаковых числа. Дубль!' },
   '그림으로 나타내 봐요.': { en: 'Show it with a picture.', zh: '用图画表示出来。', vi: 'Hãy thể hiện bằng hình vẽ.', ja: 'えで あらわしてみよう。', ru: 'Покажи это картинкой.' },
   /* ---- 전략별 오답 발문(v81) ---- */
   '동그라미를 처음부터 모두 세어 볼까요?': { en: 'Shall we count all the circles from the start?', zh: '从头把圆圈全部数一遍好吗？', vi: 'Cùng đếm tất cả hình tròn từ đầu nhé?', ja: 'まるを はじめから ぜんぶ かぞえてみようか？', ru: 'Посчитаем все кружки с начала?' },
   '큰 수부터 이어서 세어 볼까요?': { en: 'Shall we count on from the bigger number?', zh: '从大的数接着数好吗？', vi: 'Đếm tiếp từ số lớn hơn nhé?', ja: 'おおきい かずから つづけて かぞえてみようか？', ru: 'Посчитаем дальше от большего числа?' },
-  '두 수가 똑같아요. 더블로 생각해 볼까요?': { en: 'The two numbers are the same. Think doubles?', zh: '两个数一样，用双倍来想好吗？', vi: 'Hai số giống nhau. Nghĩ theo gấp đôi nhé?', ja: 'おなじ かずだよ。ダブルで かんがえてみようか？', ru: 'Числа одинаковые. Подумаем про дубль?' },
-  '더블을 먼저 생각하고, 하나 더 해 볼까요?': { en: 'Think of the double first, then one more?', zh: '先想双倍，再加一个好吗？', vi: 'Nghĩ gấp đôi trước, rồi thêm một nhé?', ja: 'まず ダブルを かんがえて、もう ひとつ たしてみようか？', ru: 'Сначала дубль, потом ещё один?' },
+  '두 수가 똑같아요. 같은 수 더하기로 생각해 볼까요?': { en: 'The two numbers are the same. Think doubles?', zh: '两个数一样，用双倍来想好吗？', vi: 'Hai số giống nhau. Nghĩ theo gấp đôi nhé?', ja: 'おなじ かずだよ。ダブルで かんがえてみようか？', ru: 'Числа одинаковые. Подумаем про дубль?' },
+  '같은 수 더하기를 먼저 생각하고, 하나 더 해 볼까요?': { en: 'Think of the double first, then one more?', zh: '先想双倍，再加一个好吗？', vi: 'Nghĩ gấp đôi trước, rồi thêm một nhé?', ja: 'まず ダブルを かんがえて、もう ひとつ たしてみようか？', ru: 'Сначала дубль, потом ещё один?' },
   '10을 만들려면 몇이 더 필요할까요?': { en: 'How many more do we need to make 10?', zh: '凑成 10 还需要几个？', vi: 'Cần thêm mấy để tạo thành 10?', ja: '10を つくるには いくつ たりないかな？', ru: 'Сколько не хватает до 10?' },
   '수직선에서 앞으로 뛰어 볼까요?': { en: 'Shall we jump forward on the number line?', zh: '在数线上向前跳好吗？', vi: 'Nhảy tới trên trục số nhé?', ja: 'すうちょくせんで まえに とんでみようか？', ru: 'Прыгнем вперёд по числовой прямой?' },
   '빼는 만큼 지우고, 남은 것을 세어 볼까요?': { en: 'Cross out that many and count what is left?', zh: '划掉要减的，再数剩下的好吗？', vi: 'Gạch bỏ phần bớt rồi đếm phần còn lại nhé?', ja: 'ひく ぶんだけ けして、のこりを かぞえてみようか？', ru: 'Зачеркнём и посчитаем остаток?' },
@@ -1624,8 +1635,8 @@ const TRX = {
   '모두 세었어요. 모두 몇일까요?': { en: 'We counted them all. How many in all?', zh: '全都数完了。一共是几？', vi: 'Đã đếm hết rồi. Tất cả là mấy?', ja: 'ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы всё посчитали. Сколько всего?' },
   '동그라미를 누르면 짝도 같이 세어져요. 둘씩 세어 보세요.': { en: 'Tap a circle and its partner counts too. Count by twos.', zh: '点一个圆圈，它的搭档也一起数。两个两个地数。', vi: 'Chạm một hình tròn, bạn cặp cũng được đếm. Đếm từng đôi nhé.', ja: 'まるを おすと、ペアも いっしょに かぞえるよ。2ずつ かぞえてね。', ru: 'Нажми кружок — его пара тоже считается. Считай по два.' },
   '둘씩 세었어요. 모두 몇일까요?': { en: 'We counted by twos. How many in all?', zh: '两个两个数完了。一共是几？', vi: 'Đã đếm từng đôi. Tất cả là mấy?', ja: '2ずつ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали по два. Сколько всего?' },
-  '동그라미를 누르면서 더블을 먼저 세어 보세요.': { en: 'Tap the circles and count the double first.', zh: '点圆圈，先数双倍的部分。', vi: 'Chạm hình tròn và đếm phần gấp đôi trước.', ja: 'まるを おして、まず ダブルを かぞえてね。', ru: 'Нажимай кружки и сначала посчитай дубль.' },
-  '더블을 다 세었어요. 이제 하나 더!': { en: 'The double is done. Now one more!', zh: '双倍数完了。再来一个！', vi: 'Đếm xong gấp đôi rồi. Giờ thêm một!', ja: 'ダブルは かぞえたね。あと ひとつ！', ru: 'Дубль посчитан. Теперь ещё один!' },
+  '동그라미를 누르면서 같은 수를 먼저 세어 보세요.': { en: 'Tap the circles and count the double first.', zh: '点圆圈，先数双倍的部分。', vi: 'Chạm hình tròn và đếm phần gấp đôi trước.', ja: 'まるを おして、まず ダブルを かぞえてね。', ru: 'Нажимай кружки и сначала посчитай дубль.' },
+  '같은 수를 다 세었어요. 이제 하나 더!': { en: 'The double is done. Now one more!', zh: '双倍数完了。再来一个！', vi: 'Đếm xong gấp đôi rồi. Giờ thêm một!', ja: 'ダブルは かぞえたね。あと ひとつ！', ru: 'Дубль посчитан. Теперь ещё один!' },
   '하나 더 세었어요. 모두 몇일까요?': { en: 'We counted one more. How many in all?', zh: '又数了一个。一共是几？', vi: 'Đã đếm thêm một. Tất cả là mấy?', ja: 'もう ひとつ かぞえたね。ぜんぶで いくつ？', ru: 'Посчитали ещё один. Сколько всего?' },
   '한 칸씩 뛰어요.': { en: 'Jump one step at a time.', zh: '一格一格地跳。', vi: 'Nhảy từng bước một.', ja: '1こずつ とぼう。', ru: 'Прыгай по одному шагу.' },
   '모두 몇일까요?': { en: 'How many in all?', zh: '一共是几？', vi: 'Tất cả là mấy?', ja: 'ぜんぶで いくつ？', ru: 'Сколько всего?' },
@@ -1753,8 +1764,15 @@ function trKo(t) {
   if (m = t.match(/^(\d+)[과와] (\d+)[을를] 모으면 (\d+)\. 정답은/))
     return T({ en: `${m[1]} and ${m[2]} together make ${m[3]}. The answer is ${m[3]}.`, zh: `${m[1]} 和 ${m[2]} 合起来是 ${m[3]}。答案是 ${m[3]}。`, vi: `${m[1]} và ${m[2]} gộp lại là ${m[3]}. Đáp án là ${m[3]}.`, ja: `${m[1]}と ${m[2]}を あわせて ${m[3]}。こたえは ${m[3]}。`, ru: `${m[1]} и ${m[2]} вместе — ${m[3]}. Ответ: ${m[3]}.` });
   /* 연산 전략 힌트(v71: 더블·더블+1·가르기 다리·교환·덜어내기) — '정답은' 일반 패턴보다 먼저 */
-  if (m = t.match(/^두 수가 똑같아요\. 더블이에요! (\d+) 더하기 (\d+)[은는]\?$/))
+  if (m = t.match(/^두 수가 똑같아요\. 같은 수 더하기예요! (\d+) 더하기 (\d+)[은는]\?$/))
     return T({ en: `The two numbers are the same — doubles! ${m[1]} plus ${m[2]}?`, zh: `两个数一样，是双倍！${m[1]} 加 ${m[2]} 等于几？`, vi: `Hai số giống nhau — gấp đôi! ${m[1]} cộng ${m[2]} bằng mấy?`, ja: `おなじ かずだよ、ダブル！${m[1]} たす ${m[2]} は？`, ru: `Два одинаковых числа — дубль! ${m[1]} плюс ${m[2]}?` });
+  /* v101 — 합=10·10−b 특수 발화 */
+  if (m = t.match(/^(\d+)[과와] (\d+)[이가] 만나면, 10! 모두 몇일까요\?$/))
+    return T({ en: `${m[1]} and ${m[2]} make 10! How many in all?`, zh: `${m[1]} 和 ${m[2]} 凑成 10！一共是几？`, vi: `${m[1]} và ${m[2]} thành 10! Tất cả là mấy?`, ja: `${m[1]}と ${m[2]}で 10！ぜんぶで いくつ？`, ru: `${m[1]} и ${m[2]} — это 10! Сколько всего?` });
+  if (m = t.match(/^10에서 (\d+)[을를] 빼 봐요\.$/))
+    return T({ en: `Take ${m[1]} away from 10.`, zh: `从 10 里减去 ${m[1]}。`, vi: `Bớt ${m[1]} từ 10 nhé.`, ja: `10から ${m[1]}を ひいてみよう。`, ru: `Вычти ${m[1]} из 10.` });
+  if (m = t.match(/^(\d+)[은는] (\d+)의 10 짝꿍수예요\.$/))
+    return T({ en: `${m[1]} is the partner of ${m[2]} that makes 10.`, zh: `${m[1]} 是 ${m[2]} 凑十的好朋友。`, vi: `${m[1]} là bạn ghép 10 của ${m[2]}.`, ja: `${m[1]}は ${m[2]}の 10の なかまだよ。`, ru: `${m[1]} — пара для ${m[2]}, вместе будет 10.` });
   if (m = t.match(/^(\d+) 더하기 (\d+)[은는] (\d+)\.( 정답은.*)?$/))
     return T({ en: `${m[1]} plus ${m[2]} is ${m[3]}.${m[4] ? ` The answer is ${m[3]}.` : ''}`, zh: `${m[1]} 加 ${m[2]} 等于 ${m[3]}。${m[4] ? `答案是 ${m[3]}。` : ''}`, vi: `${m[1]} cộng ${m[2]} bằng ${m[3]}.${m[4] ? ` Đáp án là ${m[3]}.` : ''}`, ja: `${m[1]} たす ${m[2]} は ${m[3]}。${m[4] ? `こたえは ${m[3]}。` : ''}`, ru: `${m[1]} плюс ${m[2]} будет ${m[3]}.${m[4] ? ` Ответ: ${m[3]}.` : ''}` });
   if (m = t.match(/^(\d+)[은는] (\d+)[과와] 1이에요\.$/))
@@ -2243,7 +2261,7 @@ function tryResume() {
   const r = lsGet('resume:' + current.id, null);
   /* 재도전 큐만 남은 상태(문제는 다 풀었음)도 이어하기 대상 — 아니면 그날 기록 전체가 유실 */
   if (r && r.date === todayStr() && (r.idx < r.items.length || (r.retryQ && r.retryQ.length))) {
-    session = { items: r.items, idx: r.idx, levelId: r.levelId, levelName: r.levelName, log: r.log || [], startAt: r.startAt || Date.now(), retryQ: r.retryQ || [] };
+    session = { items: r.items, idx: r.idx, levelId: migrateLv(r.levelId), levelName: r.levelName, log: r.log || [], startAt: r.startAt || Date.now(), retryQ: r.retryQ || [] };
     if (session.idx < session.items.length) renderProblem(); else advanceProblem();
     speak('이어서 해 볼까요?');
     return true;
@@ -2273,7 +2291,7 @@ function renderProblem() {
   retryArm = false; rt = null;                             // ③(v100) 재도전 예약·상태 초기화
   /* 낮은 단계(5 이하 연산)는 문제부터 그림+식(CRA 구체물, 토도 B레벨) — 뺄셈 뒷수는 회색(제거 의미) */
   const p0 = session.items[session.idx];
-  if ([1, 2, 3].includes(session.levelId) && p0.type === 'binary')
+  if ([120, 121, 122].includes(session.levelId) && p0.type === 'binary')   // 5 이하 단계(v101 새 id)는 그림+식
     curCirc = p0.op === '-' ? [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'gray' }] : [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'red' }];
   setNav(studyNav());
   $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
@@ -3345,6 +3363,11 @@ function pickAddStrat(p) {
   if (has('jump')) return 'jump';
   if (has('all')) return 'all';
   if (has('on')) return 'on';
+  /* v101 폴백 — 전략 미선택이어도 구조가 뚜렷한 문제는 그 전략으로(신설 143~145 단계와 짝).
+     합이 정확히 10인 문제는 기존 사다리(sum>10)에 안 걸려 보수 연결이 끊겼던 공백을 닫는다 */
+  if (a === b) return 'double';
+  if (Math.abs(a - b) === 1) return 'near';
+  if (a < 10 && b < 10 && sum === 10) return 'ten';
   return null;
 }
 function addStratHint(p, h, stage) {
@@ -3740,6 +3763,8 @@ function pickSubStrat(p) {
   if (has('jump')) return 'jump';
   if (has('take')) return 'take';
   if (has('back')) return 'back';
+  /* v101 폴백 — 10−b는 '10에서 빼기'가 곧 정답인 구조(보수 142단계 연결). 기존 사다리는 a>10만 받아내림으로 봐서 빠졌다 */
+  if (a === 10) return 'ten';
   return null;
 }
 function subStratHint(p, h, stage) {
@@ -3790,7 +3815,7 @@ function pickDivStrat(p) {
 }
 /* 오답 직후 공통 멘트를 전략별 발문으로(v81, 사용자 지시 ③) — 전략 미선택이면 null(기존 멘트) */
 const STRAT_CUES = {
-  add: { all: '동그라미를 처음부터 모두 세어 볼까요?', on: '큰 수부터 이어서 세어 볼까요?', double: '두 수가 똑같아요. 더블로 생각해 볼까요?', near: '더블을 먼저 생각하고, 하나 더 해 볼까요?', ten: '10을 만들려면 몇이 더 필요할까요?', jump: '수직선에서 앞으로 뛰어 볼까요?' },
+  add: { all: '동그라미를 처음부터 모두 세어 볼까요?', on: '큰 수부터 이어서 세어 볼까요?', double: '두 수가 똑같아요. 같은 수 더하기로 생각해 볼까요?', near: '같은 수 더하기를 먼저 생각하고, 하나 더 해 볼까요?', ten: '10을 만들려면 몇이 더 필요할까요?', jump: '수직선에서 앞으로 뛰어 볼까요?' },
   sub: { take: '빼는 만큼 지우고, 남은 것을 세어 볼까요?', back: '거꾸로 세어 볼까요?', bridge: '빼는 수를 갈라서 10을 만들어 볼까요?', ten: '10에서 먼저 빼 볼까요?', jump: '수직선에서 뒤로 뛰어 볼까요?' },
   mul: { quad: '몇씩 몇 묶음인지 생각해 볼까요?', group: '몇씩 몇 묶음인지 생각해 볼까요?', skip: '뛰어 세어 볼까요?', swap: '순서를 바꾸어 생각해 볼까요?' },
   div: { take: '몇 번 덜어낼 수 있을까요?', fact: '곱셈구구로 생각해 볼까요?' },
@@ -3897,8 +3922,9 @@ function make10Add(p, h, stage) {
   const fuseTargets = bigDots.concat(slots);   // big + take = 10개
   const srcDots = [...mSmall.querySelectorAll('.cdot')];
   const items = [];
+  /* 합이 정확히 10이면(v101: 신설 145단계·폴백) 작은 수 전체가 그대로 보수 — 가르기 단계가 성립하지 않아 건너뛴다 */
   items.push({
-    text: `${small}${josaEun(small)} ${take}${josaGwa(take)} ${rest}${josaRo(rest)} 가를 수 있어요.`, action: () => {
+    text: rest > 0 ? `${small}${josaEun(small)} ${take}${josaGwa(take)} ${rest}${josaRo(rest)} 가를 수 있어요.` : `${small}${josaEun(small)} ${big}의 10 짝꿍수예요.`, action: () => {
       const nb = document.querySelector(`#qface [data-t="n${bigIdx}"]`); if (nb) nb.classList.add('oring');
       srcDots.slice(0, take).forEach(d => d.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 320 }));
     }
@@ -3918,7 +3944,7 @@ function make10Add(p, h, stage) {
     }
   });
   items.push({
-    text: `십하고 ${koCnt(rest)}. 정답은 ${sum}${josaYeyo(sum)}.`, action: () => {
+    text: rest > 0 ? `십하고 ${koCnt(rest)}. 정답은 ${sum}${josaYeyo(sum)}.` : `정답은 ${sum}${josaYeyo(sum)}.`, action: () => {
       [...mSmall.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden').forEach(x => x.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 300 }));
     }
   });
@@ -3964,7 +3990,9 @@ function make10Drag(p, h) {
         if (moved === take) setTimeout(() => {
           bigDots.concat(slots).forEach(x => { x.classList.add('fuse'); setTimeout(() => { x.style.visibility = 'hidden'; }, 520); });
           const nr = document.createElement('div'); nr.className = 'rod new'; rowBig.appendChild(nr);
-          speak(`${big}${josaGwa(big)} ${take}${josaIga(take)} 만나면, 10! 십하고 남은 동그라미를 세어 봐요.`);
+          /* 합=10이면 남은 동그라미가 없다(v101) — 산출을 물어 마무리 */
+          speak(a + b === 10 ? `${big}${josaGwa(big)} ${take}${josaIga(take)} 만나면, 10! 모두 몇일까요?`
+            : `${big}${josaGwa(big)} ${take}${josaIga(take)} 만나면, 10! 십하고 남은 동그라미를 세어 봐요.`);
           [...mSmall.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden').forEach(pulseDot);
         }, 380);
       };
@@ -4007,12 +4035,12 @@ function doubleAdd(p, h, stage) {
   if (stage < 2 && a < 10) return doubleTap(p, h);   // 1차: 학생이 짝과 함께 둘씩 탭(v84)
   curCirc = null; paintFace(false);
   const { ma, mb } = hangTwoModels(p, true);
-  const cue = `두 수가 똑같아요. 더블이에요! ${a} 더하기 ${a}${josaEun(a)}?`;
-  h.innerHTML = `<div class="tip">${stage >= 2 ? '더블! 둘씩 세어 봐요' : cue}</div>`;
+  const cue = `두 수가 똑같아요. 같은 수 더하기예요! ${a} 더하기 ${a}${josaEun(a)}?`;
+  h.innerHTML = `<div class="tip">${stage >= 2 ? '같은 수 더하기! 둘씩 세어 봐요' : cue}</div>`;
   if (stage < 2) { speak(cue); return; }
   const da = [...ma.querySelectorAll('.cdot')], db = [...mb.querySelectorAll('.cdot')];
   const items = [{
-    text: '두 수가 똑같아요. 더블!', action: () => {
+    text: '두 수가 똑같아요. 같은 수 더하기!', action: () => {
       ['n0', 'n1'].forEach(t => { const n = document.querySelector(`#qface [data-t="${t}"]`); if (n) n.classList.add('oring'); });
     }
   }];
@@ -4053,7 +4081,7 @@ function doublePlusAdd(p, h, stage) {
   const { ma, mb } = hangTwoModels(p, true);
   const mBig = bigIdx === 0 ? ma : mb, mSmall = bigIdx === 0 ? mb : ma;
   const cue = `${big}${josaEun(big)} ${small}보다 하나 큰 수예요. ${small} 더하기 ${small}${josaEul(small)} 먼저 생각해요.`;
-  h.innerHTML = `<div class="tip">${stage >= 2 ? '더블에서 하나 더!' : cue}</div>`;
+  h.innerHTML = `<div class="tip">${stage >= 2 ? '같은 수에서 하나 더!' : cue}</div>`;
   if (stage < 2) { speak(cue); return; }
   const dBig = [...mBig.querySelectorAll('.cdot')], dSmall = [...mSmall.querySelectorAll('.cdot')];
   const extra = dBig[dBig.length - 1];   // 큰 수의 '하나 더' 동그라미 (사전 확정)
@@ -4086,8 +4114,8 @@ function nearTap(p, h) {
   const dBig = [...mBig.querySelectorAll('.cdot')], dSmall = [...mSmall.querySelectorAll('.cdot')];
   const extra = dBig[dBig.length - 1];               // 큰 수의 '하나 더' 동그라미 (사전 확정)
   if (extra) extra.classList.add('gray');
-  h.innerHTML = `<div class="tip">더블을 먼저 세고, 하나 더!</div>`;
-  speak('동그라미를 누르면서 더블을 먼저 세어 보세요.');
+  h.innerHTML = `<div class="tip">같은 수를 먼저 세고, 하나 더!</div>`;
+  speak('동그라미를 누르면서 같은 수를 먼저 세어 보세요.');
   let k = 0;
   const tapPair = i => {
     const x = dSmall[i], y = dBig[i];
@@ -4095,7 +4123,7 @@ function nearTap(p, h) {
     k++; const v = 2 * k;
     [x, y].forEach(d => { d.classList.add('cnt'); d.textContent = v; pulseDot(d); });
     speakFast(String(v));
-    if (k === small) setTimeout(() => speak('더블을 다 세었어요. 이제 하나 더!'), lastSpeakMs + 150);
+    if (k === small) setTimeout(() => speak('같은 수를 다 세었어요. 이제 하나 더!'), lastSpeakMs + 150);
   };
   dSmall.forEach((d, i) => d.addEventListener('pointerdown', () => tapPair(i)));
   dBig.forEach((d, i) => { if (i < small) d.addEventListener('pointerdown', () => tapPair(i)); });
@@ -4183,7 +4211,8 @@ function subViaTen(p, h, stage) {
   const a = p.a, b = p.b, aU = a % 10, keep = 10 - b, ans = a - b;
   curCirc = null; paintFace(false);
   const { ma, mb, fit } = hangTwoModels(p, true);   // 빼는 수(mb)는 sub-src(빗금) 자동
-  const cue = `${a}${josaEun(a)} 10과 ${aU}${josaYeyo(aU)}. 10에서 ${b}${josaEul(b)} 빼 봐요.`;
+  /* a=10(v101 폴백)이면 '10은 10과 0' 같은 어색한 가르기 말이 없어야 한다 */
+  const cue = aU > 0 ? `${a}${josaEun(a)} 10과 ${aU}${josaYeyo(aU)}. 10에서 ${b}${josaEul(b)} 빼 봐요.` : `10에서 ${b}${josaEul(b)} 빼 봐요.`;
   h.innerHTML = `<div class="tip">${stage >= 2 ? '10에서 빼고, 남은 수를 모아요' : cue}</div>`;
   if (stage < 2) { speak(cue); return; }
   const rowA = ma.querySelector('.rodrow'), stackA = ma.querySelector('.cstack');
@@ -4194,7 +4223,7 @@ function subViaTen(p, h, stage) {
   fit();
   const bDots = [...mb.querySelectorAll('.cdot')];
   const items = [];
-  items.push({ text: `${a}${josaEun(a)} 10과 ${aU}${josaRo(aU)} 가를 수 있어요.`, action: () => { const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring'); } });
+  if (aU > 0) items.push({ text: `${a}${josaEun(a)} 10과 ${aU}${josaRo(aU)} 가를 수 있어요.`, action: () => { const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring'); } });
   items.push({ text: '십 막대 한 개는 동그라미 몇 개일까요?' });   // 발문형(v87)
   items.push({
     text: '열 개!', action: () => {
@@ -4208,7 +4237,7 @@ function subViaTen(p, h, stage) {
   }
   items.push({ text: `10에서 ${b}${josaEul(b)} 빼면 ${koCnt(keep)} 개가 남아요.` });
   items.push({
-    text: `${keep}${josaGwa(keep)} ${aU}${josaEul(aU)} 모으면 ${ans}. 정답은 ${ans}${josaYeyo(ans)}.`, action: () => {
+    text: aU > 0 ? `${keep}${josaGwa(keep)} ${aU}${josaEul(aU)} 모으면 ${ans}. 정답은 ${ans}${josaYeyo(ans)}.` : `정답은 ${ans}${josaYeyo(ans)}.`, action: () => {
       [...stackA.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden').forEach(x => x.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 300 }));
     }
   });
@@ -5312,7 +5341,7 @@ async function renderStudentDetail(id) {
           ${(() => {
       const chk = (k, v) => ((s.strat && s.strat[k]) || []).includes(v) ? 'checked' : '';
       const box = (k, v, l) => `<label><input type="checkbox" ${chk(k, v)} onchange="setStratT('${s.id}','${k}','${v}',this.checked)">${l}</label>`;
-      return `<div><b>덧셈</b> ${box('add', 'all', '모두 세기')} ${box('add', 'on', '이어 세기')} ${box('add', 'double', '더블')} ${box('add', 'near', '더블+1')} ${box('add', 'ten', '10 만들기')} ${box('add', 'jump', '수직선 점프')}</div>
+      return `<div><b>덧셈</b> ${box('add', 'all', '모두 세기')} ${box('add', 'on', '이어 세기')} ${box('add', 'double', '같은 수 더하기')} ${box('add', 'near', '같은 수+1')} ${box('add', 'ten', '10 만들기')} ${box('add', 'jump', '수직선 점프')}</div>
           <div><b>뺄셈</b> ${box('sub', 'take', '덜어내기')} ${box('sub', 'back', '거꾸로 세기')} ${box('sub', 'bridge', '빼는 수 가르기')} ${box('sub', 'ten', '10에서 빼기')} ${box('sub', 'jump', '수직선 점프')}</div>
           <div><b>곱셈</b> ${box('mul', 'group', '묶음 세기')} ${box('mul', 'skip', '뛰어 세기')} ${box('mul', 'quad', '몇씩 몇묶음(4분면)')} ${box('mul', 'swap', '교환')}</div>
           <div><b>나눗셈</b> ${box('div', 'fact', '묶어 세기·구구')} ${box('div', 'take', '덜어내기')}</div>`;
