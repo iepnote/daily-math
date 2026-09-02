@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 106 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 107 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -19,10 +19,10 @@
   --font-main:'NanumSquareNeo','NanumSquare Neo','NanumSquareNeoOTF','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
   /* 버튼용: 같은 스택 + 축소 이모지(BtnEmoji) — 이모지가 줄 높이를 못 키우게 해 한글이 항상 가운데 */
   --font-btn:'NanumSquareNeo','NanumSquare Neo','NanumSquareNeoOTF','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','BtnEmoji',sans-serif;
-  --ink:#2D3436; --ink-soft:#777;
+  --ink:#2D3436; --ink-soft:#616161;
   --accent:#64B5F6; --accent-strong:#1E88E5; --accent-shadow:#1565C0;
   --ok:#2E7D32; --ok-bg:#E8F5E9; --no:#C62828; --no-bg:#FDECEA;
-  --choice-bg:#F2FAFF; --choice-border:#90CAF9;
+  --choice-bg:#F2FAFF; --choice-border:#1E88E5;
   --card-bg:#FFFFFF; --page-bg:#1b1b1f;
   --teal:#26A69A; --amber:#FFB300;
   --r-card:1.4rem; --r-btn:1.3rem; --r-pill:1rem;
@@ -45,6 +45,7 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .nav button{ font-family:inherit; cursor:pointer; border:none; border-radius:var(--r-pill); padding:.45rem .9rem;
   font-size:1.15rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:.3rem;
   box-shadow:0 3px 0 rgba(0,0,0,.18); transition:transform .08s; }
+.nav button{ height:36px; padding-top:0; padding-bottom:0; line-height:1; }   /* v107: 전체화면(⛶) 글리프가 키를 키우지 않게 전 버튼 같은 높이 */
 .nav button:active{ transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.18); }
 .nav .home{ background:#42A5F5; } .nav .retry{ background:#66BB6A; } .nav .prev{ background:#78909C; }
 .nav .next{ background:var(--accent-strong); } .nav .mode{ background:#26A69A; } .nav .set{ background:#7E57C2; }
@@ -69,7 +70,9 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
   padding:.2rem .9rem; font-size:1.1rem; font-weight:700; margin-bottom:.4rem; }
 .read-sentence{ font-size:1.6rem; font-weight:700; line-height:1.5; word-break:keep-all; }
 .sub{ font-size:1.2rem; color:var(--ink-soft); margin-top:.2rem; }
-.speak-icon{ cursor:pointer; }
+/* v107 접근성: 🔊는 <button> — 기본 버튼 외형 제거, 터치 영역 44px 확보 */
+.speak-icon{ cursor:pointer; background:none; border:0; padding:0; font:inherit; color:inherit; line-height:1;
+  min-width:44px; min-height:44px; display:inline-flex; align-items:center; justify-content:center; border-radius:.6rem; }
 .dim{ color:var(--ink-soft); font-size:.88rem; }
 .ver{ text-align:center; color:var(--ink-soft); font-size:.8rem; margin-top:1rem; opacity:.7; }
 .hidden{ display:none !important; }
@@ -137,7 +140,7 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .btn-name.pk .nm{ font-size:1.8rem; }
 .btn-name.pkguest{ flex-direction:row; gap:.7rem; padding:.7rem 1.6rem; border-style:dashed; border-color:var(--teal); background:#fff; }
 .btn-name.pkguest .nm{ color:var(--teal); font-size:1.5rem; }
-.credit{ position:absolute; right:18px; bottom:10px; font-size:.78rem; color:#9aa4ab; }
+.credit{ position:absolute; right:18px; bottom:10px; font-size:.78rem; color:#6B7280; }
 
 /* ===== 학습 화면 배치 — 카드가 무대를 채우고, 수식 영역이 남는 공간을 모두 차지 ===== */
 .study{ width:100%; max-width:1120px; margin:0 auto; flex:1; display:flex; flex-direction:column; min-height:0; }
@@ -158,7 +161,9 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .qblank.answered{ border-color:transparent; color:#E53935; animation:slotPop .5s cubic-bezier(.2,1.5,.4,1); }
 @keyframes slotPop{ 0%{ transform:scale(.4); } 60%{ transform:scale(1.25); } 100%{ transform:scale(1); } }
 /* 가로셈 */
-.faceh{ display:flex; align-items:flex-start; justify-content:center; gap:.32em; }
+.faceh{ display:flex; align-items:center; justify-content:center; gap:.32em; }   /* v107: 정답칸이 키가 커도 숫자와 한 줄에 */
+.faceh .qblank{ min-height:1.34em; }                                             /* v107: 가로셈 정답칸 세로 +20% */
+.qblank .qm{ font-size:.9em; }                                                   /* v107: 물음표 −10% */
 .faceh .opcol{ display:flex; flex-direction:column; align-items:center; gap:.28em; position:relative; }
 /* 힌트 동그라미는 숫자 아래 '매달림'(절대배치) — 수식 간격·위치에 영향 없음 */
 .faceh .opcol > .cstack{ position:absolute; top:calc(100% + .18em); left:50%; transform:translateX(-50%); }
@@ -171,10 +176,13 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .faceh.pv .fnum .hd:nth-last-child(2){ background:#E3F2FD; }
 .faceh.pv .fnum .hd:nth-last-child(3){ background:#E8F5E9; }
 .faceh.pv .fnum .hd:nth-last-child(4){ background:#FFF3E0; }
-/* 가로셈 정답 자릿값 칸 */
-.qblank-cells{ border:none; padding:0; min-width:auto; gap:.12em; }
-.qblank-cells .ansbox{ min-width:.72em; min-height:1.15em; border:.06em dashed var(--accent); border-radius:.14em; color:#E53935; box-sizing:border-box; text-align:center; }
-.qblank-cells .ansbox.filled{ border-style:solid; border-color:transparent; }
+/* 가로셈 정답 자릿값 칸 — v107: 네모 상자 하나 + 자리 구분 세로 점선(칸이 떨어져 있으면 혼동, 사용자 지시) */
+.qblank-cells{ border:none; padding:0; min-width:auto; gap:0; }
+.qblank-cells .ansbox{ min-width:.72em; min-height:1.38em; color:#E53935; box-sizing:border-box; text-align:center; margin:0;
+  border:.06em dashed var(--accent); border-left-width:0; border-radius:0; }
+.qblank-cells .ansbox:first-child{ border-left-width:.06em; border-radius:.14em 0 0 .14em; }
+.qblank-cells .ansbox:last-child{ border-radius:0 .14em .14em 0; }
+.qblank-cells.answered .ansbox{ border-color:transparent; }
 /* 세로셈 */
 .facev{ display:inline-flex; flex-direction:column; gap:.06em; }
 .vrow{ display:flex; align-items:center; justify-content:flex-end; gap:.18em; position:relative; }
@@ -211,7 +219,7 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .cstack .cdot.slash::after{ height:5px; }
 /* 이어 세기 시작 표시: 앞 숫자에 펜으로 친 듯한 동그라미 */
 .oring{ position:relative; }
-.oring::after{ content:''; position:absolute; inset:-.16em -.36em; border:.08em solid #E53935; border-radius:50%;
+.oring::after{ content:''; position:absolute; inset:-.16em -.36em; border:.1em solid #7E57C2; border-radius:50%;   /* v107: 힌트 표식은 보라 — 빨강은 오류 강조 전용(사용자 결정) */
   animation:oringIn .4s cubic-bezier(.2,1.35,.4,1); pointer-events:none; }
 @keyframes oringIn{ 0%{ transform:scale(.4); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
 
@@ -305,6 +313,16 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .facev.pv .vnum .vd:nth-last-child(2){ background:#E3F2FD; }
 .facev.pv .vnum .vd:nth-last-child(3){ background:#E8F5E9; }
 .facev.pv .vnum .vd:nth-last-child(4){ background:#FFF3E0; }
+/* v107: 세로셈 일의 자리 연속 띠(정답칸까지)·위→아래 화살표 — facev를 기준 상자로 */
+.facev{ position:relative; }
+.facev .vrow{ z-index:1; }
+.pvstripe{ position:absolute; z-index:0; background:#FDECEA; border-radius:.12em; pointer-events:none; }
+.faceh.pvans .qblank-cells .ansbox[data-pl="0"]{ background:#FDECEA; }
+.vdown{ position:absolute; z-index:2; width:0; border-left:6px solid #C62828; border-radius:3px; pointer-events:none;
+  animation:pulseSoft 1.05s ease-in-out 3; }
+.vdown::after{ content:''; position:absolute; left:-12px; bottom:-6px; border:9px solid transparent; border-bottom:0; border-top:15px solid #C62828; }
+.cmark.cgone::after{ animation:cgone .45s ease forwards; }
+@keyframes cgone{ to{ opacity:0; transform:translate(-50%,-.5em) scale(.5); } }
 .vd.cur, .hd.cur{ box-shadow:inset 0 0 0 4px var(--accent-strong); }
 .ansbox.cur{ box-shadow:0 0 0 4px var(--amber); }
 /* 자리별 하이라이트(현재 계산 중인 자리만 채움색 — 일=빨강·십=파랑·백=초록·천=주황, 테두리 없음) */
@@ -324,10 +342,13 @@ body{ font-family:var(--font-main); color:var(--ink); background:var(--page-bg);
 .pvinline .rod{ width:7px; height:24px; border-radius:2px; }
 .pvinline .cdot{ width:13px; height:13px; }
 .pvinline .bflat{ width:16px; height:16px; }
-/* 정답 자릿값 칸(빈 상자 → 자리별 채움) */
+/* 정답 자릿값 칸(빈 상자 → 자리별 채움) — v107: 상자 하나 + 자리 구분 세로 점선(앞의 빈 .vd 자리는 상자 밖) */
 .vans-cells{ display:inline-flex; justify-content:flex-end; margin-right:0; padding:0; min-width:auto; }
-.vans-cells .ansbox{ min-height:1.15em; border:.06em dashed var(--accent); border-radius:.14em; color:#E53935; box-sizing:border-box; }
-.vans-cells .ansbox.filled{ border-style:solid; border-color:transparent; }
+.vans-cells .ansbox{ min-height:1.15em; color:#E53935; box-sizing:border-box;
+  border:.06em dashed var(--accent); border-left-width:0; border-radius:0; }
+.vans-cells .ansbox:first-child, .vans-cells .vd:not(.ansbox) + .ansbox{ border-left-width:.06em; border-radius:.14em 0 0 .14em; }
+.vans-cells .ansbox:last-child{ border-radius:0 .14em .14em 0; }
+.vans-cells.answered .ansbox{ border-color:transparent; }
 /* 세 자리 덧셈 자리별 직접 입력 패널(식 오른쪽) */
 .colside{ position:absolute; right:2%; top:50%; transform:translateY(-50%); z-index:3;
   background:#fff; border:4px solid var(--accent); border-radius:1rem; padding:.8rem 1rem;
@@ -969,7 +990,11 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .erec{ margin:.45rem 0; }
 .erec .tag{ margin:.15rem .1rem; display:inline-block; }
 /* (A) 발문-시각 동기화(v102): 오답 직후 발문과 함께 관련 토큰 강조 — 정답 비노출, 2.3초 뒤 자동 해제 */
-.cueflash{ outline:4px solid var(--no); outline-offset:4px; border-radius:.35em; animation:pulseSoft 1.05s ease-in-out 2; }
+/* v107: 빨간 테두리 대신 글자 자체를 빨갛게 + 크기 펄스(시각 우세 학생은 대상 글자의 변화가 더 잘 잡힘).
+   두 수를 동시에 가리킬 때(.cueboth)만 예전 테두리 — 숫자 둘이 다 빨개지면 무엇을 보라는지 흐려짐 */
+#qface .cueflash{ color:var(--no); display:inline-block; animation:cuePop 1.05s ease-in-out 2; }
+#qface .cueflash.cueboth{ color:inherit; animation:pulseSoft 1.05s ease-in-out 2; outline:4px solid var(--no); outline-offset:4px; border-radius:.35em; }
+@keyframes cuePop{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.14); } }
 /* ②(v100) 듣고 시작 — 문제 읽기가 끝날 때까지 보기 잠금(회색) */
 #choices.listen{ pointer-events:none; }
 #choices.listen .btn-choice{ opacity:.45; }
@@ -981,6 +1006,10 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
   background:var(--choice-bg); border:2px solid #C7E3FA; color:var(--ink); cursor:pointer; transition:transform .08s;
   box-shadow:0 4px 0 #C7E3FA; }
 .chk-key:active{ transform:translateY(3px); box-shadow:0 1px 0 #C7E3FA; }
+/* ① 2차 오답부터 직접 입력(v107): 객관식 자리의 숫자패드(6열 2줄 — 힌트와 함께 720 무대 안에 들어오게) + 정답칸 입력 커서 */
+.anspad{ display:grid; grid-template-columns:repeat(6, 84px); gap:.45rem; justify-content:center; margin-top:.4rem; }
+.anspad .chk-key{ height:52px; }
+.ansbox.padcur{ box-shadow:inset 0 0 0 4px var(--accent-strong); }
 .chk-del{ background:#FFF3E0; border-color:#FFDFB0; box-shadow:0 4px 0 #FFDFB0; }
 .chk-del:active{ box-shadow:0 1px 0 #FFDFB0; }
 .chk-ok{ background:var(--ok-bg); border-color:#A5D6A7; box-shadow:0 4px 0 #A5D6A7; font-size:1.9rem; }
@@ -1021,7 +1050,7 @@ const WS_BG="";
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 106';
+const APP_VERSION = 'ver 107';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1606,6 +1635,13 @@ const TRX = {
   '수직선에서 앞으로 뛰어 볼까요?': { en: 'Shall we jump forward on the number line?', zh: '在数线上向前跳好吗？', vi: 'Nhảy tới trên trục số nhé?', ja: 'すうちょくせんで まえに とんでみようか？', ru: 'Прыгнем вперёд по числовой прямой?' },
   '빼는 만큼 지우고, 남은 것을 세어 볼까요?': { en: 'Cross out that many and count what is left?', zh: '划掉要减的，再数剩下的好吗？', vi: 'Gạch bỏ phần bớt rồi đếm phần còn lại nhé?', ja: 'ひく ぶんだけ けして、のこりを かぞえてみようか？', ru: 'Зачеркнём и посчитаем остаток?' },
   '거꾸로 세어 볼까요?': { en: 'Shall we count backwards?', zh: '倒着数好吗？', vi: 'Đếm ngược nhé?', ja: 'さかさまに かぞえてみようか？', ru: 'Посчитаем назад?' },
+  /* v107 폴백 발문 + 숫자패드 안내 */
+  '일의 자리부터 차례로 더해 볼까요?': { en: 'Shall we add from the ones place, one place at a time?', zh: '从个位开始一位一位地加好吗？', vi: 'Cộng từ hàng đơn vị, từng hàng một nhé?', ja: 'いちの くらいから じゅんばんに たしてみようか？', ru: 'Сложим по разрядам, начиная с единиц?' },
+  '일의 자리부터 차례로 빼 볼까요?': { en: 'Shall we subtract from the ones place, one place at a time?', zh: '从个位开始一位一位地减好吗？', vi: 'Trừ từ hàng đơn vị, từng hàng một nhé?', ja: 'いちの くらいから じゅんばんに ひいてみようか？', ru: 'Вычтем по разрядам, начиная с единиц?' },
+  '앞의 두 수부터 계산해 볼까요?': { en: 'Shall we start with the first two numbers?', zh: '先算前面两个数好吗？', vi: 'Tính hai số đầu trước nhé?', ja: 'まえの ふたつの かずから けいさんしてみようか？', ru: 'Начнём с первых двух чисел?' },
+  '모두 몇 개인지 생각해 볼까요?': { en: 'How many are there altogether?', zh: '一共有几个呢？', vi: 'Tất cả có bao nhiêu cái nhỉ?', ja: 'ぜんぶで いくつか かんがえてみようか？', ru: 'Сколько всего получится?' },
+  '몇 개 남았는지 생각해 볼까요?': { en: 'How many are left?', zh: '还剩几个呢？', vi: 'Còn lại bao nhiêu cái nhỉ?', ja: 'いくつ のこったか かんがえてみようか？', ru: 'Сколько осталось?' },
+  '이번엔 숫자를 직접 눌러 봐요.': { en: 'This time, type the number yourself.', zh: '这次自己按数字试试。', vi: 'Lần này hãy tự bấm số nhé.', ja: 'こんどは すうじを じぶんで おしてみよう。', ru: 'Теперь набери число сам.' },
   '빼는 수를 갈라서 10을 만들어 볼까요?': { en: 'Split the number we take away and make 10 first?', zh: '把要减的数分开，先凑成 10 好吗？', vi: 'Tách số cần bớt để tạo số 10 trước nhé?', ja: 'ひく かずを わけて、まず 10を つくってみようか？', ru: 'Разделим вычитаемое и сначала сделаем 10?' },
   '10에서 먼저 빼 볼까요?': { en: 'Shall we take it away from the 10 first?', zh: '先从 10 里减好吗？', vi: 'Bớt từ 10 trước nhé?', ja: 'まず 10から ひいてみようか？', ru: 'Сначала вычтем из 10?' },
   '수직선에서 뒤로 뛰어 볼까요?': { en: 'Shall we jump back on the number line?', zh: '在数线上向后跳好吗？', vi: 'Nhảy lùi trên trục số nhé?', ja: 'すうちょくせんで うしろに とんでみようか？', ru: 'Прыгнем назад по числовой прямой?' },
@@ -2071,7 +2107,7 @@ function faceH(p, circ) {
   const bigAns = m.slot === 'end' && m.result >= 10;     // 두 자리 이상 답은 자릿값 칸으로
   const slot = bigAns
     ? `<span class="qblank qblank-cells" id="qslot" data-t="ans">${[...String(m.result)].map((_, k, a) => `<i class="hd ansbox" data-pl="${a.length - 1 - k}"></i>`).join('')}</span>`
-    : `<span class="qblank" id="qslot" data-t="ans">?</span>`;
+    : `<span class="qblank" id="qslot" data-t="ans"><span class="qm">?</span></span>`;
   let parts = [];
   if (m.slot === 'end') {
     m.nums.forEach((v, i) => { parts.push(num(v, i)); if (i < m.ops.length) parts.push(`<span class="fsign" data-t="op${i}">${m.ops[i]}</span>`); });
@@ -2111,11 +2147,11 @@ function faceV(p, circ) {
       const cells = Array.from({ length: digits }, (_, k) => { const pl = digits - 1 - k; return pl < ansLen ? `<i class="vd ansbox" data-pl="${pl}"></i>` : '<i class="vd"></i>'; }).join('');
       rows.push(`<div class="vrow"><span class="vop"></span><span class="vans vans-cells" id="qslot" data-t="ans">${cells}</span></div>`);
     } else {
-      rows.push(`<div class="vrow"><span class="vop"></span><span class="vans qblank" id="qslot" data-t="ans" style="width:${ansW}">?</span></div>`);
+      rows.push(`<div class="vrow"><span class="vop"></span><span class="vans qblank" id="qslot" data-t="ans" style="width:${ansW}"><span class="qm">?</span></span></div>`);
     }
   } else {
     rows.push(numRow(m.nums[0], 0, ''));
-    rows.push(`<div class="vrow"><span class="vop" data-t="op0">${m.ops[0]}</span><span class="vans qblank" id="qslot" data-t="ans" style="width:${ansW}">?</span></div>`);
+    rows.push(`<div class="vrow"><span class="vop" data-t="op0">${m.ops[0]}</span><span class="vans qblank" id="qslot" data-t="ans" style="width:${ansW}"><span class="qm">?</span></span></div>`);
     rows.push(`<div class="vrow"><span class="vop"></span><div class="vbar" data-t="bar" style="width:${barW}"></div></div>`);
     rows.push(`<div class="vrow"><span class="vop"></span><span class="vnum fnum" data-t="nr">${digitCells(m.result)}</span></div>`);
   }
@@ -2293,9 +2329,10 @@ function tryResume() {
 /* ---- 상단 메뉴 (왼쪽: 학생, 오른쪽: 버튼) ---- */
 const schoolShort = s => String(s || '').replace('초등학교', '초').replace('중학교', '중').replace('고등학교', '고');
 function studyNav() {
-  const who = current && current.guest ? '🎈 손님 · 기록 저장 안 함'
+  const who = rt ? '💪 아까 문제, 한 번 더!'                      // 재도전 화면도 같은 네비(v107, 사용자 지시) — 이전·다시·다음은 rt 분기
+    : current && current.guest ? '🎈 손님 · 기록 저장 안 함'
     : current ? `${schoolShort(klass && klass.school)} ${esc(current.name)}`.trim() : '';
-  return `<span class="nav-student">🧑‍🎓 ${who}</span>
+  return `<span class="nav-student">${rt ? '' : '🧑‍🎓 '}${who}</span>
     <button class="home" onclick="goHome()">🏠 홈</button>
     <button class="prev" onclick="prevProblem()">◀ 이전</button>
     <button class="retry" onclick="retryProblem()">🔄 다시</button>
@@ -2303,12 +2340,19 @@ function studyNav() {
     <button class="lvl" onclick="openLevelPicker()">📚 단계</button>
     <button class="mode" onclick="toggleMode()">🔀 ${prefs.mode === 'h' ? '세로셈으로' : '가로셈으로'}</button>
     <button class="set" onclick="openSettings()">⚙ 설정</button>
-    <button class="full" onclick="toggleFull()">⛶</button>`;
+    <button class="full" onclick="toggleFull()">⛶</button>
+    <button class="quit" onclick="quitStudy()">🚪 그만</button>`;
+}
+/* 그만(v107, 사용자 지시): 학습을 멈추고 첫 화면(이름 고르기 / 교실 코드)으로 — 나가기와 같은 동작 */
+function quitStudy() {
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  rt = null; cadd = null; guide = null; mguide = null; pad = null;
+  if (current && current.guest) exitGuest(); else logoutStudent();
 }
 
 /* ---- 문제 그리기 ---- */
 function renderProblem() {
-  wrongCount = 0; wrongVals = []; locked = false; guide = null; mguide = null; cadd = null; curCirc = null; itemStart = Date.now();
+  wrongCount = 0; wrongVals = []; locked = false; guide = null; mguide = null; cadd = null; curCirc = null; pad = null; itemStart = Date.now();
   retryArm = false; rt = null;                             // ③(v100) 재도전 예약·상태 초기화
   hintStage = 0;                                           // ①(v106) 힌트 실측 초기화
   /* 낮은 단계(5 이하 연산)는 문제부터 그림+식(CRA 구체물, 토도 B레벨) — 뺄셈 뒷수는 회색(제거 의미) */
@@ -2319,7 +2363,7 @@ function renderProblem() {
   $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
     <div class="card card--accent study-card">
       <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.2rem">
-        <span class="speak-icon" onclick="speakProblem()" style="font-size:1.6rem">🔊</span>
+        <button type="button" class="speak-icon" onclick="speakProblem()" aria-label="문제 읽어 주기" style="font-size:1.6rem">🔊</button>
         <div class="counter" style="margin:0">${session.idx + 1} / ${session.items.length} · ${esc(session.levelName)}</div>
       </div>
       <div class="qface" id="qface"></div>
@@ -2388,6 +2432,7 @@ function paintFace(flip) {
   const before = flip ? captureTokens(el) : null;
   el.innerHTML = buildFace(p, curCirc);
   if (before) runFlip(el, before);
+  if (pad) padPaint();                                   // 숫자패드 입력 중이면 새 얼굴에 입력 표시 복원(v107)
   if (curCirc) fitCircles();                             // 그림 문제 모드(1~3단계)·세 수 안내
   if (p.type === 'put') initPut();                // 담기: 드래그/탭 상호작용 연결
   if (p.type === 'count') initCount();            // 세기: 동그라미 누르면 "하나, 둘…" 소리
@@ -2537,11 +2582,13 @@ function afterCorrectSpeak(msg, gapMs) {
   speak(msg, go);
   setTimeout(go, lastSpeakMs + 1200);
 }
-function answer(btn, ans) {
+function answer(btn, ans) { if (locked) return; judgeAnswer(btn, parseInt(btn.dataset.v, 10), ans); }
+/* 정·오답 판정 공통(v107) — btn=객관식 버튼(패드 입력이면 null) */
+function judgeAnswer(btn, v, ans) {
   if (locked) return;
   const p = session.items[session.idx];
-  if (parseInt(btn.dataset.v, 10) === ans) {
-    locked = true; btn.classList.add('correct');
+  if (v === ans) {
+    locked = true; if (btn) btn.classList.add('correct'); pad = null;
     const slot = $('qslot'); if (slot) { fillSlot(slot, ans); celebrate(slot); }
     if (p.type === 'flash') { flashOpen = true; const c = $('fcover'); if (c) c.classList.add('hidden'); }   // 직산: 정답 후 열어서 눈으로 확인
     chime(true);
@@ -2553,19 +2600,21 @@ function answer(btn, ans) {
     } else speak(praiseFor(wrongCount));   // 5차(v105): 힌트 뒤 정답은 과정 칭찬(전략 사용 언급 — 자기효능감·전이)
     afterCorrect();   // 대기 시간은 칭찬 발화 길이에 맞춰 자동(afterCorrect)
   } else {
-    btn.classList.add('wrong'); btn.disabled = true;
-    chime(false); wrongCount++; wrongVals.push(parseInt(btn.dataset.v, 10)); wiggle($('qface'));
+    if (btn) { btn.classList.add('wrong'); btn.disabled = true; } else padPaint();   // 패드 입력은 지우고 다시
+    chime(false); wrongCount++; wrongVals.push(v); wiggle($('qface'));
     /* ①(v100) 오답 잠금 — 피드백 발화가 끝날 때까지 연타 무효(빠른 찍기의 속도 이득 제거) */
     locked = true;
     const unlock = () => { locked = false; };
     const lv = (current && current.hintLv) || 'fade';   // 학생별 힌트 수준(IEP 개별화)
-    if (lv === 'off') { speak('다시 한 번 해 볼까요?', unlock); setTimeout(unlock, lastSpeakMs + 800); return; }
+    /* v107 ① 2차 오답부터 직접 입력 — 보기 소거로 정답만 남는 구조 차단(세 수는 단계 안내가 보기를 직접 씀 → 제외) */
+    const padNew = wrongCount >= 2 && !pad && showAnswerPad();
+    if (lv === 'off') { speak(padNew ? PAD_MSG : '다시 한 번 해 볼까요?', unlock); setTimeout(unlock, lastSpeakMs + 800); return; }
     /* 힌트가 곧바로 speak/speakSequence를 부르면 이 안내가 잘림 → 발화가 끝난 뒤 힌트 시작(보루 타이머 병행) */
     /* SEM ⑥ 힌트 fading(v91): 'fade'=지원 점감 — 한 단계 늦춤(1차 오답은 발문만 듣고 스스로, 2차부터 단서) */
     const stage = lv === 'fade' ? wrongCount - 1 : wrongCount + (lv === 'strong' ? 1 : 0);
     /* 오류 유형 판정(v86) > 전략 발문(v81) > 공통 멘트 순 — 오답값이 알려진 오류 패턴이면 특정 피드백.
        (A, v102) 발문과 동시에 관련 토큰을 시각 강조(cueFlash) — 청각 단서만으로는 자폐 학생이 놓친다 */
-    const diag = diagnoseWrong(p, parseInt(btn.dataset.v, 10));
+    const diag = diagnoseWrong(p, v);
     let cue = diag || hintCueFor(p) || '다시 한 번 해 볼까요?';
     /* ④(v106) strong 학생은 명령형 — 의문형('~볼까요?')을 '선택 가능'으로 해석하는 자폐 학생 배려.
        외국어는 trKo가 원 의문형 번역으로 폴백 */
@@ -2577,9 +2626,53 @@ function answer(btn, ans) {
     }
     let started = false;
     const go = () => { if (started) return; started = true; locked = false; routeHint(stage); };
-    speak(cue, go);
-    setTimeout(go, lastSpeakMs + 1200);
+    /* 패드로 바뀐 순간엔 안내 한 마디를 발문 뒤에 붙인다(외국어 사전은 문장 단위라 따로 발화) */
+    let said = false;
+    const sayThenGo = () => { if (said) return; said = true; if (!padNew) { go(); return; } speak(PAD_MSG, go); setTimeout(go, lastSpeakMs + 1200); };
+    speak(cue, sayThenGo);
+    setTimeout(sayThenGo, lastSpeakMs + 1200);
   }
+}
+/* =========================================================
+   ① 2차 오답부터 직접 입력(v107, 사용자 지시) — 객관식 자리에 숫자패드(6열 2줄), 정답칸에 입력 표시.
+   자릿값 칸이 있으면 왼쪽(높은 자리)부터 채우고 다음 칸에 커서, 한 칸 정답은 ? 자리에 숫자.
+   힌트가 얼굴을 다시 그려도 paintFace 끝에서 padPaint()로 되살림. 자리별 입력(startColumn)·다음 문제에서 해제.
+   ========================================================= */
+let pad = null;
+const PAD_MSG = '이번엔 숫자를 직접 눌러 봐요.';
+function showAnswerPad() {
+  const p = session.items[session.idx];
+  if (pad || !p || !(p.type === 'binary' || p.type === 'missing')) return false;
+  const ch = $('choices'); if (!ch || !ch.querySelector('.btn-choice')) return false;
+  pad = { typed: '' };
+  ch.innerHTML = `<div class="anspad" id="anspad">${[1, 2, 3, 4, 5, 'del', 6, 7, 8, 9, 0, 'ok'].map(k =>
+    k === 'del' ? `<button class="chk-key chk-del" onclick="padDel()" aria-label="지우기">⌫</button>`
+      : k === 'ok' ? `<button class="chk-key chk-ok" onclick="padOk()" aria-label="확인">✓</button>`
+        : `<button class="chk-key" data-k="${k}" onclick="padKey(${k})">${k}</button>`).join('')}</div>`;
+  padPaint();
+  return true;
+}
+function padBoxes() { const s = $('qslot'); return s ? [...s.querySelectorAll('.ansbox')].sort((a, b) => +b.dataset.pl - +a.dataset.pl) : []; }
+function padPaint() {
+  if (!pad) return;
+  if (!$('anspad')) { pad = null; return; }                       // 다른 흐름이 보기를 바꿨으면 해제
+  const slot = $('qslot'); if (!slot || slot.classList.contains('answered')) return;
+  const boxes = padBoxes();
+  if (boxes.length) boxes.forEach((bx, i) => { bx.textContent = pad.typed[i] || ''; bx.classList.toggle('padcur', i === pad.typed.length); });
+  else slot.innerHTML = pad.typed ? esc(pad.typed) : '<span class="qm">?</span>';
+}
+function padKey(k) {
+  if (!pad || !$('anspad') || locked) return;
+  const max = padBoxes().length || 4;
+  if (pad.typed.length >= max) return;
+  pad.typed += k; padPaint();
+}
+function padDel() { if (!pad || locked) return; pad.typed = pad.typed.slice(0, -1); padPaint(); }
+function padOk() {
+  if (!pad || locked) return;
+  if (!pad.typed) { wiggle($('qslot')); return; }
+  const v = parseInt(pad.typed, 10); pad.typed = '';
+  judgeAnswer(null, v, session.items[session.idx].ans);
 }
 /* SEM 오답값→오류 유형 판정(v86, 서울대 난산 연수자료) — 오답 보기 값이 알려진 오류 패턴과 일치하면
    일반 멘트 대신 특정 피드백 발문. 판정 순서는 좁은 패턴부터. 해당 없으면 null(기존 흐름) */
@@ -2637,11 +2730,8 @@ function startRetry(oi, intro) {
 }
 function renderRetry() {
   const p = rt.p;
-  /* 재도전 화면 전용 네비 — 세션 문제는 이미 끝나 이전·다시·다음이 성립하지 않음(idx 범위 밖 렌더 방지) */
-  setNav(`<span class="nav-student">💪 아까 문제, 한 번 더!</span>
-    <button class="home" onclick="goHome()">🏠 홈</button>
-    <button class="set" onclick="openSettings()">⚙ 설정</button>
-    <button class="full" onclick="toggleFull()">⛶</button>`);
+  /* 학습 화면과 같은 네비(v107) — 세션 문제는 이미 끝났으므로 이전=없음·다시=재도전 초기화·다음=건너뛰기(prev/retry/nextProblem의 rt 분기) */
+  setNav(studyNav());
   const pad = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'del', 0, 'ok'].map(k =>
     k === 'del' ? `<button class="chk-key chk-del" onclick="rtDel()">⌫</button>`
       : k === 'ok' ? `<button class="chk-key chk-ok" onclick="rtOk()">✓</button>`
@@ -2649,7 +2739,7 @@ function renderRetry() {
   $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
     <div class="card card--accent study-card">
       <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.2rem">
-        <span class="speak-icon" onclick="rtSpeak()" style="font-size:1.6rem">🔊</span>
+        <button type="button" class="speak-icon" onclick="rtSpeak()" aria-label="문제 읽어 주기" style="font-size:1.6rem">🔊</button>
         <div class="counter" style="margin:0">💪 한 번 더! · ${esc(session.levelName)}</div>
       </div>
       <div class="qface" id="qface"></div>
@@ -2901,8 +2991,42 @@ function markPlaceColors() {
   const fv = document.querySelector('#qface .facev'); if (fv) fv.classList.add('pv');
   const fh = document.querySelector('#qface .faceh'); if (fh) fh.classList.add('pv');
 }
+/* v107 받아올림 소거(사용자 지시): 그 자리 계산이 끝나면 올려 둔 작은 1을 지운다 — 세로=첫째 수 위 cmark, 가로=정답칸 위 anscarry.
+   자리별 입력의 replay 기록도 함께 지워 가로↔세로 전환 시 되살아나지 않게 */
+function clearCarry(pl) {
+  const e = colDigitEl(pl);
+  if (e && e.classList.contains('cmark')) { e.classList.add('cgone'); setTimeout(() => e.classList.remove('cmark', 'cgone'), 480); }
+  document.querySelectorAll(`#qface .anscarry[data-pl="${pl}"]`).forEach(m => { m.style.opacity = 0; setTimeout(() => m.remove(), 200); });
+  if (cadd) cadd.replay.delete('carry' + (pl - 1));
+}
+/* v107 큰수−작은수 오류 단서(세로셈): 일의 자리 옆에 '위에서 아래로' 화살표 — 자리 색 띠와 함께 */
+function drawSubArrow() {
+  const fv = document.querySelector('#qface .facev'); if (!fv) return;
+  fv.querySelectorAll('.vdown').forEach(e => e.remove());
+  const rows = fv.querySelectorAll('.vrow');
+  const c0 = rows[0] && rows[0].querySelector('.vnum .vd:last-child'), c1 = rows[1] && rows[1].querySelector('.vnum .vd:last-child');
+  if (!c0 || !c1) return;
+  const a = offIn(c0, fv), b = offIn(c1, fv), top = a.y + c0.offsetHeight * .3;
+  const d = document.createElement('div'); d.className = 'vdown';
+  d.style.left = (a.x + c0.offsetWidth + 6) + 'px'; d.style.top = top + 'px';
+  d.style.height = (b.y + c1.offsetHeight * .7 - top) + 'px';
+  fv.appendChild(d);
+}
+/* v107 색 띠 단계(2차 오류): 일의 자리 띠를 정답칸까지 한 줄로 — 세로=열 뒤 연속 띠, 가로=일의 자리 정답칸 색칠 */
+function onesStripe() {
+  const fh = document.querySelector('#qface .faceh'); if (fh) fh.classList.add('pvans');
+  const fv = document.querySelector('#qface .facev'); if (!fv) return;
+  fv.querySelectorAll('.pvstripe').forEach(e => e.remove());
+  const top = fv.querySelector('.vrow .vnum .vd:last-child'), ans = fv.querySelector('.vans-cells .ansbox[data-pl="0"]');
+  if (!top || !ans) return;
+  const a = offIn(top, fv), b = offIn(ans, fv);
+  const s = document.createElement('div'); s.className = 'pvstripe';
+  s.style.left = Math.min(a.x, b.x) + 'px'; s.style.top = a.y + 'px';
+  s.style.width = Math.max(top.offsetWidth, ans.offsetWidth) + 'px'; s.style.height = (b.y + ans.offsetHeight - a.y) + 'px';
+  fv.insertBefore(s, fv.firstChild);
+}
 function hintPlace(p, h, stage) {
-  markPlaceColors();
+  markPlaceColors(); onesStripe();
   h.innerHTML = `<div class="tip"><span class="pvchip c1">일</span><span class="pvchip c2">십</span><span class="pvchip c3">백</span>
     자리마다 색깔 띠가 있어요. <b>일의 자리부터</b> 차례로 계산해요.</div>`;
   if (stage === 1) { speak('일의 자리부터 차례로 계산해요.'); return; }
@@ -2912,7 +3036,7 @@ function hintPlace(p, h, stage) {
     const da = dg(p.a, pl), db = dg(p.b, pl), nm = PLACE_KO[pl];
     if (p.op === '+') {
       const s = da + db + c;
-      items.push({ text: `${nm}의 자리. ${da} 더하기 ${db}${c ? ' 하고 1' : ''}${josaEun(c ? 1 : db)} ${s}.`, action: () => litCol(pl) });
+      items.push({ text: `${nm}의 자리. ${da} 더하기 ${db}${c ? ' 하고 1' : ''}${josaEun(c ? 1 : db)} ${s}.`, action: () => { litCol(pl); if (pl >= 2) clearCarry(pl - 1); } });   // 윗자리로 넘어가면 아랫자리에서 쓴 올림 1은 지움(v107)
       if (s >= 10) { const nx = pl + 1; items.push({ text: '십이 넘어요. 1을 위 자리로 올려요.', action: () => markCol(nx, 'cmark') }); c = 1; } else c = 0;
     } else {
       let d = da - c; c = 0;
@@ -2939,7 +3063,7 @@ function startColumn(p) {
   }
   /* 자릿값 라벨은 1차 단서 전용 — 계산 단계에선 올림·빌림 표기(cmark·bmark)와 겹치지 않게 표시 안 함(paintFace가 지움) */
   locked = true;
-  $('choices').innerHTML = '';                       // 객관식 대신 직접 입력
+  $('choices').innerHTML = ''; pad = null;           // 객관식 대신 직접 입력(숫자패드가 있었어도 자리별 입력으로 대체)
   renderColStep();                                   // 자리 하이라이트는 litCol이 현재 자리만 색칠
 }
 /* 지금까지 채운 자리·올림·빌림 표기를 기록해 둔다 — paintFace가 얼굴을 새로 만들어도(가로↔세로 전환) 그대로 재생 */
@@ -3050,6 +3174,7 @@ function highlightAnsCell(pl) {
   const c = document.querySelector(`#qslot .ansbox[data-pl="${pl}"]`); if (c) c.classList.add('cur', 'curp' + Math.min(pl, 3));
 }
 function renderColStep(silent) {
+  if (!cadd) return;                                  // 그만·홈으로 나간 뒤 예약 타이머가 들어오는 경우(v107)
   const { p, pl, carry } = cadd, minus = p.op === '-';
   const da = dg(p.a, pl), db = dg(p.b, pl), nm = PLACE_KO[pl];
   litCol(pl); highlightAnsCell(pl);
@@ -3077,7 +3202,7 @@ function renderColStep(silent) {
     <div class="coleq">${eq} ＝
       <input id="colin" class="colinput" inputmode="numeric" maxlength="2" autocomplete="off" aria-label="답 입력"></div>
     <button class="btn btn--orange colok" onclick="colSubmit()">확인 ✓</button>`;
-  const face = $('qface');
+  const face = $('qface'); if (!face) return;      // 학습 화면을 떠난 뒤 타이머(v107)
   face.querySelectorAll('.colside').forEach(e => e.remove());
   const tipTxt = `${pl === 0 ? '먼저 ' : ''}<b>${nm}의 자리</b>의 숫자끼리 ${minus ? '빼' : '더해'} 봐요.`;
   if (prefs.mode === 'v') {                           // 세로셈: 식 오른쪽 패널
@@ -3123,6 +3248,7 @@ function colSubmit() {
     /* 받아올림: 마지막 자리가 아니면 합을 두 자리 다 쓰고 → 안내 → 십의 1을 위로 올린다 */
     const up = !minus && expect >= 10 && pl + 1 < cadd.places;
     const next = () => {
+      if (!cadd) return;                              // 화면을 떠난 뒤 발화 콜백이 들어오는 경우(v107)
       cadd.pl++;
       if (cadd.pl >= cadd.places) {
         if (!minus && cadd.carry) colShow('ans' + cadd.places, () => fillAnsCell(cadd.places, 1));
@@ -3130,7 +3256,9 @@ function colSubmit() {
       } else { speak('좋아요'); setTimeout(() => renderColStep(), lastSpeakMs + 150); }
     };
     setTimeout(() => {
+      if (!cadd) return;                              // 그만·홈으로 나간 뒤(v107)
       colShow('ans' + pl, () => fillAnsCell(pl, minus ? expect : expect % 10));
+      if (!minus && carry) clearCarry(pl);              // 이 자리 계산에 쓴 올림 1은 없어진다(v107, 사용자 지시)
       if (minus) { cadd.carry = cadd.borrow; next(); return; }   // 이번에 빌렸으면 윗자리에서 1 뺌
       cadd.carry = expect >= 10 ? 1 : 0;
       if (!up) { if (cadd.carry && pl + 1 < cadd.places) colShow('carry' + pl, () => markCarry(pl + 1)); next(); return; }
@@ -3665,27 +3793,46 @@ const STRAT_CUES = {
   sub: { take: '빼는 만큼 지우고, 남은 것을 세어 볼까요?', back: '거꾸로 세어 볼까요?', bridge: '빼는 수를 갈라서 10을 만들어 볼까요?', ten: '10에서 먼저 빼 볼까요?', jump: '수직선에서 뒤로 뛰어 볼까요?' },
   mul: { quad: '몇씩 몇 묶음인지 생각해 볼까요?', group: '몇씩 몇 묶음인지 생각해 볼까요?', skip: '뛰어 세어 볼까요?', swap: '순서를 바꾸어 생각해 볼까요?' },
   div: { take: '몇 번 덜어낼 수 있을까요?', fact: '곱셈구구로 생각해 볼까요?' },
+  /* v107 폴백 발문 — 전략 미설정·다자릿수·세 수·문장제에도 1차 오답에 생각할 거리를 준다(공통 멘트 대체) */
+  multi: { colAdd: '일의 자리부터 차례로 더해 볼까요?', colSub: '일의 자리부터 차례로 빼 볼까요?', triple: '앞의 두 수부터 계산해 볼까요?',
+    wordAdd: '모두 몇 개인지 생각해 볼까요?', wordSub: '몇 개 남았는지 생각해 볼까요?' },
 };
 function cueKeyFor(p) {
-  if (!p || p.type !== 'binary') return null;
-  if (p.op === '+' && p.ans <= 20) { const k = pickAddStrat(p); return k ? { g: 'add', k } : null; }
-  if (p.op === '-' && p.a <= 20) { const k = pickSubStrat(p); return k ? { g: 'sub', k } : null; }
+  if (!p) return null;
+  if (p.type === 'triple') return { g: 'multi', k: 'triple' };                                   // v107 폴백
+  if (p.type === 'word') return { g: 'multi', k: p.op === '-' ? 'wordSub' : 'wordAdd' };        // v107 폴백(문장제)
+  if (p.type !== 'binary') return null;
+  if (p.op === '+' && p.ans <= 20) return { g: 'add', k: pickAddStrat(p) || (p.a < 10 && p.b < 10 && p.a + p.b > 10 ? 'ten' : 'on') };   // 폴백: 10 넘으면 10 만들기, 아니면 이어 세기
+  if (p.op === '-' && p.a <= 20) return { g: 'sub', k: pickSubStrat(p) || subCueFallback(p) };
   if (p.op === '×' && p.a < 10) { const k = pickMulStrat(p); return k ? { g: 'mul', k } : null; }
   if (p.op === '÷') { const k = pickDivStrat(p); return k ? { g: 'div', k } : null; }
+  if (p.op === '+' || p.op === '-') return { g: 'multi', k: p.op === '+' ? 'colAdd' : 'colSub' };   // 두 자리 이상: 자리별
   return null;
+}
+/* 발문 전용 폴백(힌트 라우팅 pickSubStrat은 그대로): 십몇−몇 받아내림=10에서 빼기, 빼는 수 ≤2=거꾸로 세기, 그 외=덜어내기 */
+function subCueFallback(p) {
+  const a = p.a, b = p.b;
+  if (a > 10 && a < 20 && b < 10 && b > a % 10) return 'ten';
+  if (b <= 2) return 'back';
+  return 'take';
 }
 function hintCueFor(p) { const c = cueKeyFor(p); return c ? STRAT_CUES[c.g][c.k] : null; }
 /* (A) 발문-시각 동기화(v102) — 자폐 학생 시각 우세: 오답 직후 발문이 나가는 동안 관련 토큰을 잠깐 강조.
    정답은 노출하지 않는다(fade의 '스스로 기회' 취지 유지). 2.3초 뒤 자동 해제.
    공통 멘트('다시 한 번')는 강조 없음 — 특정 요소를 가리키면 오해를 만들 수 있어서 */
 function cueFlash(p, diag) {
-  document.querySelectorAll('#qface .cueflash').forEach(e => e.classList.remove('cueflash'));
+  document.querySelectorAll('#qface .cueflash').forEach(e => e.classList.remove('cueflash', 'cueboth'));
   const tok = t => document.querySelector(`#qface [data-t="${t}"]`);
   let els = [];
   if (diag) {
     if (diag.includes('기호')) els = [tok('op0')];
     else if (diag.includes('한 칸만')) els = [tok(p.op === '+' ? (p.a <= p.b ? 'n0' : 'n1') : 'n1')];   // 이어·거꾸로 셀 수
     else if (diag.includes('묶음')) els = [tok('n1')];                                                  // 묶음 수를 다시 보게
+    else if (diag.includes('작은 수에서 큰 수')) {                                                        // v107: 자리 색 띠 + (세로) 위→아래 화살표, 빨간 링 대신
+      markPlaceColors();
+      if (prefs.mode === 'v') { drawSubArrow(); els = []; }
+      else els = [...document.querySelectorAll('#qface .faceh .fnum .hd:nth-last-child(1)')];          // 가로: 일의 자리 숫자만 강조
+    }
     else els = [tok('n0'), tok('n1')];                                                                  // 자리·이어붙임 등 — 두 수를 다시 보게
   } else {
     const ck = cueKeyFor(p);
@@ -3697,11 +3844,15 @@ function cueFlash(p, diag) {
       mul: { quad: ['n0', 'n1'], group: ['n0', 'n1'], skip: ['n1'], swap: ['n0', 'n1'] },
       div: { take: ['n1'], fact: ['op0'] },
     };
-    els = ((F[ck.g] || {})[ck.k] || []).map(tok);
+    if (ck.g === 'multi') {                                                                       // v107 폴백 발문의 시각 단서
+      if (ck.k === 'colAdd' || ck.k === 'colSub') els = [...document.querySelectorAll('#qface .vnum .vd:nth-last-child(1), #qface .faceh .fnum .hd:nth-last-child(1)')];   // 일의 자리
+      else if (ck.k === 'triple') els = [tok('n0'), tok('n1')];
+    } else els = ((F[ck.g] || {})[ck.k] || []).map(tok);
   }
   els = els.filter(Boolean);
-  els.forEach(e => e.classList.add('cueflash'));
-  if (els.length) setTimeout(() => els.forEach(e => e.classList.remove('cueflash')), 2300);
+  const both = els.filter(e => /^n\d$/.test(e.dataset.t || '')).length >= 2;   // 두 수 통째로 동시 강조 → 테두리 방식(v107)
+  els.forEach(e => { e.classList.add('cueflash'); if (both) e.classList.add('cueboth'); });
+  if (els.length) setTimeout(() => els.forEach(e => e.classList.remove('cueflash', 'cueboth')), 2300);
 }
 function mulStratHint(p, h, stage) {
   const st = stratOf('mul'), has = k => st.includes(k);
@@ -4673,13 +4824,17 @@ function animateStep(p, step) {
 /* =========================================================
    세션 이동·전환·종료
    ========================================================= */
-function goHome() { if (current) renderCalendar(false); else renderStart(); }
-function prevProblem() { if (session.idx > 0) { session.idx--; renderProblem(); } }
-function retryProblem() { renderProblem(); }
-function nextProblem() { logItem(); session.idx++; saveResume(); if (session.idx >= session.items.length) finishSession(); else renderProblem(); }
+function goHome() { cadd = null; pad = null; guide = null; mguide = null; rt = null; if (current) renderCalendar(false); else renderStart(); }   // 진행 중 힌트 상태 해제(v107)
+function prevProblem() { if (rt) return; if (session.idx > 0) { session.idx--; renderProblem(); } }   // 재도전 화면: 이전 문제 없음
+function retryProblem() { if (rt) { rt.tries = 0; rt.typed = ''; rt.follow = false; rt.fi = 0; renderRetry(); return; } renderProblem(); }
+function nextProblem() {
+  if (rt) { rt = null; advanceProblem(); return; }        // 재도전 건너뛰기 → 남은 재도전 또는 세션 마무리
+  logItem(); session.idx++; saveResume(); if (session.idx >= session.items.length) finishSession(); else renderProblem();
+}
 function toggleMode() {
   prefs.mode = prefs.mode === 'h' ? 'v' : 'h'; savePrefs();
   setNav(studyNav());
+  if (rt) { const keep = rt.intro; rt.intro = false; renderRetry(); rt.intro = keep; rtPaint(); return; }   // 재도전: 같은 문제를 새 모드로
   if (guide) renderGuideStep(true); else { paintFace(true); if (cadd) redrawColumn(); }
 }
 /* 자동 진급: 같은 단계 연속 2세션 첫 시도 정답률 80% 이상 → LEVEL_ORDER(교육과정 순)의 다음 단계.
@@ -6716,7 +6871,7 @@ function renderChalProblem() {
   $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
     <div class="card card--accent study-card chalcard">
       <div style="display:flex;align-items:center;justify-content:center;gap:.7rem;margin-bottom:.2rem">
-        <span class="speak-icon" onclick="speakProblem()" style="font-size:1.6rem">🔊</span>
+        <button type="button" class="speak-icon" onclick="speakProblem()" aria-label="문제 읽어 주기" style="font-size:1.6rem">🔊</button>
         <div class="counter" style="margin:0">${chal.idx + 1} / ${chal.items.length} · ⚡ ${esc(chal.lvl.name)}</div>
         ${chal.deadline ? '<span class="chtimer" id="chtimer"></span>' : ''}
       </div>
