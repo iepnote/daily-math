@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 110 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 111 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -756,6 +756,13 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
   color:#00695C; border-radius:999px; padding:.4rem 1rem; font-size:1.05rem; font-weight:800; }
 .lvtab.sel{ background:#00897B; border-color:#00695C; color:#fff; }
 /* 단계 선택 목록의 세부 단계: 테두리 없이 옅은 배경만 */
+/* 교사 노출 단계 페이지(v111): 스크롤 없이 한 화면 — 카드가 무대 세로를 꽉 채우고(flex:1) 줄들이 남는 높이를 균등 분배(space-evenly).
+   소제목은 줄 왼쪽에 붙여 세로 절반(6탭 전부 무대 안 수납 실측 — 단계가 늘어 넘치면 줄이 겹치지 않고 카드 밖으로 잘림) */
+.lvpagecard{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+.lvpage{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; justify-content:space-evenly; }
+.lvpage .lvgrp{ display:flex; align-items:center; gap:.8rem; margin:0; }
+.lvpage .lvg{ flex:0 0 9rem; margin:0 !important; white-space:nowrap; }   /* '받아올림·받아내림'까지 한 줄 */
+.lvpage .optrow{ flex:1; margin:0; }
 .lvlist .opt{ border:none; padding:.62rem 1.32rem; }
 .lvlist .opt.sel{ background:var(--accent); color:#fff; }
 
@@ -1093,7 +1100,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 110';
+const APP_VERSION = 'ver 111';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -4960,9 +4967,9 @@ function lvPickerHtml(tabIdx, allow, tabClick, btnHtml) {
   let html = '';
   for (const { g, ls: gl } of groups) {
     const sub = g.split(' · ').slice(1).join(' · ') || g;   // 탭 이름과 겹치는 앞부분(기초·1학년…)은 생략
-    html += `<div style="font-weight:700;text-align:left;margin:.6rem 0 .2rem;color:var(--ink-soft)">${sub}</div><div class="optrow" style="justify-content:flex-start">`;
+    html += `<div class="lvgrp"><div class="lvg" style="font-weight:700;text-align:left;margin:.6rem 0 .2rem;color:var(--ink-soft)">${sub}</div><div class="optrow" style="justify-content:flex-start">`;
     html += gl.map(btnHtml).join('');
-    html += '</div>';
+    html += '</div></div>';
   }
   return { tabs, html };
 }
@@ -5624,8 +5631,8 @@ async function renderStudentDetail(id) {
       return `<div class="stat errstat ${fr ? 'warn' : ''}" onclick="renderErrDetail('${s.id}')" title="상세 오류 분석 보기">
         <div class="k">오류 분석</div><div class="v">${fr ? '단계 조정 검토 ▸' : e ? ERR_NAME[e.key] + ' 오류 ▸' : '기록 쌓는 중 ▸'}</div></div>`;
     })()}
-      <div class="stat grow"><div class="k">현재 단계 · 노출 단계</div><div class="v" style="font-family:var(--font-btn)">${esc(levelById(s.level).name)}
-        <button class="btn btn--gray btn-sm" style="vertical-align:middle;margin-left:.4rem" onclick="openLvSetPicker('${s.id}')" title="학생 단계 선택 화면에 보여줄 단계 고르기">노출 ${s.lvSet && s.lvSet.length ? s.lvSet.length + '개' : '전체'}</button></div></div>
+      <div class="stat grow errstat" onclick="openLvSetPicker('${s.id}')" title="학생 단계 선택 화면에 보여줄 단계 고르기">
+        <div class="k">현재 단계 · 노출 ${s.lvSet && s.lvSet.length ? s.lvSet.length + '개' : '전체'}</div><div class="v">${esc(levelById(s.level).name)} ▸</div></div>
       <div class="stat grow"><div class="k">힌트 지원 (개별화)</div>
         <select onchange="setHintLvT('${s.id}',this.value)" style="font-size:1rem;padding:.3rem .4rem;margin-top:.2rem">
           ${[['fade', '기본: 첫 오답은 발문만(스스로 다시) → 2차 단서 → 3차 자세히'], ['normal', '바로 단서: 1차 단서 → 2차 자세히'], ['strong', '강한 지원: 처음부터 자세히'], ['off', '힌트 끄기(스스로 재시도)']]
@@ -5655,7 +5662,7 @@ async function renderStudentDetail(id) {
   </div>`;
 }
 
-/* ---- 노출 단계 고르기 (⑤, v106) — 학생 단계 선택과 같은 6탭 모달(lvPickerHtml 공용), 전략 체크박스 문법(누를 때마다 저장).
+/* ---- 노출 단계 고르기 (⑤, v106 모달 → v111 페이지: 오류 분석처럼 stat 박스 클릭 ▸) — 학생 단계 선택과 같은 6탭(lvPickerHtml 공용), 전략 체크박스 문법(누를 때마다 저장).
    규칙: 노출 = 선택 목록 ∪ {현재 단계(⭐, 항상 보임)} · 선택 0개 = 전체 노출(현행) · 🎈손님은 항상 전체 ---- */
 function openLvSetPicker(id, tabIdx) {
   const s = dash.students.find(x => x.id === id); if (!s) return;
@@ -5663,26 +5670,21 @@ function openLvSetPicker(id, tabIdx) {
   if (tabIdx === undefined) tabIdx = Math.max(0, LEVEL_BANDS.findIndex(b => b.ids.includes(cur)));
   const pk = lvPickerHtml(tabIdx, null, i => `openLvSetPicker('${id}',${i})`,
     l => `<button class="opt ${set.has(l.id) ? 'sel' : ''}" onclick="toggleLvSetT('${id}',${l.id},${tabIdx})">${lvlNo(l.id)}. ${l.name}${l.id === cur ? ' ⭐' : ''}</button>`);
-  openModal(`<div class="read-sentence" style="font-size:1.3rem;margin-bottom:.2rem;text-align:center">노출 단계 고르기 — ${esc(s.name)}</div>
-    <div class="dim" style="text-align:center;margin-bottom:.4rem">누르면 선택/해제 · <b>선택 없음 = 전체 노출</b> · 현재 단계(⭐)는 항상 보여요 · 지금 ${set.size ? set.size + '개 선택' : '전체 노출'}</div>
+  setNav(teacherNav('detail'));
+  $('wrap').innerHTML = `<div class="card lvpagecard" style="text-align:left">
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <button class="btn btn--gray btn-sm" onclick="renderStudentDetail('${id}')">← 학생 상세</button>
+      <span class="read-sentence" style="font-size:1.4rem;margin:0">노출 단계 고르기 — ${esc(s.name)}</span>
+    </div>
+    <div class="dim" style="margin:.5rem 0">누르면 선택/해제 · <b>선택 없음 = 전체 노출</b> · 현재 단계(⭐)는 항상 보여요 · 지금 ${set.size ? set.size + '개 선택' : '전체 노출'}</div>
     <div class="lvtabs">${pk.tabs}</div>
-    <div class="lvlist" style="text-align:left;max-height:56vh;overflow:auto">${pk.html}</div>
-    <div style="text-align:center;margin-top:.6rem;display:flex;gap:.6rem;justify-content:center">
-      <button class="btn btn--gray btn-sm" onclick="clearLvSetT('${id}',${tabIdx})">모두 해제(전체 노출)</button>
-      <button class="btn btn--teal" onclick="closeModal();renderStudentDetail('${id}')">완료</button>
-    </div>`, '760px');
+    <div class="lvlist lvpage">${pk.html}</div></div>`;
 }
 async function toggleLvSetT(id, lvId, tabIdx) {
   const s = dash.students.find(x => x.id === id); if (!s) return;
   const arr = s.lvSet || (s.lvSet = []);
   const i = arr.indexOf(lvId);
   if (i >= 0) arr.splice(i, 1); else arr.push(lvId);
-  await Store.updateStudent(s);
-  openLvSetPicker(id, tabIdx);
-}
-async function clearLvSetT(id, tabIdx) {
-  const s = dash.students.find(x => x.id === id); if (!s) return;
-  s.lvSet = [];
   await Store.updateStudent(s);
   openLvSetPicker(id, tabIdx);
 }
