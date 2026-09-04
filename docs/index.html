@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 108 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 109 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -583,21 +583,24 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
   font-family:'NanumSquareNeo','NanumSquare Neo','NanumSquareNeoOTF','NanumSquareRound','Malgun Gothic',sans-serif; }
 /* 여백은 종이가 아니라 지면(.ws-page padding)이 가짐 — 브라우저 여백과의 반올림 충돌로
    빈 둘째 쪽이 생기는 것을 원천 차단. 인쇄 창 여백은 '기본값' 그대로 두면 됨 */
-@page{ size:A4 portrait; margin:0; }
+/* margin:0은 실프린터가 못 지키고(Canon 등) 크롬이 프린터 여백 기준으로 쪽을 나눠 마지막 줄이 둘째 쪽으로 밀렸음(2026-09-04, 3회 재현).
+   프린터 최소 여백보다 큰 값을 명시하면 크롬·프린터가 같은 페이지 영역을 쓴다 */
+@page{ size:A4 portrait; margin:8mm; }
 @media print{
   html,body{ overflow:visible !important; height:auto !important; margin:0 !important; background:#fff !important; }
   #stage{ display:none !important; }
   #printsheet{ display:block !important; }
 }
 /* 페이지: A4 한 장 높이 고정, 문제 영역이 남은 공간을 균등 분배해 지면 끝까지 채움 */
-/* 종이(297mm)보다 확실히 작게 + 여백을 padding으로 내장 */
-.ws-page{ position:relative; height:288mm; padding:10mm 13mm; box-sizing:border-box;
+/* 종이보다 확실히 작게(@page 8mm 여백 안 281mm 중 274mm) + 안쪽 여백은 padding으로 내장 */
+.ws-page{ position:relative; width:194mm; height:274mm; margin:0 auto; padding:10mm 13mm; box-sizing:border-box;
   display:flex; flex-direction:column; overflow:hidden; }
 .ws-page > *{ position:relative; z-index:1; }
 .ws-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:fill; z-index:0 !important; }
 /* bg 모드(print_bg.png = 한글 템플릿 배경, 13_hwpx.js와 같은 조판): 그림의 제목 타원(12~20mm)에 단원명(나눔바른펜 11/12pt),
-   흰 칸(22.7~35.6mm)에 학교·이름 ｜ 월 일(나눔스퀘어네오 14pt). 지면이 288mm라 세로 0.97배 — 값은 그에 맞춘 것 */
-.ws-page.bg{ padding:11.5mm 15mm 12mm 20mm; }
+   흰 칸(22.7~35.6mm)에 학교·이름 ｜ 월 일(나눔스퀘어네오 14pt). 지면이 274mm라 세로 0.923배 — 값은 그에 맞춘 것
+   (타원 중심 14.8mm = 11 + 7.5/2, 흰 칸 21~32.9mm 안에 info 22.5~30.5mm) */
+.ws-page.bg{ padding:11mm 15mm 11mm 19mm; }
 .ws-page.bg .ws-head{ border:0; background:transparent; height:7.5mm; margin:0 0 4mm; justify-content:center; }
 .ws-page.bg .ws-title{ flex:0 1 auto; flex-direction:row; align-items:baseline; justify-content:center; gap:1.5mm; padding:0;
   font-family:'나눔바른펜','NanumBarunpen',var(--font-main); white-space:nowrap; }
@@ -625,53 +628,59 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .ws-info{ text-align:right; font-size:13pt; font-weight:700; margin:0 1mm 3mm 0; letter-spacing:.02em; }
 /* 문제 영역 — 남은 세로 공간 전체를 문제 줄들이 나눠 가짐 */
 .ws-problems{ flex:1; display:flex; flex-direction:column; justify-content:space-around; padding:2mm 0 4mm; }
-.ws-row{ display:flex; justify-content:space-around; align-items:center;
+/* 한 줄 2문제: 두 문제 사이 간격을 넉넉히(사용자 요청 2026-09-04 — 문제는 작아도 됨) */
+.ws-row{ display:flex; justify-content:space-around; align-items:center; gap:8mm; padding:0;
   break-inside:avoid; page-break-inside:avoid; }
 .ws-row.single{ justify-content:center; }
-/* 문제 — 일일수학풍: 점선 칸 없이 깔끔한 숫자 + 밑줄, 회색 동그라미 번호 */
-.wp{ display:flex; align-items:flex-start; gap:2.5mm; }
-.wnum{ font-size:12pt; font-weight:700; color:#999; padding-top:0; }
+.ws-row.single .wpe{ max-width:none; }   /* 한 줄 1문제(같은 수 찾기·자리값·수 배열·5문제)는 폭 제한 해제 */
+/* 문제 — 일일수학풍: 점선 칸 없이 깔끔한 숫자 + 밑줄, 검정 동그라미 번호(번호와 문제 사이 5mm) */
+.wp{ display:flex; align-items:flex-start; gap:5mm; }
+.wnum{ font-size:12pt; font-weight:700; color:#000; padding-top:0; }
 .wpv{ border-collapse:collapse; width:auto; table-layout:fixed; }
-.wpv td{ width:11mm; height:11mm; padding:0; text-align:center; vertical-align:middle;
-  font-size:21pt; font-weight:800; border:none; }
-.wpv td.op{ width:10mm; font-size:19pt; font-weight:800; }
-.wpv td.ans{ height:14mm; }
+.wpv td{ width:10mm; height:10mm; padding:0; text-align:center; vertical-align:middle;
+  font-size:19pt; font-weight:800; border:none; }
+.wpv td.op{ width:9mm; font-size:17pt; font-weight:800; }
+.wpv td.ans{ height:13mm; }
+.wpv.r4 td{ height:9.5mm; }  .wpv.r4 td.ans{ height:12mm; }   /* 세 수(4줄 표)는 2×5 배열에서 4mm 넘치므로 줄 높이 축소 */
 .wpv td.rule{ border-bottom:0.55mm solid #222; }
 /* 빈칸 유형(10의 보수)의 가운데 답 칸만 옅은 안내 상자 */
 .wpv td.ans.rule:not(.op){ border:0.3mm dashed #b5b5b5; border-bottom:0.55mm solid #222; }
-.wph{ font-size:22pt; font-weight:800; display:flex; align-items:center; gap:3mm; min-width:70mm; }
-.wph .bl{ display:inline-block; width:17mm; height:12mm; vertical-align:middle; }   /* 상자 없이 빈 공간(일일수학풍) */
+.wph{ font-size:19pt; font-weight:800; display:flex; align-items:center; gap:3mm; min-width:62mm; }
+.wph .wnum{ margin-right:2.5mm; }   /* 번호와 식 사이 총 5.5mm */
+.wph .bl{ display:inline-block; width:15mm; height:11mm; vertical-align:middle; }   /* 상자 없이 빈 공간(일일수학풍) */
 /* 20문제 — 한 장에 들어가도록 축소 (가로셈 2×10, 세로셈 4×5) */
-.ws-page.n20.h .wph{ font-size:16pt; min-width:60mm; gap:2.5mm; }
-.ws-page.n20.h .wph .bl{ width:13mm; height:9mm; }
+.ws-page.n20.h .wph{ font-size:15pt; min-width:54mm; gap:2.5mm; }
+.ws-page.n20.h .wph .bl{ width:12mm; height:8mm; }
 .ws-page.n20.h .wnum{ font-size:12pt; padding-top:0; }
-.ws-page.n20.v .wpv td{ width:8mm; height:8.5mm; font-size:14pt; }
-.ws-page.n20.v .wpv td.op{ width:6.5mm; font-size:12.5pt; }
-.ws-page.n20.v .wpv td.ans{ height:10mm; }
+.ws-page.n20.v .wpv td{ width:7.5mm; height:8mm; font-size:13pt; }
+.ws-page.n20.v .wpv td.op{ width:6mm; font-size:12pt; }
+.ws-page.n20.v .wpv td.ans{ height:9.5mm; }
 .ws-page.n20.v .wnum{ font-size:11.5pt; padding-top:1mm; }
-.ws-page.n20.v .ws-row{ justify-content:space-between; padding:0 2mm; }
+.ws-page.n20.v .wp{ gap:3mm; }
+.ws-page.n20.v .ws-row{ justify-content:space-between; gap:6mm; padding:0 3mm; }
 /* 기초 유형 지필형 칸(세기·담기·모으기·가르기·비교·수열·문장제·채점) */
-.wpe{ display:flex; flex-direction:column; gap:2.5mm; min-width:78mm; max-width:88mm; }
-.wpe-q{ display:flex; align-items:flex-start; gap:2.5mm; font-size:13pt; font-weight:700; line-height:1.45;
+.wpe{ display:flex; flex-direction:column; gap:2.5mm; min-width:70mm; max-width:80mm; }   /* 한 줄 2문제: 80+8+80 = 지면 안폭 168mm */
+.wpe-q{ display:flex; align-items:flex-start; gap:5mm; font-size:13pt; font-weight:700; line-height:1.45;
   word-break:keep-all; }   /* 문장제: 어절 중간에서 줄이 끊기지 않게 */
 /* 동그라미: 한 줄에 정확히 5개(p5) 또는 10개(p10). 지름(--d)·간격(--g)을 변수로 두고
    한 줄 폭(min-width)을 계산 → 개수가 적어도 상자 크기가 같아 "상자 크기=답" 단서가 생기지 않음 */
-.wdots{ --d:7.4mm; --g:1.8mm; display:flex; flex-direction:column; gap:1.6mm; }
+.wdots{ --d:6.6mm; --g:1.6mm; display:flex; flex-direction:column; gap:1.5mm; }
 .wdrow{ display:flex; gap:var(--g); }
 .wdot{ width:var(--d); height:var(--d); border-radius:50%; background:#E53935; border:0.3mm solid #B71C1C;
   display:inline-block; flex:0 0 auto; }
 .wdots.p5{ min-width:calc(var(--d)*5 + var(--g)*4); }
-.wdots.p10{ --d:5.6mm; --g:1.2mm; min-width:calc(var(--d)*10 + var(--g)*9); }
+.wdots.p10{ --d:5mm; --g:1.1mm; min-width:calc(var(--d)*10 + var(--g)*9); }
 .wdot.hollow{ background:#fff; border:0.45mm solid #555; }   /* 색칠용 빈 동그라미 */
 /* 동그라미를 담는 네모 상자 + 번호·상자·답칸 한 줄 배치 */
-.wdbox{ border:0.5mm solid #444; border-radius:2mm; padding:2mm 2.5mm; display:inline-flex; }
+.wdbox{ border:0.5mm solid #444; border-radius:2mm; padding:2mm; display:inline-flex; }
 .wdline{ display:flex; align-items:center; gap:3mm; }
+.wdline > .wnum{ margin-right:2mm; }   /* 번호와 상자 사이 5mm */
 /* 상자 + 그 아래 답칸: 열 폭이 상자 폭이라 답칸이 상자 오른쪽 끝에 맞고 밖으로 나가지 않음 */
 .wcol{ display:flex; flex-direction:column; align-items:flex-end; gap:1.5mm; }
 .ws-inst{ font-size:13.5pt; font-weight:800; padding:2mm 0 0; }
 /* 크기 비교: 상자 2개가 한 칸에 들어가야 해 조금 작게(10문제는 더 작게) */
 .cmpq .wdots{ --d:5.8mm; --g:1.3mm; min-height:calc(var(--d)*2 + 1.6mm); }   /* 두 줄 높이 고정 — 상자 크기가 완전히 같아야 세어서 비교 */
-.ws-page.n10 .cmpq .wdots{ --d:5mm; --g:1.1mm; }
+.ws-page.n10 .cmpq .wdots{ --d:4.5mm; --g:1mm; }   /* 상자 2개+번호 = 78mm 이내 */
 /* 수감각(50~53) 지필형: 큰 것 고르기 · 같은 수 찾기 · 하나씩 선 잇기 */
 .wbig{ display:flex; align-items:center; gap:14mm; }
 .wbe{ line-height:1; font-size:8mm; }
@@ -688,15 +697,16 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 /* 모으기·가르기: 상자 2개+＋ 가 한 칸(88mm)에 들어가도록 동그라미를 작게 */
 .wgs{ display:flex; flex-direction:column; align-items:center; gap:1.6mm; }
 .wgs .wdots{ --d:5mm; --g:1.1mm; }
-.wgrow{ display:flex; align-items:center; gap:3mm; }
-.wgrow.wide{ gap:12mm; }
+.wgrow{ display:flex; align-items:center; gap:2.5mm; }
+.wgrow .wdots{ --d:5.4mm; --g:1.2mm; }   /* 모으기 상자 2개+＋ 가 80mm 안에 */
+.wgrow.wide{ gap:8mm; }
 .wgplus{ font-size:15pt; font-weight:800; }
 .wgarr{ font-size:13pt; color:#888; }
-.wgbox{ min-width:16mm; min-height:11mm; border:0.45mm solid #444; border-radius:1.5mm; display:flex;
+.wgbox{ min-width:14mm; min-height:11mm; border:0.45mm solid #444; border-radius:1.5mm; display:flex;
   align-items:center; justify-content:center; font-size:15pt; font-weight:800; padding:0 2mm; }
 .wgbox.dash{ border-style:dashed; border-color:#999; }
-.wseq{ display:flex; align-items:center; gap:2mm; }
-.wsbox{ min-width:12mm; height:11mm; border:0.45mm solid #444; border-radius:1.5mm; display:inline-flex;
+.wseq{ display:flex; align-items:center; gap:1.5mm; }
+.wsbox{ min-width:10.5mm; height:10mm; border:0.45mm solid #444; border-radius:1.5mm; display:inline-flex;
   align-items:center; justify-content:center; font-size:14pt; font-weight:800; padding:0 1.5mm; }
 .wsbox.ans{ border-style:dashed; border-color:#999; }
 .wsarr{ font-size:12pt; color:#888; }
@@ -709,6 +719,25 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .ws-page.n20 .wgbox{ min-width:12mm; min-height:9mm; font-size:12pt; }
 .ws-page.n20 .wsbox{ min-width:9.5mm; height:9mm; font-size:11pt; }
 .ws-page.n20 .wjudge{ font-size:13pt; }
+
+/* ===== 설정 패널(v109) — 두루책방 런처와 같은 드롭다운(⚙️ 아래, 무대 오른쪽) ===== */
+.setpanel{ position:absolute; right:.6rem; z-index:95; background:#fff; border:3px solid #FFD23F; border-radius:1.1rem;
+  box-shadow:0 10px 28px rgba(0,0,0,.22); padding:.9rem 1.1rem; width:340px; max-height:calc(var(--stage-h) - 70px); overflow:auto; text-align:left; }
+.setpanel .srow{ margin-bottom:.85rem; } .setpanel .srow:last-child{ margin-bottom:0; }
+.setpanel .srow b{ display:block; font-size:1.1rem; font-weight:800; margin-bottom:.4rem; color:var(--ink); }
+.setpanel .svol{ font-weight:700; font-size:.95rem; color:var(--ink-soft); margin-left:.3rem; }
+.setpanel .shelp{ display:block; font-size:.82rem; font-weight:600; color:var(--ink-soft); margin:.2rem 0 0 1.6rem; line-height:1.3; }
+.setpanel .sopts.lcb{ flex-wrap:nowrap; }
+.setpanel select{ width:100%; font-family:inherit; font-weight:800; font-size:1rem; padding:.35rem; border:2px solid #B3E5FC; border-radius:.5rem; background:#F7FAFF; cursor:pointer; color:var(--ink); }
+.setpanel input[type=range]{ width:100%; cursor:pointer; accent-color:#26A69A; margin:0; }
+.setpanel label{ cursor:pointer; font-weight:800; font-size:1.05rem; display:flex; align-items:center; gap:.45rem; color:var(--ink); }
+.setpanel label input{ width:1.15rem; height:1.15rem; margin:0; accent-color:#26A69A; }
+.setpanel .sopts{ display:flex; gap:.45rem; flex-wrap:wrap; }
+.setpanel .sopts button{ font-family:inherit; cursor:pointer; border:2px solid #B3E5FC; background:#F7FAFF; color:var(--ink);
+  border-radius:.8rem; padding:.45rem .85rem; font-size:1.05rem; font-weight:800; }
+.setpanel .sopts button.on{ background:#26A69A; color:#fff; border-color:#00897B; }
+.setpanel .sopts.lcb button{ background:#FFF8EC; border-color:#CBB994; color:#5D4A2E; }
+.setpanel .sopts.lcb button.on{ background:#5B7FBF; border-color:#5B7FBF; color:#fff; }
 
 /* ===== 모달 ===== */
 .modal{ position:absolute; inset:0; background:rgba(0,0,0,.45); z-index:100; display:flex; align-items:center; justify-content:center; }
@@ -786,7 +815,7 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
   border-radius:1.1rem; padding:.7rem 1.2rem; }
 /* SEM 문장제 대형(v93): 큰 글자 + 수 강조 */
 .wtext-big{ font-size:2rem; line-height:1.6; }
-.wnum{ color:var(--accent-strong); font-weight:800; }
+.wnum{ color:#000; font-weight:800; }   /* 번호 검정(사용자 요청 2026-09-04, 이전엔 파랑 accent) */
 .wpic{ display:flex; align-items:center; gap:1.1rem; justify-content:center; }
 .wplus{ font-size:2rem; font-weight:800; color:var(--accent-strong); }
 .estack{ display:flex; flex-direction:column; gap:.15rem; }
@@ -971,7 +1000,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .wnline .ln{ position:absolute; left:0; right:0; top:4.5mm; height:1mm; background:#000; border-radius:.5mm; }
 .wnline .tk{ position:absolute; top:3mm; width:.6mm; height:4mm; background:#000; transform:translateX(-50%); }
 .wnline .lb{ position:absolute; top:6.5mm; transform:translateX(-50%); font-weight:800; font-size:11pt; }
-.wpvq{ display:flex; align-items:center; gap:6mm; flex:1; flex-wrap:wrap; }   /* 막대 9개+동그라미 9개면 칸 폭을 넘쳐 답칸이 줄바꿈되게 */
+.wpvq{ display:flex; align-items:center; gap:6mm; flex:1; }   /* 자리값 읽기는 한 줄 1문제(per=1)라 폭 여유 있음 */
 .wrods{ display:flex; gap:1.5mm; align-items:flex-end; }
 .wrod{ width:3mm; height:15mm; background:#1E88E5; border-radius:.8mm; display:inline-block; }
 
@@ -1061,7 +1090,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 108';
+const APP_VERSION = 'ver 109';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1272,9 +1301,19 @@ const lsSet = (k, v) => { try { localStorage.setItem(LS + k, JSON.stringify(v));
 const lsDel = k => { try { localStorage.removeItem(LS + k); } catch (e) { } };
 
 /* ---- 기기 설정 (화면 모드·크기·소리, 마지막 교실) ---- */
-let prefs = Object.assign({ mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false, warmup: false }, lsGet('prefs', {}));
-const loadPrefs = () => Object.assign(prefs, PREFS_DEFAULT, lsGet('prefs', {}));
-const PREFS_DEFAULT = { mode: 'h', size: 'md', soundLevel: 'mid', rate: 'normal', calm: false, lang: 'ko', flashSec: 2, mask: false, warmup: false };
+/* v109 설정 개편(두루책방 런처 구성): vol=소리 크기 0~100(0=음소거, 별도 음소거 항목 없음) · rate=slow|normal|fast ·
+   langAt=외국어로 읽을 곳(q 문제·praise 칭찬·hint 힌트) · tapGuard=충동 탭 막기(듣고 시작+오답 잠금, v100 동작을 설정으로) */
+const LANG_AT_DEFAULT = { q: true, praise: true, hint: true };
+const PREFS_DEFAULT = { mode: 'h', size: 'md', vol: 70, rate: 'normal', calm: false, lang: 'ko', langAt: LANG_AT_DEFAULT, flashSec: 2, mask: false, warmup: false, tapGuard: true };
+const migPrefs = p => {   // 구 soundLevel(off/low/mid/high) → vol, langAt 항상 새 객체(기본 객체 공유 금지)
+  if (p.soundLevel) p.vol = ({ off: 0, low: 40, mid: 70, high: 100 })[p.soundLevel] ?? 70;   // 기본값 병합 뒤라 vol은 항상 있음 — 구 키가 남아 있으면 그쪽이 정본
+  delete p.soundLevel;
+  p.vol = Math.max(0, Math.min(100, Number.isFinite(+p.vol) ? +p.vol : 70));
+  p.langAt = Object.assign({}, LANG_AT_DEFAULT, (p.langAt && typeof p.langAt === 'object') ? p.langAt : {});
+  return p;
+};
+let prefs = migPrefs(Object.assign({}, PREFS_DEFAULT, lsGet('prefs', {})));
+const loadPrefs = () => migPrefs(Object.assign(prefs, PREFS_DEFAULT, lsGet('prefs', {})));
 const savePrefs = () => { if (typeof current !== 'undefined' && current && current.guest) return; lsSet('prefs', prefs); };   // 손님: 기기 설정 저장 안 함
 let device = Object.assign({ classCode: '', lastStudentId: '' }, lsGet('device', {}));
 const saveDevice = () => lsSet('device', device);
@@ -1444,8 +1483,7 @@ const Store = {
    규칙: 정·오답 피드백은 화면 텍스트 없이 음성·시각 효과로만.
    speak()는 이전 발화를 취소함. 연속 발화는 speakSequence() 사용.
    ========================================================= */
-const VOL = { off: 0, low: 0.4, mid: 0.7, high: 1 };
-const vol = () => VOL[prefs.soundLevel] ?? 0.7;
+const vol = () => Math.max(0, Math.min(1, (Number.isFinite(+prefs.vol) ? +prefs.vol : 70) / 100));   // v109: 0~100 슬라이더(0=음소거)
 let actx = null;
 function chime(ok) {
   if (vol() <= 0) return; const pk = 0.2 * vol();
@@ -1470,25 +1508,34 @@ function pickKoVoice() {
   return natural || ko[0];
 }
 /* 말 빠르기 설정(한글놀이터 이식): 보통/느리게 — 모든 발화 공통 */
-const spRate = base => (typeof prefs !== 'undefined' && prefs.rate === 'slow') ? base * 0.8 : base;
+const spRate = base => (typeof prefs !== 'undefined' && prefs.rate === 'slow') ? base * 0.8 : (typeof prefs !== 'undefined' && prefs.rate === 'fast') ? base * 1.25 : base;   // v109: 빠름 추가
+/* 외국어로 읽을 곳(v109, prefs.langAt): q=문제(speakProblem이 _spKind로 표시) · praise=칭찬(PRAISES·PRAISE_HELP) · hint=그 밖의 안내 */
+let _spKind = null;
+function speakKind(text) {
+  const k = _spKind; _spKind = null; if (k) return k;
+  const t = String(text || '').trim();
+  return (PRAISES.includes(t) || PRAISE_HELP.includes(t)) ? 'praise' : 'hint';
+}
+const langAtOn = kind => !(prefs.langAt && prefs.langAt[kind] === false);
 /* 발화 예상 길이(ms) — 한국어 TTS 실측 회귀(Heami, rate 0.95): 글자당 175ms + 시작 지연 700ms.
    speak()는 첫 줄에서 cancel()을 하므로, 발화가 끝나기 전에 다음 speak/화면 전환이 오면 말이 잘린다.
    호출부의 '보루 타이머'는 반드시 이 값 이상이어야 한다(고정 3초·1.1초 상수가 발화를 자르던 원인). */
-function speakMs(text) {
+function speakMs(text, kind) {
   const t = String(text || '');
   const pause = (t.match(/[.!?,]/g) || []).length * 400;   // 문장부호마다 쉬는 시간(딩동댕! 맞았어요! 처럼 감탄부호가 길다)
   const base = t.length * 175 + 700 + pause;
-  const slow = (typeof prefs !== 'undefined' && prefs.rate === 'slow') ? 1.3 : 1;
-  const fr = (typeof prefs !== 'undefined' && prefs.lang && prefs.lang !== 'ko') ? 2.2 : 1;   // 외국어로 한 번 더
+  const slow = (typeof prefs !== 'undefined' && prefs.rate === 'slow') ? 1.3 : (typeof prefs !== 'undefined' && prefs.rate === 'fast') ? 0.8 : 1;
+  const fr = (typeof prefs !== 'undefined' && prefs.lang && prefs.lang !== 'ko' && (!kind || langAtOn(kind))) ? 2.2 : 1;   // 외국어로 한 번 더
   return Math.round(Math.max(1800, base) * slow * fr);   // 짧은 말도 실측 1.1~1.7초('좋아요'=1.7초) — 하한을 둔다
 }
 let lastSpeakMs = 0;   // 직전 speak()의 예상 길이 — 보루 타이머·다음 문제 전환이 이 값을 기준으로 기다린다
 function speak(text, onEnd) {
-  lastSpeakMs = (vol() <= 0 || !('speechSynthesis' in window)) ? 0 : speakMs(text);
+  const kind = speakKind(text);                     // v109: 외국어로 읽을 곳 판정(문제·칭찬·힌트)
+  lastSpeakMs = (vol() <= 0 || !('speechSynthesis' in window)) ? 0 : speakMs(text, kind);
   if (vol() <= 0 || !('speechSynthesis' in window)) { if (onEnd) setTimeout(onEnd, 0); return; }
   try {
     speechSynthesis.cancel();
-    const fr = trKo(text);                          // 설정 언어면 같은 내용을 외국어로 한 번 더
+    const fr = trKo(text, kind);                    // 설정 언어면 같은 내용을 외국어로 한 번 더
     const u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; u.volume = vol();
     const v = pickKoVoice(); if (v) u.voice = v;
     u.pitch = 1.0; u.rate = spRate(0.95);
@@ -1520,7 +1567,7 @@ function speakFast(text) {
     const v = pickKoVoice(); if (v) u.voice = v;
     u.pitch = 1.05; u.rate = spRate(1.1);
     speechSynthesis.speak(u);
-    const fr = trKo(text); if (fr) speakForeign(fr);   // 세기 수사(하나→1 등)도 외국어로 한 번 더
+    const fr = trKo(text, 'hint'); if (fr) speakForeign(fr);   // 세기 수사(하나→1 등)도 외국어로 한 번 더
   } catch (e) { }
 }
 /* 발화 시작(onstart)에 맞춰 화면 동작(action)을 실행 — 세기 애니메이션 동기화 */
@@ -1532,7 +1579,7 @@ function speakSequence(items) {
       const v = pickKoVoice(); if (v) u.voice = v; u.pitch = 1.0; u.rate = spRate(1.0);
       if (it.action) u.onstart = () => { try { it.action(); } catch (e) { } };
       speechSynthesis.speak(u);
-      const fr = trKo(it.text); if (fr) speakForeign(fr);   // 각 항목을 외국어로 한 번 더(세기 안내 포함)
+      const fr = trKo(it.text, 'hint'); if (fr) speakForeign(fr);   // 각 항목을 외국어로 한 번 더(세기 안내 포함)
     });
   } else {
     items.forEach((it, i) => setTimeout(() => { it.action && it.action(); }, i * 600));
@@ -1751,10 +1798,11 @@ function cntToNum(w) {
   if (w[0] === '열' && w.length > 1) { const j = KO_CNT.indexOf(w.slice(1)); if (j > 0) return 10 + j; }
   return null;
 }
-/* 한국어 안내문 → 외국어. 매칭 실패 시 '' (한국어만 발화) */
-function trKo(t) {
+/* 한국어 안내문 → 외국어. 매칭 실패 시 '' (한국어만 발화). kind(q·praise·hint)가 설정에서 꺼져 있으면 '' */
+function trKo(t, kind) {
   const l = prefs.lang || 'ko';
   if (l === 'ko' || !t) return '';
+  if (kind && !langAtOn(kind)) return '';
   t = String(t).trim();
   const T = o => (o && o[l]) || '';
   if (TRX[t]) return T(TRX[t]);
@@ -2046,6 +2094,7 @@ function toggleFull() {
 function setNav(html) {
   $('nav').innerHTML = html + `<span id="syncbadge" class="syncbadge"></span>`; syncBadge();
   const mp = $('maskpad'); if (mp) mp.remove();   // 가림판(v89)은 학습 화면 전용 — 화면 전환마다 제거(renderProblem이 다시 붙임)
+  if (typeof closeSettings === 'function') closeSettings();   // 설정 패널(v109)은 ⚙️ 버튼에 붙어 있어 네비가 바뀌면 닫는다
 }
 function closeModal() { const m = $('modal'); if (m) m.remove(); }
 function openModal(inner, maxW) {
@@ -2350,7 +2399,7 @@ function studyNav() {
     <button class="next" onclick="nextProblem()">다음 ▶</button>
     <button class="lvl" onclick="openLevelPicker()">📚 단계</button>
     <button class="mode" onclick="toggleMode()">🔀 ${prefs.mode === 'h' ? '세로셈으로' : '가로셈으로'}</button>
-    <button class="set" onclick="openSettings()">⚙ 설정</button>
+    <button class="set" onclick="openSettings()" title="설정" aria-label="설정">⚙️</button>
     <button class="full" onclick="toggleFull()">⛶</button>
     <button class="quit" onclick="quitStudy()">🚪 그만</button>`;
 }
@@ -2387,7 +2436,7 @@ function renderProblem() {
   if (prefs.mask) addMask();               // SEM 가림판(v89) — setNav가 지우므로 문제마다 다시 붙임
   /* ②(v100) 듣고 시작 — 문제 읽기가 끝나야 보기가 눌린다(듣기 전 충동 탭 차단). 보기 없는 조작형은 그대로 */
   const cbox = $('choices');
-  if (cbox && cbox.querySelector('.btn-choice')) {
+  if (cbox && cbox.querySelector('.btn-choice') && prefs.tapGuard !== false) {   // v109: 설정 '충동 탭 막기' 끄면 바로 열림
     cbox.classList.add('listen');
     let opened = false;
     const open = () => { if (opened) return; opened = true; const c = $('choices'); if (c) c.classList.remove('listen'); };
@@ -2543,6 +2592,7 @@ function speakProblem(onEnd) {
   else if (p.form === 'addToTen') t = `${p.k}에 얼마를 더하면 10이 될까요?`;
   else if (p.form === 'partner') t = `10이 되려면 ${p.k}${josaGwa(p.k)} 무엇을 더해야 할까요?`;
   else t = `10에서 얼마를 빼면 ${p.result}${josaIga(p.result)} 될까요?`;
+  _spKind = 'q';                                    // v109: '외국어로 읽을 곳 — 문제' 판정용
   speak(t, onEnd);                                  // 설정 언어가 있으면 trKo가 외국어로 한 번 더(자동)
 }
 
@@ -2613,8 +2663,8 @@ function judgeAnswer(btn, v, ans) {
   } else {
     if (btn) { btn.classList.add('wrong'); btn.disabled = true; } else padPaint();   // 패드 입력은 지우고 다시
     chime(false); wrongCount++; wrongVals.push(v); wiggle($('qface'));
-    /* ①(v100) 오답 잠금 — 피드백 발화가 끝날 때까지 연타 무효(빠른 찍기의 속도 이득 제거) */
-    locked = true;
+    /* ①(v100) 오답 잠금 — 피드백 발화가 끝날 때까지 연타 무효(빠른 찍기의 속도 이득 제거). v109: 설정 '충동 탭 막기' 끄면 잠그지 않음 */
+    locked = prefs.tapGuard !== false;
     const unlock = () => { locked = false; };
     const lv = (current && current.hintLv) || 'fade';   // 학생별 힌트 수준(IEP 개별화)
     /* v107 ① 2차 오답부터 직접 입력 — 보기 소거로 정답만 남는 구조 차단(세 수는 단계 안내가 보기를 직접 씀 → 제외) */
@@ -4932,38 +4982,57 @@ async function chooseLevel(id) {
   if (current) { current.level = id; if (!current.guest) await Store.updateStudent(current); }
   closeModal(); clearResume(); startSession();
 }
+/* 설정 패널(v109, 사용자 지시) — 두루책방 런처와 같은 드롭다운 구성. ⚙️ 버튼 아래 붙고, 바깥 클릭·⚙️ 다시 누르면 닫힘.
+   항목: 음성 언어 · 외국어로 읽을 곳 · 소리 크기(0=음소거, 별도 음소거 없음) · 읽는 속도 · 저자극 · 번쩍 보기 · 가림판 · 타임어택 워밍업 · 충동 탭 막기 · 글씨 크기 */
+function closeSettings() { const p = $('setpanel'); if (p) p.remove(); document.removeEventListener('pointerdown', _setOutside); }
+function _setOutside(e) { const p = $('setpanel'); if (p && !p.contains(e.target) && !(e.target.closest && e.target.closest('.nav .set'))) closeSettings(); }
 function openSettings() {
-  const opt = (group, v, cur, label) => `<button class="opt ${v === cur ? 'sel' : ''}" onclick="setPref('${group}','${v}')">${label}</button>`;
-  openModal(`<div class="read-sentence" style="font-size:1.4rem;margin-bottom:.6rem">설정</div>
-    <div style="font-weight:700">글자 크기</div>
-    <div class="optrow">${opt('size', 'sm', prefs.size, '작게')}${opt('size', 'md', prefs.size, '보통')}${opt('size', 'lg', prefs.size, '크게')}</div>
-    <div style="font-weight:700">소리</div>
-    <div class="optrow">${opt('sound', 'low', prefs.soundLevel, '작게')}${opt('sound', 'mid', prefs.soundLevel, '보통')}${opt('sound', 'high', prefs.soundLevel, '크게')}${opt('sound', 'off', prefs.soundLevel, '🔇')}</div>
-    <div style="font-weight:700">말 빠르기</div>
-    <div class="optrow">${opt('rate', 'normal', prefs.rate, '보통')}${opt('rate', 'slow', prefs.rate, '느리게')}</div>
-    <div style="font-weight:700">음성 언어 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— 문제·칭찬을 고른 언어로 한 번 더 말해요</span></div>
-    <div class="optrow">${['ko', 'en', 'zh', 'vi', 'ja', 'ru'].map(l => opt('lang', l, prefs.lang || 'ko', LANG_NAME[l])).join('')}</div>
-    <div style="font-weight:700">화면 효과</div>
-    <div class="optrow">${opt('calm', 'off', prefs.calm ? 'on' : 'off', '반짝임 켜기')}${opt('calm', 'on', prefs.calm ? 'on' : 'off', '저자극(반짝임 끄기)')}</div>
-    <div style="font-weight:700">번쩍 보기 시간 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— 번쩍 보고 알기에서 보여 주는 시간</span></div>
-    <div class="optrow">${['0.5', '1', '2', '3'].map(s => opt('flash', s, String(prefs.flashSec || 2), s + '초')).join('')}</div>
-    <div style="font-weight:700">가림판 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— ㄱ자 판을 끌어 문제 일부를 가리고 지금 보는 곳에 집중해요</span></div>
-    <div class="optrow">${opt('mask', 'off', prefs.mask ? 'on' : 'off', '끄기')}${opt('mask', 'on', prefs.mask ? 'on' : 'off', '켜기')}</div>
-    <div style="font-weight:700">타임어택 워밍업 <span style="font-weight:400;font-size:.85em;color:var(--ink-soft)">— 학습 전에 아는 단계 문제 5개를 시간 재며 빠르게(기록 안 남음)</span></div>
-    <div class="optrow">${opt('warmup', 'off', prefs.warmup ? 'on' : 'off', '끄기')}${opt('warmup', 'on', prefs.warmup ? 'on' : 'off', '켜기')}</div>
-    <button class="btn btn--orange" onclick="closeModal()">닫기</button>`);
+  if ($('setpanel')) { closeSettings(); return; }
+  const p = document.createElement('div'); p.id = 'setpanel'; p.className = 'setpanel';
+  p.innerHTML = settingsHtml();
+  const nav = $('nav'); p.style.top = ((nav ? nav.offsetHeight : 54) + 4) + 'px';
+  $('stage').appendChild(p);
+  setTimeout(() => document.addEventListener('pointerdown', _setOutside), 0);
+}
+function refreshSettings() { const p = $('setpanel'); if (p) p.innerHTML = settingsHtml(); }
+const volLabel = () => +prefs.vol > 0 ? String(+prefs.vol) : '🔇 음소거';
+function settingsHtml() {
+  const on = (cond, label, js) => `<button type="button" class="${cond ? 'on' : ''}" onclick="${js}">${label}</button>`;
+  const chk = (group, cur, label) => `<label><input type="checkbox"${cur ? ' checked' : ''} onchange="setPref('${group}',this.checked?'on':'off')"> ${label}</label>`;   // 저자극과 같은 체크박스(사용자 지시)
+  const la = prefs.langAt || {};
+  const rate = prefs.rate === 'slow' ? 'slow' : prefs.rate === 'fast' ? 'fast' : 'normal';
+  return `
+    <div class="srow"><b>🌐 음성 언어</b><select onchange="setPref('lang',this.value)">${['ko', 'en', 'zh', 'vi', 'ja', 'ru'].map(l => `<option value="${l}"${l === (prefs.lang || 'ko') ? ' selected' : ''}>${LANG_NAME[l]}</option>`).join('')}</select></div>
+    <div class="srow"><b>🌐 외국어로 읽을 곳</b><div class="sopts lcb">${on(la.q !== false, '문제', "setPref('langAt','q')")}${on(la.praise !== false, '칭찬', "setPref('langAt','praise')")}${on(la.hint !== false, '힌트', "setPref('langAt','hint')")}</div></div>
+    <div class="srow"><b>🔉 소리 크기 <span class="svol">${volLabel()}</span></b><input type="range" min="0" max="100" step="10" value="${+prefs.vol || 0}" oninput="setPref('vol',this.value)" onchange="setPref('volDone',this.value)"></div>
+    <div class="srow"><b>🐢 읽는 속도</b><div class="sopts">${on(rate === 'slow', '느림', "setPref('rate','slow')")}${on(rate === 'normal', '보통', "setPref('rate','normal')")}${on(rate === 'fast', '빠름', "setPref('rate','fast')")}</div></div>
+    <div class="srow"><b>🔠 글씨 크기</b><div class="sopts">${on(prefs.size === 'sm', '작게', "setPref('size','sm')")}${on(prefs.size === 'md', '보통', "setPref('size','md')")}${on(prefs.size === 'lg', '크게', "setPref('size','lg')")}</div></div>
+    <div class="srow"><b>⚡ 번쩍 보기</b><div class="sopts">${['0.5', '1', '2', '3'].map(s => on(String(prefs.flashSec || 2) === s, s + '초', `setPref('flash','${s}')`)).join('')}</div></div>
+    <div class="srow">${chk('calm', prefs.calm, '🎨 저자극 (반짝임 끄기)')}</div>
+    <div class="srow">${chk('mask', prefs.mask, '🫣 가림판')}<span class="shelp">ㄱ자 판을 끌어 문제 일부를 가리고 지금 보는 곳에 집중해요</span></div>
+    <div class="srow">${chk('warmup', prefs.warmup, '⏱️ 타임어택 워밍업')}<span class="shelp">학습 전에 아는 단계 문제 5개를 시간 재며 빠르게 (기록 안 남음)</span></div>
+    <div class="srow">${chk('guard', prefs.tapGuard !== false, '🖐️ 충동 탭 막기')}<span class="shelp">문제를 다 듣고 보기가 열려요 · 틀리면 말이 끝날 때까지 잠겨요</span></div>`;
 }
 function setPref(group, v) {
+  const clampVol = x => Math.max(0, Math.min(100, parseInt(x, 10) || 0));
+  if (group === 'vol') {   // 슬라이더 끄는 중: 패널을 다시 그리지 않고 숫자만 갱신(다시 그리면 드래그가 끊김)
+    prefs.vol = clampVol(v); savePrefs(); const s = document.querySelector('#setpanel .svol'); if (s) s.textContent = volLabel(); return;
+  }
+  if (group === 'volDone') {
+    prefs.vol = clampVol(v); savePrefs(); refreshSettings();
+    if (prefs.vol > 0) speak('이렇게 들려요.'); else if (window.speechSynthesis) speechSynthesis.cancel();
+    return;
+  }
   if (group === 'size') prefs.size = v;
-  else if (group === 'sound') prefs.soundLevel = v;
   else if (group === 'rate') prefs.rate = v;
   else if (group === 'calm') prefs.calm = v === 'on';
   else if (group === 'lang') prefs.lang = v;
+  else if (group === 'langAt') { const la = prefs.langAt = Object.assign({}, LANG_AT_DEFAULT, prefs.langAt || {}); la[v] = la[v] === false; }
   else if (group === 'flash') prefs.flashSec = parseFloat(v);
   else if (group === 'mask') { prefs.mask = v === 'on'; if ($('study')) { if (prefs.mask) addMask(); else removeMask(); } }
   else if (group === 'warmup') { prefs.warmup = v === 'on'; if (prefs.warmup) warmedUp = false; }   // 켜면 다음 세션에 바로 적용
-  savePrefs(); openSettings();
-  if (group === 'sound') speak('이렇게 들려요.');
+  else if (group === 'guard') { prefs.tapGuard = v === 'on'; if (!prefs.tapGuard) { const c = $('choices'); if (c) c.classList.remove('listen'); } }   // 끄면 지금 문제의 보기도 바로 열림
+  savePrefs(); refreshSettings();
   if (group === 'rate') speak('이 빠르기로 말해요.');
   if (group === 'lang') speak('참 잘했어요!');       // trKo가 외국어 칭찬을 이어 말함(미리듣기)
   if (group === 'size' && $('study')) { $('study').className = 'study sz-' + prefs.size; }
@@ -4997,7 +5066,7 @@ function renderCalendar(justFinished, keepMonth) {
   setNav(`<button class="home" onclick="renderCalendar(false)">🏠 홈</button>
           <button class="next" onclick="${resumable ? 'tryResume()' : 'startSession()'}">${resumable ? '▶ 이어하기' : '➕ 더하기'}</button>
           <button class="quit" onclick="logoutStudent()">🚪 나가기</button>
-          <button class="set" onclick="openSettings()">⚙ 설정</button>`);
+          <button class="set" onclick="openSettings()" title="설정" aria-label="설정">⚙️</button>`);
   /* 손님: 저장되는 진도가 없어 달력이 무의미 → 점수·안내만 보여주고 단계 다시 고르기 */
   if (current.guest) return renderGuestHome(justFinished);
   const done = new Set(current.completedDates);
@@ -5052,7 +5121,7 @@ function renderGuestHome(justFinished) {
     <button class="next" onclick="startSession()">➕ 더하기</button>
     <button class="lvl" onclick="openLevelPicker()">📚 단계</button>
     <button class="quit" onclick="exitGuest()">🚪 나가기</button>
-    <button class="set" onclick="openSettings()">⚙ 설정</button>`);
+    <button class="set" onclick="openSettings()" title="설정" aria-label="설정">⚙️</button>`);
   $('wrap').innerHTML = `<div class="card card--accent" style="max-width:640px;margin:0 auto;position:relative;">
     <div class="calband">매일매일 수학 · 🎈 손님 모드</div>
     <div class="read-sentence">${justFinished ? '다 했어요!' : '🎈 손님으로 해보는 중'}</div>
@@ -5731,7 +5800,9 @@ function buildPrintSheet(lvlId, cnt, mode) {
     ? `${school}${/학교$/.test(school) ? '' : '학교'}`
     : `<span class="wl lg"></span>초등학교`;
   const early = EARLY_TYPES.has(probs[0].type);       // 기초 유형: 지필형 칸(가로/세로 선택 무관), 한 줄 2문제
-  const per = cnt === 5 ? 1 : (!early && cnt === 20 && mode === 'v') ? 4 : 2;
+  if (mode === 'v' && probs.every(p => p.op === '÷')) mode = 'h';   // 나눗셈은 세로셈이 없어 가로셈으로 그리므로 4열(20문제) 배열이 폭을 넘침
+  const wideRow = ['samepick', 'pvread', 'seq'].includes(probs[0].type);   // 상자 3개·막대+동그라미·수 배열 5칸: 한 줄 1문제
+  const per = (cnt === 5 || wideRow) ? 1 : (!early && cnt === 20 && mode === 'v') ? 4 : 2;
   const eo = { per: probs.some(p => p.type === 'count' && p.n > 10) ? 10 : 5 };   // 스물까지 세기는 동그라미 한 줄 10개 (구 id 47/48 판정은 v101 재번호로 무효)
   const rows = [];
   for (let i = 0; i < probs.length; i += per) {
@@ -5788,7 +5859,8 @@ function wsProblemV(p, num) {
     html += blankRow(m.ops[0], cols, 'ans rule');
     html += digitRow('', String(m.result), cols, '');
   }
-  return `<div class="wp"><span class="wnum">${num || ''}</span><table class="wpv">${html}</table></div>`;
+  const r4 = (html.match(/<tr>/g) || []).length >= 4 ? ' r4' : '';   // 세 수 = 4줄 → 축소 클래스
+  return `<div class="wp"><span class="wnum">${num || ''}</span><table class="wpv${r4}">${html}</table></div>`;
 }
 
 /* ---- 기초 유형 지필형 한 칸 (세기·담기·모으기·가르기·비교·수열·문장제·채점) ----
