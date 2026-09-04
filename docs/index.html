@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 109 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 110 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -589,11 +589,14 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 @media print{
   html,body{ overflow:visible !important; height:auto !important; margin:0 !important; background:#fff !important; }
   #stage{ display:none !important; }
-  #printsheet{ display:block !important; }
+  /* 쪽 영역(100vh = 종이−@page 여백) 한 칸을 정확히 차지하고 지면을 그 안에 세로·가로 가운데 정렬.
+     overflow hidden이라 어떤 프린터 여백에서도 둘째 쪽이 생기지 않는다 (2026-09-05 Canon 빈 2쪽 재발 대응) */
+  #printsheet{ display:flex !important; height:100vh; overflow:hidden; align-items:center; justify-content:center; }
 }
 /* 페이지: A4 한 장 높이 고정, 문제 영역이 남은 공간을 균등 분배해 지면 끝까지 채움 */
-/* 종이보다 확실히 작게(@page 8mm 여백 안 281mm 중 274mm) + 안쪽 여백은 padding으로 내장 */
-.ws-page{ position:relative; width:194mm; height:274mm; margin:0 auto; padding:10mm 13mm; box-sizing:border-box;
+/* 기본 194×274mm(A4 비율, @page 8mm 여백 안 281mm) — 쪽 영역이 더 좁거나 짧으면(실프린터 하드웨어 여백) 비율을 지킨 채 축소.
+   내부 mm 값은 그대로라 축소 시 배경 그림과 1mm 안팎 어긋나지만 눈에 띄지 않음. 안쪽 여백은 padding으로 내장 */
+.ws-page{ position:relative; width:min(194mm, 100%, calc(100vh * 194 / 274)); aspect-ratio:194 / 274; margin:0; padding:10mm 13mm; box-sizing:border-box;
   display:flex; flex-direction:column; overflow:hidden; }
 .ws-page > *{ position:relative; z-index:1; }
 .ws-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:fill; z-index:0 !important; }
@@ -1090,7 +1093,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 109';
+const APP_VERSION = 'ver 110';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -5564,6 +5567,17 @@ async function addStudentT() {
   renderDashboard();
 }
 
+/* ---- 이름 바꾸기 (v110) — 기록은 id로 묶여 있어 이름만 바꾸면 됨(구분 태그는 그대로) ---- */
+async function renameStudentT(id) {
+  const s = dash.students.find(x => x.id === id); if (!s) return;
+  const name = (prompt('새 이름을 적어 주세요.', s.name) || '').trim();
+  if (!name || name === s.name) return;
+  if (dash.students.some(x => x.id !== id && x.name === name && (x.tag || '') === (s.tag || ''))) { alert('이미 있는 학생이에요.'); return; }
+  s.name = name;
+  await Store.updateStudent(s);
+  renderStudentDetail(id);
+}
+
 /* ---- 학생 상세 ---- */
 async function renderStudentDetail(id) {
   if (teacherOK !== klass.code) { renderTeacherLogin(); return; }
@@ -5599,6 +5613,7 @@ async function renderStudentDetail(id) {
     <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
       <button class="btn btn--gray btn-sm" onclick="renderDashboard()">← 대시보드</button>
       <span class="read-sentence" style="font-size:1.4rem;margin:0">${esc(s.name)}${s.tag ? ` <span class="dim">(${esc(s.tag)})</span>` : ''}</span>
+      <button class="btn btn--gray btn-sm" onclick="renameStudentT('${s.id}')" title="이름 바꾸기">✏️ 이름 바꾸기</button>
     </div>
     <div class="statrow" style="margin-top:.8rem">
       <div class="stat"><div class="k">누적 학습일</div><div class="v">${(s.completedDates || []).length}일</div></div>
