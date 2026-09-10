@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 117 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 118 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -952,6 +952,11 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .nlflag.jumpgo .nlhead{ background:var(--ok); }
 .nlflag.jumpgo .nlstem{ background:var(--ok); }
 .nlband{ position:absolute; top:90px; height:22px; background:rgba(76,175,80,.32); border-radius:5px; }
+/* 1차 힌트 방향 화살표(v118) — 가운데 눈금에서 정답 쪽으로, 주황(가운데 눈금과 같은 색) */
+.nlarrow{ position:absolute; top:26px; left:50%; font-size:3.6rem; font-weight:900; line-height:1; color:#E08A00; text-shadow:0 0 0 #E08A00, 1px 0 0 #E08A00; animation:nlarrow .9s ease-in-out infinite alternate; }
+.nlarrow.r{ transform:translateX(14px); }
+.nlarrow.l{ transform:translateX(calc(-100% - 14px)); }
+@keyframes nlarrow{ from{ opacity:.55; } to{ opacity:1; } }
 .nlflag{ position:absolute; top:8px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; pointer-events:none; z-index:3; }
 .nlhead{ min-width:54px; text-align:center; font-size:1.8rem; font-weight:800; color:#fff; background:var(--accent-strong); border-radius:.8rem; padding:.1rem .5rem; }
 .nlstem{ width:6px; height:38px; background:var(--accent-strong); border-radius:3px; }
@@ -1114,7 +1119,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 117';
+const APP_VERSION = 'ver 118';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1714,6 +1719,7 @@ const TRX = {
   /* ---- 수감각도구 이식(55~59) 문제·힌트 (2026-08-08) ---- */
   '어느 쪽이 더 많을까요? 똑같으면 같아요를 눌러요.': { en: 'Which side has more? If they are the same, tap "same".', zh: '哪边更多？一样多就点“一样”。', vi: 'Bên nào nhiều hơn? Nếu bằng nhau, hãy chạm "bằng nhau".', ja: 'どっちが おおい？ おなじなら「おなじ」を おしてね。', ru: 'Где больше? Если поровну — нажми «поровну».' },
   '십 모형과 일 모형을 보고, 모두 얼마인지 골라요.': { en: 'Look at the tens and ones blocks. How much in all?', zh: '看十的模型和一的模型，一共是多少？', vi: 'Nhìn khối chục và khối đơn vị. Tất cả là bao nhiêu?', ja: '10の もけいと 1の もけいを みて、ぜんぶで いくつか えらんでね。', ru: 'Посмотри на десятки и единицы. Сколько всего?' },
+  '초록색에서 찾아봐요.': { en: 'Find it in the green.', zh: '在绿色里找一找。', vi: 'Hãy tìm trong vùng màu xanh lá.', ja: 'みどりの ところで さがしてね。', ru: 'Найди в зелёной зоне.' },
   '선을 눌러 깃발을 놓아 봐요.': { en: 'Tap the line to place your flag.', zh: '点一下线，放上小旗。', vi: 'Chạm vào đường thẳng để đặt lá cờ.', ja: 'せんを おして、はたを おいてみよう。', ru: 'Нажми на линию и поставь флажок.' },
   '윗줄 다섯 칸을 먼저 채워 봐요.': { en: 'Fill the top row of five first.', zh: '先把上面一行五格填满。', vi: 'Hãy tô đầy hàng trên năm ô trước.', ja: 'うえの だん 5この ますを さきに うめよう。', ru: 'Сначала заполни верхний ряд из пяти.' },
   '파란 막대는 십, 빨간 동그라미는 일이에요. 막대부터 세어 봐요.': { en: 'Blue rods are tens, red circles are ones. Count the rods first.', zh: '蓝色小棒是十，红色圆圈是一。先数小棒。', vi: 'Thanh xanh là chục, hình tròn đỏ là đơn vị. Đếm thanh trước.', ja: 'あおい ぼうは 10、あかい まるは 1だよ。ぼうから かぞえよう。', ru: 'Синие палочки — десятки, красные кружки — единицы. Сначала посчитай палочки.' },
@@ -2097,8 +2103,6 @@ function trKo(t, kind) {
     return T({ en: `The middle is ${m[1]}. ${m[2]} is right in the middle!`, zh: `中间是 ${m[1]}。${m[2]} 正好在中间！`, vi: `Ở giữa là ${m[1]}. ${m[2]} nằm đúng chính giữa!`, ja: `まんなかは ${m[1]}。${m[2]}は ちょうど まんなかだよ！`, ru: `Середина — ${m[1]}. ${m[2]} прямо посередине!` });
   if (m = t.match(/^정답은 (\d+)(?:이에요|예요)\. 여기예요\.$/))
     return T({ en: `The answer is ${m[1]}. It's right here.`, zh: `答案是 ${m[1]}。就在这里。`, vi: `Đáp án là ${m[1]}. Ở ngay đây.`, ja: `こたえは ${m[1]}。ここだよ。`, ru: `Ответ: ${m[1]}. Вот здесь.` });
-  if (m = t.match(/^(\d+)[은는] 초록 깃발 자리예요\. 깃발을 옮겨 봐요\.$/))
-    return T({ en: `${m[1]} is at the green flag. Move your flag there.`, zh: `${m[1]} 在绿色小旗那里。把你的小旗移过去。`, vi: `${m[1]} ở chỗ lá cờ xanh. Hãy dời cờ đến đó.`, ja: `${m[1]}は みどりの はたの ところだよ。はたを うごかそう。`, ru: `${m[1]} — у зелёного флажка. Передвинь свой флажок туда.` });
   if (m = t.match(/^아직 모자라요\. (\d+)개를 채워요\.$/))
     return T({ en: `Not enough yet. Fill ${m[1]}.`, zh: `还不够，要填 ${m[1]} 个。`, vi: `Chưa đủ. Hãy tô ${m[1]} cái.`, ja: `まだ たりないよ。${m[1]}こ うめよう。`, ru: `Ещё мало. Заполни ${m[1]}.` });
   if (m = t.match(/^너무 많아요\. (\d+)개만 채워요\.$/))
@@ -6482,9 +6486,16 @@ function hintNle(p, h, stage) {
     nleVal = null;
     nleTicks(p);
     const side = p.ans === mid ? '' : p.ans > mid ? '오른쪽' : '왼쪽';
+    /* v118(사용자 지시): 왼쪽·오른쪽을 모르는 학생 — 글자 옆 화살표 + 가운데 눈금에서 그쪽으로 뻗는 주황 화살표 */
+    const arr = side === '오른쪽' ? '→' : '←';
     h.innerHTML = side
-      ? `<div class="tip">가운데는 <b>${mid}</b>! ${p.ans}${josaEun(p.ans)} 가운데보다 <b>${side}</b>이에요</div>`
+      ? `<div class="tip">가운데는 <b>${mid}</b>! ${p.ans}${josaEun(p.ans)} 가운데보다 <b>${side} ${arr}</b>이에요</div>`
       : `<div class="tip">가운데는 <b>${mid}</b>! ${p.ans}${josaEun(p.ans)} 바로 가운데예요</div>`;
+    if (side && !$('nlwrap').querySelector('.nlarrow')) {
+      const a = document.createElement('div'); a.className = 'nlarrow ' + (side === '오른쪽' ? 'r' : 'l'); a.textContent = arr;
+      if (prefs.calm) a.style.animation = 'none';           // 저자극: 깜빡임 끔
+      $('nlwrap').insertBefore(a, $('nlhit'));
+    }
     speak(side
       ? `가운데는 ${mid}${josaYeyo(mid)}. ${p.ans}${josaEun(p.ans)} 가운데보다 ${side}이에요.`
       : `가운데는 ${mid}${josaYeyo(mid)}. ${p.ans}${josaEun(p.ans)} 바로 가운데예요.`, nleAfterSpeak);
@@ -6498,8 +6509,9 @@ function hintNle(p, h, stage) {
     band.classList.remove('hidden');
   }
   const af = $('nlans'); if (af) af.classList.remove('hidden');
-  h.innerHTML = `<div class="tip"><b>초록 깃발</b> 자리가 정답이에요. 그 자리를 눌러 봐요</div>`;
-  speak(`${p.ans}${josaEun(p.ans)} 초록 깃발 자리예요. 깃발을 옮겨 봐요.`, nleAfterSpeak);
+  const ar = $('nlwrap').querySelector('.nlarrow'); if (ar) ar.remove();   // 1차의 방향 화살표는 치움(초록 띠가 목표)
+  h.innerHTML = `<div class="tip"><b>초록색</b>에서 찾아봐요</div>`;      // v118 문구(사용자 지시)
+  speak('초록색에서 찾아봐요.', nleAfterSpeak);
 }
 /* 십틀 채우기 힌트 — 1차: 윗줄 5칸 강조 / 2차: 채울 자리에 번호를 붙이며 세기(학생이 눌러 채워야 정답) */
 function hintTenFill(p, h, stage) {
