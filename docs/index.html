@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 113 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 115 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -958,6 +958,11 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .nlflag.ok{ top:0; z-index:2; }                               /* 정답 깃발(2차 힌트·정답 후): 초록, 학생 깃발보다 뒤 */
 .nlflag.ok .nlhead{ background:#2E7D32; }
 .nlflag.ok .nlstem{ background:#2E7D32; height:46px; }
+.nlflag.mv{ transition:left .35s ease; }                      /* 정답 자리로 옮겨 가기(v115) — 드래그 중엔 붙이지 않음 */
+.nlflag.done .nlhead{ background:var(--ok); }                 /* 정답 후: 학생 깃발이 초록으로(깃발 하나) */
+.nlflag.done .nlstem{ background:var(--ok); }
+.nllab.all{ font-size:1.45rem; }                              /* 정답 후 전체 숫자(1~max−1) */
+.nllab.all.dense{ font-size:1.15rem; }                        /* 0~20은 칸이 좁아 더 작게 */
 .nlhit{ position:absolute; left:-20px; right:-20px; top:56px; bottom:0; cursor:pointer; touch-action:none; }   /* 선이 얇아 판정 영역만 넓힘 */
 /* 십틀 채우기(58) */
 .tfq{ gap:1.1rem; }
@@ -1109,7 +1114,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 113';
+const APP_VERSION = 'ver 115';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1300,8 +1305,9 @@ const LEVEL_BANDS = [
 /* 학습지 인쇄 비지원 유형 — 번쩍 보기(105·111)는 잠깐 보여주는 화면 전용 활동이라 지필 불가.
    십틀 10 만들기(139)·자리값 블록 만들기(128)는 조작 활동이라 지면 미지원(v94 규칙: 신규 유형은 NO_PRINT) */
 const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128]);
-/* 같은 수 더하기 단계(v112, 사용자 지시): 받아올림 단원이 아니므로 정답칸은 자릿값 칸 없이 **한 칸**, 전략은 항상 double(10 만들기는 자리칸이 필요) */
-const DBL_LEVELS = new Set([143, 165]);
+/* 같은 수 더하기 계열 단계(v112 사용자 지시, v114에 144 합류): 받아올림 단원이 아니므로 정답칸은 자릿값 칸 없이 **한 칸**,
+   전략은 항상 double/near(10 만들기는 자리칸이 필요) */
+const DBL_LEVELS = new Set([143, 165, 144]);
 const nextLevel = id => { const i = LEVEL_ORDER.indexOf(id); return i >= 0 && i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : 0; };
 
 /* =========================================================
@@ -1904,15 +1910,20 @@ function trKo(t, kind) {
   if (m = t.match(/^(\d+)[과와] (\d+)[을를] 모으면 (\d+)\. 정답은/))
     return T({ en: `${m[1]} and ${m[2]} together make ${m[3]}. The answer is ${m[3]}.`, zh: `${m[1]} 和 ${m[2]} 合起来是 ${m[3]}。答案是 ${m[3]}。`, vi: `${m[1]} và ${m[2]} gộp lại là ${m[3]}. Đáp án là ${m[3]}.`, ja: `${m[1]}と ${m[2]}を あわせて ${m[3]}。こたえは ${m[3]}。`, ru: `${m[1]} и ${m[2]} вместе — ${m[3]}. Ответ: ${m[3]}.` });
   /* 같은 수 더하기 닻 그림(v112) — "거미 다리처럼 이쪽에 네 개, 저쪽에 네 개…" */
-  if (m = t.match(/^(.+?)처럼 이쪽에 (.+?) 개, 저쪽에 (.+?) 개(예요\. 동그라미를 누르면서 둘씩 세어 보세요\.|예요\. 같은 수 더하기로 생각해 (?:볼까요\?|보세요\.)|\. 같은 수 더하기!)$/)) {
-    const nm = T(ANCHOR_NM[m[1]]), n = cntToNum(m[2]), k = /동그라미/.test(m[4]) ? 'tap' : /생각해/.test(m[4]) ? 'think' : 'dbl';
+  if (m = t.match(/^(.+?)처럼 이쪽에 (.+?) 개, 저쪽에 (.+?) 개(예요\. 동그라미를 누르면서 둘씩 세어 보세요\.|예요\. 같은 수 더하기로 생각해 (?:볼까요\?|보세요\.)|\. 같은 수 더하기!|, 하나 더예요\. 동그라미를 누르면서 같은 수를 먼저 세어 보세요\.|, 하나 더예요\. 같은 수 더하기를 먼저 생각하고, 하나 더 해 (?:볼까요\?|보세요\.))$/)) {
+    const nm = T(ANCHOR_NM[m[1]]), n = cntToNum(m[2]), s4 = m[4], near = s4.startsWith(', 하나 더');
+    const k = near ? (/동그라미/.test(s4) ? 'neartap' : 'nearthink') : /동그라미/.test(s4) ? 'tap' : /생각해/.test(s4) ? 'think' : 'dbl';
     const tail = {
       tap: { en: 'Tap the circles and count by twos.', zh: '点圆圈，两个两个地数。', vi: 'Chạm hình tròn và đếm từng hai.', ja: 'まるを おして 2こずつ かぞえよう。', ru: 'Нажимай кружки и считай по два.' },
       think: { en: 'Think doubles?', zh: '用双倍来想好吗？', vi: 'Nghĩ theo gấp đôi nhé?', ja: 'ダブルで かんがえてみようか？', ru: 'Подумаем про дубль?' },
       dbl: { en: 'Doubles!', zh: '是双倍！', vi: 'Gấp đôi!', ja: 'ダブル！', ru: 'Дубль!' },
+      /* v114: 144 하나 더 */
+      neartap: { en: 'and one more. Tap the circles and count the double first.', zh: '再加一个。点圆圈，先数双倍的部分。', vi: 'và thêm một. Chạm hình tròn và đếm phần gấp đôi trước.', ja: 'そして もう ひとつ。まるを おして、まず ダブルを かぞえてね。', ru: 'и ещё один. Нажимай кружки и сначала посчитай дубль.' },
+      nearthink: { en: 'and one more. Think of the double first, then one more?', zh: '再加一个。先想双倍，再加一个好吗？', vi: 'và thêm một. Nghĩ gấp đôi trước, rồi thêm một nhé?', ja: 'そして もう ひとつ。まず ダブルを かんがえて、もう ひとつ たしてみようか？', ru: 'и ещё один. Сначала дубль, потом ещё один?' },
     }[k];
-    return T({ en: `Like ${nm}: ${n} on this side, ${n} on that side. ${tail.en}`, zh: `像${nm}一样，这边 ${n} 个，那边 ${n} 个。${tail.zh}`,
-      vi: `Giống ${nm}: bên này ${n}, bên kia ${n}. ${tail.vi}`, ja: `${nm}のように、こっちに ${n}こ、あっちに ${n}こ。${tail.ja}`, ru: `Как ${nm}: ${n} с этой стороны и ${n} с той. ${tail.ru}` });
+    const sep = near ? ', ' : '. ';
+    return T({ en: `Like ${nm}: ${n} on this side, ${n} on that side${near ? ', ' : '. '}${tail.en}`, zh: `像${nm}一样，这边 ${n} 个，那边 ${n} 个${near ? '，' : '。'}${tail.zh}`,
+      vi: `Giống ${nm}: bên này ${n}, bên kia ${n}${near ? ', ' : '. '}${tail.vi}`, ja: `${nm}のように、こっちに ${n}こ、あっちに ${n}こ${near ? '、' : '。'}${tail.ja}`, ru: `Как ${nm}: ${n} с этой стороны и ${n} с той${near ? ', ' : '. '}${tail.ru}` });
   }
   /* 연산 전략 힌트(v71: 더블·더블+1·가르기 다리·교환·덜어내기) — '정답은' 일반 패턴보다 먼저 */
   if (m = t.match(/^두 수가 똑같아요\. 같은 수 더하기예요! (\d+) 더하기 (\d+)[은는]\?$/))
@@ -2084,6 +2095,8 @@ function trKo(t, kind) {
     return T({ en: `The middle is ${m[1]}. ${m[2]} is to the ${rt ? 'right' : 'left'} of the middle.`, zh: `中间是 ${m[1]}。${m[2]} 在中间的${rt ? '右' : '左'}边。`, vi: `Ở giữa là ${m[1]}. ${m[2]} nằm bên ${rt ? 'phải' : 'trái'} điểm giữa.`, ja: `まんなかは ${m[1]}。${m[2]}は まんなかより ${rt ? 'みぎ' : 'ひだり'}だよ。`, ru: `Середина — ${m[1]}. ${m[2]} ${rt ? 'правее' : 'левее'} середины.` }); }
   if (m = t.match(/^가운데는 (\d+)(?:이에요|예요)\. (\d+)[은는] 바로 가운데예요\.$/))
     return T({ en: `The middle is ${m[1]}. ${m[2]} is right in the middle!`, zh: `中间是 ${m[1]}。${m[2]} 正好在中间！`, vi: `Ở giữa là ${m[1]}. ${m[2]} nằm đúng chính giữa!`, ja: `まんなかは ${m[1]}。${m[2]}は ちょうど まんなかだよ！`, ru: `Середина — ${m[1]}. ${m[2]} прямо посередине!` });
+  if (m = t.match(/^정답은 (\d+)(?:이에요|예요)\. 여기예요\.$/))
+    return T({ en: `The answer is ${m[1]}. It's right here.`, zh: `答案是 ${m[1]}。就在这里。`, vi: `Đáp án là ${m[1]}. Ở ngay đây.`, ja: `こたえは ${m[1]}。ここだよ。`, ru: `Ответ: ${m[1]}. Вот здесь.` });
   if (m = t.match(/^(\d+)[은는] 초록 깃발 자리예요\. 깃발을 옮겨 봐요\.$/))
     return T({ en: `${m[1]} is at the green flag. Move your flag there.`, zh: `${m[1]} 在绿色小旗那里。把你的小旗移过去。`, vi: `${m[1]} ở chỗ lá cờ xanh. Hãy dời cờ đến đó.`, ja: `${m[1]}は みどりの はたの ところだよ。はたを うごかそう。`, ru: `${m[1]} — у зелёного флажка. Передвинь свой флажок туда.` });
   if (m = t.match(/^아직 모자라요\. (\d+)개를 채워요\.$/))
@@ -2734,9 +2747,16 @@ function judgeAnswer(btn, v, ans) {
     cueFlash(p, diag);
     if (stage < 1) {
       /* v112(사용자 지시): 같은 수 더하기의 1차 피드백 = 닻 그림(동그라미 모형·입력칸은 2차부터). 오류 유형 발문(diag)이 있으면 그쪽 우선 */
-      if (!diag && p.type === 'binary' && p.a === p.b && singleAns() && DBL_ANCHOR[p.a]) {
-        const hh = $('hint'); hh.innerHTML = anchorHtml(p.a, '같은 수 더하기로 생각해 봐요'); hh.classList.remove('hidden');
-        cue = anchorSay(p.a, lv === 'strong' ? '예요. 같은 수 더하기로 생각해 보세요.' : '예요. 같은 수 더하기로 생각해 볼까요?');
+      const sm = Math.min(p.a, p.b), df = Math.abs(p.a - p.b);
+      if (!diag && p.type === 'binary' && singleAns() && df <= 1 && DBL_ANCHOR[sm]) {
+        const hh = $('hint'); hh.classList.remove('hidden');
+        if (df === 0) {
+          hh.innerHTML = anchorHtml(sm, '같은 수 더하기로 생각해 봐요');
+          cue = anchorSay(sm, lv === 'strong' ? '예요. 같은 수 더하기로 생각해 보세요.' : '예요. 같은 수 더하기로 생각해 볼까요?');
+        } else {   // v114: 144 하나 더 — 작은 수의 닻 + '하나 더'
+          hh.innerHTML = anchorHtml(sm, '같은 수를 먼저 생각하고, 하나 더!', ', 하나 더');
+          cue = anchorSay(sm, lv === 'strong' ? ', 하나 더예요. 같은 수 더하기를 먼저 생각하고, 하나 더 해 보세요.' : ', 하나 더예요. 같은 수 더하기를 먼저 생각하고, 하나 더 해 볼까요?');
+        }
       }
       speak(cue, unlock);
       setTimeout(unlock, lastSpeakMs + 800); return;
@@ -3445,7 +3465,7 @@ const stratOf = k => { const s = current && current.strat && current.strat[k]; r
 function pickAddStrat(p) {
   const st = stratOf('add'), has = k => st.includes(k);
   const a = p.a, b = p.b, small = Math.min(a, b), sum = a + b;
-  if (a === b && singleAns()) return 'double';   // v112: 같은 수 더하기 단계는 정답칸이 한 칸 → 자리칸을 쓰는 10 만들기로 못 감
+  if (singleAns()) { if (a === b) return 'double'; if (Math.abs(a - b) === 1) return 'near'; }   // v112·v114: 같은 수 계열 단계는 정답칸이 한 칸 → 자리칸을 쓰는 10 만들기로 못 감
   if (has('double') && a === b) return 'double';
   if (has('near') && Math.abs(a - b) === 1) return 'near';
   if (has('all') && sum <= 5) return 'all';
@@ -3957,7 +3977,7 @@ function cueFlash(p, diag) {
     if (!ck) return;
     const bigT = p.a >= p.b ? 'n0' : 'n1';
     const F = {
-      add: { on: [bigT], double: [], near: ['n0', 'n1'], ten: ['n0', 'n1'], all: ['n0', 'n1'], jump: ['op0'] },   // double: 숫자 강조 없음(v112 사용자 지시 — 닻 그림이 시각 단서)
+      add: { on: [bigT], double: [], near: [], ten: ['n0', 'n1'], all: ['n0', 'n1'], jump: ['op0'] },   // double·near: 숫자 강조 없음(v112·v114 사용자 지시 — 닻 그림이 시각 단서)
       sub: { take: ['n1'], back: ['n1'], bridge: ['n1'], ten: ['n0'], jump: ['op0'] },
       mul: { quad: ['n0', 'n1'], group: ['n0', 'n1'], skip: ['n1'], swap: ['n0', 'n1'] },
       div: { take: ['n1'], fact: ['op0'] },
@@ -4182,11 +4202,11 @@ function countAllTap(p, h) {
 /* 같은 수 더하기 닻 그림(v112, 난산 학생용) — 숫자엔 의미를 못 붙여도 생활 사물의 '양쪽이 같은 모양'엔 붙는다.
    그림은 IMG_DBL(90_images), 7·8은 한 사물 그림을 두 장 나란히(크레파스 7색 두 상자·문어 두 마리). 9는 v113에서 아홉 손가락(엄지 접은 두 손) 추가 */
 const DBL_ANCHOR = { 1: '눈', 2: '나비 날개', 3: '무당벌레 다리', 4: '거미 다리', 5: '손가락', 6: '시계 숫자', 7: '크레파스', 8: '문어 다리', 9: '아홉 손가락' };   // 9(v113)=엄지 접은 두 손 두 장 — 5+5 닻과 이어져 '10에서 하나 접으면 9'
-const anchorHtml = (a, tip) => {
+const anchorHtml = (a, tip, extra = '') => {   // extra: 144 '하나 더'(v114)
   const nm = DBL_ANCHOR[a];
   if (!nm) return `<div class="tip">${tip}</div>`;
   const img = `<img class="aimg" src="${IMG_DBL[a]}" alt="${nm}">`;
-  return `<div class="anchor">${img}${a >= 7 ? img : ''}<div><div class="tip"><b>${nm}</b>처럼 이쪽에 ${a}, 저쪽에 ${a}!</div><div class="tip">${tip}</div></div></div>`;
+  return `<div class="anchor">${img}${a >= 7 ? img : ''}<div><div class="tip"><b>${nm}</b>처럼 이쪽에 ${a}, 저쪽에 ${a}${extra}!</div><div class="tip">${tip}</div></div></div>`;
 };
 const anchorSay = (a, tail) => DBL_ANCHOR[a] ? `${DBL_ANCHOR[a]}처럼 이쪽에 ${koCnt(a)} 개, 저쪽에 ${koCnt(a)} 개${tail}` : '';
 /* 더블 — 같은 수 덧셈: 두 모형에서 짝을 지어 2씩 센다 (v71, strat.add='double', a===b) */
@@ -4239,15 +4259,14 @@ function doublePlusAdd(p, h, stage) {
   const { ma, mb } = hangTwoModels(p, true);
   const mBig = bigIdx === 0 ? ma : mb, mSmall = bigIdx === 0 ? mb : ma;
   const cue = `${big}${josaEun(big)} ${small}보다 하나 큰 수예요. ${small} 더하기 ${small}${josaEul(small)} 먼저 생각해요.`;
-  h.innerHTML = `<div class="tip">${stage >= 2 ? '같은 수에서 하나 더!' : cue}</div>`;
+  h.innerHTML = stage >= 2 && wrongCount <= 1 ? anchorHtml(small, '같은 수에서 하나 더!', ', 하나 더') : `<div class="tip">${stage >= 2 ? '같은 수에서 하나 더!' : cue}</div>`;   // 닻 그림은 첫 피드백에만(v114)
   if (stage < 2) { speak(cue); return; }
   const dBig = [...mBig.querySelectorAll('.cdot')], dSmall = [...mSmall.querySelectorAll('.cdot')];
   const extra = dBig[dBig.length - 1];   // 큰 수의 '하나 더' 동그라미 (사전 확정)
   const items = [];
   items.push({
     text: `${big}${josaEun(big)} ${small}${josaGwa(small)} 1이에요.`, action: () => {
-      const nb = document.querySelector(`#qface [data-t="n${bigIdx}"]`); if (nb) nb.classList.add('oring');
-      if (extra) extra.classList.add('gray');
+      if (extra) extra.classList.add('gray');   // 큰 수 oring은 v114에서 제거(사용자 지시) — 회색 '하나 더' 동그라미가 위치를 보여 줌
     }
   });
   items.push({
@@ -4272,8 +4291,9 @@ function nearTap(p, h) {
   const dBig = [...mBig.querySelectorAll('.cdot')], dSmall = [...mSmall.querySelectorAll('.cdot')];
   const extra = dBig[dBig.length - 1];               // 큰 수의 '하나 더' 동그라미 (사전 확정)
   if (extra) extra.classList.add('gray');
-  h.innerHTML = `<div class="tip">같은 수를 먼저 세고, 하나 더!</div>`;
-  speak('동그라미를 누르면서 같은 수를 먼저 세어 보세요.');
+  const first = wrongCount <= 1;   // 닻 그림·닻 문장은 첫 피드백에만(v114, doubleTap과 같은 규칙)
+  h.innerHTML = first ? anchorHtml(small, '같은 수를 먼저 세고, 하나 더!', ', 하나 더') : `<div class="tip">같은 수를 먼저 세고, 하나 더!</div>`;
+  speak((first && anchorSay(small, ', 하나 더예요. 동그라미를 누르면서 같은 수를 먼저 세어 보세요.')) || '동그라미를 누르면서 같은 수를 먼저 세어 보세요.');
   let k = 0;
   const tapPair = i => {
     const x = dSmall[i], y = dBig[i];
@@ -6806,6 +6826,25 @@ function initNle() {
   hit.onpointermove = e => { if (locked || !e.buttons) return; setAt(e); };
   hit.onpointerup = () => { if (!locked && nleVal != null) speakFast(String(nleVal)); };
 }
+/* 정답 자리 드러내기(v115, 정답·3회 오답 공통) — 초록 정답 깃발은 쓰지 않고 학생 깃발 하나가
+   정확한 자리로 스르륵(.mv) 옮겨 가며 초록(.done)으로 바뀐다. 동시에 눈금·숫자를 전부 표시(0·max만 있던 것) */
+function nleReveal(p) {
+  const w = $('nlwrap'), flag = $('nlflag'), head = $('nlhead'); if (!w || !flag) return;
+  const af = $('nlans'); if (af) af.classList.add('hidden');       // 2차 힌트의 초록 깃발이 떠 있으면 치움
+  const band = $('nlband'); if (band) band.classList.add('hidden');
+  flag.classList.remove('hidden'); flag.classList.add('mv', 'done');
+  flag.style.left = (p.ans / p.max * 100) + '%'; head.textContent = p.ans;
+  nleTicks(p); $('nlmid') && $('nlmid').classList.remove('hidden');
+  $('nlmlab') && $('nlmlab').classList.add('hidden');              // 주황 가운데 숫자는 전체 숫자에 흡수
+  if (!w.querySelector('.nllab.all')) {
+    const hit = $('nlhit');
+    for (let v = 1; v < p.max; v++) {
+      const l = document.createElement('div'); l.className = 'nllab all' + (p.max > 10 ? ' dense' : '');
+      l.style.left = (v / p.max * 100).toFixed(2) + '%'; l.textContent = v;
+      w.insertBefore(l, hit);
+    }
+  }
+}
 function nleSubmit() {
   if (locked) return;
   const p = session.items[session.idx];
@@ -6813,11 +6852,16 @@ function nleSubmit() {
   const tol = Math.max(1, Math.round(p.max * .06));   // 허용 오차 ±6%(수감각도구와 동일)
   if (Math.abs(nleVal - p.ans) <= tol) {
     locked = true; chime(true);
-    const af = $('nlans'); if (af) af.classList.remove('hidden');   // 정답 위치 즉시 피드백(선형 표상 형성의 핵심)
-    celebrate($('nlflag')); speak(praise());
+    nleReveal(p);                                          // 학생 깃발이 정확한 자리로 옮겨 가며 초록으로(v115) — 깃발은 하나
+    celebrate($('nlflag')); speak(praiseFor(wrongCount));
     afterCorrect(Math.max(1600, lastSpeakMs + 300));
   } else {
     chime(false); wrongCount++; wiggle($('nlwrap'));
+    if (wrongCount >= 3) {                                 // 시도 3회 제한(v115): 정답 자리를 보여 주고 다음 문제로
+      locked = true; nleReveal(p);
+      afterCorrectSpeak(`정답은 ${p.ans}${josaYeyo(p.ans)}. 여기예요.`, 1000);
+      return;
+    }
     const msg = `조금 더 ${nleVal < p.ans ? '오른쪽' : '왼쪽'}으로 옮겨 봐요.`;
     const lv = (current && current.hintLv) || 'fade';
     if (lv === 'off') { speak(msg); return; }
