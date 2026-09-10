@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 115 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 116 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1114,7 +1114,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 115';
+const APP_VERSION = 'ver 116';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2574,7 +2574,7 @@ function paintFace(flip) {
 function paintChoices() {
   const p = session.items[session.idx];
   if (p.type === 'put') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="putSubmit()">다 담았어요 ✓</button>`; return; }
-  if (p.type === 'nle') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="nleSubmit()">여기예요 ✓</button>`; return; }
+  if (p.type === 'nle') { $('choices').innerHTML = ''; return; }   // 수직선: 선에서 손을 떼는 순간 판정(v116) — 확인 버튼 없음
   if (p.type === 'tenfill') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="tfSubmit()">다 채웠어요 ✓</button>`; return; }
   if (p.type === 'pvbuild') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="pvbSubmit()">다 만들었어요 ✓</button>`; return; }
   if (['compare', 'freesplit', 'bigpick', 'more', 'samepick', 'onemap'].includes(p.type)) { $('choices').innerHTML = ''; return; }   // 접시·상자 자체가 조작 대상
@@ -6126,7 +6126,7 @@ function earlyFace(p) {
       <div class="flashcard" id="fcard">${p.dbl ? `<div class="dbl">${diceStack(p.n)}<span class="dplus">+</span>${diceStack(p.n)}</div>` : p.tf ? tfStack(p.n) : diceStack(p.n)}<div class="fcover hidden" id="fcover">❓</div></div>
       <button class="peek" onclick="flashPeek()">👀 다시 보기</button>
       <div class="early-q">모두 <span class="qblank" id="qslot">?</span> 개</div></div>`;
-  if (p.type === 'nle')   /* 수직선 추정 — 선을 눌러 깃발을 놓고 '여기예요'로 확인(허용 오차 ±6%) */
+  if (p.type === 'nle')   /* 수직선 추정 — 선을 누르거나 끌어 깃발을 놓고 손을 떼면 바로 판정(허용 오차 ±6%, v116) */
     return `<div class="early nleq">
       <div class="early-q"><b class="nletgt">${p.ans}</b><span>${josaEun(p.ans)} 어디쯤일까요?</span></div>
       <div class="nlwrap" id="nlwrap">
@@ -6497,7 +6497,7 @@ function hintNle(p, h, stage) {
     band.classList.remove('hidden');
   }
   const af = $('nlans'); if (af) af.classList.remove('hidden');
-  h.innerHTML = `<div class="tip"><b>초록 깃발</b> 자리가 정답이에요. 깃발을 옮기고 '여기예요'를 눌러요</div>`;
+  h.innerHTML = `<div class="tip"><b>초록 깃발</b> 자리가 정답이에요. 그 자리를 눌러 봐요</div>`;
   speak(`${p.ans}${josaEun(p.ans)} 초록 깃발 자리예요. 깃발을 옮겨 봐요.`);
 }
 /* 십틀 채우기 힌트 — 1차: 윗줄 5칸 강조 / 2차: 채울 자리에 번호를 붙이며 세기(학생이 눌러 채워야 정답) */
@@ -6807,7 +6807,9 @@ function flashPeek() {
   setTimeout(() => { if (c.isConnected && !locked && !flashOpen) c.classList.remove('hidden'); }, flashMs());
 }
 
-/* ---- 수직선 추정(55·56): 선을 누르거나 끌어 깃발 놓기 → '여기예요' 확인.
+/* ---- 수직선 추정(115·116): 선을 누르거나 끌어 깃발 놓기 → 손을 떼면 바로 판정(v116, 사용자 지시 —
+   확인 버튼이 있으니 모든 자리를 눌러 보며 탐색하던 것을 막음. 한 번 누름 = 시도 1회, 3회 제한).
+   드래그는 그대로: 누른 채 옮기다 떼는 자리로 판정.
    좌표는 비율(clientX/width)이라 _sc 보정 불필요 ---- */
 let nleVal = null;
 function initNle() {
@@ -6824,7 +6826,7 @@ function initNle() {
   };
   hit.onpointerdown = e => { if (locked) return; try { hit.setPointerCapture(e.pointerId); } catch (err) { } setAt(e); tick(); };
   hit.onpointermove = e => { if (locked || !e.buttons) return; setAt(e); };
-  hit.onpointerup = () => { if (!locked && nleVal != null) speakFast(String(nleVal)); };
+  hit.onpointerup = () => { if (!locked && nleVal != null) nleSubmit(); };
 }
 /* 정답 자리 드러내기(v115, 정답·3회 오답 공통) — 초록 정답 깃발은 쓰지 않고 학생 깃발 하나가
    정확한 자리로 스르륵(.mv) 옮겨 가며 초록(.done)으로 바뀐다. 동시에 눈금·숫자를 전부 표시(0·max만 있던 것) */
@@ -6853,8 +6855,8 @@ function nleSubmit() {
   if (Math.abs(nleVal - p.ans) <= tol) {
     locked = true; chime(true);
     nleReveal(p);                                          // 학생 깃발이 정확한 자리로 옮겨 가며 초록으로(v115) — 깃발은 하나
-    celebrate($('nlflag')); speak(praiseFor(wrongCount));
-    afterCorrect(Math.max(1600, lastSpeakMs + 300));
+    celebrate($('nlflag'));
+    afterCorrectSpeak(praiseFor(wrongCount));            // 발화 종료 기반 전환(v116) — 고정 타이머는 온라인 음성 지연에 칭찬이 잘렸음
   } else {
     chime(false); wrongCount++; wiggle($('nlwrap'));
     if (wrongCount >= 3) {                                 // 시도 3회 제한(v115): 정답 자리를 보여 주고 다음 문제로
