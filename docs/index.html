@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 116 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 117 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1114,7 +1114,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 116';
+const APP_VERSION = 'ver 117';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -6473,6 +6473,7 @@ function nleTicks(p) {
   }
 }
 function hintNle(p, h, stage) {
+  if (nleDone) return;                                   // v117: 이미 정답·공개된 문제엔 힌트 금지(늦게 온 호출 안전망)
   const mid = p.max / 2, tol = Math.max(1, Math.round(p.max * .06));
   $('nlmid') && $('nlmid').classList.remove('hidden');
   if (stage === 1) {
@@ -6486,7 +6487,7 @@ function hintNle(p, h, stage) {
       : `<div class="tip">가운데는 <b>${mid}</b>! ${p.ans}${josaEun(p.ans)} 바로 가운데예요</div>`;
     speak(side
       ? `가운데는 ${mid}${josaYeyo(mid)}. ${p.ans}${josaEun(p.ans)} 가운데보다 ${side}이에요.`
-      : `가운데는 ${mid}${josaYeyo(mid)}. ${p.ans}${josaEun(p.ans)} 바로 가운데예요.`);
+      : `가운데는 ${mid}${josaYeyo(mid)}. ${p.ans}${josaEun(p.ans)} 바로 가운데예요.`, nleAfterSpeak);
     return;
   }
   $('nlmlab') && $('nlmlab').classList.remove('hidden');
@@ -6498,7 +6499,7 @@ function hintNle(p, h, stage) {
   }
   const af = $('nlans'); if (af) af.classList.remove('hidden');
   h.innerHTML = `<div class="tip"><b>초록 깃발</b> 자리가 정답이에요. 그 자리를 눌러 봐요</div>`;
-  speak(`${p.ans}${josaEun(p.ans)} 초록 깃발 자리예요. 깃발을 옮겨 봐요.`);
+  speak(`${p.ans}${josaEun(p.ans)} 초록 깃발 자리예요. 깃발을 옮겨 봐요.`, nleAfterSpeak);
 }
 /* 십틀 채우기 힌트 — 1차: 윗줄 5칸 강조 / 2차: 채울 자리에 번호를 붙이며 세기(학생이 눌러 채워야 정답) */
 function hintTenFill(p, h, stage) {
@@ -6812,8 +6813,10 @@ function flashPeek() {
    드래그는 그대로: 누른 채 옮기다 떼는 자리로 판정.
    좌표는 비율(clientX/width)이라 _sc 보정 불필요 ---- */
 let nleVal = null;
+let nleDone = false;          // v117: 정답·공개로 끝난 문제 표시 — 남은 콜백·힌트가 화면을 덮지 못하게
+let nleAfterSpeak = null;     // v117: 힌트 발화가 끝나면 잠금 해제(hintNle가 speak의 onEnd로 넘김)
 function initNle() {
-  nleVal = null;
+  nleVal = null; nleDone = false; nleAfterSpeak = null;
   const hit = $('nlhit'), flag = $('nlflag'), head = $('nlhead'); if (!hit) return;
   const p = session.items[session.idx];
   const setAt = e => {
@@ -6832,6 +6835,7 @@ function initNle() {
    정확한 자리로 스르륵(.mv) 옮겨 가며 초록(.done)으로 바뀐다. 동시에 눈금·숫자를 전부 표시(0·max만 있던 것) */
 function nleReveal(p) {
   const w = $('nlwrap'), flag = $('nlflag'), head = $('nlhead'); if (!w || !flag) return;
+  nleDone = true;
   const af = $('nlans'); if (af) af.classList.add('hidden');       // 2차 힌트의 초록 깃발이 떠 있으면 치움
   const band = $('nlband'); if (band) band.classList.add('hidden');
   flag.classList.remove('hidden'); flag.classList.add('mv', 'done');
@@ -6864,15 +6868,22 @@ function nleSubmit() {
       afterCorrectSpeak(`정답은 ${p.ans}${josaYeyo(p.ans)}. 여기예요.`, 1000);
       return;
     }
-    const msg = `조금 더 ${nleVal < p.ans ? '오른쪽' : '왼쪽'}으로 옮겨 봐요.`;
+    /* v117(실기기 동영상): ①오답 즉시 잠금 — 연산 문제와 같은 규칙(설정 '충동 탭 막기'), 발화가 끝나면 해제.
+       ②피드백은 한 문장·즉시 — 예전엔 발문 뒤 발화 종료를 기다려 힌트를 예약했는데, 온라인 음성 지연으로 3~5초 뒤
+       도착한 힌트가 이미 정답·공개된 화면을 덮고 칭찬과 겹쳤음. 힌트 문장에 방향이 들어 있어 별도 발문 불필요 */
+    locked = prefs.tapGuard !== false;
+    const tok = itemStart;
+    const unlock = () => { if (nleDone || itemStart !== tok) return; locked = false; };
     const lv = (current && current.hintLv) || 'fade';
-    if (lv === 'off') { speak(msg); return; }
-    const stage = lv === 'fade' ? wrongCount - 1 : wrongCount + (lv === 'strong' ? 1 : 0);
-    if (stage < 1) { speak(msg); return; }               // 1차는 발문만 — 스스로 다시 해 볼 기회
-    let started = false;
-    const go = () => { if (started) return; started = true; routeHint(stage); };
-    speak(msg, go);
-    setTimeout(go, lastSpeakMs + 1200);
+    const stage = lv === 'off' ? 0 : lv === 'fade' ? wrongCount - 1 : wrongCount + (lv === 'strong' ? 1 : 0);
+    if (stage < 1) {                                       // 발문만 — 스스로 다시 해 볼 기회
+      speak(`조금 더 ${nleVal < p.ans ? '오른쪽' : '왼쪽'}으로 옮겨 봐요.`, unlock);
+      setTimeout(unlock, lastSpeakMs + 800);
+      return;
+    }
+    nleAfterSpeak = unlock;
+    routeHint(stage);                                      // hintNle가 발화 끝에 unlock 호출
+    setTimeout(unlock, lastSpeakMs + 1200);                // 음성 이벤트 유실 대비 보루
   }
 }
 
