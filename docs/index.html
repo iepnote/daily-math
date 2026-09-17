@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 120 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 121 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1119,7 +1119,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 120';
+const APP_VERSION = 'ver 121';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1607,6 +1607,7 @@ function speakMs(text, kind) {
   const fr = (typeof prefs !== 'undefined' && prefs.lang && prefs.lang !== 'ko' && (!kind || langAtOn(kind))) ? 2.2 : 1;   // 외국어로 한 번 더
   return Math.round(Math.max(1800, base) * slow * fr);   // 짧은 말도 실측 1.1~1.7초('좋아요'=1.7초) — 하한을 둔다
 }
+let seqEndAt = 0;      // v121: 직전 speakSequence()의 예상 종료 시각(ms) — 시연 중 입력 잠금(judgeAnswer)이 읽는다
 let lastSpeakMs = 0;   // 직전 speak()의 예상 길이 — 보루 타이머·다음 문제 전환이 이 값을 기준으로 기다린다
 function speak(text, onEnd) {
   const kind = speakKind(text);                     // v109: 외국어로 읽을 곳 판정(문제·칭찬·힌트)
@@ -1651,6 +1652,7 @@ function speakFast(text) {
 }
 /* 발화 시작(onstart)에 맞춰 화면 동작(action)을 실행 — 세기 애니메이션 동기화 */
 function speakSequence(items) {
+  seqEndAt = Date.now() + ((vol() > 0 && ('speechSynthesis' in window)) ? items.reduce((s, it) => s + speakMs(it.text, 'hint'), 0) : items.length * 600);
   if (vol() > 0 && ('speechSynthesis' in window)) {
     speechSynthesis.cancel();
     items.forEach(it => {
@@ -1794,7 +1796,6 @@ const TRX = {
   '앞의 두 수부터 계산해 볼까요?': { en: 'Shall we start with the first two numbers?', zh: '先算前面两个数好吗？', vi: 'Tính hai số đầu trước nhé?', ja: 'まえの ふたつの かずから けいさんしてみようか？', ru: 'Начнём с первых двух чисел?' },
   '모두 몇 개인지 생각해 볼까요?': { en: 'How many are there altogether?', zh: '一共有几个呢？', vi: 'Tất cả có bao nhiêu cái nhỉ?', ja: 'ぜんぶで いくつか かんがえてみようか？', ru: 'Сколько всего получится?' },
   '몇 개 남았는지 생각해 볼까요?': { en: 'How many are left?', zh: '还剩几个呢？', vi: 'Còn lại bao nhiêu cái nhỉ?', ja: 'いくつ のこったか かんがえてみようか？', ru: 'Сколько осталось?' },
-  '이번엔 숫자를 직접 눌러 봐요.': { en: 'This time, type the number yourself.', zh: '这次自己按数字试试。', vi: 'Lần này hãy tự bấm số nhé.', ja: 'こんどは すうじを じぶんで おしてみよう。', ru: 'Теперь набери число сам.' },
   '빼는 수를 갈라서 10을 만들어 볼까요?': { en: 'Split the number we take away and make 10 first?', zh: '把要减的数分开，先凑成 10 好吗？', vi: 'Tách số cần bớt để tạo số 10 trước nhé?', ja: 'ひく かずを わけて、まず 10を つくってみようか？', ru: 'Разделим вычитаемое и сначала сделаем 10?' },
   '10에서 먼저 빼 볼까요?': { en: 'Shall we take it away from the 10 first?', zh: '先从 10 里减好吗？', vi: 'Bớt từ 10 trước nhé?', ja: 'まず 10から ひいてみようか？', ru: 'Сначала вычтем из 10?' },
   '수직선에서 뒤로 뛰어 볼까요?': { en: 'Shall we jump back on the number line?', zh: '在数线上向后跳好吗？', vi: 'Nhảy lùi trên trục số nhé?', ja: 'すうちょくせんで うしろに とんでみようか？', ru: 'Прыгнем назад по числовой прямой?' },
@@ -1893,6 +1894,48 @@ function cntToNum(w) {
   if (w[0] === '열' && w.length > 1) { const j = KO_CNT.indexOf(w.slice(1)); if (j > 0) return 10 + j; }
   return null;
 }
+/* v121 전략 발문(식의 숫자 포함) — STRAT_CUES(06_study)의 문장과 1:1. [정규식, m → {en,zh,vi,ja,ru}]. 의문형·strong 명령형 각 1개 */
+const TRX_RX = [
+  [/^(\d+)[와과] (\d+)[을를] 모두 세면 몇 개일까요\?$/, m => ({ en: `Count ${m[1]} and ${m[2]} all together. How many?`, zh: `把 ${m[1]} 和 ${m[2]} 全部数一数，一共几个？`, vi: `Đếm hết ${m[1]} và ${m[2]}. Tất cả là mấy?`, ja: `${m[1]}と ${m[2]}を ぜんぶ かぞえると いくつ？`, ru: `Сосчитай ${m[1]} и ${m[2]} вместе. Сколько всего?` })],
+  [/^(\d+)[와과] (\d+)[을를] 처음부터 모두 세어 보세요\.$/, m => ({ en: `Count ${m[1]} and ${m[2]} all together from the start.`, zh: `把 ${m[1]} 和 ${m[2]} 从头全部数一数。`, vi: `Đếm hết ${m[1]} và ${m[2]} từ đầu.`, ja: `${m[1]}と ${m[2]}を はじめから ぜんぶ かぞえてね。`, ru: `Сосчитай ${m[1]} и ${m[2]} вместе с самого начала.` })],
+  [/^(\d+)부터 (\d+)만큼 이어 세면 몇일까요\?$/, m => ({ en: `Start at ${m[1]} and count on ${m[2]}. What do you get?`, zh: `从 ${m[1]} 接着数 ${m[2]} 个，是几？`, vi: `Bắt đầu từ ${m[1]}, đếm tiếp ${m[2]}. Được mấy?`, ja: `${m[1]}から ${m[2]} つづけて かぞえると いくつ？`, ru: `Начни с ${m[1]} и досчитай ${m[2]}. Сколько получится?` })],
+  [/^(\d+)부터 (\d+)만큼 이어 세어 보세요\.$/, m => ({ en: `Start at ${m[1]} and count on ${m[2]}.`, zh: `从 ${m[1]} 接着数 ${m[2]} 个。`, vi: `Bắt đầu từ ${m[1]}, đếm tiếp ${m[2]}.`, ja: `${m[1]}から ${m[2]} つづけて かぞえてね。`, ru: `Начни с ${m[1]} и досчитай ${m[2]}.` })],
+  [/^(\d+)[와과] (\d+), 두 수가 똑같아요\. (\d+)[을를] 두 번 더하면 몇일까요\?$/, m => ({ en: `${m[1]} and ${m[1]}, the two numbers are the same. What is ${m[1]} plus ${m[1]}?`, zh: `${m[1]} 和 ${m[1]}，两个数一样。${m[1]} 加两次是几？`, vi: `${m[1]} và ${m[1]}, hai số giống nhau. ${m[1]} cộng hai lần là mấy?`, ja: `${m[1]}と ${m[1]}、おなじ かずだね。${m[1]}を 2かい たすと いくつ？`, ru: `${m[1]} и ${m[1]} — числа одинаковые. Сколько будет ${m[1]} плюс ${m[1]}?` })],
+  [/^(\d+)[와과] (\d+), 두 수가 똑같아요\. (\d+)[을를] 두 번 더해 보세요\.$/, m => ({ en: `${m[1]} and ${m[1]} are the same. Add ${m[1]} twice.`, zh: `${m[1]} 和 ${m[1]} 一样。把 ${m[1]} 加两次。`, vi: `${m[1]} và ${m[1]} giống nhau. Cộng ${m[1]} hai lần.`, ja: `${m[1]}と ${m[1]}は おなじ。${m[1]}を 2かい たしてね。`, ru: `${m[1]} и ${m[1]} одинаковые. Прибавь ${m[1]} два раза.` })],
+  [/^(\d+)[와과] (\d+)[을를] 먼저 더하고, 하나 더 하면 몇일까요\?$/, m => ({ en: `First add ${m[1]} and ${m[1]}, then one more. What do you get?`, zh: `先算 ${m[1]} 加 ${m[1]}，再加 1，是几？`, vi: `Cộng ${m[1]} với ${m[1]} trước, rồi thêm một. Được mấy?`, ja: `まず ${m[1]}と ${m[1]}を たして、もう 1つ たすと いくつ？`, ru: `Сначала ${m[1]} плюс ${m[1]}, потом ещё один. Сколько получится?` })],
+  [/^(\d+)[와과] (\d+)[을를] 먼저 더하고, 하나 더 해 보세요\.$/, m => ({ en: `First add ${m[1]} and ${m[1]}, then add one more.`, zh: `先算 ${m[1]} 加 ${m[1]}，再加 1。`, vi: `Cộng ${m[1]} với ${m[1]} trước, rồi thêm một.`, ja: `まず ${m[1]}と ${m[1]}を たして、もう 1つ たしてね。`, ru: `Сначала ${m[1]} плюс ${m[1]}, потом прибавь ещё один.` })],
+  [/^(\d+)[은는] 10이 되려면 몇이 더 필요할까요\?$/, m => ({ en: `How many more does ${m[1]} need to make 10?`, zh: `${m[1]} 还差几才到 10？`, vi: `${m[1]} cần thêm mấy để thành 10?`, ja: `${m[1]}は 10に なるのに あと いくつ？`, ru: `Сколько не хватает ${m[1]} до 10?` })],
+  [/^(\d+)[이가] 10이 되려면 몇이 더 필요한지 생각해 보세요\.$/, m => ({ en: `Think how many more ${m[1]} needs to make 10.`, zh: `想一想 ${m[1]} 还差几才到 10。`, vi: `Hãy nghĩ xem ${m[1]} cần thêm mấy để thành 10.`, ja: `${m[1]}が 10に なるのに あと いくつか かんがえてね。`, ru: `Подумай, сколько не хватает ${m[1]} до 10.` })],
+  [/^수직선에서 (\d+)부터 (\d+)만큼 앞으로 뛰면 몇일까요\?$/, m => ({ en: `On the number line, jump forward ${m[2]} from ${m[1]}. Where do you land?`, zh: `在数线上从 ${m[1]} 向前跳 ${m[2]} 格，到几？`, vi: `Trên tia số, từ ${m[1]} nhảy tới ${m[2]}. Đến mấy?`, ja: `すうちょくせんで ${m[1]}から ${m[2]} まえに とぶと いくつ？`, ru: `На числовой прямой прыгни от ${m[1]} вперёд на ${m[2]}. Где окажешься?` })],
+  [/^수직선에서 (\d+)부터 (\d+)만큼 앞으로 뛰어 보세요\.$/, m => ({ en: `On the number line, jump forward ${m[2]} from ${m[1]}.`, zh: `在数线上从 ${m[1]} 向前跳 ${m[2]} 格。`, vi: `Trên tia số, từ ${m[1]} nhảy tới ${m[2]}.`, ja: `すうちょくせんで ${m[1]}から ${m[2]} まえに とんでね。`, ru: `На числовой прямой прыгни от ${m[1]} вперёд на ${m[2]}.` })],
+  [/^(\d+)에서 (\d+)만큼 지우면 몇 개가 남을까요\?$/, m => ({ en: `Cross out ${m[2]} from ${m[1]}. How many are left?`, zh: `从 ${m[1]} 个里划掉 ${m[2]} 个，还剩几个？`, vi: `Gạch bỏ ${m[2]} trong ${m[1]}. Còn lại mấy cái?`, ja: `${m[1]}こから ${m[2]}こ けすと、なんこ のこる？`, ru: `Из ${m[1]} зачеркни ${m[2]}. Сколько останется?` })],
+  [/^(\d+)에서 (\d+)만큼 지우고, 남은 것을 세어 보세요\.$/, m => ({ en: `Cross out ${m[2]} from ${m[1]}, then count what is left.`, zh: `从 ${m[1]} 个里划掉 ${m[2]} 个，再数剩下的。`, vi: `Gạch bỏ ${m[2]} trong ${m[1]}, rồi đếm phần còn lại.`, ja: `${m[1]}こから ${m[2]}こ けして、のこりを かぞえてね。`, ru: `Из ${m[1]} зачеркни ${m[2]} и посчитай остаток.` })],
+  [/^(\d+)부터 (\d+)만큼 거꾸로 세면 몇일까요\?$/, m => ({ en: `Start at ${m[1]} and count back ${m[2]}. What do you get?`, zh: `从 ${m[1]} 倒着数 ${m[2]} 个，是几？`, vi: `Từ ${m[1]} đếm ngược ${m[2]}. Được mấy?`, ja: `${m[1]}から ${m[2]} さかさまに かぞえると いくつ？`, ru: `Начни с ${m[1]} и отсчитай назад ${m[2]}. Сколько получится?` })],
+  [/^(\d+)부터 (\d+)만큼 거꾸로 세어 보세요\.$/, m => ({ en: `Start at ${m[1]} and count back ${m[2]}.`, zh: `从 ${m[1]} 倒着数 ${m[2]} 个。`, vi: `Từ ${m[1]} đếm ngược ${m[2]}.`, ja: `${m[1]}から ${m[2]} さかさまに かぞえてね。`, ru: `Начни с ${m[1]} и отсчитай назад ${m[2]}.` })],
+  [/^(\d+)[을를] 갈라서 (\d+)에서 먼저 10을 만들어 볼까요\?$/, m => ({ en: `Split ${m[1]} so that ${m[2]} becomes 10 first?`, zh: `把 ${m[1]} 分开，先让 ${m[2]} 变成 10 好吗？`, vi: `Tách ${m[1]} để ${m[2]} thành 10 trước nhé?`, ja: `${m[1]}を わけて、${m[2]}から まず 10を つくってみようか？`, ru: `Разобьём ${m[1]}, чтобы из ${m[2]} сначала получить 10?` })],
+  [/^(\d+)[을를] 갈라서 (\d+)에서 먼저 10을 만들어 보세요\.$/, m => ({ en: `Split ${m[1]} so that ${m[2]} becomes 10 first.`, zh: `把 ${m[1]} 分开，先让 ${m[2]} 变成 10。`, vi: `Tách ${m[1]} để ${m[2]} thành 10 trước.`, ja: `${m[1]}を わけて、${m[2]}から まず 10を つくってね。`, ru: `Разбей ${m[1]}, чтобы из ${m[2]} сначала получить 10.` })],
+  [/^10에서 (\d+)[을를] 먼저 빼면 몇일까요\?$/, m => ({ en: `Take ${m[1]} from 10 first. What do you get?`, zh: `先从 10 里减 ${m[1]}，是几？`, vi: `Lấy 10 trừ ${m[1]} trước. Được mấy?`, ja: `まず 10から ${m[1]}を ひくと いくつ？`, ru: `Сначала вычти ${m[1]} из 10. Сколько получится?` })],
+  [/^10에서 (\d+)[을를] 먼저 빼 보세요\.$/, m => ({ en: `Take ${m[1]} from 10 first.`, zh: `先从 10 里减 ${m[1]}。`, vi: `Lấy 10 trừ ${m[1]} trước.`, ja: `まず 10から ${m[1]}を ひいてね。`, ru: `Сначала вычти ${m[1]} из 10.` })],
+  [/^수직선에서 (\d+)부터 (\d+)만큼 뒤로 뛰면 몇일까요\?$/, m => ({ en: `On the number line, jump back ${m[2]} from ${m[1]}. Where do you land?`, zh: `在数线上从 ${m[1]} 向后跳 ${m[2]} 格，到几？`, vi: `Trên tia số, từ ${m[1]} nhảy lùi ${m[2]}. Đến mấy?`, ja: `すうちょくせんで ${m[1]}から ${m[2]} うしろに とぶと いくつ？`, ru: `На числовой прямой прыгни от ${m[1]} назад на ${m[2]}. Где окажешься?` })],
+  [/^수직선에서 (\d+)부터 (\d+)만큼 뒤로 뛰어 보세요\.$/, m => ({ en: `On the number line, jump back ${m[2]} from ${m[1]}.`, zh: `在数线上从 ${m[1]} 向后跳 ${m[2]} 格。`, vi: `Trên tia số, từ ${m[1]} nhảy lùi ${m[2]}.`, ja: `すうちょくせんで ${m[1]}から ${m[2]} うしろに とんでね。`, ru: `На числовой прямой прыгни от ${m[1]} назад на ${m[2]}.` })],
+  [/^(\d+)씩 (\d+)묶음이면 모두 몇 개일까요\?$/, m => ({ en: `${m[2]} groups of ${m[1]}. How many in all?`, zh: `${m[1]} 个一组，${m[2]} 组，一共几个？`, vi: `${m[2]} nhóm, mỗi nhóm ${m[1]}. Tất cả là mấy?`, ja: `${m[1]}こずつ ${m[2]}たばで、ぜんぶで なんこ？`, ru: `${m[2]} группы по ${m[1]}. Сколько всего?` })],
+  [/^(\d+)씩 (\d+)묶음을 세어 보세요\.$/, m => ({ en: `Count ${m[2]} groups of ${m[1]}.`, zh: `数一数 ${m[1]} 个一组的 ${m[2]} 组。`, vi: `Đếm ${m[2]} nhóm, mỗi nhóm ${m[1]}.`, ja: `${m[1]}こずつ ${m[2]}たばを かぞえてね。`, ru: `Сосчитай ${m[2]} группы по ${m[1]}.` })],
+  [/^(\d+)씩 (\d+)번 뛰어 세면 몇일까요\?$/, m => ({ en: `Skip count by ${m[1]}, ${m[2]} times. What do you get?`, zh: `${m[1]} 个 ${m[1]} 个地数 ${m[2]} 次，是几？`, vi: `Đếm cách ${m[1]}, ${m[2]} lần. Được mấy?`, ja: `${m[1]}とびで ${m[2]}かい かぞえると いくつ？`, ru: `Считай по ${m[1]} ${m[2]} раз. Сколько получится?` })],
+  [/^(\d+)씩 (\d+)번 뛰어 세어 보세요\.$/, m => ({ en: `Skip count by ${m[1]}, ${m[2]} times.`, zh: `${m[1]} 个 ${m[1]} 个地数 ${m[2]} 次。`, vi: `Đếm cách ${m[1]}, ${m[2]} lần.`, ja: `${m[1]}とびで ${m[2]}かい かぞえてね。`, ru: `Считай по ${m[1]} ${m[2]} раз.` })],
+  [/^(\d+) 곱하기 (\d+)[은는] (\d+) 곱하기 (\d+)[와과] 같아요\. 순서를 바꾸면 몇일까요\?$/, m => ({ en: `${m[1]} times ${m[2]} is the same as ${m[2]} times ${m[1]}. Swap them. What do you get?`, zh: `${m[1]} 乘 ${m[2]} 和 ${m[2]} 乘 ${m[1]} 一样。换个顺序，是几？`, vi: `${m[1]} nhân ${m[2]} bằng ${m[2]} nhân ${m[1]}. Đổi thứ tự thì được mấy?`, ja: `${m[1]}かける${m[2]}は ${m[2]}かける${m[1]}と おなじ。じゅんばんを かえると いくつ？`, ru: `${m[1]} умножить на ${m[2]} — то же, что ${m[2]} умножить на ${m[1]}. Поменяй местами. Сколько получится?` })],
+  [/^(\d+) 곱하기 (\d+)[은는] (\d+) 곱하기 (\d+)[와과] 같아요\. 순서를 바꾸어 생각해 보세요\.$/, m => ({ en: `${m[1]} times ${m[2]} is the same as ${m[2]} times ${m[1]}. Think of it the other way round.`, zh: `${m[1]} 乘 ${m[2]} 和 ${m[2]} 乘 ${m[1]} 一样。换个顺序想一想。`, vi: `${m[1]} nhân ${m[2]} bằng ${m[2]} nhân ${m[1]}. Hãy nghĩ theo thứ tự ngược lại.`, ja: `${m[1]}かける${m[2]}は ${m[2]}かける${m[1]}と おなじ。じゅんばんを かえて かんがえてね。`, ru: `${m[1]} умножить на ${m[2]} — то же, что ${m[2]} умножить на ${m[1]}. Подумай наоборот.` })],
+  [/^(\d+)에서 (\d+)씩 몇 번 덜어낼 수 있을까요\?$/, m => ({ en: `From ${m[1]}, how many times can you take away ${m[2]}?`, zh: `从 ${m[1]} 里每次拿走 ${m[2]} 个，能拿几次？`, vi: `Từ ${m[1]}, bớt ${m[2]} mỗi lần được mấy lần?`, ja: `${m[1]}から ${m[2]}ずつ なんかい とれる？`, ru: `Из ${m[1]} сколько раз можно убрать по ${m[2]}?` })],
+  [/^(\d+)에서 (\d+)씩 덜어내며 몇 번인지 세어 보세요\.$/, m => ({ en: `Take away ${m[2]} at a time from ${m[1]} and count how many times.`, zh: `从 ${m[1]} 里每次拿走 ${m[2]} 个，数一数拿了几次。`, vi: `Từ ${m[1]}, bớt ${m[2]} mỗi lần và đếm số lần.`, ja: `${m[1]}から ${m[2]}ずつ とりながら なんかいか かぞえてね。`, ru: `Убирай из ${m[1]} по ${m[2]} и считай, сколько раз.` })],
+  [/^(\d+) 곱하기 몇이 (\d+)일까요\?$/, m => ({ en: `${m[1]} times what makes ${m[2]}?`, zh: `${m[1]} 乘几等于 ${m[2]}？`, vi: `${m[1]} nhân mấy bằng ${m[2]}?`, ja: `${m[1]}かける いくつで ${m[2]}？`, ru: `${m[1]} умножить на сколько будет ${m[2]}?` })],
+  [/^(\d+) 곱하기 몇이 (\d+)인지 곱셈구구로 생각해 보세요\.$/, m => ({ en: `Use the times table: ${m[1]} times what makes ${m[2]}?`, zh: `用乘法口诀想一想：${m[1]} 乘几等于 ${m[2]}。`, vi: `Dùng bảng cửu chương: ${m[1]} nhân mấy bằng ${m[2]}.`, ja: `九九で かんがえてね。${m[1]}かける いくつで ${m[2]}？`, ru: `Вспомни таблицу умножения: ${m[1]} умножить на сколько будет ${m[2]}.` })],
+  [/^(\d+) (더하기|빼기) (\d+)부터 계산하면 몇일까요\?$/, m => { const o = OPW[m[2]]; return { en: `First work out ${m[1]} ${o.en} ${m[3]}. What is it?`, zh: `先算 ${m[1]} ${o.zh} ${m[3]}，是几？`, vi: `Tính ${m[1]} ${o.vi} ${m[3]} trước. Được mấy?`, ja: `まず ${m[1]} ${o.ja} ${m[3]}を けいさんすると いくつ？`, ru: `Сначала посчитай ${m[1]} ${o.ru} ${m[3]}. Сколько?` }; }],
+  [/^(\d+) (더하기|빼기) (\d+)부터 계산해 보세요\.$/, m => { const o = OPW[m[2]]; return { en: `First work out ${m[1]} ${o.en} ${m[3]}.`, zh: `先算 ${m[1]} ${o.zh} ${m[3]}。`, vi: `Tính ${m[1]} ${o.vi} ${m[3]} trước.`, ja: `まず ${m[1]} ${o.ja} ${m[3]}を けいさんしてね。`, ru: `Сначала посчитай ${m[1]} ${o.ru} ${m[3]}.` }; }],
+  [/^(\d+)개와 (\d+)개를 모두 세면 몇 개일까요\?$/, m => ({ en: `Count ${m[1]} and ${m[2]} all together. How many?`, zh: `把 ${m[1]} 个和 ${m[2]} 个全部数一数，一共几个？`, vi: `Đếm hết ${m[1]} cái và ${m[2]} cái. Tất cả là mấy?`, ja: `${m[1]}こと ${m[2]}こを ぜんぶ かぞえると なんこ？`, ru: `Сосчитай ${m[1]} и ${m[2]} вместе. Сколько всего?` })],
+  [/^(\d+)개와 (\d+)개를 모두 세어 보세요\.$/, m => ({ en: `Count ${m[1]} and ${m[2]} all together.`, zh: `把 ${m[1]} 个和 ${m[2]} 个全部数一数。`, vi: `Đếm hết ${m[1]} cái và ${m[2]} cái.`, ja: `${m[1]}こと ${m[2]}こを ぜんぶ かぞえてね。`, ru: `Сосчитай ${m[1]} и ${m[2]} вместе.` })],
+  [/^(\d+)개에서 (\d+)개를 빼면 몇 개가 남을까요\?$/, m => ({ en: `Take ${m[2]} away from ${m[1]}. How many are left?`, zh: `${m[1]} 个里拿走 ${m[2]} 个，还剩几个？`, vi: `${m[1]} cái bớt đi ${m[2]} cái. Còn lại mấy?`, ja: `${m[1]}こから ${m[2]}こ とると、なんこ のこる？`, ru: `Из ${m[1]} убери ${m[2]}. Сколько останется?` })],
+  [/^(\d+)개에서 (\d+)개를 빼고 남은 것을 세어 보세요\.$/, m => ({ en: `Take ${m[2]} away from ${m[1]}, then count what is left.`, zh: `${m[1]} 个里拿走 ${m[2]} 个，再数剩下的。`, vi: `${m[1]} cái bớt đi ${m[2]} cái, rồi đếm phần còn lại.`, ja: `${m[1]}こから ${m[2]}こ とって、のこりを かぞえてね。`, ru: `Из ${m[1]} убери ${m[2]} и посчитай остаток.` })],
+  [/^정답은 (\d+)(?:이에요|예요)\.(?: 여기예요\.)?$/, m => ({ en: `The answer is ${m[1]}.`, zh: `答案是 ${m[1]}。`, vi: `Đáp án là ${m[1]}.`, ja: `こたえは ${m[1]}。`, ru: `Ответ: ${m[1]}.` })],
+];
 /* 한국어 안내문 → 외국어. 매칭 실패 시 '' (한국어만 발화). kind(q·praise·hint)가 설정에서 꺼져 있으면 '' */
 function trKo(t, kind) {
   const l = prefs.lang || 'ko';
@@ -1910,6 +1953,7 @@ function trKo(t, kind) {
   let m;
   if (m = t.match(/^(.+?) ?개[.!]?$/)) { const n = cntToNum(m[1]); if (n) return String(n); }
   const op = w => T(OPW[w]), pl = w => T(PLW[w]);
+  for (const [rx, f] of TRX_RX) if (m = t.match(rx)) return T(f(m));   // v121 전략 발문(숫자) · 정답 공개
   /* 문제 읽기 */
   if (m = t.match(/^(\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/)) return `${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`;
   if (m = t.match(/^(\d+) (더하기|빼기) (\d+) (더하기|빼기) (\d+)[은는]\?$/)) return `${m[1]} ${op(m[2])} ${m[3]} ${op(m[4])} ${m[5]}${T(EQW)}`;
@@ -2775,23 +2819,31 @@ function judgeAnswer(btn, v, ans) {
   } else {
     if (btn) { btn.classList.add('wrong'); btn.disabled = true; } else padPaint();   // 패드 입력은 지우고 다시
     chime(false); wrongCount++; wrongVals.push(v); wiggle($('qface'));
+    /* v121 ①(사용자 지시): 오답 상한 3회(보기 2 + 패드 1) — 패드(v107)는 보기 소거 같은 자연 상한이 없어 같은 발문·시연이 끝없이 재시작됐다.
+       정답을 채워 공개하고 발화 종료 기반으로 다음 문제(수직선 v115와 같은 규칙). 재도전 큐는 nextStep이 wrongCount≥2로 자동 처리 */
+    if (wrongCount >= 3) {
+      locked = true; pad = null;
+      const slot = $('qslot'); if (slot) fillSlot(slot, ans);
+      afterCorrectSpeak(`정답은 ${ans}${josaYeyo(ans)}.`, 1000);
+      return;
+    }
     /* ①(v100) 오답 잠금 — 피드백 발화가 끝날 때까지 연타 무효(빠른 찍기의 속도 이득 제거). v109: 설정 '충동 탭 막기' 끄면 잠그지 않음 */
     locked = prefs.tapGuard !== false;
     const unlock = () => { locked = false; };
     const lv = (current && current.hintLv) || 'fade';   // 학생별 힌트 수준(IEP 개별화)
     /* v107 ① 2차 오답부터 직접 입력 — 보기 소거로 정답만 남는 구조 차단(세 수는 단계 안내가 보기를 직접 씀 → 제외) */
-    const padNew = wrongCount >= 2 && !pad && showAnswerPad();
-    if (lv === 'off') { speak(padNew ? PAD_MSG : '다시 한 번 해 볼까요?', unlock); setTimeout(unlock, lastSpeakMs + 800); return; }
+    if (wrongCount >= 2 && !pad) showAnswerPad();
+    if (lv === 'off') { speak('다시 한 번 해 볼까요?', unlock); setTimeout(unlock, lastSpeakMs + 800); return; }
     /* 힌트가 곧바로 speak/speakSequence를 부르면 이 안내가 잘림 → 발화가 끝난 뒤 힌트 시작(보루 타이머 병행) */
     /* SEM ⑥ 힌트 fading(v91): 'fade'=지원 점감 — 한 단계 늦춤(1차 오답은 발문만 듣고 스스로, 2차부터 단서) */
     const stage = lv === 'fade' ? wrongCount - 1 : wrongCount + (lv === 'strong' ? 1 : 0);
     /* 오류 유형 판정(v86) > 전략 발문(v81) > 공통 멘트 순 — 오답값이 알려진 오류 패턴이면 특정 피드백.
        (A, v102) 발문과 동시에 관련 토큰을 시각 강조(cueFlash) — 청각 단서만으로는 자폐 학생이 놓친다 */
     const diag = diagnoseWrong(p, v);
-    let cue = diag || hintCueFor(p) || '다시 한 번 해 볼까요?';
+    let cue = diag || hintCueFor(p, lv === 'strong') || '다시 한 번 해 볼까요?';   // v121: 전략 발문은 strong 명령형을 스스로 만든다
     /* ④(v106) strong 학생은 명령형 — 의문형('~볼까요?')을 '선택 가능'으로 해석하는 자폐 학생 배려.
        외국어는 trKo가 원 의문형 번역으로 폴백 */
-    if (lv === 'strong') cue = cue.replace(/볼까요\?$/, '보세요.');
+    if (lv === 'strong') cue = cue.replace(/볼까요\?$/, '보세요.');   // 진단 문장·폴백 문자열용(전략 발문은 위에서 처리)
     cueFlash(p, diag);
     if (stage < 1) {
       /* v112(사용자 지시): 같은 수 더하기의 1차 피드백 = 닻 그림(동그라미 모형·입력칸은 2차부터). 오류 유형 발문(diag)이 있으면 그쪽 우선 */
@@ -2809,11 +2861,18 @@ function judgeAnswer(btn, v, ans) {
       speak(cue, unlock);
       setTimeout(unlock, lastSpeakMs + 800); return;
     }
-    let started = false;
-    const go = () => { if (started) return; started = true; locked = false; routeHint(stage); };
-    /* 패드로 바뀐 순간엔 안내 한 마디를 발문 뒤에 붙인다(외국어 사전은 문장 단위라 따로 발화) */
+    let started = false; const tokIdx = session.idx;
+    const go = () => {
+      if (started || session.idx !== tokIdx) return;   // v121: 정답·공개로 문제가 넘어간 뒤 늦게 온 보루 타이머 무시
+      started = true; locked = false; routeHint(stage);
+      /* v121 ②: 시연(speakSequence)이 도는 동안 입력 잠금 — 시연 중 오답이 cancel()로 시연을 끊고 처음부터 재시작하던 문제.
+         힌트가 스스로 잠근 경우(startColumn 등)는 건드리지 않음. 설정 '충동 탭 막기' 끄면 잠그지 않음(상한 ①이 방어) */
+      const wait = seqEndAt - Date.now();
+      if (wait > 0 && !locked && prefs.tapGuard !== false) { locked = true; setTimeout(() => { if (session.idx === tokIdx) locked = false; }, wait + 500); }
+    };
+    /* v121(사용자 지시): 패드 전환 안내 음성("이번엔 숫자를 직접 눌러 봐요") 삭제 — 패드는 말없이 바뀌고 발문 뒤 바로 힌트 */
     let said = false;
-    const sayThenGo = () => { if (said) return; said = true; if (!padNew) { go(); return; } speak(PAD_MSG, go); setTimeout(go, lastSpeakMs + 1200); };
+    const sayThenGo = () => { if (said) return; said = true; go(); };
     speak(cue, sayThenGo);
     setTimeout(sayThenGo, lastSpeakMs + 1200);
   }
@@ -2824,7 +2883,6 @@ function judgeAnswer(btn, v, ans) {
    힌트가 얼굴을 다시 그려도 paintFace 끝에서 padPaint()로 되살림. 자리별 입력(startColumn)·다음 문제에서 해제.
    ========================================================= */
 let pad = null;
-const PAD_MSG = '이번엔 숫자를 직접 눌러 봐요.';
 function showAnswerPad() {
   const p = session.items[session.idx];
   if (pad || !p || !(p.type === 'binary' || p.type === 'missing')) return false;
@@ -3981,14 +4039,42 @@ function pickDivStrat(p) {
   return null;
 }
 /* 오답 직후 공통 멘트를 전략별 발문으로(v81, 사용자 지시 ③) — 전략 미선택이면 null(기존 멘트) */
+/* v121(사용자 지시): 모든 전략 발문에 식의 숫자를 넣는다 — 함수 (p, s) → 문장(s=true면 strong 학생용 명령형).
+   조사는 헬퍼(josaGwa·josaEul·josaEun·josaIga)로, '부터'·'만큼'·'에서'·'씩'은 받침 무관. 외국어는 03_audio TRX_RX 정규식이 같은 문장을 받는다.
+   자리별(colAdd·colSub)은 절차 안내라 숫자를 넣지 않음(문자열 유지) */
 const STRAT_CUES = {
-  add: { all: '동그라미를 처음부터 모두 세어 볼까요?', on: '큰 수부터 이어서 세어 볼까요?', double: '두 수가 똑같아요. 같은 수 더하기로 생각해 볼까요?', near: '같은 수 더하기를 먼저 생각하고, 하나 더 해 볼까요?', ten: '10을 만들려면 몇이 더 필요할까요?', jump: '수직선에서 앞으로 뛰어 볼까요?' },
-  sub: { take: '빼는 만큼 지우고, 남은 것을 세어 볼까요?', back: '거꾸로 세어 볼까요?', bridge: '빼는 수를 갈라서 10을 만들어 볼까요?', ten: '10에서 먼저 빼 볼까요?', jump: '수직선에서 뒤로 뛰어 볼까요?' },
-  mul: { quad: '몇씩 몇 묶음인지 생각해 볼까요?', group: '몇씩 몇 묶음인지 생각해 볼까요?', skip: '뛰어 세어 볼까요?', swap: '순서를 바꾸어 생각해 볼까요?' },
-  div: { take: '몇 번 덜어낼 수 있을까요?', fact: '곱셈구구로 생각해 볼까요?' },
+  add: {
+    all: (p, s) => s ? `${p.a}${josaGwa(p.a)} ${p.b}${josaEul(p.b)} 처음부터 모두 세어 보세요.` : `${p.a}${josaGwa(p.a)} ${p.b}${josaEul(p.b)} 모두 세면 몇 개일까요?`,
+    on: (p, s) => { const big = Math.max(p.a, p.b), sm = Math.min(p.a, p.b); return s ? `${big}부터 ${sm}만큼 이어 세어 보세요.` : `${big}부터 ${sm}만큼 이어 세면 몇일까요?`; },
+    double: (p, s) => s ? `${p.a}${josaGwa(p.a)} ${p.a}, 두 수가 똑같아요. ${p.a}${josaEul(p.a)} 두 번 더해 보세요.` : `${p.a}${josaGwa(p.a)} ${p.a}, 두 수가 똑같아요. ${p.a}${josaEul(p.a)} 두 번 더하면 몇일까요?`,
+    near: (p, s) => { const sm = Math.min(p.a, p.b); return s ? `${sm}${josaGwa(sm)} ${sm}${josaEul(sm)} 먼저 더하고, 하나 더 해 보세요.` : `${sm}${josaGwa(sm)} ${sm}${josaEul(sm)} 먼저 더하고, 하나 더 하면 몇일까요?`; },
+    ten: (p, s) => { const big = Math.max(p.a, p.b); return s ? `${big}${josaIga(big)} 10이 되려면 몇이 더 필요한지 생각해 보세요.` : `${big}${josaEun(big)} 10이 되려면 몇이 더 필요할까요?`; },
+    jump: (p, s) => s ? `수직선에서 ${p.a}부터 ${p.b}만큼 앞으로 뛰어 보세요.` : `수직선에서 ${p.a}부터 ${p.b}만큼 앞으로 뛰면 몇일까요?`,
+  },
+  sub: {
+    take: (p, s) => s ? `${p.a}에서 ${p.b}만큼 지우고, 남은 것을 세어 보세요.` : `${p.a}에서 ${p.b}만큼 지우면 몇 개가 남을까요?`,
+    back: (p, s) => s ? `${p.a}부터 ${p.b}만큼 거꾸로 세어 보세요.` : `${p.a}부터 ${p.b}만큼 거꾸로 세면 몇일까요?`,
+    bridge: (p, s) => s ? `${p.b}${josaEul(p.b)} 갈라서 ${p.a}에서 먼저 10을 만들어 보세요.` : `${p.b}${josaEul(p.b)} 갈라서 ${p.a}에서 먼저 10을 만들어 볼까요?`,
+    ten: (p, s) => s ? `10에서 ${p.b}${josaEul(p.b)} 먼저 빼 보세요.` : `10에서 ${p.b}${josaEul(p.b)} 먼저 빼면 몇일까요?`,
+    jump: (p, s) => s ? `수직선에서 ${p.a}부터 ${p.b}만큼 뒤로 뛰어 보세요.` : `수직선에서 ${p.a}부터 ${p.b}만큼 뒤로 뛰면 몇일까요?`,
+  },
+  mul: {   // a×b = a씩 b묶음(mulStratHint와 같은 관례)
+    quad: (p, s) => s ? `${p.a}씩 ${p.b}묶음을 세어 보세요.` : `${p.a}씩 ${p.b}묶음이면 모두 몇 개일까요?`,
+    group: (p, s) => s ? `${p.a}씩 ${p.b}묶음을 세어 보세요.` : `${p.a}씩 ${p.b}묶음이면 모두 몇 개일까요?`,
+    skip: (p, s) => s ? `${p.a}씩 ${p.b}번 뛰어 세어 보세요.` : `${p.a}씩 ${p.b}번 뛰어 세면 몇일까요?`,
+    swap: (p, s) => `${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.b} 곱하기 ${p.a}${josaGwa(p.a)} 같아요. ` + (s ? '순서를 바꾸어 생각해 보세요.' : '순서를 바꾸면 몇일까요?'),
+  },
+  div: {   // a÷b = a에서 b씩
+    take: (p, s) => s ? `${p.a}에서 ${p.b}씩 덜어내며 몇 번인지 세어 보세요.` : `${p.a}에서 ${p.b}씩 몇 번 덜어낼 수 있을까요?`,
+    fact: (p, s) => s ? `${p.b} 곱하기 몇이 ${p.a}인지 곱셈구구로 생각해 보세요.` : `${p.b} 곱하기 몇이 ${p.a}일까요?`,
+  },
   /* v107 폴백 발문 — 전략 미설정·다자릿수·세 수·문장제에도 1차 오답에 생각할 거리를 준다(공통 멘트 대체) */
-  multi: { colAdd: '일의 자리부터 차례로 더해 볼까요?', colSub: '일의 자리부터 차례로 빼 볼까요?', triple: '앞의 두 수부터 계산해 볼까요?',
-    wordAdd: '모두 몇 개인지 생각해 볼까요?', wordSub: '몇 개 남았는지 생각해 볼까요?' },
+  multi: {
+    colAdd: '일의 자리부터 차례로 더해 볼까요?', colSub: '일의 자리부터 차례로 빼 볼까요?',
+    triple: (p, s) => { const w = p.op === '-' ? '빼기' : '더하기'; return s ? `${p.a} ${w} ${p.b}부터 계산해 보세요.` : `${p.a} ${w} ${p.b}부터 계산하면 몇일까요?`; },
+    wordAdd: (p, s) => s ? `${p.a}개와 ${p.b}개를 모두 세어 보세요.` : `${p.a}개와 ${p.b}개를 모두 세면 몇 개일까요?`,
+    wordSub: (p, s) => s ? `${p.a}개에서 ${p.b}개를 빼고 남은 것을 세어 보세요.` : `${p.a}개에서 ${p.b}개를 빼면 몇 개가 남을까요?`,
+  },
 };
 function cueKeyFor(p) {
   if (!p) return null;
@@ -4009,7 +4095,7 @@ function subCueFallback(p) {
   if (b <= 2) return 'back';
   return 'take';
 }
-function hintCueFor(p) { const c = cueKeyFor(p); return c ? STRAT_CUES[c.g][c.k] : null; }
+function hintCueFor(p, strong) { const c = cueKeyFor(p); if (!c) return null; const v = STRAT_CUES[c.g][c.k]; return typeof v === 'function' ? v(p, !!strong) : v; }
 /* (A) 발문-시각 동기화(v102) — 자폐 학생 시각 우세: 오답 직후 발문이 나가는 동안 관련 토큰을 잠깐 강조.
    정답은 노출하지 않는다(fade의 '스스로 기회' 취지 유지). 2.3초 뒤 자동 해제.
    공통 멘트('다시 한 번')는 강조 없음 — 특정 요소를 가리키면 오해를 만들 수 있어서 */
@@ -4533,8 +4619,7 @@ function takeTap(p, h) {
 function takeAwaySub(p, h, stage) {
   if (stage < 2) return takeTap(p, h);   // 1차: 학생이 직접 탭으로 지우고 세기(v84)
   curCirc = [{ n: p.a, cls: 'sky' }]; paintFace(true);
-  h.innerHTML = `<div class="tip">빼는 만큼 지우고, 남은 것을 세어 봐요</div>`;
-  if (stage < 2) { speak('빼는 만큼 지우고, 남은 것을 세어 봐요.'); return; }
+  h.innerHTML = `<div class="tip">${p.a}에서 ${p.b}만큼 지우면 몇 개가 남을까요?</div>`;   // v121: 발문과 같은 숫자 문장
   const dots = [...$('qface').querySelectorAll('.cdot')];
   const items = [];
   for (let k = 0; k < p.b; k++) { const d = dots[p.a - 1 - k]; items.push({ text: KO_NUM[k + 1] || String(k + 1), action: () => d && d.classList.add('slash', 'gray') }); }
