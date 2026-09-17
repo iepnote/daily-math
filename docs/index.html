@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 119 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 120 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1119,7 +1119,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 119';
+const APP_VERSION = 'ver 120';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1149,6 +1149,14 @@ function swapAdd(maxSum) {
   const minSum = maxSum === 9 && Math.random() < .7 ? 6 : 3, c = [];
   for (let a = 1; a <= 3; a++) for (let b = a + 1; a + b <= maxSum; b++) if (a + b >= minSum) c.push([a, b]);
   const [a, b] = c[R(0, c.length - 1)]; return mkAdd(a, b);
+}
+/* ---- 한 자리 뺄셈 세분 단계(174~180, v120) — 덧셈 세분(167~173)의 짝: 빼는 수(1·2·3)와 큰 수 빼기(답이 1~3 — 작은 수+큰 수의 가족 식) ---- */
+const mkSub = (a, b) => ({ type: 'binary', a, b, op: '-', ans: a - b });
+/* 큰 수 빼기: 답 1~maxAns, 빼는 수가 답보다 큼(9−8, 8−6). 9 이하는 70%를 피감수 6~9(5 이하 구간에 없던 식)로 */
+function bigSub(maxA) {
+  const minA = maxA === 9 && Math.random() < .7 ? 6 : 3, c = [];
+  for (let a = minA; a <= maxA; a++) for (let d = 1; d <= (maxA === 5 ? 2 : 3); d++) if (a - d > d) c.push([a, a - d]);
+  const [a, b] = c[R(0, c.length - 1)]; return mkSub(a, b);
 }
 function bSub(maxA) { const a = R(2, maxA); const b = R(1, a); return { type: 'binary', a, b, op: '-', ans: a - b }; }
 
@@ -1241,6 +1249,10 @@ const LEVELS = [
  { id: 168, g: "1학년 · 5까지의 수", name: "2 더하기 (5 이하)", gen: noRep(() => Math.random() < .7 ? mkAdd(R(1, 3), 2) : mkAdd(R(1, 4), 1)) },
  { id: 169, g: "1학년 · 5까지의 수", name: "작은 수 + 큰 수 (5 이하)", gen: noRep(() => swapAdd(5)) },
  { id: 120, g: "1학년 · 5까지의 수", name: "5 이하 덧셈", gen: () => bAdd(5) },
+ /* 174~176: 5 이하 뺄셈 세분(v120) — 1 빼기 → 2 빼기(1 빼기 복습 30%) → 큰 수 빼기 → 121(누적 혼합) */
+ { id: 174, g: "1학년 · 5까지의 수", name: "1 빼기 (5 이하)", gen: noRep(() => mkSub(R(2, 5), 1)) },
+ { id: 175, g: "1학년 · 5까지의 수", name: "2 빼기 (5 이하)", gen: noRep(() => Math.random() < .7 ? mkSub(R(3, 5), 2) : mkSub(R(2, 5), 1)) },
+ { id: 176, g: "1학년 · 5까지의 수", name: "큰 수 빼기 (5 이하)", gen: noRep(() => bigSub(5)) },
  { id: 121, g: "1학년 · 5까지의 수", name: "5 이하 뺄셈", gen: () => bSub(5) },
  { id: 122, g: "1학년 · 5까지의 수", name: "5 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(5) : bSub(5) },
  /* 123~124: 9 이하 덧셈·뺄셈 분리 단계 — 교육과정(합 9이하 덧셈/피감수 9이하 뺄셈)대로 혼합(125) 앞에 배치 */
@@ -1250,6 +1262,11 @@ const LEVELS = [
  { id: 172, g: "1학년 · 9까지의 수", name: "3 더하기 (9 이하)", gen: noRep(() => mkAdd(R(1, 6), 3)) },
  { id: 173, g: "1학년 · 9까지의 수", name: "작은 수 + 큰 수 (9 이하)", gen: noRep(() => swapAdd(9)) },
  { id: 123, g: "1학년 · 9까지의 수", name: "9 이하 덧셈", gen: () => bAdd(9) },
+ /* 177~180: 9 이하 뺄셈 세분(v120) — 새 범위 70% + 앞 단계 복습 30% */
+ { id: 177, g: "1학년 · 9까지의 수", name: "1 빼기 (9 이하)", gen: noRep(() => mkSub(Math.random() < .7 ? R(6, 9) : R(2, 5), 1)) },
+ { id: 178, g: "1학년 · 9까지의 수", name: "2 빼기 (9 이하)", gen: noRep(() => { const r = Math.random(); return r < .7 ? mkSub(R(6, 9), 2) : r < .85 ? mkSub(R(3, 5), 2) : mkSub(R(2, 9), 1); }) },
+ { id: 179, g: "1학년 · 9까지의 수", name: "3 빼기 (9 이하)", gen: noRep(() => mkSub(R(4, 9), 3)) },
+ { id: 180, g: "1학년 · 9까지의 수", name: "큰 수 빼기 (9 이하)", gen: noRep(() => bigSub(9)) },
  { id: 124, g: "1학년 · 9까지의 수", name: "9 이하 뺄셈", gen: () => bSub(9) },
  { id: 125, g: "1학년 · 9까지의 수", name: "9 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(9) : bSub(9) },
  { id: 126, g: "1학년 · 문장제", name: "덧셈·뺄셈 문장제", gen: wordGen },
@@ -1311,7 +1328,7 @@ const migrateLv = v => (v >= 101 ? v : (OLD2NEW[v] || LEVEL_ORDER[0]));
 const levelById = id => LEVELS.find(l => l.id === migrateLv(id)) || LEVELS[0];
 /* v101 재부여 후 id = 101 + 교육과정 순이라 지금은 오름차순과 같다.
    새 단계는 165+ 번호로 만들고 이 배열의 원하는 위치에 삽입한다(기존 id 재부여 금지). */
-const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 121, 122, 170, 171, 172, 173, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
+const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
 /* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
@@ -1321,7 +1338,7 @@ const LEVEL_BANDS = [
   { name: '수 감각', ids: [101, 102, 103, 104, 105, 111, 115, 116] },
   /* 십틀(138)·자리값 블록(127)은 수 기초 탭에(사용자 지정) — 진급 순서상 위치(10의 보수 앞·두 자리 앞)는 유지 */
   { name: '수 기초', ids: [106, 107, 108, 109, 110, 112, 113, 114, 117, 118, 119, 138, 139, 127, 128] },
-  { name: '한 자리 수 덧셈·뺄셈', ids: [167, 168, 169, 120, 121, 122, 170, 171, 172, 173, 123, 124, 125, 126] },
+  { name: '한 자리 수 덧셈·뺄셈', ids: [167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126] },
   /* v119: 덧셈 세분(167~173)으로 탭이 27개가 되어 둘로 나눔 — 세 수·10의 보수·덧셈 전략·십몇 */
   { name: '세 수·10 만들기·십몇', ids: [135, 136, 137, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147] },
   { name: '두 자리 수 덧셈·뺄셈', ids: [129, 130, 131, 132, 133, 134, 148, 149] },
@@ -1336,8 +1353,10 @@ const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128]);
 const DBL_LEVELS = new Set([143, 165, 144]);
 /* 덧셈 세분 단계의 힌트 전략 기본값(v119) — 같은 수 더하기(165~) 학습 전이라 세기 전략만: 5 이하=모두 세기, 9 이하=이어 세기. 06_study pickAddStrat이 사용 */
 const CNT_LEVELS = { 167: 'all', 168: 'all', 169: 'all', 120: 'all', 122: 'all', 170: 'on', 171: 'on', 172: 'on', 173: 'on', 123: 'on', 125: 'on' };   // 기존 5 이하·9 이하 덧셈·혼합(120·122·123·125)도 같은 이유로 고정(사용자 승인)
+/* 뺄셈 세분 단계의 힌트 전략 기본값(v120) — 덧셈의 짝: 5 이하=덜어내기(take), 9 이하 1·2·3 빼기=거꾸로 세기(back), 큰 수 빼기=덜어내기(거꾸로 8번 세기는 비효율). 06_study pickSubStrat이 사용 */
+const SUB_LEVELS = { 174: 'take', 175: 'take', 176: 'take', 177: 'back', 178: 'back', 179: 'back', 180: 'take' };
 /* 5 이하 연산 단계: 문제부터 그림+식(CRA 구체물) — 06_study renderProblem이 사용 */
-const PIC_LEVELS = new Set([120, 121, 122, 167, 168, 169]);
+const PIC_LEVELS = new Set([120, 121, 122, 167, 168, 169, 174, 175, 176]);
 const nextLevel = id => { const i = LEVEL_ORDER.indexOf(id); return i >= 0 && i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : 0; };
 
 /* =========================================================
@@ -3900,6 +3919,9 @@ function pickSubStrat(p) {
   const st = stratOf('sub'), has = k => st.includes(k);
   const a = p.a, b = p.b;
   const borrow = a > 10 && a < 20 && b < 10 && b > a % 10;   // 받아내림(십몇−한 자리)
+  /* v120: 뺄셈 세분 단계(174~180)는 단계 기본 전략으로 — 교사가 덜어내기·거꾸로 세기 중 하나만 골랐으면 그쪽(큰 수 빼기의 거꾸로 세기는 b가 커서 제외) */
+  const sl = typeof session !== 'undefined' && session && SUB_LEVELS[session.levelId];
+  if (sl) return has('take') !== has('back') && !(has('back') && b > 3) ? (has('take') ? 'take' : 'back') : sl;
   if (has('take') && a <= 5) return 'take';
   if (has('back') && b <= 2) return 'back';
   if (has('bridge') && borrow) return 'bridge';
