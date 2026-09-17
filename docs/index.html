@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 122 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 123 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1119,7 +1119,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 122';
+const APP_VERSION = 'ver 123';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1674,7 +1674,7 @@ const koCnt = n => n <= 10 ? KO_CNT[n] : (n < 20 ? '열' + KO_CNT[n - 10] : (n =
 const PRAISES = ['잘했어요!', '참 잘했어요!', '최고예요!', '딩동댕! 맞았어요!', '멋져요!', '천재예요!'];
 const praise = () => PRAISES[Math.floor(Math.random() * PRAISES.length)];
 /* 5차(v105) 과정 칭찬 — 힌트를 받고 맞힌 경우: 결과가 아니라 전략 사용·끈기를 칭찬(자기효능감·전략 전이) */
-const PRAISE_HELP = ['같이 해내서 맞혔어요! 다음엔 혼자 해 봐요.', '힌트를 잘 따라와서 맞혔어요!', '포기하지 않고 끝까지 해냈어요!'];
+const PRAISE_HELP = ['같이 해냈어요!', '힌트대로 잘했어요!', '끝까지 해냈어요!'];
 const praiseFor = w => w > 0 ? PRAISE_HELP[Math.floor(Math.random() * PRAISE_HELP.length)] : praise();
 
 /* ================= 다국어 음성(낱말놀이 문법 이식) =================
@@ -1734,26 +1734,26 @@ const ANCHOR_NM = {
   '문어 다리': { en: 'octopus legs', zh: '章鱼的腿', vi: 'chân bạch tuộc', ja: 'たこの あし', ru: 'щупальца осьминога' },
 };
 const TRX = {
-  '동그라미가 모두 몇 개일까요?': { en: 'How many circles are there?', zh: '一共有几个圆圈？', vi: 'Có tất cả mấy hình tròn?', ja: 'まるは ぜんぶで いくつ？', ru: 'Сколько всего кружков?' },
-  '어느 쪽이 더 많을까요? 많은 쪽을 눌러 주세요.': { en: 'Which side has more? Tap the bigger one.', zh: '哪边更多？请点多的一边。', vi: 'Bên nào nhiều hơn? Hãy chạm vào bên nhiều hơn.', ja: 'どっちが おおい？ おおい ほうを おしてね。', ru: 'Где больше? Нажми, где больше.' },
-  '빈칸에 알맞은 수는 무엇일까요?': { en: 'What number goes in the blank?', zh: '空格里应该填几？', vi: 'Số nào điền vào ô trống?', ja: 'あいた ますに はいる かずは？', ru: 'Какое число пропущено?' },
+  '모두 몇 개?': { en: 'How many circles are there?', zh: '一共有几个圆圈？', vi: 'Có tất cả mấy hình tròn?', ja: 'まるは ぜんぶで いくつ？', ru: 'Сколько всего кружков?' },
+  '더 많은 쪽을 눌러요.': { en: 'Tap the side with more.', zh: '点多的那一边。', vi: 'Chạm bên nhiều hơn.', ja: 'おおい ほうを おしてね。', ru: 'Нажми, где больше.' },
+  '빈칸의 수는?': { en: 'What number goes in the blank?', zh: '空格里应该填几？', vi: 'Số nào điền vào ô trống?', ja: 'あいた ますに はいる かずは？', ru: 'Какое число пропущено?' },
   '손으로 하나씩 짚으며 세어 봐요.': { en: 'Point and count one by one.', zh: '用手一个一个指着数。', vi: 'Hãy chỉ tay đếm từng cái một.', ja: 'ゆびで ひとつずつ かぞえよう。', ru: 'Считай по одному, показывая пальцем.' },
   '일의 자리부터 차례로 계산해요.': { en: 'Start from the ones place.', zh: '从个位开始按顺序算。', vi: 'Tính lần lượt từ hàng đơn vị.', ja: 'いちのくらいから じゅんばんに けいさんしよう。', ru: 'Считай по порядку с разряда единиц.' },
   '좋아요': { en: 'Good!', zh: '很好！', vi: 'Tốt lắm!', ja: 'いいね！', ru: 'Хорошо!' },
   '다시 한 번 세어 볼까요?': { en: "Let's count again!", zh: '再数一次吧！', vi: 'Đếm lại lần nữa nhé!', ja: 'もういちど かぞえてみよう！', ru: 'Давай посчитаем ещё раз!' },
   '다시 한 번 해 볼까요?': { en: "Let's try again!", zh: '再试一次吧！', vi: 'Thử lại lần nữa nhé!', ja: 'もういちど やってみよう！', ru: 'Попробуй ещё раз!' },
   '시간이 다 되었어요.': { en: "Time's up!", zh: '时间到了！', vi: 'Hết giờ rồi!', ja: 'じかんに なりました！', ru: 'Время вышло!' },
-  '빈칸에 도착했어요. 빈칸의 수를 써 보세요.': { en: 'We reached the blank. Write the number.', zh: '到空格了。写出这个数吧。', vi: 'Đến ô trống rồi. Hãy viết số đó.', ja: 'あいた ますに ついたよ。かずを かいてみよう。', ru: 'Мы дошли до пропуска. Напиши это число.' },
+  '빈칸의 수를 써요.': { en: 'Write the number in the blank.', zh: '写出空格里的数。', vi: 'Viết số vào ô trống.', ja: 'あいた ますの かずを かいてね。', ru: 'Напиши число в пустой клетке.' },
   '도전 끝! 잘했어요.': { en: 'Challenge complete! Great job!', zh: '挑战结束！做得好！', vi: 'Thử thách kết thúc! Giỏi lắm!', ja: 'チャレンジ おわり！よくできました！', ru: 'Задание выполнено! Молодец!' },
   '십이 넘어요. 1을 위 자리로 올려요.': { en: 'It goes over ten. Carry the 1.', zh: '满十了，向前一位进 1。', vi: 'Quá mười rồi, nhớ 1 sang hàng trên.', ja: '10を こえたよ。1を うえの くらいに あげよう。', ru: 'Больше десяти. Перенеси 1 в старший разряд.' },
   '큰 수를 찾아요. 큰 수부터 작은 수만큼 이어서 세요.': { en: 'Find the bigger number and count on from it.', zh: '找出大的数，从它接着数。', vi: 'Tìm số lớn hơn rồi đếm tiếp từ đó.', ja: 'おおきい かずを みつけて、つづけて かぞえよう。', ru: 'Найди большее число и считай дальше от него.' },
   '동그라미를 세어 봐요. 그리고 빗금 친 것만큼 빼요.': { en: 'Count the circles, then take away the crossed ones.', zh: '数一数圆圈，再去掉画线的。', vi: 'Đếm hình tròn rồi bớt đi phần gạch chéo.', ja: 'まるを かぞえて、せんの ぶんだけ ひこう。', ru: 'Сосчитай кружки и убери зачёркнутые.' },
   '동그라미 열 개는, 십 막대 한 개로 바뀌어요!': { en: 'Ten circles become one tens rod!', zh: '十个圆圈变成一根十的小棒！', vi: 'Mười hình tròn đổi thành một thanh chục!', ja: 'まる10こは、10の ぼう 1ぽんに かわるよ！', ru: 'Десять кружков — это одна палочка-десяток!' },
   /* ---- 수감각(50~54) 문제·힌트 (2026-08-05) ---- */
-  '둘 중에서 더 큰 것을 눌러 주세요.': { en: 'Tap the bigger one.', zh: '请点更大的那个。', vi: 'Hãy chạm vào cái to hơn.', ja: 'おおきい ほうを おしてね。', ru: 'Нажми на тот, что больше.' },
-  '접시마다 하나씩 놓아 주세요.': { en: 'Put one on each plate.', zh: '每个盘子放一个。', vi: 'Đặt mỗi đĩa một cái nhé.', ja: 'おさらに ひとつずつ おいてね。', ru: 'Положи по одному на каждую тарелку.' },
-  '위 상자와 개수가 같은 쪽을 눌러 주세요.': { en: 'Tap the box with the same number as the top.', zh: '请点和上面数量一样的箱子。', vi: 'Hãy chạm vào ô có số lượng giống ô trên.', ja: 'うえと おなじ かずの はこを おしてね。', ru: 'Нажми на коробку, где столько же, сколько сверху.' },
-  '동그라미가 몇 개인지 번쩍 보고 알아맞혀요.': { en: 'Take a quick look — how many circles?', zh: '快速看一眼，有几个圆圈？', vi: 'Nhìn nhanh xem có mấy hình tròn nhé.', ja: 'ぱっと みて、まるが いくつか あててね。', ru: 'Взгляни быстро — сколько кружков?' },
+  '더 큰 것을 눌러요.': { en: 'Tap the bigger one.', zh: '请点更大的那个。', vi: 'Hãy chạm vào cái to hơn.', ja: 'おおきい ほうを おしてね。', ru: 'Нажми на тот, что больше.' },
+  '접시마다 하나씩 놓아요.': { en: 'Put one on each plate.', zh: '每个盘子放一个。', vi: 'Đặt mỗi đĩa một cái nhé.', ja: 'おさらに ひとつずつ おいてね。', ru: 'Положи по одному на каждую тарелку.' },
+  '위와 같은 개수를 눌러요.': { en: 'Tap the box with the same number as the top.', zh: '请点和上面数量一样的箱子。', vi: 'Hãy chạm vào ô có số lượng giống ô trên.', ja: 'うえと おなじ かずの はこを おしてね。', ru: 'Нажми на коробку, где столько же, сколько сверху.' },
+  '번쩍 보고, 몇 개?': { en: 'Take a quick look — how many circles?', zh: '快速看一眼，有几个圆圈？', vi: 'Nhìn nhanh xem có mấy hình tròn nhé.', ja: 'ぱっと みて、まるが いくつか あててね。', ru: 'Взгляни быстро — сколько кружков?' },
   '두 개를 나란히 봐요. 어느 쪽이 더 클까요?': { en: 'Look at both. Which one is bigger?', zh: '两个一起看，哪个更大？', vi: 'Nhìn cả hai. Cái nào to hơn?', ja: 'ふたつを くらべてみよう。どっちが おおきい？', ru: 'Посмотри на оба. Какой больше?' },
   '이쪽이 더 커요. 큰 것을 눌러요.': { en: 'This one is bigger. Tap it.', zh: '这边更大，点它。', vi: 'Cái này to hơn. Chạm vào nó.', ja: 'こっちが おおきいよ。おしてね。', ru: 'Этот больше. Нажми на него.' },
   '세지 않아도 알 수 있어요. 어느 쪽이 더 가득한가요?': { en: "You don't need to count. Which side looks fuller?", zh: '不用数也能看出来，哪边更满？', vi: 'Không cần đếm. Bên nào trông đầy hơn?', ja: 'かぞえなくても わかるよ。どっちが いっぱいかな？', ru: 'Можно не считать. Где полнее?' },
@@ -1763,8 +1763,8 @@ const TRX = {
   '접시마다 하나씩, 골고루 나눴어요.': { en: 'One on every plate — shared out evenly!', zh: '每个盘子一个，分得真好！', vi: 'Mỗi đĩa một cái, chia đều rồi!', ja: 'おさらに ひとつずつ、うまく わけたね！', ru: 'По одному на каждой тарелке — разделил поровну!' },
   '다시 한 번 잘 봐요.': { en: 'Look again carefully.', zh: '再仔细看一次。', vi: 'Nhìn kỹ lại lần nữa nhé.', ja: 'もういちど よく みてね。', ru: 'Посмотри ещё раз внимательно.' },
   /* ---- 수감각도구 이식(55~59) 문제·힌트 (2026-08-08) ---- */
-  '어느 쪽이 더 많을까요? 똑같으면 같아요를 눌러요.': { en: 'Which side has more? If they are the same, tap "same".', zh: '哪边更多？一样多就点“一样”。', vi: 'Bên nào nhiều hơn? Nếu bằng nhau, hãy chạm "bằng nhau".', ja: 'どっちが おおい？ おなじなら「おなじ」を おしてね。', ru: 'Где больше? Если поровну — нажми «поровну».' },
-  '십 모형과 일 모형을 보고, 모두 얼마인지 골라요.': { en: 'Look at the tens and ones blocks. How much in all?', zh: '看十的模型和一的模型，一共是多少？', vi: 'Nhìn khối chục và khối đơn vị. Tất cả là bao nhiêu?', ja: '10の もけいと 1の もけいを みて、ぜんぶで いくつか えらんでね。', ru: 'Посмотри на десятки и единицы. Сколько всего?' },
+  '더 많은 쪽은? 똑같으면 같아요를 눌러요.': { en: 'Which side has more? If they are the same, tap "same".', zh: '哪边更多？一样多就点“一样”。', vi: 'Bên nào nhiều hơn? Nếu bằng nhau, hãy chạm "bằng nhau".', ja: 'どっちが おおい？ おなじなら「おなじ」を おしてね。', ru: 'Где больше? Если поровну — нажми «поровну».' },
+  '모형을 보고, 얼마인지 골라요.': { en: 'Look at the tens and ones blocks. How much in all?', zh: '看十的模型和一的模型，一共是多少？', vi: 'Nhìn khối chục và khối đơn vị. Tất cả là bao nhiêu?', ja: '10の もけいと 1の もけいを みて、ぜんぶで いくつか えらんでね。', ru: 'Посмотри на десятки и единицы. Сколько всего?' },
   '초록색에서 찾아봐요.': { en: 'Find it in the green.', zh: '在绿色里找一找。', vi: 'Hãy tìm trong vùng màu xanh lá.', ja: 'みどりの ところで さがしてね。', ru: 'Найди в зелёной зоне.' },
   '선을 눌러 깃발을 놓아 봐요.': { en: 'Tap the line to place your flag.', zh: '点一下线，放上小旗。', vi: 'Chạm vào đường thẳng để đặt lá cờ.', ja: 'せんを おして、はたを おいてみよう。', ru: 'Нажми на линию и поставь флажок.' },
   '윗줄 다섯 칸을 먼저 채워 봐요.': { en: 'Fill the top row of five first.', zh: '先把上面一行五格填满。', vi: 'Hãy tô đầy hàng trên năm ô trước.', ja: 'うえの だん 5この ますを さきに うめよう。', ru: 'Сначала заполни верхний ряд из пяти.' },
@@ -1778,7 +1778,7 @@ const TRX = {
   '빼는 만큼 지우고, 남은 것을 세어 봐요.': { en: 'Cross out that many, then count what is left.', zh: '划掉要减的数量，再数剩下的。', vi: 'Gạch bỏ số cần bớt, rồi đếm phần còn lại.', ja: 'ひく ぶんだけ けして、のこりを かぞえよう。', ru: 'Зачеркни столько, сколько вычитаешь, и посчитай остаток.' },
   '두 수가 똑같아요. 같은 수 더하기!': { en: 'The two numbers are the same. Doubles!', zh: '两个数一样，是双倍！', vi: 'Hai số giống nhau. Gấp đôi!', ja: 'ふたつの かずが おなじ。ダブル！', ru: 'Два одинаковых числа. Дубль!' },
   /* ---- 같은 수 더하기 닻 그림·거울 배열 번쩍 보기(v112) ---- */
-  '양쪽이 똑같아요. 모두 몇 개인지 번쩍 보고 알아맞혀요.': { en: 'Both sides are the same. Flash — how many in all?', zh: '两边一样。闪一下，一共有几个？', vi: 'Hai bên giống nhau. Nhìn nhanh, tất cả có mấy cái?', ja: 'りょうほう おなじだよ。ぱっと みて、ぜんぶで いくつ？', ru: 'Обе стороны одинаковые. Взгляни быстро — сколько всего?' },
+  '양쪽이 똑같아요. 모두 몇 개?': { en: 'Both sides are the same. Flash — how many in all?', zh: '两边一样。闪一下，一共有几个？', vi: 'Hai bên giống nhau. Nhìn nhanh, tất cả có mấy cái?', ja: 'りょうほう おなじだよ。ぱっと みて、ぜんぶで いくつ？', ru: 'Обе стороны одинаковые. Взгляни быстро — сколько всего?' },
   '양쪽이 똑같아요. 둘씩 세어 봐요.': { en: 'Both sides are the same. Count by twos.', zh: '两边一样。两个两个地数。', vi: 'Hai bên giống nhau. Đếm từng hai.', ja: 'りょうほう おなじ。2こずつ かぞえよう。', ru: 'Обе стороны одинаковые. Считай по два.' },
   '그림으로 나타내 봐요.': { en: 'Show it with a picture.', zh: '用图画表示出来。', vi: 'Hãy thể hiện bằng hình vẽ.', ja: 'えで あらわしてみよう。', ru: 'Покажи это картинкой.' },
   /* ---- 전략별 오답 발문(v81) ---- */
@@ -1786,29 +1786,25 @@ const TRX = {
   /* v107 폴백 발문 + 숫자패드 안내 */
   '일의 자리부터 더해요.': { en: 'Start adding from the ones place.', zh: '从个位开始加。', vi: 'Cộng từ hàng đơn vị trước.', ja: 'いちの くらいから たそう。', ru: 'Начни складывать с единиц.' },
   '일의 자리부터 빼요.': { en: 'Start subtracting from the ones place.', zh: '从个位开始减。', vi: 'Trừ từ hàng đơn vị trước.', ja: 'いちの くらいから ひこう。', ru: 'Начни вычитать с единиц.' },
-  '동그라미를 옮겨서 10을 만들어 보세요.': { en: 'Move the circles to make 10.', zh: '把圆圈移过去，凑成 10。', vi: 'Kéo hình tròn sang để tạo thành 10.', ja: 'まるを うごかして 10を つくってね。', ru: 'Передвинь кружки и составь 10.' },
+  '옮겨서 10을 만들어요.': { en: 'Move the circles to make 10.', zh: '把圆圈移过去，凑成 10。', vi: 'Kéo hình tròn sang để tạo thành 10.', ja: 'まるを うごかして 10を つくってね。', ru: 'Передвинь кружки и составь 10.' },
   /* ---- 전략 1차 직접 조작(v84: 모두 세기·더블·더블+1·점프·덜어내기·거꾸로·가르기·묶음) ---- */
-  '동그라미를 하나씩 누르면서 처음부터 모두 세어 보세요.': { en: 'Tap the circles one by one and count them all from the start.', zh: '一个一个点圆圈，从头全部数一遍。', vi: 'Chạm từng hình tròn và đếm tất cả từ đầu.', ja: 'まるを ひとつずつ おして、はじめから ぜんぶ かぞえてね。', ru: 'Нажимай кружки по одному и посчитай все с начала.' },
-  '모두 세었어요. 모두 몇일까요?': { en: 'We counted them all. How many in all?', zh: '全都数完了。一共是几？', vi: 'Đã đếm hết rồi. Tất cả là mấy?', ja: 'ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы всё посчитали. Сколько всего?' },
-  '동그라미를 누르면 짝도 같이 세어져요. 둘씩 세어 보세요.': { en: 'Tap a circle and its partner counts too. Count by twos.', zh: '点一个圆圈，它的搭档也一起数。两个两个地数。', vi: 'Chạm một hình tròn, bạn cặp cũng được đếm. Đếm từng đôi nhé.', ja: 'まるを おすと、ペアも いっしょに かぞえるよ。2ずつ かぞえてね。', ru: 'Нажми кружок — его пара тоже считается. Считай по два.' },
-  '둘씩 세었어요. 모두 몇일까요?': { en: 'We counted by twos. How many in all?', zh: '两个两个数完了。一共是几？', vi: 'Đã đếm từng đôi. Tất cả là mấy?', ja: '2ずつ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали по два. Сколько всего?' },
-  '동그라미를 누르면서 같은 수를 먼저 세어 보세요.': { en: 'Tap the circles and count the double first.', zh: '点圆圈，先数双倍的部分。', vi: 'Chạm hình tròn và đếm phần gấp đôi trước.', ja: 'まるを おして、まず ダブルを かぞえてね。', ru: 'Нажимай кружки и сначала посчитай дубль.' },
-  '같은 수를 다 세었어요. 이제 하나 더!': { en: 'The double is done. Now one more!', zh: '双倍数完了。再来一个！', vi: 'Đếm xong gấp đôi rồi. Giờ thêm một!', ja: 'ダブルは かぞえたね。あと ひとつ！', ru: 'Дубль посчитан. Теперь ещё один!' },
-  '하나 더 세었어요. 모두 몇일까요?': { en: 'We counted one more. How many in all?', zh: '又数了一个。一共是几？', vi: 'Đã đếm thêm một. Tất cả là mấy?', ja: 'もう ひとつ かぞえたね。ぜんぶで いくつ？', ru: 'Посчитали ещё один. Сколько всего?' },
+  '눌러서 모두 세요.': { en: 'Tap and count them all.', zh: '点一点，全部数一数。', vi: 'Chạm và đếm tất cả.', ja: 'おして ぜんぶ かぞえてね。', ru: 'Нажимай и сосчитай все.' },
+  '눌러서 둘씩 세요.': { en: 'Tap and count by twos.', zh: '点一点，两个两个地数。', vi: 'Chạm và đếm hai cái một.', ja: 'おして ふたつずつ かぞえてね。', ru: 'Нажимай и считай по два.' },
+  '같은 수를 먼저 눌러 세요.': { en: 'Tap the circles and count the double first.', zh: '点圆圈，先数双倍的部分。', vi: 'Chạm hình tròn và đếm phần gấp đôi trước.', ja: 'まるを おして、まず ダブルを かぞえてね。', ru: 'Нажимай кружки и сначала посчитай дубль.' },
+  '이제 하나 더!': { en: 'Now one more!', zh: '现在再加一个！', vi: 'Giờ thêm một nữa!', ja: 'つぎは もう ひとつ！', ru: 'Теперь ещё один!' },
   '한 칸씩 뛰어요.': { en: 'Jump one step at a time.', zh: '一格一格地跳。', vi: 'Nhảy từng bước một.', ja: '1こずつ とぼう。', ru: 'Прыгай по одному шагу.' },
   '모두 몇일까요?': { en: 'How many in all?', zh: '一共是几？', vi: 'Tất cả là mấy?', ja: 'ぜんぶで いくつ？', ru: 'Сколько всего?' },
-  '다 지웠어요. 몇 개가 남았나요?': { en: 'All crossed out. How many are left?', zh: '全划掉了。还剩几个？', vi: 'Đã gạch hết. Còn lại mấy cái?', ja: 'ぜんぶ けしたね。いくつ のこった？', ru: 'Всё зачеркнули. Сколько осталось?' },
-  '빗금 동그라미를 끌어서 하나씩 빼 보세요. 먼저 10을 만들어요.': { en: 'Drag the crossed circles to take them away one by one. Make 10 first.', zh: '把画线的圆圈拖过去一个一个减。先凑成 10。', vi: 'Kéo hình tròn gạch chéo để bớt từng cái. Tạo số 10 trước.', ja: 'せんの まるを ドラッグして ひとつずつ ひこう。まず 10を つくるよ。', ru: 'Перетаскивай зачёркнутые кружки по одному. Сначала сделай 10.' },
-  '10이 되었어요! 십 막대 한 개는 동그라미 몇 개일까요? 열 개! 남은 것도 끌어서 빼 보세요.': { en: 'We made 10! How many circles is one tens rod? Ten! Now drag the rest to take them away.', zh: '凑成 10 了！一根十的小棒是几个圆圈？十个！把剩下的也拖过去减。', vi: 'Đã thành 10! Một thanh chục là mấy hình tròn? Mười! Kéo phần còn lại để bớt tiếp.', ja: '10に なったよ！10の ぼう 1ぽんは まる なんこかな？ 10こ！のこりも ドラッグして ひこう。', ru: 'Получилось 10! Сколько кружков в палочке-десятке? Десять! Перетащи остальные.' },
+  '몇 개 남았나요?': { en: 'How many are left?', zh: '还剩几个？', vi: 'Còn lại mấy cái?', ja: 'なんこ のこった？', ru: 'Сколько осталось?' },
+  '빗금을 끌어서 빼요. 먼저 10!': { en: 'Drag the crossed circles to take them away one by one. Make 10 first.', zh: '把画线的圆圈拖过去一个一个减。先凑成 10。', vi: 'Kéo hình tròn gạch chéo để bớt từng cái. Tạo số 10 trước.', ja: 'せんの まるを ドラッグして ひとつずつ ひこう。まず 10を つくるよ。', ru: 'Перетаскивай зачёркнутые кружки по одному. Сначала сделай 10.' },
+  '10이 됐어요! 십 막대는 열 개. 남은 것도 빼요.': { en: 'We made 10! A tens rod is ten circles. Take away the rest too.', zh: '变成 10 了！十的小棒是十个圆圈。把剩下的也减掉。', vi: 'Đã thành 10! Thanh chục là mười hình tròn. Bớt nốt phần còn lại.', ja: '10に なったね！10の ぼうは まる 10こ。のこりも ひこう。', ru: 'Получилось 10! Палочка-десяток — это десять кружков. Убери и остальное.' },
   /* ---- 발문형 교체(v87: 변신 내레이션을 묻고-답하기로) ---- */
   '동그라미 열 개는 무엇으로 바꿀 수 있을까요?': { en: 'What can ten circles change into?', zh: '十个圆圈可以变成什么？', vi: 'Mười hình tròn có thể đổi thành gì?', ja: 'まる 10こは なにに かえられるかな？', ru: 'Во что можно превратить десять кружков?' },
   '십 막대 한 개!': { en: 'One tens rod!', zh: '一根十的小棒！', vi: 'Một thanh chục!', ja: '10の ぼう 1ぽん！', ru: 'Одна палочка-десяток!' },
   '동그라미가 모자라요. 십 막대 한 개는 동그라미 몇 개일까요?': { en: 'Not enough circles. How many circles is one tens rod?', zh: '圆圈不够了。一根十的小棒是几个圆圈？', vi: 'Không đủ hình tròn. Một thanh chục là mấy hình tròn?', ja: 'まるが たりないよ。10の ぼう 1ぽんは まる なんこかな？', ru: 'Кружков не хватает. Сколько кружков в палочке-десятке?' },
   '십 막대 한 개는 동그라미 몇 개일까요?': { en: 'How many circles is one tens rod?', zh: '一根十的小棒是几个圆圈？', vi: 'Một thanh chục là mấy hình tròn?', ja: '10の ぼう 1ぽんは まる なんこかな？', ru: 'Сколько кружков в палочке-десятке?' },
   '열 개!': { en: 'Ten!', zh: '十个！', vi: 'Mười!', ja: '10こ！', ru: 'Десять!' },
-  '묶음을 다 세었어요. 모두 몇일까요?': { en: 'We counted all the groups. How many in all?', zh: '所有的组都数完了。一共是几？', vi: 'Đã đếm hết các nhóm. Tất cả là mấy?', ja: 'たばを ぜんぶ かぞえたね。ぜんぶで いくつ？', ru: 'Мы посчитали все группы. Сколько всего?' },
   /* ---- 수감각도구 잔여 3건(v94: 십틀 10 만들기·자리값 만들기·거꾸로 세기) ---- */
-  '십틀이 10이 되도록 빈칸을 채워요.': { en: 'Fill the empty cells to make 10.', zh: '把空格填满，凑成 10。', vi: 'Tô các ô trống để thành 10.', ja: 'あいた ますを うめて 10に しよう。', ru: 'Заполни пустые клетки, чтобы получилось 10.' },
+  '10이 되게 빈칸을 채워요.': { en: 'Fill the empty cells to make 10.', zh: '把空格填满，凑成 10。', vi: 'Tô các ô trống để thành 10.', ja: 'あいた ますを うめて 10に しよう。', ru: 'Заполни пустые клетки, чтобы получилось 10.' },
   '빈칸을 채워서 10을 만들어 봐요.': { en: "Fill the empty cells and make 10.", zh: '填满空格，凑成 10。', vi: 'Tô ô trống để tạo thành 10.', ja: 'あいた ますを うめて 10を つくろう。', ru: 'Заполни пустые клетки и составь 10.' },
   '앞 숫자만큼 십 막대를, 뒷 숫자만큼 동그라미를 놓아요.': { en: 'Place tens rods for the first digit, circles for the last digit.', zh: '前面的数字放小棒，后面的数字放圆圈。', vi: 'Đặt thanh chục theo chữ số đầu, hình tròn theo chữ số cuối.', ja: 'まえの すうじの ぶん 10の ぼうを、うしろの すうじの ぶん まるを おこう。', ru: 'Первая цифра — палочки-десятки, последняя — кружки.' },
   '아홉 개까지만 놓을 수 있어요.': { en: 'You can place up to nine.', zh: '最多只能放九个。', vi: 'Chỉ đặt được tối đa chín cái.', ja: '9こまでしか おけないよ。', ru: 'Можно положить не больше девяти.' },
@@ -1816,7 +1812,7 @@ const TRX = {
   '십 막대가 모자라요.': { en: 'Not enough tens rods.', zh: '十的小棒不够。', vi: 'Chưa đủ thanh chục.', ja: '10の ぼうが たりないよ。', ru: 'Палочек-десятков не хватает.' },
   '동그라미가 너무 많아요.': { en: 'Too many circles.', zh: '圆圈太多了。', vi: 'Quá nhiều hình tròn.', ja: 'まるが おおすぎるよ。', ru: 'Слишком много кружков.' },
   '동그라미가 모자라요.': { en: 'Not enough circles.', zh: '圆圈不够。', vi: 'Chưa đủ hình tròn.', ja: 'まるが たりないよ。', ru: 'Кружков не хватает.' },
-  '거꾸로 세어요. 빈칸의 수는 무엇일까요?': { en: 'Count backwards. What number goes in the blank?', zh: '倒着数。空格里应该填几？', vi: 'Đếm ngược. Số nào điền vào ô trống?', ja: 'さかさまに かぞえよう。あいた ますの かずは？', ru: 'Считай назад. Какое число пропущено?' },
+  '거꾸로 세요. 빈칸은?': { en: 'Count backwards. What number goes in the blank?', zh: '倒着数。空格里应该填几？', vi: 'Đếm ngược. Số nào điền vào ô trống?', ja: 'さかさまに かぞえよう。あいた ますの かずは？', ru: 'Считай назад. Какое число пропущено?' },
   /* ---- SEM 타임어택 워밍업(v90) ---- */
   '빨리 풀기! 아는 문제를 빠르게 풀어 봐요. 시작!': { en: "Speed round! Solve the ones you know, fast. Go!", zh: '快速挑战！把会的题快快做完。开始！', vi: 'Vòng nhanh! Giải nhanh các bài đã biết. Bắt đầu!', ja: 'はやとき！しっている もんだいを はやく とこう。スタート！', ru: 'Скоростной раунд! Решай знакомые примеры быстро. Старт!' },
   /* ---- SEM 오류 유형 판정(v86) ---- */
@@ -1838,18 +1834,23 @@ const TRX = {
   '잘 따라 눌렀어요!': { en: 'You followed along nicely!', zh: '跟着按得真好！', vi: 'Con bấm theo giỏi lắm!', ja: 'じょうずに ついて おせたね！', ru: 'Ты отлично повторил!' },
   '남은 동그라미는 일의 자리로.': { en: 'The leftover circles go to the ones place.', zh: '剩下的圆圈放到个位。', vi: 'Hình tròn còn lại về hàng đơn vị.', ja: 'のこりの まるは いちの くらいへ。', ru: 'Оставшиеся кружки — в разряд единиц.' },
   /* ---- 4차 조작형 보강(v105: 10에서 빼기·뛰어 세기·나눗셈·십틀 탭) ---- */
-  '십 막대를 눌러 보세요. 열 개로 바뀌어요.': { en: 'Tap the tens rod. It turns into ten circles.', zh: '点一下十的小棒，会变成十个圆圈。', vi: 'Chạm thanh chục. Nó đổi thành mười hình tròn.', ja: '10の ぼうを おしてね。まる 10こに かわるよ。', ru: 'Нажми на палочку-десяток — она станет десятью кружками.' },
-  '끝까지 뛰었어요. 모두 몇일까요?': { en: 'We jumped to the end. How many in all?', zh: '跳到最后了。一共是几？', vi: 'Đã nhảy đến cuối. Tất cả là mấy?', ja: 'さいごまで とんだね。ぜんぶで いくつ？', ru: 'Мы допрыгали до конца. Сколько всего?' },
-  '묶음을 하나씩 누르면서 몇 묶음인지 세어 보세요.': { en: 'Tap the groups one by one and count how many groups.', zh: '一组一组点，数一数有几组。', vi: 'Chạm từng nhóm và đếm xem có mấy nhóm.', ja: 'たばを ひとつずつ おして、なんたばか かぞえてね。', ru: 'Нажимай группы по одной и считай, сколько групп.' },
-  '묶음을 다 세었어요. 몇 묶음일까요?': { en: 'We counted all the groups. How many groups?', zh: '所有的组都数完了。有几组？', vi: 'Đã đếm hết các nhóm. Có mấy nhóm?', ja: 'たばを ぜんぶ かぞえたね。なんたばかな？', ru: 'Мы посчитали все группы. Сколько групп?' },
-  '점선 동그라미를 눌러서 빼 보세요.': { en: 'Tap the dotted circles to take them away.', zh: '点虚线圆圈，把它们减掉。', vi: 'Chạm hình tròn chấm chấm để bớt đi.', ja: 'てんせんの まるを おして ひいてみよう。', ru: 'Нажимай пунктирные кружки, чтобы убрать их.' },
-  '빈칸을 눌러서 채워 보세요.': { en: 'Tap the empty cells to fill them.', zh: '点空格，把它填满。', vi: 'Chạm ô trống để tô vào.', ja: 'あいた ますを おして うめてみよう。', ru: 'Нажимай пустые клетки и заполняй их.' },
-  '다 지웠어요. 몇 개를 뺐나요?': { en: 'All crossed out. How many did we take away?', zh: '都划掉了。减了几个？', vi: 'Đã gạch hết. Bớt đi mấy cái?', ja: 'ぜんぶ けしたね。なんこ ひいたかな？', ru: 'Всё зачеркнули. Сколько мы убрали?' },
-  '십틀을 다 채웠어요. 몇 개를 더했나요?': { en: 'The ten-frame is full. How many did we add?', zh: '十格都填满了。加了几个？', vi: 'Khung mười đã đầy. Đã thêm mấy cái?', ja: '10わくが いっぱいに なったね。なんこ たしたかな？', ru: 'Десятиклеточная рамка полна. Сколько мы добавили?' },
+  '십 막대를 눌러요.': { en: 'Tap the tens rod.', zh: '点一下十的小棒。', vi: 'Chạm thanh chục.', ja: '10の ぼうを おしてね。', ru: 'Нажми на палочку-десяток.' },
+  '묶음을 눌러 세요.': { en: 'Tap the groups and count them.', zh: '点一点每一组，数一数。', vi: 'Chạm từng nhóm và đếm.', ja: 'たばを おして かぞえてね。', ru: 'Нажимай группы и считай.' },
+  '몇 묶음일까요?': { en: 'How many groups?', zh: '有几组？', vi: 'Có mấy nhóm?', ja: 'なんたばかな？', ru: 'Сколько групп?' },
+  '점선을 눌러 빼요.': { en: 'Tap the dotted circles to take them away.', zh: '点虚线圆圈，把它们减掉。', vi: 'Chạm hình tròn chấm chấm để bớt đi.', ja: 'てんせんの まるを おして ひいてみよう。', ru: 'Нажимай пунктирные кружки, чтобы убрать их.' },
+  '빈칸을 눌러 채워요.': { en: 'Tap the empty cells to fill them.', zh: '点空格，把它填满。', vi: 'Chạm ô trống để tô vào.', ja: 'あいた ますを おして うめてみよう。', ru: 'Нажимай пустые клетки и заполняй их.' },
+  '몇 개를 뺐나요?': { en: 'How many did we take away?', zh: '减了几个？', vi: 'Bớt đi mấy cái?', ja: 'なんこ ひいたかな？', ru: 'Сколько мы убрали?' },
+  '몇 개를 더했나요?': { en: 'How many did we add?', zh: '加了几个？', vi: 'Đã thêm mấy cái?', ja: 'なんこ たしたかな？', ru: 'Сколько мы добавили?' },
+  '자리에 맞게 옮겨요.': { en: 'Move them to the right places.', zh: '把它们移到对应的数位。', vi: 'Chuyển chúng về đúng hàng.', ja: 'くらいに あわせて うごかそう。', ru: 'Перенеси их на свои места.' },
+  '어디에 도착했나요?': { en: 'Where did you land?', zh: '到了哪里？', vi: 'Đã đến đâu?', ja: 'どこに ついたかな？', ru: 'Где ты оказался?' },
+  '남은 것을 모두 세요.': { en: 'Count all that is left.', zh: '把剩下的全部数一数。', vi: 'Đếm hết phần còn lại.', ja: 'のこりを ぜんぶ かぞえてね。', ru: 'Сосчитай всё, что осталось.' },
+  '몇이 남았나요?': { en: 'How many are left?', zh: '还剩几？', vi: 'Còn lại mấy?', ja: 'いくつ のこった？', ru: 'Сколько осталось?' },
+  '남은 것을 세요.': { en: 'Count what is left.', zh: '数一数剩下的。', vi: 'Đếm phần còn lại.', ja: 'のこりを かぞえてね。', ru: 'Посчитай остаток.' },
+  '몇 번 덜어냈나요?': { en: 'How many times did we take away?', zh: '拿走了几次？', vi: 'Đã bớt mấy lần?', ja: 'なんかい とったかな？', ru: 'Сколько раз мы убрали?' },
   /* ---- 5차 과정 칭찬(v105) ---- */
-  '같이 해내서 맞혔어요! 다음엔 혼자 해 봐요.': { en: 'We did it together! Next time, try it by yourself.', zh: '我们一起做对了！下次自己试试。', vi: 'Cùng nhau làm đúng rồi! Lần sau con tự làm nhé.', ja: 'いっしょに できたね！つぎは ひとりで やってみよう。', ru: 'Мы справились вместе! В следующий раз попробуй сам.' },
-  '힌트를 잘 따라와서 맞혔어요!': { en: 'You followed the hint and got it right!', zh: '跟着提示做对了！', vi: 'Con theo gợi ý và làm đúng rồi!', ja: 'ヒントに そって できたね！', ru: 'Ты следовал подсказке и решил правильно!' },
-  '포기하지 않고 끝까지 해냈어요!': { en: "You didn't give up and made it to the end!", zh: '没有放弃，坚持到最后了！', vi: 'Con không bỏ cuộc và làm đến cùng!', ja: 'あきらめずに さいごまで やりとげたね！', ru: 'Ты не сдался и дошёл до конца!' },
+  '같이 해냈어요!': { en: 'We did it together!', zh: '我们一起做对了！', vi: 'Cùng nhau làm được rồi!', ja: 'いっしょに できたね！', ru: 'Мы справились вместе!' },
+  '힌트대로 잘했어요!': { en: 'You followed the hint and got it right!', zh: '跟着提示做对了！', vi: 'Con theo gợi ý và làm đúng rồi!', ja: 'ヒントに そって できたね！', ru: 'Ты следовал подсказке и решил правильно!' },
+  '끝까지 해냈어요!': { en: 'You made it to the end!', zh: '坚持到最后了！', vi: 'Con đã làm đến cùng!', ja: 'さいごまで やりとげたね！', ru: 'Ты дошёл до конца!' },
 };
 /* hintTwo 단서(더해/빼 × 세로/가로) */
 [['더해', { en: 'add', zh: '加一加', vi: 'cộng lại', ja: 'たしてみよう', ru: 'сложи' }], ['빼', { en: 'subtract', zh: '减一减', vi: 'trừ đi', ja: 'ひいてみよう', ru: 'вычти' }]].forEach(([k, w]) => {
@@ -1945,14 +1946,14 @@ function trKo(t, kind) {
   /* 문제 읽기 */
   if (m = t.match(/^(\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/)) return `${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`;
   if (m = t.match(/^(\d+) (더하기|빼기) (\d+) (더하기|빼기) (\d+)[은는]\?$/)) return `${m[1]} ${op(m[2])} ${m[3]} ${op(m[4])} ${m[5]}${T(EQW)}`;
-  if (m = t.match(/^(\d+)에 얼마를 더하면 10이 될까요\?$/)) return T({ en: `${m[1]} plus what makes 10?`, zh: `${m[1]} 加几等于 10？`, vi: `${m[1]} cộng mấy bằng 10?`, ja: `${m[1]}に いくつ たすと 10？`, ru: `${m[1]} плюс сколько будет 10?` });
+  if (m = t.match(/^(\d+)에 몇을 더하면 10\?$/)) return T({ en: `${m[1]} plus what makes 10?`, zh: `${m[1]} 加几等于 10？`, vi: `${m[1]} cộng mấy bằng 10?`, ja: `${m[1]}に いくつ たすと 10？`, ru: `${m[1]} плюс сколько будет 10?` });
   if (m = t.match(/^10이 되려면 (\d+)[와과] 무엇을 더해야 할까요\?$/)) return T({ en: `${m[1]} plus what makes 10?`, zh: `${m[1]} 加几等于 10？`, vi: `${m[1]} cộng mấy bằng 10?`, ja: `${m[1]}に いくつ たすと 10？`, ru: `${m[1]} плюс сколько будет 10?` });
-  if (m = t.match(/^10에서 얼마를 빼면 (\d+)[이가] 될까요\?$/)) return T({ en: `10 minus what makes ${m[1]}?`, zh: `10 减几等于 ${m[1]}？`, vi: `10 trừ mấy bằng ${m[1]}?`, ja: `10から いくつ ひくと ${m[1]}？`, ru: `10 минус сколько будет ${m[1]}?` });
-  if (m = t.match(/^동그라미를 (\d+)개, 접시에 담아 주세요\.$/)) return T({ en: `Put ${m[1]} on the plate.`, zh: `把 ${m[1]} 个放到盘子里。`, vi: `Hãy đặt ${m[1]} cái vào đĩa.`, ja: `${m[1]}こ、おさらに いれてね。`, ru: `Положи ${m[1]} на тарелку.` });
-  if (m = t.match(/^(\d+)[과와] (\d+)[을를] 모으면 얼마일까요\?$/)) return T({ en: `How much is ${m[1]} and ${m[2]} together?`, zh: `${m[1]} 和 ${m[2]} 合起来是几？`, vi: `${m[1]} và ${m[2]} gộp lại là mấy?`, ja: `${m[1]}と ${m[2]}を あわせると いくつ？`, ru: `Сколько будет ${m[1]} и ${m[2]} вместе?` });
-  if (m = t.match(/^(\d+)[은는] (\d+)[과와] 몇으로 가를 수 있을까요\?$/)) return T({ en: `${m[1]} splits into ${m[2]} and what?`, zh: `${m[1]} 可以分成 ${m[2]} 和几？`, vi: `${m[1]} tách thành ${m[2]} và mấy?`, ja: `${m[1]}は ${m[2]}と いくつに わけられる？`, ru: `${m[1]} — это ${m[2]} и сколько?` });
+  if (m = t.match(/^10에서 몇을 빼면 (\d+)\?$/)) return T({ en: `10 minus what makes ${m[1]}?`, zh: `10 减几等于 ${m[1]}？`, vi: `10 trừ mấy bằng ${m[1]}?`, ja: `10から いくつ ひくと ${m[1]}？`, ru: `10 минус сколько будет ${m[1]}?` });
+  if (m = t.match(/^(\d+)개를 접시에 담아요\.$/)) return T({ en: `Put ${m[1]} on the plate.`, zh: `把 ${m[1]} 个放到盘子里。`, vi: `Hãy đặt ${m[1]} cái vào đĩa.`, ja: `${m[1]}こ、おさらに いれてね。`, ru: `Положи ${m[1]} на тарелку.` });
+  if (m = t.match(/^(\d+)[과와] (\d+)[을를] 모으면\?$/)) return T({ en: `How much is ${m[1]} and ${m[2]} together?`, zh: `${m[1]} 和 ${m[2]} 合起来是几？`, vi: `${m[1]} và ${m[2]} gộp lại là mấy?`, ja: `${m[1]}と ${m[2]}を あわせると いくつ？`, ru: `Сколько будет ${m[1]} и ${m[2]} вместе?` });
+  if (m = t.match(/^(\d+)[은는] (\d+)[과와] 몇\?$/)) return T({ en: `${m[1]} splits into ${m[2]} and what?`, zh: `${m[1]} 可以分成 ${m[2]} 和几？`, vi: `${m[1]} tách thành ${m[2]} và mấy?`, ja: `${m[1]}は ${m[2]}と いくつに わけられる？`, ru: `${m[1]} — это ${m[2]} и сколько?` });
   if (m = t.match(/^(\d+) 곱하기 (\d+)[은는] (\d+)\. 맞으면/)) return T({ en: `${m[1]} times ${m[2]} is ${m[3]}. Right or wrong?`, zh: `${m[1]} 乘 ${m[2]} 等于 ${m[3]}，对不对？`, vi: `${m[1]} nhân ${m[2]} bằng ${m[3]}, đúng hay sai?`, ja: `${m[1]}かける${m[2]}は ${m[3]}。あってる？`, ru: `${m[1]} умножить на ${m[2]} будет ${m[3]}. Верно или нет?` });
-  if (m = t.match(/^(\d+)씩 뛰어 세어요\./)) return T({ en: `Skip count by ${m[1]}. What number goes in the blank?`, zh: `${m[1]} 个 ${m[1]} 个地数。空格里应该填几？`, vi: `Đếm cách ${m[1]}. Số nào điền vào ô trống?`, ja: `${m[1]}とびで かぞえよう。あいた ますの かずは？`, ru: `Считай по ${m[1]}. Какое число пропущено?` });
+  if (m = t.match(/^(\d+)씩 뛰어 세요\. 빈칸은\?$/)) return T({ en: `Skip count by ${m[1]}. What number goes in the blank?`, zh: `${m[1]} 个 ${m[1]} 个地数。空格里应该填几？`, vi: `Đếm cách ${m[1]}. Số nào điền vào ô trống?`, ja: `${m[1]}とびで かぞえよう。あいた ますの かずは？`, ru: `Считай по ${m[1]}. Какое число пропущено?` });
   /* 두 자리 덧셈 전략 힌트(v99) */
   if (m = t.match(/^일의 자리의 덧셈부터 해요\. (\d+)의 10 짝꿍수만큼 옮겨서 더해 봐요\. 10이 넘으면 받아올림 해요\.$/))
     return T({ en: `Start with the ones. Move as many as ${m[1]} needs to make 10, then carry.`, zh: `先算个位。把 ${m[1]} 凑十所差的个数移过来，超过 10 就进位。`, vi: `Bắt đầu từ hàng đơn vị. Chuyển đủ số để ${m[1]} thành 10, quá 10 thì nhớ.`, ja: `いちのくらいから。${m[1]}が 10に なる ぶんだけ うつして、10を こえたら くりあげよう。`, ru: `Начни с единиц. Перенеси столько, сколько ${m[1]} не хватает до 10, и сделай перенос.` });
@@ -2038,12 +2039,12 @@ function trKo(t, kind) {
   if (m = t.match(/^(\d+)[을를] (.+?) 번 덜어냈어요\. 정답은 (\d+)/)) { const n = cntToNum(m[2]) || m[2];
     return T({ en: `Took away ${m[1]}, ${n} times. The answer is ${m[3]}.`, zh: `拿走了 ${n} 次 ${m[1]}。答案是 ${m[3]}。`, vi: `Đã bớt ${m[1]}, ${n} lần. Đáp án là ${m[3]}.`, ja: `${m[1]}を ${n}かい とったよ。こたえは ${m[3]}。`, ru: `Убрали ${m[1]} ${n} раз(а). Ответ: ${m[3]}.` }); }
   /* 이어 세기 탭 조작(v82) */
-  if (m = t.match(/^큰 수 (\d+)부터! 동그라미를 하나씩 누르면서 이어 세어 보세요\.$/))
+  if (m = t.match(/^(\d+)부터! 눌러서 이어 세요\.$/))
     return T({ en: `Start at the bigger number, ${m[1]}! Tap the circles one by one and count on.`, zh: `从大的数 ${m[1]} 开始！一个一个点圆圈接着数。`, vi: `Bắt đầu từ số lớn ${m[1]}! Chạm từng hình tròn và đếm tiếp.`, ja: `おおきい かず ${m[1]}から！まるを ひとつずつ おして つづけて かぞえてね。`, ru: `Начни с большего числа, ${m[1]}! Нажимай кружки по одному и считай дальше.` });
   if (m = t.match(/^(\d+)부터 이어 세었어요\. 모두 몇일까요\?$/))
     return T({ en: `We counted on from ${m[1]}. How many in all?`, zh: `从 ${m[1]} 接着数完了。一共是几？`, vi: `Đã đếm tiếp từ ${m[1]}. Tất cả là mấy?`, ja: `${m[1]}から つづけて かぞえたね。ぜんぶで いくつ？`, ru: `Мы досчитали от ${m[1]}. Сколько всего?` });
   /* 수감각도구 잔여 3건 패턴(v94) */
-  if (m = t.match(/^(\d+)[을를] 십 모형과 일 모형으로 만들어요\.$/))
+  if (m = t.match(/^(\d+)[을를] 모형으로 만들어요\.$/))
     return T({ en: `Build ${m[1]} with tens and ones blocks.`, zh: `用十的模型和一的模型摆出 ${m[1]}。`, vi: `Xếp số ${m[1]} bằng khối chục và khối đơn vị.`, ja: `${m[1]}を 10の もけいと 1の もけいで つくろう。`, ru: `Составь ${m[1]} из десятков и единиц.` });
   if (m = t.match(/^(\d+)[은는] 십 (\d+)개와 일 (\d+)개예요\.$/))
     return T({ en: `${m[1]} is ${m[2]} tens and ${m[3]} ones.`, zh: `${m[1]} 是 ${m[2]} 个十和 ${m[3]} 个一。`, vi: `${m[1]} là ${m[2]} chục và ${m[3]} đơn vị.`, ja: `${m[1]}は 10が ${m[2]}こと 1が ${m[3]}こ。`, ru: `${m[1]} — это ${m[2]} десятков и ${m[3]} единиц.` });
@@ -2061,19 +2062,19 @@ function trKo(t, kind) {
   if (m = t.match(/^빨리 풀기 끝! (\d+)문제를 (\d+)초에 풀었어요\.$/))
     return T({ en: `Speed round done! ${m[1]} problems in ${m[2]} seconds.`, zh: `快速挑战结束！${m[2]} 秒做完 ${m[1]} 道题。`, vi: `Xong vòng nhanh! ${m[1]} bài trong ${m[2]} giây.`, ja: `はやとき おわり！${m[1]}もんを ${m[2]}びょうで といたよ。`, ru: `Скоростной раунд окончен! ${m[1]} примеров за ${m[2]} секунд.` });
   /* 전략 1차 직접 조작 패턴(v84 · v100에서 점프 안내 축약) */
-  if (m = t.match(/^한 칸씩 (앞으로|뒤로) 뛰어 보세요\.$/)) { const fw = m[1] === '앞으로';
+  if (m = t.match(/^한 칸씩 (앞으로|뒤로) 뛰어요\.$/)) { const fw = m[1] === '앞으로';
     return T({ en: `Jump ${fw ? 'forward' : 'back'} one step at a time.`, zh: `一格一格向${fw ? '前' : '后'}跳。`, vi: `Nhảy ${fw ? 'tới' : 'lùi'} từng bước một.`, ja: `1こずつ ${fw ? 'まえに' : 'うしろに'} とんでね。`, ru: `Прыгай ${fw ? 'вперёд' : 'назад'} по одному шагу.` }); }
   if (m = t.match(/^(\d+)만큼 (앞으로|뒤로) 뛰었어요\. 어디에 도착했나요\?$/)) { const fw = m[2] === '앞으로';
     return T({ en: `We jumped ${fw ? 'forward' : 'back'} ${m[1]}. Where did we land?`, zh: `向${fw ? '前' : '后'}跳了 ${m[1]} 格。到了哪里？`, vi: `Đã nhảy ${fw ? 'tới' : 'lùi'} ${m[1]} bước. Đến số mấy rồi?`, ja: `${m[1]}こ ${fw ? 'まえに' : 'うしろに'} とんだね。どこに ついたかな？`, ru: `Мы прыгнули ${fw ? 'вперёд' : 'назад'} на ${m[1]}. Где мы оказались?` }); }
-  if (m = t.match(/^동그라미를 눌러서 (\d+)개를 지워 보세요\.$/))
+  if (m = t.match(/^(\d+)개를 눌러 지워요\.$/))
     return T({ en: `Tap the circles to cross out ${m[1]}.`, zh: `点圆圈，划掉 ${m[1]} 个。`, vi: `Chạm hình tròn để gạch bỏ ${m[1]} cái.`, ja: `まるを おして、${m[1]}こ けしてね。`, ru: `Нажимай кружки и зачеркни ${m[1]}.` });
-  if (m = t.match(/^(\d+)부터! 빗금 동그라미를 하나씩 누르면서 거꾸로 세어 보세요\.$/))
+  if (m = t.match(/^(\d+)부터! 빗금을 눌러 거꾸로 세요\.$/))
     return T({ en: `Start at ${m[1]}! Tap the crossed circles one by one and count back.`, zh: `从 ${m[1]} 开始！一个一个点画线的圆圈，倒着数。`, vi: `Bắt đầu từ ${m[1]}! Chạm từng hình tròn gạch chéo và đếm ngược.`, ja: `${m[1]}から！せんの まるを ひとつずつ おして、さかさまに かぞえてね。`, ru: `Начни с ${m[1]}! Нажимай зачёркнутые кружки и считай назад.` });
   if (m = t.match(/^(\d+)부터 거꾸로 세었어요\. 어디에 도착했나요\?$/))
     return T({ en: `We counted back from ${m[1]}. Where did we land?`, zh: `从 ${m[1]} 倒着数完了。到了哪里？`, vi: `Đã đếm ngược từ ${m[1]}. Đến số mấy rồi?`, ja: `${m[1]}から さかさまに かぞえたね。どこに ついたかな？`, ru: `Мы посчитали назад от ${m[1]}. Где мы оказались?` });
   if (m = t.match(/^10에서 (\d+)[을를] 뺐어요\. 몇이 남았나요\?$/))
     return T({ en: `We took ${m[1]} away from 10. How many are left?`, zh: `从 10 里减去了 ${m[1]}。还剩几个？`, vi: `Đã bớt ${m[1]} từ 10. Còn lại mấy?`, ja: `10から ${m[1]}を ひいたね。いくつ のこった？`, ru: `Мы вычли ${m[1]} из 10. Сколько осталось?` });
-  if (m = t.match(/^묶음을 하나씩 누르면서 (\d+)씩 세어 보세요\.$/))
+  if (m = t.match(/^묶음을 눌러 (\d+)씩 세요\.$/))
     return T({ en: `Tap the groups one by one and count by ${m[1]}s.`, zh: `一组一组地点，${m[1]} 个 ${m[1]} 个地数。`, vi: `Chạm từng nhóm và đếm cách ${m[1]}.`, ja: `たばを ひとつずつ おして、${m[1]}ずつ かぞえてね。`, ru: `Нажимай группы по одной и считай по ${m[1]}.` });
   /* 연산 전략 힌트(v72: 수직선 점프·곱셈 4분면) */
   if (m = t.match(/^(\d+)에서 출발해서, (\d+)만큼 (앞으로|뒤로) 뛰어 봐요\.$/)) { const fw = m[3] === '앞으로';
@@ -2113,20 +2114,20 @@ function trKo(t, kind) {
   /* 4차 조작형(v105) — 수가 들어가는 안내 */
   if (m = t.match(/^10에서 (\d+)[을를] 뺐어요\. 남은 동그라미를 모두 세어 봐요\.$/))
     return T({ en: `We took ${m[1]} from 10. Count all the circles that are left.`, zh: `从 10 里减了 ${m[1]}。数一数剩下的圆圈。`, vi: `Đã bớt ${m[1]} từ 10. Đếm tất cả hình tròn còn lại.`, ja: `10から ${m[1]}を ひいたよ。のこりの まるを ぜんぶ かぞえよう。`, ru: `Мы вычли ${m[1]} из 10. Посчитай оставшиеся кружки.` });
-  if (m = t.match(/^10이 되었어요\. 동그라미를 눌러서 (\d+)개를 지워 보세요\.$/))
+  if (m = t.match(/^10이 됐어요\. (\d+)개를 눌러 지워요\.$/))
     return T({ en: `We made 10. Tap the circles to cross out ${m[1]}.`, zh: `变成 10 了。点圆圈，划掉 ${m[1]} 个。`, vi: `Đã thành 10. Chạm hình tròn để gạch ${m[1]} cái.`, ja: `10に なったよ。まるを おして ${m[1]}こ けしてね。`, ru: `Получилось 10. Нажимай кружки и зачеркни ${m[1]}.` });
-  if (m = t.match(/^칸을 순서대로 누르면서 (\d+)씩 뛰어 세어 보세요\.$/))
+  if (m = t.match(/^칸을 눌러 (\d+)씩 뛰어요\.$/))
     return T({ en: `Tap the boxes in order and skip count by ${m[1]}.`, zh: `按顺序点格子，${m[1]} 个 ${m[1]} 个地数。`, vi: `Chạm các ô theo thứ tự và đếm cách ${m[1]}.`, ja: `ますを じゅんばんに おして、${m[1]}とびで かぞえてね。`, ru: `Нажимай клетки по порядку и считай по ${m[1]}.` });
-  if (m = t.match(/^묶음을 하나씩 누르면서 (\d+)씩 덜어내 보세요\.$/))
+  if (m = t.match(/^묶음을 눌러 (\d+)씩 덜어내요\.$/))
     return T({ en: `Tap the groups one by one and take away ${m[1]} each time.`, zh: `一组一组点，每次拿走 ${m[1]}。`, vi: `Chạm từng nhóm, mỗi lần bớt ${m[1]}.`, ja: `たばを ひとつずつ おして、${m[1]}ずつ とっていこう。`, ru: `Нажимай группы по одной и убирай по ${m[1]}.` });
   if (m = t.match(/^0이 되었어요\. (\d+)[을를] 몇 번 덜어냈나요\?$/))
     return T({ en: `We reached 0. How many times did we take ${m[1]} away?`, zh: `到 0 了。一共拿走了几次 ${m[1]}？`, vi: `Về 0 rồi. Đã bớt ${m[1]} mấy lần?`, ja: `0に なったよ。${m[1]}を なんかい とったかな？`, ru: `Дошли до 0. Сколько раз мы убрали ${m[1]}?` });
   /* 재도전(v100) — '정답은' 일반 패턴보다 먼저 */
-  if (m = t.match(/^오늘 문제를 다 풀었어요! 아까 문제를 한 번 더 풀어 봐요\. (\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/))
+  if (m = t.match(/^아까 문제를 한 번 더 풀어요\. (\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/))
     return T({ en: `All done for today! Let's try that problem one more time. ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, zh: `今天的题都做完了！刚才的题再来一次。${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, vi: `Xong bài hôm nay rồi! Làm lại bài lúc nãy một lần nữa nhé. ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, ja: `きょうの もんだいは おわり！さっきの もんだいを もういちど。${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, ru: `На сегодня всё! Решим ту задачу ещё раз. ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}` });
-  if (m = t.match(/^한 번 더 풀어 봐요\. (\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/))
+  if (m = t.match(/^한 번 더 풀어요\. (\d+) (더하기|빼기|곱하기|나누기) (\d+)[은는]\?$/))
     return T({ en: `One more time! ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, zh: `再来一次！${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, vi: `Thêm một lần nữa! ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, ja: `もういちど！${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}`, ru: `Ещё раз! ${m[1]} ${op(m[2])} ${m[3]}${T(EQW)}` });
-  if (m = t.match(/^정답은 (\d+)(?:이에요|예요)\. 같이 눌러 볼까요\?$/))
+  if (m = t.match(/^정답은 (\d+)(?:이에요|예요)\. 같이 눌러요\.$/))
     return T({ en: `The answer is ${m[1]}. Let's press it together!`, zh: `答案是 ${m[1]}。一起按吧！`, vi: `Đáp án là ${m[1]}. Cùng bấm nhé!`, ja: `こたえは ${m[1]}。いっしょに おしてみよう！`, ru: `Ответ: ${m[1]}. Нажмём вместе!` });
   if (m = t.match(/정답은 (\d+)/)) return T({ en: `The answer is ${m[1]}.`, zh: `答案是 ${m[1]}。`, vi: `Đáp án là ${m[1]}.`, ja: `こたえは ${m[1]}。`, ru: `Ответ: ${m[1]}.` });
   /* ---- 기초·확장 힌트(v40 이후 추가분) — 다국어 커버 ---- */
@@ -2148,7 +2149,7 @@ function trKo(t, kind) {
   if (m = t.match(/^연두색 (.+?) 개를 갈라 주면, 빨간 동그라미가 몇 개 남을까요\?$/)) { const n = cntToNum(m[1]) || m[1]; return T({ en: `If you split off ${n} green ones, how many red circles are left?`, zh: `分出 ${n} 个绿色的，红色圆圈还剩几个？`, vi: `Tách ra ${n} hình tròn xanh, còn lại mấy hình tròn đỏ?`, ja: `みどりの ${n}こを わけると、あかい まるは いくつ のこる？`, ru: `Если отделить ${n} зелёных, сколько красных останется?` }); }
   if (t === '연두색은 왼쪽 상자에, 빨간색은 오른쪽 상자에 갈라요.') return T({ en: 'Green goes in the left box, red in the right box.', zh: '绿色放左边的盒子，红色放右边的盒子。', vi: 'Màu xanh vào ô trái, màu đỏ vào ô phải.', ja: 'みどりは ひだりの はこ、あかは みぎの はこに わけよう。', ru: 'Зелёные — в левую коробку, красные — в правую.' });
   if (m = t.match(/^(\d+)[은는] (\d+)[과와] (\d+)으?로 가를 수 있어요\.$/)) return T({ en: `${m[1]} can be split into ${m[2]} and ${m[3]}.`, zh: `${m[1]} 可以分成 ${m[2]} 和 ${m[3]}。`, vi: `${m[1]} có thể tách thành ${m[2]} và ${m[3]}.`, ja: `${m[1]}は ${m[2]}と ${m[3]}に わけられるよ。`, ru: `${m[1]} можно разделить на ${m[2]} и ${m[3]}.` });
-  if (m = t.match(/^동그라미 (\d+)개를 아래 두 상자에 나누어 담아요\.$/)) return T({ en: `Split ${m[1]} circles into the two bottom boxes.`, zh: `把 ${m[1]} 个圆圈分到下面两个盒子里。`, vi: `Chia ${m[1]} hình tròn vào hai ô dưới.`, ja: `まる ${m[1]}こを したの ふたつの はこに わけよう。`, ru: `Раздели ${m[1]} кружков в две нижние коробки.` });
+  if (m = t.match(/^(\d+)개를 두 상자에 나눠 담아요\.$/)) return T({ en: `Split ${m[1]} circles into the two bottom boxes.`, zh: `把 ${m[1]} 个圆圈分到下面两个盒子里。`, vi: `Chia ${m[1]} hình tròn vào hai ô dưới.`, ja: `まる ${m[1]}こを したの ふたつの はこに わけよう。`, ru: `Раздели ${m[1]} кружков в две нижние коробки.` });
   if (t === '동그라미를 아래 두 상자에 나누어 담아요. 어떻게 나눠도 좋아요.') return T({ en: 'Split the circles into the two boxes. Any way is fine.', zh: '把圆圈分到两个盒子里，怎么分都可以。', vi: 'Chia hình tròn vào hai ô. Chia thế nào cũng được.', ja: 'まるを ふたつの はこに わけよう。どう わけても いいよ。', ru: 'Раздели кружки в две коробки. Как угодно.' });
   if (t === '양쪽에 나누어 담아요.') return T({ en: 'Put some in both boxes.', zh: '两边都要放一些。', vi: 'Đặt vào cả hai bên.', ja: 'りょうほうに わけて いれよう。', ru: 'Положи в обе коробки.' });
   if (t === '동그라미가 모자라요. 십 막대 한 개는, 동그라미 열 개!') return T({ en: 'Not enough circles. One tens rod becomes ten circles!', zh: '圆圈不够了，一根十的小棒换成十个圆圈！', vi: 'Không đủ hình tròn. Một thanh chục đổi thành mười hình tròn!', ja: 'まるが たりないよ。10の ぼう 1ぽんは、まる 10こ！', ru: 'Кружков не хватает. Одна палочка-десяток — это десять кружков!' });
@@ -2167,9 +2168,9 @@ function trKo(t, kind) {
     return T(base) + (m[2] && NOTE[m[2]] ? ' ' + T(NOTE[m[2]]) : '');
   }
   /* ---- 수감각도구 이식(55~59) 패턴 (2026-08-08) ---- */
-  if (m = t.match(/^(\d+)[은는] 수직선 어디쯤일까요\? 선을 눌러 봐요\.$/))
+  if (m = t.match(/^(\d+)[은는] 어디\? 선을 눌러요\.$/))
     return T({ en: `Where is ${m[1]} on the number line? Tap the line.`, zh: `${m[1]} 在数线的哪里？点一下线。`, vi: `${m[1]} nằm ở đâu trên trục số? Chạm vào đường thẳng.`, ja: `${m[1]}は すうちょくせんの どのへん？ せんを おしてね。`, ru: `Где ${m[1]} на числовой прямой? Нажми на линию.` });
-  if (m = t.match(/^십틀에 동그라미를 (\d+)개 채워요\.$/))
+  if (m = t.match(/^십틀에 (\d+)개를 채워요\.$/))
     return T({ en: `Fill ${m[1]} circles in the ten frame.`, zh: `在十格框里填 ${m[1]} 个圆圈。`, vi: `Tô ${m[1]} hình tròn vào khung mười.`, ja: `10の わくに まるを ${m[1]}こ うめてね。`, ru: `Заполни ${m[1]} кружков в рамке на десять.` });
   if (m = t.match(/^조금 더 (오른쪽|왼쪽)으로 옮겨 봐요\.$/)) { const rt = m[1] === '오른쪽';
     return T({ en: `Move a little more to the ${rt ? 'right' : 'left'}.`, zh: `再往${rt ? '右' : '左'}边挪一点。`, vi: `Dịch thêm một chút sang ${rt ? 'phải' : 'trái'}.`, ja: `もう すこし ${rt ? 'みぎ' : 'ひだり'}に うごかそう。`, ru: `Подвинь ещё немного ${rt ? 'вправо' : 'влево'}.` }); }
@@ -2722,27 +2723,27 @@ function speakProblem(onEnd) {
   const w = op => op === '+' ? '더하기' : op === '×' ? '곱하기' : op === '÷' ? '나누기' : '빼기';
   if (p.type === 'binary') t = `${p.a} ${w(p.op)} ${p.b}${josaEun(p.b)}?`;
   else if (p.type === 'triple') t = `${p.a} ${w(p.op)} ${p.b} ${w(p.op2)} ${p.c}${josaEun(p.c)}?`;
-  else if (p.type === 'count') t = '동그라미가 모두 몇 개일까요?';
-  else if (p.type === 'put') t = `동그라미를 ${p.n}개, 접시에 담아 주세요.`;
-  else if (p.type === 'gather') t = `${p.a}${josaGwa(p.a)} ${p.b}${josaEul(p.b)} 모으면 얼마일까요?`;
-  else if (p.type === 'split') t = `${p.n}${josaEun(p.n)} ${p.k}${josaGwa(p.k)} 몇으로 가를 수 있을까요?`;
-  else if (p.type === 'freesplit') t = `동그라미 ${p.n}개를 아래 두 상자에 나누어 담아요.`;
-  else if (p.type === 'compare') t = '어느 쪽이 더 많을까요? 똑같으면 같아요를 눌러요.';
-  else if (p.type === 'more') t = '어느 쪽이 더 많을까요? 많은 쪽을 눌러 주세요.';
-  else if (p.type === 'nle') t = `${p.ans}${josaEun(p.ans)} 수직선 어디쯤일까요? 선을 눌러 봐요.`;
-  else if (p.type === 'tenfill') t = p.pre ? '십틀이 10이 되도록 빈칸을 채워요.' : `십틀에 동그라미를 ${p.n}개 채워요.`;
-  else if (p.type === 'pvread') t = '십 모형과 일 모형을 보고, 모두 얼마인지 골라요.';
-  else if (p.type === 'pvbuild') t = `${p.ans}${josaEul(p.ans)} 십 모형과 일 모형으로 만들어요.`;
-  else if (p.type === 'bigpick') t = '둘 중에서 더 큰 것을 눌러 주세요.';
-  else if (p.type === 'onemap') t = '접시마다 하나씩 놓아 주세요.';
-  else if (p.type === 'samepick') t = '위 상자와 개수가 같은 쪽을 눌러 주세요.';
-  else if (p.type === 'flash') t = p.dbl ? '양쪽이 똑같아요. 모두 몇 개인지 번쩍 보고 알아맞혀요.' : '동그라미가 몇 개인지 번쩍 보고 알아맞혀요.';
-  else if (p.type === 'seq') t = p.step === -1 ? '거꾸로 세어요. 빈칸의 수는 무엇일까요?' : p.step === 1 ? '빈칸에 알맞은 수는 무엇일까요?' : `${p.step}씩 뛰어 세어요. 빈칸의 수는 무엇일까요?`;
+  else if (p.type === 'count') t = '모두 몇 개?';
+  else if (p.type === 'put') t = `${p.n}개를 접시에 담아요.`;
+  else if (p.type === 'gather') t = `${p.a}${josaGwa(p.a)} ${p.b}${josaEul(p.b)} 모으면?`;
+  else if (p.type === 'split') t = `${p.n}${josaEun(p.n)} ${p.k}${josaGwa(p.k)} 몇?`;
+  else if (p.type === 'freesplit') t = `${p.n}개를 두 상자에 나눠 담아요.`;
+  else if (p.type === 'compare') t = '더 많은 쪽은? 똑같으면 같아요를 눌러요.';
+  else if (p.type === 'more') t = '더 많은 쪽을 눌러요.';
+  else if (p.type === 'nle') t = `${p.ans}${josaEun(p.ans)} 어디? 선을 눌러요.`;
+  else if (p.type === 'tenfill') t = p.pre ? '10이 되게 빈칸을 채워요.' : `십틀에 ${p.n}개를 채워요.`;
+  else if (p.type === 'pvread') t = '모형을 보고, 얼마인지 골라요.';
+  else if (p.type === 'pvbuild') t = `${p.ans}${josaEul(p.ans)} 모형으로 만들어요.`;
+  else if (p.type === 'bigpick') t = '더 큰 것을 눌러요.';
+  else if (p.type === 'onemap') t = '접시마다 하나씩 놓아요.';
+  else if (p.type === 'samepick') t = '위와 같은 개수를 눌러요.';
+  else if (p.type === 'flash') t = p.dbl ? '양쪽이 똑같아요. 모두 몇 개?' : '번쩍 보고, 몇 개?';
+  else if (p.type === 'seq') t = p.step === -1 ? '거꾸로 세요. 빈칸은?' : p.step === 1 ? '빈칸의 수는?' : `${p.step}씩 뛰어 세요. 빈칸은?`;
   else if (p.type === 'word') t = p.text;
-  else if (p.type === 'judge') t = `${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.shown}. 맞으면 동그라미, 틀리면 엑스를 눌러요.`;
-  else if (p.form === 'addToTen') t = `${p.k}에 얼마를 더하면 10이 될까요?`;
-  else if (p.form === 'partner') t = `10이 되려면 ${p.k}${josaGwa(p.k)} 무엇을 더해야 할까요?`;
-  else t = `10에서 얼마를 빼면 ${p.result}${josaIga(p.result)} 될까요?`;
+  else if (p.type === 'judge') t = `${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.shown}. 맞으면 동그라미, 틀리면 엑스!`;
+  else if (p.form === 'addToTen') t = `${p.k}에 몇을 더하면 10?`;
+  else if (p.form === 'partner') t = `${p.k}에 몇을 더하면 10?`;
+  else t = `10에서 몇을 빼면 ${p.result}?`;
   _spKind = 'q';                                    // v109: '외국어로 읽을 곳 — 문제' 판정용
   speak(t, onEnd);                                  // 설정 언어가 있으면 trKo가 외국어로 한 번 더(자동)
 }
@@ -2987,7 +2988,7 @@ function renderRetry() {
   $('qface').innerHTML = buildFace(p, null);
   chalSlot();                                    // 정답칸을 입력 표시+커서로(도전 모드 문법 공용)
   if (prefs.mask) addMask();
-  rtSpeak(rt.intro ? '오늘 문제를 다 풀었어요! 아까 문제를 한 번 더 풀어 봐요. ' : '한 번 더 풀어 봐요. ');
+  rtSpeak(rt.intro ? '아까 문제를 한 번 더 풀어요. ' : '한 번 더 풀어요. ');
 }
 function rtPaint() { const d = $('chd'); if (d) d.textContent = rt ? rt.typed : ''; }
 function rtSpeak(pre) {
@@ -3016,7 +3017,7 @@ function rtOk() {
 function startFollow() {
   rt.follow = true; rt.fi = 0; rt.typed = ''; rtPaint();
   const pad = $('rtpad'); if (pad) pad.classList.add('follow');
-  speak(`정답은 ${rt.p.ans}${josaYeyo(rt.p.ans)}. 같이 눌러 볼까요?`, rtGlow);
+  speak(`정답은 ${rt.p.ans}${josaYeyo(rt.p.ans)}. 같이 눌러요.`, rtGlow);
   setTimeout(rtGlow, lastSpeakMs + 1200);
 }
 function rtGlow() {
@@ -3701,7 +3702,7 @@ function twoDragPlace(p, g, rods, dots, mkSlot, land, over) {
   const slotsT = rods.map(() => mkSlot(g.T, 'rod')), slotsU = dots.map(() => mkSlot(g.U, 'cdot red'));
   let nT = 0, nU = 0, told = false;
   const total = rods.length + dots.length;
-  speak('막대와 동그라미를 자리에 맞게 옮겨 봐요.');
+  speak('자리에 맞게 옮겨요.');
   const wire = (el, isRod) => el.addEventListener('pointerdown', ev => {
     if (el.style.visibility === 'hidden') return;
     ev.preventDefault();
@@ -3956,7 +3957,7 @@ function countOnTap(p, h) {
   mSmall.classList.add('contap');
   const nb = document.querySelector(`#qface [data-t="n${bigIdx}"]`); if (nb) nb.classList.add('oring');
   h.innerHTML = `<div class="tip">동그라미를 하나씩 누르면서 이어 세어 봐요</div>`;
-  speak(`큰 수 ${big}부터! 동그라미를 하나씩 누르면서 이어 세어 보세요.`);
+  speak(`${big}부터! 눌러서 이어 세요.`);
   let n = 0; const dots = [...mSmall.querySelectorAll('.cdot')];
   dots.forEach(d => {
     d.addEventListener('pointerdown', () => {
@@ -3964,7 +3965,7 @@ function countOnTap(p, h) {
       d.classList.add('cnt'); n++;
       d.textContent = big + n; pulseDot(d);
       speakFast(String(big + n));
-      if (n === dots.length) setTimeout(() => speak(`${big}부터 이어 세었어요. 모두 몇일까요?`), lastSpeakMs + 150);
+      if (n === dots.length) setTimeout(() => speak('모두 몇일까요?'), lastSpeakMs + 150);
     });
   });
 }
@@ -4004,7 +4005,7 @@ function backTap(p, h) {
   mb.classList.add('contap');
   const n0 = document.querySelector('#qface [data-t="n0"]'); if (n0) n0.classList.add('oring');
   h.innerHTML = `<div class="tip">동그라미를 하나씩 누르면서 거꾸로 세어 봐요</div>`;
-  speak(`${a}부터! 빗금 동그라미를 하나씩 누르면서 거꾸로 세어 보세요.`);
+  speak(`${a}부터! 빗금을 눌러 거꾸로 세요.`);
   let n = 0; const dots = [...mb.querySelectorAll('.cdot')];
   dots.forEach(d => {
     d.addEventListener('pointerdown', () => {
@@ -4012,7 +4013,7 @@ function backTap(p, h) {
       d.classList.add('cnt'); n++;
       d.textContent = a - n; pulseDot(d);
       speakFast(String(a - n));
-      if (n === dots.length) setTimeout(() => speak(`${a}부터 거꾸로 세었어요. 어디에 도착했나요?`), lastSpeakMs + 150);
+      if (n === dots.length) setTimeout(() => speak('어디에 도착했나요?'), lastSpeakMs + 150);
     });
   });
 }
@@ -4278,7 +4279,7 @@ function make10Drag(p, h) {
   for (let i = 0; i < take; i++) { const d = document.createElement('div'); d.className = 'cdot red'; d.style.visibility = 'hidden'; addRow(stackBig).appendChild(d); slots.push(d); }
   fit();
   h.innerHTML = `<div class="tip">동그라미를 옮겨서 10을 만들어 봐요</div>`;
-  speak('동그라미를 옮겨서 10을 만들어 보세요.');
+  speak('옮겨서 10을 만들어요.');
   let moved = 0;
   [...mSmall.querySelectorAll('.cdot')].forEach(d => {
     d.addEventListener('pointerdown', ev => {
@@ -4327,7 +4328,7 @@ function countAllTap(p, h) {
   const { ma, mb } = hangTwoModels(p, true);
   [ma, mb].forEach(m => m.classList.add('contap'));
   h.innerHTML = `<div class="tip">동그라미를 하나씩 누르면서 모두 세어 봐요</div>`;
-  speak('동그라미를 하나씩 누르면서 처음부터 모두 세어 보세요.');
+  speak('눌러서 모두 세요.');
   let n = 0; const total = p.a + p.b;
   [...ma.querySelectorAll('.cdot'), ...mb.querySelectorAll('.cdot')].forEach(d => {
     d.addEventListener('pointerdown', () => {
@@ -4335,7 +4336,7 @@ function countAllTap(p, h) {
       d.classList.add('cnt'); n++;
       d.textContent = n; pulseDot(d);
       speakFast(String(n));
-      if (n === total) setTimeout(() => speak('모두 세었어요. 모두 몇일까요?'), lastSpeakMs + 150);
+      if (n === total) setTimeout(() => speak('모두 몇일까요?'), lastSpeakMs + 150);
     });
   });
 }
@@ -4377,7 +4378,7 @@ function doubleTap(p, h) {
   [ma, mb].forEach(m => m.classList.add('contap'));   // 숫자 동그라미(oring)는 v112에서 제거(사용자 지시)
   const first = wrongCount <= 1;   // 닻 그림·닻 문장은 첫 피드백에만(fade는 stage 0에서 이미 봄 → 여기선 동그라미+입력칸만)
   h.innerHTML = first ? anchorHtml(a, '짝과 함께 둘씩 세어 봐요') : `<div class="tip">짝과 함께 둘씩 세어 봐요</div>`;
-  speak((first && anchorSay(a, '예요. 동그라미를 누르면서 둘씩 세어 보세요.')) || '동그라미를 누르면 짝도 같이 세어져요. 둘씩 세어 보세요.');
+  speak((first && anchorSay(a, '예요. 동그라미를 누르면서 둘씩 세어 보세요.')) || '눌러서 둘씩 세요.');
   const da = [...ma.querySelectorAll('.cdot')], db = [...mb.querySelectorAll('.cdot')];
   let k = 0;
   const tap = i => {
@@ -4386,7 +4387,7 @@ function doubleTap(p, h) {
     k++; const v = 2 * k;
     [x, y].forEach(d => { d.classList.add('cnt'); d.textContent = v; pulseDot(d); });
     speakFast(String(v));
-    if (k === a) setTimeout(() => speak('둘씩 세었어요. 모두 몇일까요?'), lastSpeakMs + 150);
+    if (k === a) setTimeout(() => speak('모두 몇일까요?'), lastSpeakMs + 150);
   };
   da.forEach((d, i) => d.addEventListener('pointerdown', () => tap(i)));
   db.forEach((d, i) => d.addEventListener('pointerdown', () => tap(i)));
@@ -4433,7 +4434,7 @@ function nearTap(p, h) {
   if (extra) extra.classList.add('gray');
   const first = wrongCount <= 1;   // 닻 그림·닻 문장은 첫 피드백에만(v114, doubleTap과 같은 규칙)
   h.innerHTML = first ? anchorHtml(small, '같은 수를 먼저 세고, 하나 더!', ', 하나 더') : `<div class="tip">같은 수를 먼저 세고, 하나 더!</div>`;
-  speak((first && anchorSay(small, ', 하나 더예요. 동그라미를 누르면서 같은 수를 먼저 세어 보세요.')) || '동그라미를 누르면서 같은 수를 먼저 세어 보세요.');
+  speak((first && anchorSay(small, ', 하나 더예요. 동그라미를 누르면서 같은 수를 먼저 세어 보세요.')) || '같은 수를 먼저 눌러 세요.');
   let k = 0;
   const tapPair = i => {
     const x = dSmall[i], y = dBig[i];
@@ -4441,7 +4442,7 @@ function nearTap(p, h) {
     k++; const v = 2 * k;
     [x, y].forEach(d => { d.classList.add('cnt'); d.textContent = v; pulseDot(d); });
     speakFast(String(v));
-    if (k === small) setTimeout(() => speak('같은 수를 다 세었어요. 이제 하나 더!'), lastSpeakMs + 150);
+    if (k === small) setTimeout(() => speak('이제 하나 더!'), lastSpeakMs + 150);
   };
   dSmall.forEach((d, i) => d.addEventListener('pointerdown', () => tapPair(i)));
   dBig.forEach((d, i) => { if (i < small) d.addEventListener('pointerdown', () => tapPair(i)); });
@@ -4449,7 +4450,7 @@ function nearTap(p, h) {
     if (k < small || extra.classList.contains('cnt')) return;
     extra.classList.remove('gray'); extra.classList.add('cnt'); extra.textContent = p.ans; pulseDot(extra);
     speakFast(String(p.ans));
-    setTimeout(() => speak('하나 더 세었어요. 모두 몇일까요?'), lastSpeakMs + 150);
+    setTimeout(() => speak('모두 몇일까요?'), lastSpeakMs + 150);
   });
 }
 /* 두 요소가 '만나서' 함께 팡! 하고 사라지는 소멸 — 한 자리·십몇 뺄셈용 */
@@ -4532,20 +4533,20 @@ function tenTakeTap(p, h) {
   fit();
   stackA.classList.add('taketap');
   rod.classList.add('exch');                         // 반짝 유도(기존 스타일)
-  speak('십 막대를 눌러 보세요. 열 개로 바뀌어요.');
+  speak('십 막대를 눌러요.');
   let swapped = false, erased = 0;
   rod.addEventListener('pointerdown', () => {
     if (swapped) return; swapped = true; tick();
     rod.classList.remove('exch'); rod.classList.add('melt'); setTimeout(() => { rod.style.visibility = 'hidden'; }, 620);
     born.forEach(d => { d.style.visibility = 'visible'; d.classList.add('born'); });
-    speak(`10이 되었어요. 동그라미를 눌러서 ${b}개를 지워 보세요.`);
+    speak(`10이 됐어요. ${b}개를 눌러 지워요.`);
     born.forEach(d => d.addEventListener('pointerdown', () => {
       if (erased >= b || d.classList.contains('slash')) return;
       d.classList.add('slash', 'gray'); erased++;
       speakFast(KO_NUM[erased] || String(erased));
       if (erased === b) setTimeout(() => {
         [...stackA.querySelectorAll('.cdot')].filter(x => x.style.visibility !== 'hidden' && !x.classList.contains('slash')).forEach(pulseDot);
-        speak(aU > 0 ? `10에서 ${b}${josaEul(b)} 뺐어요. 남은 동그라미를 모두 세어 봐요.` : `10에서 ${b}${josaEul(b)} 뺐어요. 몇이 남았나요?`);
+        speak(aU > 0 ? '남은 것을 모두 세요.' : '몇이 남았나요?');
       }, 250);
     }));
   });
@@ -4593,7 +4594,7 @@ function takeTap(p, h) {
   curCirc = [{ n: p.a, cls: 'sky' }]; paintFace(true);
   $('qface').classList.add('taketap');
   h.innerHTML = `<div class="tip">동그라미를 눌러서 ${p.b}개를 지워 봐요</div>`;
-  speak(`동그라미를 눌러서 ${p.b}개를 지워 보세요.`);
+  speak(`${p.b}개를 눌러 지워요.`);
   const dots = [...$('qface').querySelectorAll('.cdot')];
   let erased = 0, counted = 0;
   dots.forEach(d => {
@@ -4603,8 +4604,8 @@ function takeTap(p, h) {
         d.classList.add('slash', 'gray'); erased++;
         speakFast(KO_NUM[erased] || String(erased));
         if (erased === p.b) setTimeout(() => speak(p.ans === 0
-          ? '다 지웠어요. 몇 개가 남았나요?'
-          : `${koCnt(p.b)} 개를 지웠어요. 남은 것을 세어 봐요.`), lastSpeakMs + 150);
+          ? '몇 개 남았나요?'
+          : '남은 것을 세요.'), lastSpeakMs + 150);
       } else {                                        // ② 남은 것 세기 단계
         if (d.classList.contains('slash') || d.classList.contains('cnt')) return;
         d.classList.add('cnt'); counted++; pulseDot(d);
@@ -4622,7 +4623,7 @@ function takeAwaySub(p, h, stage) {
   const dots = [...$('qface').querySelectorAll('.cdot')];
   const items = [];
   for (let k = 0; k < p.b; k++) { const d = dots[p.a - 1 - k]; items.push({ text: KO_NUM[k + 1] || String(k + 1), action: () => d && d.classList.add('slash', 'gray') }); }
-  items.push({ text: `${koCnt(p.b)} 개를 지웠어요. 남은 것을 세어 봐요.` });
+  items.push({ text: '남은 것을 세요.' });
   for (let i = 0; i < p.ans; i++) { const d = dots[i]; items.push({ text: String(i + 1), action: () => pulseDot(d) }); }
   items.push({ text: `모두 ${koCnt(p.ans)} 개. ${eqSay(p)}` });
   pushFam(items, p);
@@ -4646,7 +4647,7 @@ function bridgeDrag(p, h) {
   for (let k = 0; k < first; k++) targets.push(aDots[aU - 1 - k]);
   for (let j = 0; j < second; j++) targets.push(born[9 - j]);
   h.innerHTML = `<div class="tip">빗금 동그라미를 끌어서 하나씩 빼 봐요</div>`;
-  speak('빗금 동그라미를 끌어서 하나씩 빼 보세요. 먼저 10을 만들어요.');
+  speak('빗금을 끌어서 빼요. 먼저 10!');
   let moved = 0, ready2 = false;
   bDots.forEach(d => {
     d.addEventListener('pointerdown', ev => {
@@ -4667,12 +4668,12 @@ function bridgeDrag(p, h) {
         speakFast(String(a - moved));                 // 11, 10 … 거꾸로 세며 빼기
         if (m) killPop(d, m);
         if (moved === first) setTimeout(() => {
-          speak('10이 되었어요! 십 막대 한 개는 동그라미 몇 개일까요? 열 개! 남은 것도 끌어서 빼 보세요.');   // 발문형(v87)
+          speak('10이 됐어요! 십 막대는 열 개. 남은 것도 빼요.');   // 발문형(v87)
           const rod = rowA.querySelector('.rod'); if (rod) { rod.classList.add('melt'); setTimeout(() => { rod.style.visibility = 'hidden'; }, 620); }
           born.forEach(x => { x.style.visibility = 'visible'; x.classList.add('born'); });
           ready2 = true;
         }, 500);
-        if (moved === b) setTimeout(() => speak(`10에서 ${second}${josaEul(second)} 뺐어요. 몇이 남았나요?`), lastSpeakMs + 150);
+        if (moved === b) setTimeout(() => speak('몇이 남았나요?'), lastSpeakMs + 150);
       };
       d.addEventListener('pointermove', mv); d.addEventListener('pointerup', up); d.addEventListener('pointercancel', up);
     });
@@ -4763,7 +4764,7 @@ function initJumpDrag(p) {
   const wrap = $('jwrap'), flag = $('jflag'), head = $('jhead');
   const pos = v => (v / MAX * 100).toFixed(1);
   let cur = p.a, jumps = 0;
-  speak(`한 칸씩 ${add ? '앞으로' : '뒤로'} 뛰어 보세요.`);   // 짧게(사용자 지시) — 깃발 드래그는 pointer-events 복구로 동작
+  speak(`한 칸씩 ${add ? '앞으로' : '뒤로'} 뛰어요.`);   // 짧게(사용자 지시) — 깃발 드래그는 pointer-events 복구로 동작
   flag.addEventListener('pointerdown', ev => {
     if (jumps >= b) return;
     ev.preventDefault();
@@ -4783,7 +4784,7 @@ function initJumpDrag(p) {
       cur = want; jumps++;
       flag.style.left = pos(cur) + '%'; head.textContent = cur;
       speakFast(String(cur));
-      if (jumps === b) setTimeout(() => speak(`${b}만큼 ${add ? '앞으로' : '뒤로'} 뛰었어요. 어디에 도착했나요?`), lastSpeakMs + 150);
+      if (jumps === b) setTimeout(() => speak('어디에 도착했나요?'), lastSpeakMs + 150);
     };
     flag.addEventListener('pointermove', mv); flag.addEventListener('pointerup', up); flag.addEventListener('pointercancel', up);
   });
@@ -4817,7 +4818,7 @@ function hintTenFrame(p, h, stage) {
     return;
   }
   /* 1차(v105, 4차 E): 십틀을 직접 조작 — 채우기는 빈칸 탭, 빼기는 점선 동그라미 탭(58단계 십틀 채우기와 같은 문법) */
-  speak(isSub ? '점선 동그라미를 눌러서 빼 보세요.' : '빈칸을 눌러서 채워 보세요.');
+  speak(isSub ? '점선을 눌러 빼요.' : '빈칸을 눌러 채워요.');
   let n = 0;
   [...h.querySelectorAll('.tenframe .tf')].forEach(e => {
     const target = isSub ? e.classList.contains('rm-line') : !e.classList.contains('fill');
@@ -4828,7 +4829,7 @@ function hintTenFrame(p, h, stage) {
       e.dataset.done = 1; n++;
       if (isSub) e.classList.add('rm'); else { e.classList.add('need'); e.textContent = n; }
       speakFast(KO_NUM[n] || String(n));
-      if (n === need) setTimeout(() => speak(isSub ? '다 지웠어요. 몇 개를 뺐나요?' : '십틀을 다 채웠어요. 몇 개를 더했나요?'), 250);
+      if (n === need) setTimeout(() => speak(isSub ? '몇 개를 뺐나요?' : '몇 개를 더했나요?'), 250);
     });
   });
 }
@@ -4856,7 +4857,7 @@ function hintMul(p, h, stage, mode) {
   /* 진행 카운터(pvcounter) — 두 자리·세 자리 힌트와 디자인 통일 */
   h.innerHTML = `<div class="pvwrap"><div class="pvcounter hidden" id="pvcounter"></div><div class="skiprow">${boxes}</div></div><div class="tip">${a}씩 ${b}번 뛰어 세어 봐요</div>`;
   if (stage === 1) {   /* 1차(v105, 4차 C): 학생이 칸을 순서대로 누르며 a씩 뛰어 센다 (조작 문법: 세기=탭) */
-    speak(`칸을 순서대로 누르면서 ${a}씩 뛰어 세어 보세요.`);
+    speak(`칸을 눌러 ${a}씩 뛰어요.`);
     let n = 0;
     for (let k = 0; k < b; k++) {
       const e = $('sk' + k); if (!e) continue;
@@ -4865,7 +4866,7 @@ function hintMul(p, h, stage, mode) {
         if (k !== n) return;                          // 다음 칸만 인정(순서 강제)
         n++; const v = a * (k + 1);
         e.textContent = v; e.classList.add('on'); setC(v); speakFast(String(v));
-        if (n === b) setTimeout(() => speak('끝까지 뛰었어요. 모두 몇일까요?'), 250);
+        if (n === b) setTimeout(() => speak('모두 몇일까요?'), 250);
       });
     }
     return;
@@ -4880,7 +4881,7 @@ function groupTapMul(p, h) {
   const a = p.a, b = p.b;
   let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp tapg">${circleStack(a, k % 2 ? 'b' : '')}</div>`;
   h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">묶음을 하나씩 누르면서 ${a}씩 세어 봐요</div>`;
-  speak(`묶음을 하나씩 누르면서 ${a}씩 세어 보세요.`);
+  speak(`묶음을 눌러 ${a}씩 세요.`);
   let n = 0;
   [...h.querySelectorAll('.mgrp')].forEach(e => {
     e.addEventListener('pointerdown', () => {
@@ -4888,7 +4889,7 @@ function groupTapMul(p, h) {
       e.classList.add('on'); n++;
       const bd = document.createElement('span'); bd.className = 'gcnt'; bd.textContent = a * n; e.appendChild(bd);
       speakFast(String(a * n));
-      if (n === b) setTimeout(() => speak('묶음을 다 세었어요. 모두 몇일까요?'), lastSpeakMs + 150);
+      if (n === b) setTimeout(() => speak('모두 몇일까요?'), lastSpeakMs + 150);
     });
   });
 }
@@ -4898,7 +4899,7 @@ function hintDiv(p, h, stage) {
   let g = ''; for (let k = 0; k < q; k++) g += `<div class="dgrp" id="dg${k}">${circleStack(b, 'sky')}</div>`;
   h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">${p.a}개를 ${b}개씩 묶었어요. 몇 묶음일까요?<br><b>${b} 곱하기 몇</b>이 ${p.a}${josaIga(p.a)} 될까요?</div>`;
   if (stage === 1) {   /* 1차(v105, 4차 D): 학생이 묶음을 누르며 몇 묶음인지 직접 센다 (조작 문법: 세기=탭) */
-    speak('묶음을 하나씩 누르면서 몇 묶음인지 세어 보세요.');
+    speak('묶음을 눌러 세요.');
     let n = 0;
     [...h.querySelectorAll('.dgrp')].forEach(e => {
       e.classList.add('tapg');
@@ -4906,7 +4907,7 @@ function hintDiv(p, h, stage) {
         if (e.classList.contains('on')) return;
         e.classList.add('on'); n++;
         speakFast(KO_NUM[n] || String(n));
-        if (n === q) setTimeout(() => speak('묶음을 다 세었어요. 몇 묶음일까요?'), 250);
+        if (n === q) setTimeout(() => speak('몇 묶음일까요?'), 250);
       });
     });
     return;
@@ -4922,7 +4923,7 @@ function repeatSubDiv(p, h, stage) {
   let g = ''; for (let k = 0; k < q; k++) g += `<div class="dgrp" id="rg${k}">${circleStack(b, 'sky')}</div>`;
   h.innerHTML = `<div class="pvwrap"><div class="pvcounter hidden" id="pvcounter"></div><div class="mulrow">${g}</div></div><div class="tip">${b}씩 덜어내면서, 몇 번 덜어냈는지 세어 봐요</div>`;
   if (stage < 2) {   /* 1차(v105, 4차 D): 묶음을 누를 때마다 b씩 덜어낸다 (조작 문법: 지우기=탭, 카운터=남은 수) */
-    speak(`묶음을 하나씩 누르면서 ${b}씩 덜어내 보세요.`);
+    speak(`묶음을 눌러 ${b}씩 덜어내요.`);
     let n = 0;
     [...h.querySelectorAll('.dgrp')].forEach(e => {
       e.classList.add('tapg');
@@ -4930,7 +4931,7 @@ function repeatSubDiv(p, h, stage) {
         if (e.classList.contains('rm')) return;
         e.classList.add('rm'); n++;
         const v = a - n * b; setC(v); speakFast(String(v));
-        if (n === q) setTimeout(() => speak(`0이 되었어요. ${b}${josaEul(b)} 몇 번 덜어냈나요?`), 250);
+        if (n === q) setTimeout(() => speak('몇 번 덜어냈나요?'), 250);
       });
     });
     return;
@@ -5331,9 +5332,9 @@ function showScorePop(s) {
   const pop = document.createElement('div'); pop.className = 'scorepop' + (s.promo === 2 ? ' stay5' : '');
   pop.innerHTML = `<div>오늘 점수</div><div class="big">⭐ ${s.got} / ${s.total}</div>${s.promo === 2 ? `<div class="lvup">🎉 다음 단계로 올라갔어요!</div>` : ''}`;
   $('stage').appendChild(pop);
-  speak(`오늘 점수, ${s.total}개 중 ${s.got}개 맞았어요.`
-    + (s.promo === 2 ? ` 두 번 연속 잘 풀어서 다음 단계로 올라가요! 이제 ${s.levelName} 문제예요.`
-      : s.promo === 1 ? ' 다음에도 이만큼 잘 풀면 다음 단계로 올라가요!' : ''));
+  speak(`${s.total}개 중 ${s.got}개 맞았어요.`
+    + (s.promo === 2 ? ` 다음 단계로 올라가요! 이제 ${s.levelName}.`
+      : s.promo === 1 ? ' 한 번 더 잘하면 다음 단계!' : ''));
   if (s.promo === 2) celebrate(pop);
   setTimeout(() => pop.remove(), s.promo === 2 ? 4800 : 3000);
 }
@@ -7315,7 +7316,7 @@ function chalSeqJump(p, sl) {
   seqv.slice(1).forEach((v, i) => setTimeout(() => {
     if (!j.isConnected) return;                               // 시연 중 문제 전환·종료 대비
     show(v);
-    if (v === p.arr[p.blank]) setTimeout(() => { if (j.isConnected) speak('빈칸에 도착했어요. 빈칸의 수를 써 보세요.'); }, 650);
+    if (v === p.arr[p.blank]) setTimeout(() => { if (j.isConnected) speak('빈칸의 수를 써요.'); }, 650);
   }, 750 * (i + 1)));
 }
 function chalLog(ok, given) {
