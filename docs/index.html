@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 118 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 119 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1119,7 +1119,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 118';
+const APP_VERSION = 'ver 119';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1140,6 +1140,16 @@ const IS_REMOTE = () => !!(REMOTE.url && REMOTE.anonKey);
    ========================================================= */
 const R = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
 function bAdd(maxSum, minEach) { minEach = minEach || 1; let a, b; do { a = R(minEach, maxSum - minEach); b = R(minEach, maxSum - a); } while (a + b > maxSum); return { type: 'binary', a, b, op: '+', ans: a + b }; }
+/* ---- 한 자리 덧셈 세분 단계(167~173, v119) — 더하는 수(1·2·3)와 순서 바꾸기로 5 이하·9 이하 구간을 잘게 나눔 ---- */
+const mkAdd = (a, b) => ({ type: 'binary', a, b, op: '+', ans: a + b });
+/* 가짓수가 3~4개뿐인 단계용: 직전 문제와 같은 식은 다시 뽑는다(같은 문제 연속 방지) */
+function noRep(gen) { let last = ''; return () => { let p, k, i = 0; do { p = gen(); k = p.a + '+' + p.b; } while (k === last && ++i < 10); last = k; return p; }; }
+/* 작은 수 + 큰 수(큰 수부터 세기): a=1~3, b>a, 합 maxSum 이하. 9 이하는 70%를 합 6~9(5 이하 구간에 없던 식)로 */
+function swapAdd(maxSum) {
+  const minSum = maxSum === 9 && Math.random() < .7 ? 6 : 3, c = [];
+  for (let a = 1; a <= 3; a++) for (let b = a + 1; a + b <= maxSum; b++) if (a + b >= minSum) c.push([a, b]);
+  const [a, b] = c[R(0, c.length - 1)]; return mkAdd(a, b);
+}
 function bSub(maxA) { const a = R(2, maxA); const b = R(1, a); return { type: 'binary', a, b, op: '-', ans: a - b }; }
 
 /* 세 자리 수 생성 헬퍼 (받아올림/내림 횟수 제어) */
@@ -1226,10 +1236,19 @@ const LEVELS = [
  { id: 117, g: "기초 · 모으기와 가르기", name: "다섯까지 모으기·가르기", gen: () => gatherSplit(5) },
  { id: 118, g: "기초 · 모으기와 가르기", name: "아홉까지 모으기·가르기", gen: () => gatherSplit(9) },
  { id: 119, g: "기초 · 모으기와 가르기", name: "자유롭게 가르기", gen: () => { const n = R(3, 9); return { type: 'freesplit', n, ans: n }; } },
+ /* 167~169: 5 이하 덧셈 세분(v119) — 1 더하기 → 2 더하기(+1 복습 30%) → 작은 수+큰 수 → 120(누적 혼합) */
+ { id: 167, g: "1학년 · 5까지의 수", name: "1 더하기 (5 이하)", gen: noRep(() => mkAdd(R(1, 4), 1)) },
+ { id: 168, g: "1학년 · 5까지의 수", name: "2 더하기 (5 이하)", gen: noRep(() => Math.random() < .7 ? mkAdd(R(1, 3), 2) : mkAdd(R(1, 4), 1)) },
+ { id: 169, g: "1학년 · 5까지의 수", name: "작은 수 + 큰 수 (5 이하)", gen: noRep(() => swapAdd(5)) },
  { id: 120, g: "1학년 · 5까지의 수", name: "5 이하 덧셈", gen: () => bAdd(5) },
  { id: 121, g: "1학년 · 5까지의 수", name: "5 이하 뺄셈", gen: () => bSub(5) },
  { id: 122, g: "1학년 · 5까지의 수", name: "5 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(5) : bSub(5) },
  /* 123~124: 9 이하 덧셈·뺄셈 분리 단계 — 교육과정(합 9이하 덧셈/피감수 9이하 뺄셈)대로 혼합(125) 앞에 배치 */
+ /* 170~173: 9 이하 덧셈 세분(v119) — 새 범위 70% + 앞 단계 복습 30%. 남는 4+4·4+5·5+4는 같은 수 더하기(165·143·144) 몫 */
+ { id: 170, g: "1학년 · 9까지의 수", name: "1 더하기 (9 이하)", gen: noRep(() => mkAdd(Math.random() < .7 ? R(5, 8) : R(1, 4), 1)) },
+ { id: 171, g: "1학년 · 9까지의 수", name: "2 더하기 (9 이하)", gen: noRep(() => { const r = Math.random(); return r < .7 ? mkAdd(R(4, 7), 2) : r < .85 ? mkAdd(R(1, 3), 2) : mkAdd(R(1, 8), 1); }) },
+ { id: 172, g: "1학년 · 9까지의 수", name: "3 더하기 (9 이하)", gen: noRep(() => mkAdd(R(1, 6), 3)) },
+ { id: 173, g: "1학년 · 9까지의 수", name: "작은 수 + 큰 수 (9 이하)", gen: noRep(() => swapAdd(9)) },
  { id: 123, g: "1학년 · 9까지의 수", name: "9 이하 덧셈", gen: () => bAdd(9) },
  { id: 124, g: "1학년 · 9까지의 수", name: "9 이하 뺄셈", gen: () => bSub(9) },
  { id: 125, g: "1학년 · 9까지의 수", name: "9 이하 덧셈·뺄셈", gen: () => Math.random() < .5 ? bAdd(9) : bSub(9) },
@@ -1292,7 +1311,7 @@ const migrateLv = v => (v >= 101 ? v : (OLD2NEW[v] || LEVEL_ORDER[0]));
 const levelById = id => LEVELS.find(l => l.id === migrateLv(id)) || LEVELS[0];
 /* v101 재부여 후 id = 101 + 교육과정 순이라 지금은 오름차순과 같다.
    새 단계는 165+ 번호로 만들고 이 배열의 원하는 위치에 삽입한다(기존 id 재부여 금지). */
-const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
+const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 121, 122, 170, 171, 172, 173, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
 /* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
@@ -1302,7 +1321,9 @@ const LEVEL_BANDS = [
   { name: '수 감각', ids: [101, 102, 103, 104, 105, 111, 115, 116] },
   /* 십틀(138)·자리값 블록(127)은 수 기초 탭에(사용자 지정) — 진급 순서상 위치(10의 보수 앞·두 자리 앞)는 유지 */
   { name: '수 기초', ids: [106, 107, 108, 109, 110, 112, 113, 114, 117, 118, 119, 138, 139, 127, 128] },
-  { name: '한 자리 수 덧셈·뺄셈', ids: [120, 121, 122, 123, 124, 125, 126, 135, 136, 137, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147] },
+  { name: '한 자리 수 덧셈·뺄셈', ids: [167, 168, 169, 120, 121, 122, 170, 171, 172, 173, 123, 124, 125, 126] },
+  /* v119: 덧셈 세분(167~173)으로 탭이 27개가 되어 둘로 나눔 — 세 수·10의 보수·덧셈 전략·십몇 */
+  { name: '세 수·10 만들기·십몇', ids: [135, 136, 137, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147] },
   { name: '두 자리 수 덧셈·뺄셈', ids: [129, 130, 131, 132, 133, 134, 148, 149] },
   { name: '세 자리 수 덧셈·뺄셈', ids: [150, 151, 152, 153, 164] },
   { name: '곱셈·나눗셈', ids: [154, 155, 156, 157, 158, 159, 160, 161, 162, 163] },
@@ -1313,6 +1334,10 @@ const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128]);
 /* 같은 수 더하기 계열 단계(v112 사용자 지시, v114에 144 합류): 받아올림 단원이 아니므로 정답칸은 자릿값 칸 없이 **한 칸**,
    전략은 항상 double/near(10 만들기는 자리칸이 필요) */
 const DBL_LEVELS = new Set([143, 165, 144]);
+/* 덧셈 세분 단계의 힌트 전략 기본값(v119) — 같은 수 더하기(165~) 학습 전이라 세기 전략만: 5 이하=모두 세기, 9 이하=이어 세기. 06_study pickAddStrat이 사용 */
+const CNT_LEVELS = { 167: 'all', 168: 'all', 169: 'all', 120: 'all', 122: 'all', 170: 'on', 171: 'on', 172: 'on', 173: 'on', 123: 'on', 125: 'on' };   // 기존 5 이하·9 이하 덧셈·혼합(120·122·123·125)도 같은 이유로 고정(사용자 승인)
+/* 5 이하 연산 단계: 문제부터 그림+식(CRA 구체물) — 06_study renderProblem이 사용 */
+const PIC_LEVELS = new Set([120, 121, 122, 167, 168, 169]);
 const nextLevel = id => { const i = LEVEL_ORDER.indexOf(id); return i >= 0 && i < LEVEL_ORDER.length - 1 ? LEVEL_ORDER[i + 1] : 0; };
 
 /* =========================================================
@@ -2485,7 +2510,7 @@ function renderProblem() {
   hintStage = 0;                                           // ①(v106) 힌트 실측 초기화
   /* 낮은 단계(5 이하 연산)는 문제부터 그림+식(CRA 구체물, 토도 B레벨) — 뺄셈 뒷수는 회색(제거 의미) */
   const p0 = session.items[session.idx];
-  if ([120, 121, 122].includes(session.levelId) && p0.type === 'binary')   // 5 이하 단계(v101 새 id)는 그림+식
+  if (PIC_LEVELS.has(session.levelId) && p0.type === 'binary')   // 5 이하 단계는 그림+식(v119: 167~169 합류)
     curCirc = p0.op === '-' ? [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'gray' }] : [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'red' }];
   setNav(studyNav());
   $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
@@ -3469,6 +3494,10 @@ const stratOf = k => { const s = current && current.strat && current.strat[k]; r
 function pickAddStrat(p) {
   const st = stratOf('add'), has = k => st.includes(k);
   const a = p.a, b = p.b, small = Math.min(a, b), sum = a + b;
+  /* v119: 덧셈 세분 단계(167~173)는 같은 수 더하기를 배우기 전 — 2+1·3+2가 near/double 폴백으로 가지 않게 세기 전략으로 고정.
+     교사가 모두 세기·이어 세기 중 하나만 골랐으면 그쪽, 아니면 단계 기본값(5 이하=모두 세기, 9 이하=이어 세기) */
+  const cl = typeof session !== 'undefined' && session && CNT_LEVELS[session.levelId];
+  if (cl) return has('all') !== has('on') ? (has('all') ? 'all' : 'on') : cl;
   if (singleAns()) { if (a === b) return 'double'; if (Math.abs(a - b) === 1) return 'near'; }   // v112·v114: 같은 수 계열 단계는 정답칸이 한 칸 → 자리칸을 쓰는 10 만들기로 못 감
   if (has('double') && a === b) return 'double';
   if (has('near') && Math.abs(a - b) === 1) return 'near';
@@ -5033,7 +5062,7 @@ async function finishSession() {
 /* =========================================================
    단계 선택·설정 모달
    ========================================================= */
-/* 단계 선택 모달 공용 골격(v106) — 학생 단계 선택과 교사 '노출 단계 고르기'(09_teacher)가 같은 6탭 화면을 쓴다.
+/* 단계 선택 모달 공용 골격(v106) — 학생 단계 선택과 교사 '노출 단계 고르기'(09_teacher)가 같은 영역 탭 화면을 쓴다.
    allow(Set|null)=노출 필터(비면 탭 숨김), tabClick(i)=탭 onclick JS, btnHtml(l)=단계 버튼 렌더 */
 function lvPickerHtml(tabIdx, allow, tabClick, btnHtml) {
   const bands = LEVEL_BANDS.map((b, i) => ({ name: b.name, i, ids: allow ? b.ids.filter(id => allow.has(id)) : b.ids })).filter(b => b.ids.length);
@@ -5741,7 +5770,7 @@ async function renderStudentDetail(id) {
   </div>`;
 }
 
-/* ---- 노출 단계 고르기 (⑤, v106 모달 → v111 페이지: 오류 분석처럼 stat 박스 클릭 ▸) — 학생 단계 선택과 같은 6탭(lvPickerHtml 공용), 전략 체크박스 문법(누를 때마다 저장).
+/* ---- 노출 단계 고르기 (⑤, v106 모달 → v111 페이지: 오류 분석처럼 stat 박스 클릭 ▸) — 학생 단계 선택과 같은 영역 탭(lvPickerHtml 공용), 전략 체크박스 문법(누를 때마다 저장).
    규칙: 노출 = 선택 목록 ∪ {현재 단계(⭐, 항상 보임)} · 선택 0개 = 전체 노출(현행) · 🎈손님은 항상 전체 ---- */
 function openLvSetPicker(id, tabIdx) {
   const s = dash.students.find(x => x.id === id); if (!s) return;
