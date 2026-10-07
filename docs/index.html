@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 124 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 125 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1106,7 +1106,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* ===== 받아올림 연결큐브(14_carry, ver 124) — .carryq 1000×500 고정 배치, carryFit()이 카드 남은 공간에 맞춰 축소 ===== */
 .cb-wrap{ position:relative; width:1000px; height:500px; }
 .carryq{ position:absolute; left:0; top:0; width:1000px; height:500px; transform-origin:0 0; --cw:24px; --cth:21px; --rh:174px; --cbred:#E53935; --cbblue:#1E88E5; --cbline:#9FB3C8; }
-.cb-carry{ position:absolute; left:262px; top:-6px; font-size:30px; font-weight:800; color:var(--cbblue); opacity:0; transition:opacity .4s; z-index:3; }   /* 표 위 받아올림 1(십 칸 위) */
+.cb-carry{ position:absolute; left:266px; top:37px; width:28px; height:28px; line-height:28px; text-align:center; border-radius:7px; background:#fff; font-size:21px; font-weight:800; color:var(--cbblue); opacity:0; transition:opacity .4s; z-index:3; }   /* 받아올림 1 — 십 머리 안 흰 배지, 변신한 막대 바로 위(left는 carryFuse가 막대 위치로 계산) */
 .cb-carry.on, .cb-vcarry.on{ opacity:1; }
 .cb-pvt{ position:absolute; left:0; top:30px; width:480px; height:396px; box-sizing:border-box; border:3px solid var(--cbline); border-radius:10px; overflow:hidden; background:#fff; }
 .cb-th{ position:absolute; top:0; height:36px; line-height:36px; text-align:center; font-size:22px; font-weight:800; color:#fff; }
@@ -1135,7 +1135,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-lbl.last{ font-size:24px; text-shadow:0 0 3px #fff,0 0 3px #fff; }   /* 마지막 수: 자리 색 글씨, 조금 크게 */
 .cb-lbl.last.o{ color:var(--cbred); } .cb-lbl.last.t{ color:var(--cbblue); }
 .cb-ans{ position:absolute; top:434px; width:64px; height:64px; box-sizing:border-box; border:5px solid; border-radius:14px; background:#fff; font-size:44px; line-height:54px; text-align:center; font-weight:800; }
-.cb-ans.t{ left:285px; border-color:var(--cbblue); color:var(--cbblue); } .cb-ans.o{ left:357px; border-color:var(--cbred); color:var(--cbred); }
+.cb-ans.t{ left:236px; border-color:var(--cbblue); color:var(--cbblue); } .cb-ans.o{ left:312px; border-color:var(--cbred); color:var(--cbred); }   /* v125: 기둥 경계(307) 양쪽 — 파란 칸은 십 기둥 안, 빨간 칸은 일 기둥 안(사용자 지시) */
 .cb-ans.cb-blink{ animation:cbBlink2 .9s ease-in-out infinite; }
 @keyframes cbBlink2{ 50%{ background:#FFF3C4; } }
 .cb-valg{ position:absolute; left:560px; top:30px; font-size:84px; font-weight:800; line-height:1.05; color:var(--ink); }
@@ -1151,6 +1151,28 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-key:active{ transform:translateY(3px); box-shadow:none; }
 .cb-demo{ position:absolute; right:0; top:0; width:56px; height:56px; border-radius:50%; border:none; background:#EEF2F6; color:#8A96A3; font-size:24px; cursor:pointer; touch-action:manipulation; }   /* 교사 ▶ 보여주기(64px 예외 규칙의 구석 버튼) */
 .cb-demo.on{ background:var(--amber); color:#fff; }
+/* 183 모형 옮겨 식 만들기(v125): 쟁반·끌기 유령·자리표시 */
+.cb-tray{ position:absolute; left:0; top:72px; width:156px; height:300px; box-sizing:border-box; border:3px dashed #B0BEC5; border-radius:14px; background:#FAFBFC; display:flex; justify-content:space-evenly; align-items:center; }
+.cb-src{ cursor:grab; touch-action:none; padding:10px 12px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+.cb-src:active{ background:#EEF2F6; }
+.cb-src .cb-cube, .cb-ghost.cb-cube{ position:relative; inset:auto; width:var(--cw); height:var(--cth); }
+.cb-src .cb-cube{ transform:scale(1.4); }
+.cb-ghost{ position:absolute !important; transform:translate(-50%,-50%); pointer-events:none; z-index:9; opacity:.9; }
+.cb-vrow span:empty::before{ content:attr(data-tg); color:#DDE3EA; }
+.carryq.build .cb-rod, .carryq.build .cb-frame .cb-cube{ cursor:pointer; }
+/* build(183)는 쟁반이 표 왼쪽(십 칸 바로 옆) — 표·답 칸·배지·식·패드를 170px 오른쪽으로, 무대 폭 1060(carryFit이 offsetWidth로 읽음) */
+.carryq.build, .carryq.free{ width:1060px; }
+.carryq.build .cb-pvt, .carryq.free .cb-pvt{ left:170px; } .carryq.build .cb-carry, .carryq.free .cb-carry{ left:436px; }
+.carryq.build .cb-ans.t, .carryq.free .cb-ans.t{ left:406px; } .carryq.build .cb-ans.o, .carryq.free .cb-ans.o{ left:482px; }
+.carryq.build .cb-valg, .carryq.build .cb-pad, .carryq.free .cb-valg, .carryq.free .cb-pad{ left:700px; }
+.carryq.free .cb-rod, .carryq.free .cb-frame .cb-cube{ cursor:pointer; }
+/* 184 자유: ✓(쟁반 아래) — 식이 성립하면 켜짐 */
+.cb-ok{ position:absolute; left:30px; top:392px; width:96px; height:64px; border-radius:16px; border:none; background:#CFD8DC; color:#fff; font-size:34px; font-weight:800; cursor:pointer; touch-action:manipulation; }
+.cb-ok.on{ background:var(--teal); box-shadow:0 4px 0 #00695C; }
+.cb-ok.on:active{ transform:translateY(3px); box-shadow:none; }
+/* 놓을 칸 선택(build·free): 노란 안쪽 테두리가 숨 쉬듯 */
+.cb-cell.cb-dest{ animation:cbDest 1.2s ease-in-out infinite; }
+@keyframes cbDest{ 0%,100%{ box-shadow:inset 0 0 0 6px #FFD54A; } 50%{ box-shadow:inset 0 0 0 3px #FFE58A; } }
 
 </style>
 </head>
@@ -1168,7 +1190,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 124';
+const APP_VERSION = 'ver 125';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1334,7 +1356,9 @@ const LEVELS = [
  { id: 137, g: "1학년 · 세 수", name: "세 수 덧셈·뺄셈 혼합", gen: () => { const a = R(1, 7), b = R(1, Math.max(1, 9 - a)), c = R(1, a + b); return { type: 'triple', a, b, c, op: '+', op2: '-', ans: a + b - c }; } },
  /* 146~147: 다리 단계 — 교과서의 "(몇)+(몇)=십몇 / 십몇−(몇)" 단원. 덧셈 전략(143~145) 다음, 두 자리 받아올림(148) 앞 */
  { id: 146, g: "1학년 · 받아올림·받아내림", name: "(몇)+(몇) 십몇", gen: () => { const a = R(2, 9), b = R(Math.max(2, 11 - a), 9); return { type: 'binary', a, b, op: '+', ans: a + b }; } },
- /* 181·182(v124): 받아올림 연결큐브 — 단독 앱(받아올림_연결큐브/ v11) 이식. 146 뒤·두 자리 받아올림(148) 앞. 수 범위는 학생별 옵션(14_carry carryRange) */
+ /* 181·182(v124): 받아올림 연결큐브 — 단독 앱(받아올림_연결큐브/ v11) 이식. 146 뒤·두 자리 받아올림(148) 앞. 일의 자리는 학생별 적응(14_carry carryU: 9에서 시작, 세션 80%↑면 −1), 둘째 수 = 10 − 일의 자리 */
+ { id: 184, g: "1학년 · 받아올림·받아내림", name: "받아올림 · 자유롭게 식 만들기", gen: () => carryGen('free') },   // v125: 목표 없이 놓고 ✓ → 앱이 식을 읽고 이어 풂(큐브 묶음의 도입)
+ { id: 183, g: "1학년 · 받아올림·받아내림", name: "받아올림 · 모형 옮겨 식 만들기", gen: noRep(() => carryGen('build')) },   // v125: 쟁반의 막대·낱개를 옮기면 세로셈이 채워짐(181의 앞 단계)
  { id: 181, g: "1학년 · 받아올림·받아내림", name: "받아올림 · 모형 보고 식 쓰기", gen: noRep(() => carryGen('model')) },
  { id: 182, g: "1학년 · 받아올림·받아내림", name: "받아올림 · 식 보고 놓기", gen: noRep(() => carryGen('expr')) },
  { id: 147, g: "1학년 · 받아올림·받아내림", name: "십몇 − (몇) 받아내림", gen: () => { const a = R(11, 18), b = R(a % 10 + 1, 9); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
@@ -1380,7 +1404,7 @@ const migrateLv = v => (v >= 101 ? v : (OLD2NEW[v] || LEVEL_ORDER[0]));
 const levelById = id => LEVELS.find(l => l.id === migrateLv(id)) || LEVELS[0];
 /* v101 재부여 후 id = 101 + 교육과정 순이라 지금은 오름차순과 같다.
    새 단계는 165+ 번호로 만들고 이 배열의 원하는 위치에 삽입한다(기존 id 재부여 금지). */
-const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 181, 182, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
+const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 184, 183, 181, 182, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
 /* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
@@ -1393,13 +1417,13 @@ const LEVEL_BANDS = [
   { name: '한 자리 수 덧셈·뺄셈', ids: [167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126] },
   /* v119: 덧셈 세분(167~173)으로 탭이 27개가 되어 둘로 나눔 — 세 수·10의 보수·덧셈 전략·십몇 */
   { name: '세 수·10 만들기·십몇', ids: [135, 136, 137, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147] },
-  { name: '두 자리 수 덧셈·뺄셈', ids: [129, 130, 131, 132, 133, 134, 181, 182, 148, 149] },
+  { name: '두 자리 수 덧셈·뺄셈', ids: [129, 130, 131, 132, 133, 134, 184, 183, 181, 182, 148, 149] },
   { name: '세 자리 수 덧셈·뺄셈', ids: [150, 151, 152, 153, 164] },
   { name: '곱셈·나눗셈', ids: [154, 155, 156, 157, 158, 159, 160, 161, 162, 163] },
 ];
 /* 학습지 인쇄 비지원 유형 — 번쩍 보기(105·111)는 잠깐 보여주는 화면 전용 활동이라 지필 불가.
    십틀 10 만들기(139)·자리값 블록 만들기(128)는 조작 활동이라 지면 미지원(v94 규칙: 신규 유형은 NO_PRINT) */
-const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128, 181, 182]);   // 181·182 받아올림 큐브(v124)도 조작 활동
+const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128, 181, 182, 183, 184]);   // 181~184 받아올림 큐브(v124·125)도 조작 활동
 /* 같은 수 더하기 계열 단계(v112 사용자 지시, v114에 144 합류): 받아올림 단원이 아니므로 정답칸은 자릿값 칸 없이 **한 칸**,
    전략은 항상 double/near(10 만들기는 자리칸이 필요) */
 const DBL_LEVELS = new Set([143, 165, 144]);
@@ -1796,6 +1820,8 @@ const TRX = {
   '눌러서 십 만들어요.': { en: 'Tap to make ten.', zh: '点一点，凑成十。', vi: 'Chạm để làm thành mười.', ja: 'おして 10を つくろう。', ru: 'Нажимай, чтобы собрать десять.' },
   '눌러요.': { en: 'Tap it.', zh: '按一下。', vi: 'Hãy bấm.', ja: 'おしてね。', ru: 'Нажми.' },
   '없어요.': { en: 'None.', zh: '没有。', vi: 'Không có.', ja: 'ないよ。', ru: 'Нет ни одного.' },
+  '막대와 낱개를 놓아서 식을 만들어요.': { en: 'Place rods and cubes to make a number sentence.', zh: '摆放小棒和方块，组成一个算式。', vi: 'Hãy đặt thanh và khối để tạo một phép tính.', ja: 'ぼうと ブロックを おいて、しきを つくろう。', ru: 'Разложи палочки и кубики, чтобы составить пример.' },
+  '눌러서 위로 올려요.': { en: 'Tap to move them up.', zh: '点一点，把它们移到上面。', vi: 'Chạm để đưa lên trên.', ja: 'おして うえに あげよう。', ru: 'Нажимай, чтобы поднять их наверх.' },
   '직접 해 봐요.': { en: 'Now you try.', zh: '现在你自己试试。', vi: 'Giờ em tự làm nhé.', ja: 'じぶんで やってみよう。', ru: 'Теперь попробуй сам.' },
   '모두 몇 개?': { en: 'How many circles are there?', zh: '一共有几个圆圈？', vi: 'Có tất cả mấy hình tròn?', ja: 'まるは ぜんぶで いくつ？', ru: 'Сколько всего кружков?' },
   '더 많은 쪽을 눌러요.': { en: 'Tap the side with more.', zh: '点多的那一边。', vi: 'Chạm bên nhiều hơn.', ja: 'おおい ほうを おしてね。', ru: 'Нажми, где больше.' },
@@ -1941,7 +1967,8 @@ function cntToNum(w) {
 }
 /* v121 전략 발문(식의 숫자 포함) — STRAT_CUES(06_study)의 문장과 1:1. [정규식, m → {en,zh,vi,ja,ru}]. 의문형·strong 명령형 각 1개 */
 const TRX_RX = [
-  /* 받아올림 연결큐브(v124): 낱개 놓기 안내 · 완료 식 읽기 */
+  /* 받아올림 연결큐브(v124): 낱개 놓기 안내 · 완료 식 읽기 · (v125) 모형 만들기 안내 */
+  [/^(\d+) 더하기 (\d+)[을를] 만들어요\.$/, m => ({ en: `Make ${m[1]} plus ${m[2]}.`, zh: `摆出 ${m[1]} 加 ${m[2]}。`, vi: `Hãy xếp ${m[1]} cộng ${m[2]}.`, ja: `${m[1]} たす ${m[2]}を つくろう。`, ru: `Собери ${m[1]} плюс ${m[2]}.` })],
   [/^(.+?) 개 놓아요\.$/, m => { const n = cntToNum(m[1]) || m[1]; return { en: `Place ${n}.`, zh: `放 ${n} 个。`, vi: `Đặt ${n} khối.`, ja: `${n}こ おこう。`, ru: `Положи ${n}.` }; }],
   [/^(\d+) 더하기 (\d+)[은는] (\d+)\.$/, m => ({ en: `${m[1]} plus ${m[2]} is ${m[3]}.`, zh: `${m[1]} 加 ${m[2]} 等于 ${m[3]}。`, vi: `${m[1]} cộng ${m[2]} bằng ${m[3]}.`, ja: `${m[1]} たす ${m[2]}は ${m[3]}。`, ru: `${m[1]} плюс ${m[2]} будет ${m[3]}.` })],
   [/^(\d+)[와과] (\d+), 모두 세면\?$/, m => ({ en: `Count ${m[1]} and ${m[2]} all together. How many?`, zh: `把 ${m[1]} 和 ${m[2]} 全部数一数，一共几个？`, vi: `Đếm hết ${m[1]} và ${m[2]}. Tất cả là mấy?`, ja: `${m[1]}と ${m[2]}を ぜんぶ かぞえると いくつ？`, ru: `Сосчитай ${m[1]} и ${m[2]} вместе. Сколько всего?` })],
@@ -5237,6 +5264,7 @@ async function finishSession() {
     items: log, finishedAt: new Date().toISOString(),
   });
   const promo = await checkPromotion();
+  if (typeof carryAdapt === 'function') await carryAdapt(session.levelId, got, session.items.length);   // v125 받아올림 큐브: 80%↑면 일의 자리 하나 작아짐
   lastScore = { got, total: session.items.length, promo, levelName: levelById(current.level).name };
   speak("오늘 학습 끝! 정말 잘했어요.");
   renderCalendar(true);
@@ -5851,11 +5879,11 @@ async function setStratT(id, kind, key, on) {
   if (!on && i >= 0) arr.splice(i, 1);
   await Store.updateStudent(s);
 }
-/* 받아올림 큐브 수 범위(v124) — strat 컬럼에 함께 저장(새 마이그레이션 없음). 1 몇십9+1 · 2 몇십9+몇 · 3 몇십8·7+몇 · 4 몇십몇+몇(기본) */
-async function setCarryRangeT(id, v) {
+/* 받아올림 큐브 일의 자리(v125, 적응형) — strat 컬럼에 함께 저장(새 마이그레이션 없음). 9에서 시작해 세션 80%↑면 앱이 하나씩 내림, 교사가 직접 되돌리거나 건너뛸 수 있음 */
+async function setCarryUT(id, v) {
   const s = dash.students.find(x => x.id === id); if (!s) return;
   const st = s.strat || (s.strat = {});
-  st.carry = [String(v)];
+  st.carryU = parseInt(v, 10);
   await Store.updateStudent(s);
 }
 async function setDailyT(id, v) { const s = dash.students.find(x => x.id === id); if (s) { s.daily = parseInt(v, 10); await Store.updateStudent(s); } }
@@ -5949,7 +5977,7 @@ async function renderStudentDetail(id) {
           <div><b>뺄셈</b> ${box('sub', 'take', '덜어내기')} ${box('sub', 'back', '거꾸로 세기')} ${box('sub', 'bridge', '빼는 수 가르기')} ${box('sub', 'ten', '10에서 빼기')} ${box('sub', 'jump', '수직선 점프')}</div>
           <div><b>곱셈</b> ${box('mul', 'group', '묶음 세기')} ${box('mul', 'skip', '뛰어 세기')} ${box('mul', 'quad', '몇씩 몇묶음(4분면)')} ${box('mul', 'swap', '교환')}</div>
           <div><b>나눗셈</b> ${box('div', 'fact', '묶어 세기·구구')} ${box('div', 'take', '덜어내기')}</div>
-          <div><b>받아올림 큐브</b> 수 범위 <select onchange="setCarryRangeT('${s.id}',this.value)" style="font-size:.95rem;padding:.15rem .3rem">${[1, 2, 3, 4].map(v => `<option value="${v}" ${carryRange(s) === v ? 'selected' : ''}>${v} ${CARRY_RANGE[v]}</option>`).join('')}</select> <span class="dim">(모형 보고 식 쓰기 · 식 보고 놓기 공통)</span></div>`;
+          <div><b>받아올림 큐브</b> 지금 단계 <select onchange="setCarryUT('${s.id}',this.value)" style="font-size:.95rem;padding:.15rem .3rem">${[9, 8, 7, 6, 5, 4, 3, 2, 1, 0].map(v => `<option value="${v}" ${carryU(s) === v ? 'selected' : ''}>${v ? `몇십${v} + ${10 - v}` : '랜덤 몇십몇 + 몇'}</option>`).join('')}</select> <span class="dim">(9에서 시작 · 세션 첫 시도 80% 이상이면 자동으로 하나 작아짐, 1 다음은 랜덤 · 모형 옮기기·모형 보고·식 보고 공통)</span></div>`;
     })()}
           <div class="dim stratnote">선택 없음 = 자동 · 복수 선택 시 문제에 맞는 전략으로 자동 분기</div>
         </div></div>
@@ -7718,34 +7746,43 @@ function downloadHwpx() {
 
 /* =========================================================
    14 받아올림 연결큐브 (ver 124) — 단독 앱 받아올림_연결큐브/(v11) 이식. 설계 정본: 받아올림_연결큐브/설계.md
-   단계 181 「받아올림 · 모형 보고 식 쓰기」(kind model) · 182 「받아올림 · 식 보고 놓기」(kind expr)
+   단계 184 「받아올림 · 자유롭게 식 만들기」(kind free, v125: 목표 없이 놓고 ✓ → 앱이 식을 읽고 이어 풂, 10 미만이면 받아올림 없이 모아서 답) · 183 「받아올림 · 모형 옮겨 식 만들기」(kind build, v125) · 181 「받아올림 · 모형 보고 식 쓰기」(kind model) · 182 「받아올림 · 식 보고 놓기」(kind expr)
+   build: 쟁반(오른쪽)의 파란 막대·빨간 낱개를 끌어서 십 칸·일 칸·아래 칸에 놓으면(탭은 자동 배치) 세로셈 숫자가 바로 채워짐. 놓인 조각은 눌러서 되돌림. 목표(a, b)와 같아지면 식을 읽고 ③으로
    흐름: ①제시 → (A: 식 읽기 rt·ro·rb | B: 낱개 놓기) → ③10 만들기(탭) → ④받아올림(자동) → ⑤일 입력 → ⑥십 입력 → ⑦완료
    힌트(칸마다 오답 횟수를 따로 셈, strong은 +1): 1회=무음 숫자 라벨+마지막 수만 읽기 · 2회=음성+라벨 세기 · 3회=정답 공개 → 세션 끝에 같은 문제 한 번 더
    오류 태그(기록 item.tags): count·no_regroup·carry_missed·carry_over·other → 대시보드 분류(09_teacher classifyItem)
-   발화는 지시·질문만(설계 §7 최소안), 화면 글자 없음. 수 범위는 학생별 옵션 student.strat.carry(1~4, 기본 4=몇십몇+몇)
+   발화는 지시·질문만(설계 §7 최소안), 화면 글자 없음. 수 범위는 학생별 적응 student.strat.carryU(9→1, 아래 참고)
    교사 ▶ 보여주기(설계 §6): 같은 문제를 앱이 ②~⑦ 자동 수행(0.6초 간격) → "직접 해 봐요." → 같은 문제 학생용 재제시. 기록·점수 미반영, 시연 중 입력 잠금
    무대: .carryq 1000×500 고정 배치 → carryFit()이 학습 카드 남은 공간에 맞춰 축소(좌표는 _sc×carry.sc 보정)
    ========================================================= */
-const CARRY_RANGE = { 1: '몇십9 + 1', 2: '몇십9 + 몇', 3: '몇십8·7 + 몇', 4: '몇십몇 + 몇' };
-function carryRange(s) {
+/* 수 범위(v125 사용자 설계, v124의 1~4 선택 폐지): 첫째 수 일의 자리 u는 9에서 시작해 세션 첫 시도 80% 이상(3문제↑)이면 하나씩 작아지고(9→8→…→1),
+   둘째 수 b = 10 − u — "1부터 더해서 십을 만드는 연습". 학생별 student.strat.carryU(1~9, 기본 9) — 181·182·183 공통, strat 컬럼에 함께 저장(마이그레이션 없음).
+   교사 학생 상세에서 직접 조정 가능. 손님은 항상 9. 06_study finishSession이 carryAdapt를 호출 */
+const CARRY_U_MAX = 9;
+function carryU(s) {
   const st = (s || (typeof current !== 'undefined' && current) || {}).strat;
-  const v = st && st.carry ? +(Array.isArray(st.carry) ? st.carry[0] : st.carry) : 4;
-  return CARRY_RANGE[v] ? v : 4;
+  const v = st && st.carryU != null ? +st.carryU : CARRY_U_MAX;
+  return v >= 0 && v <= 9 ? v : CARRY_U_MAX;   // 0 = 랜덤(몇십몇 + 몇, 받아올림 무작위) — 1 다음 단계
 }
-/* 생성기 — a=10t+u, b: 모든 범위에서 u+b ≥ 10, a+b ≤ 99(t ≤ 8). 01_levels 181·182가 noRep으로 감싸 호출 */
-function carryGen(kind, range) {
-  const r = range || carryRange(), t = R(1, 8);
-  let u, b;
-  if (r === 1) { u = 9; b = 1; }
-  else if (r === 2) { u = 9; b = R(2, 9); }
-  else if (r === 3) { u = R(7, 8); b = R(10 - u, 9); }
-  else { u = R(1, 9); b = R(10 - u, 9); }
-  const a = t * 10 + u;
+/* 세션 결과로 다음 u — 3문제 이상·첫 시도 80% 이상이면 1 작아짐. 1 다음은 0(랜덤), 0이면 그대로. 안 바뀌면 null */
+function carryNextU(u, got, total) { return total >= 3 && got / total >= .8 && u > 0 ? u - 1 : null; }
+async function carryAdapt(levelId, got, total) {
+  if (!current || current.guest || ![181, 182, 183].includes(levelId)) return 0;
+  const nu = carryNextU(carryU(current), got, total); if (!nu) return 0;
+  (current.strat || (current.strat = {})).carryU = nu; await Store.updateStudent(current); return nu;
+}
+/* 생성기 — a = 10t + u(t 1~8). u ≥ 1이면 b = 10 − u(일의 자리 답 0), u = 0(랜덤)이면 u 1~9·b는 10−u~9(받아올림 보장). 01_levels 181~184가 noRep으로 감싸 호출.
+   free(184)는 학생이 놓은 뒤 carryFreeDone이 수를 채움 */
+function carryGen(kind, uFixed) {
+  if (kind === 'free') return { type: 'carry', kind, a: 0, b: 0, t: 0, u: 0, ans: 0 };
+  const cu = uFixed != null ? uFixed : carryU(), t = R(1, 8);
+  const u = cu || R(1, 9), b = cu ? 10 - cu : R(10 - u, 9), a = t * 10 + u;
   return { type: 'carry', kind, a, b, t, u, ans: a + b };
 }
 /* 오류 진단(설계 §5.2) — 우선순위 no_regroup > count > other. 식 읽기 칸(rt·ro·rb)은 ±1=count */
 const CARRY_READ = { rt: 't', ro: 'u', rb: 'b' };
 function carryDiag(slot, v, p) {
+  if (p.noCarry && (slot === 'ones' || slot === 'tens')) { const ans = slot === 'ones' ? p.ans % 10 : p.t; return v === ans ? null : Math.abs(v - ans) === 1 ? 'count' : 'other'; }   // 자유 단계의 받아올림 없는 식
   if (CARRY_READ[slot]) { const ans = p[CARRY_READ[slot]]; return v === ans ? null : Math.abs(v - ans) === 1 ? 'count' : 'other'; }
   const ones = p.ans % 10, tens = Math.floor(p.ans / 10);
   if (slot === 'ones') {
@@ -7765,7 +7802,7 @@ const CARRY_TAG_KO = { count: '세기 오류', no_regroup: '받아올림 미이�
 /* ---- 얼굴(05_face buildFace가 호출) ---- */
 function carryFace(p) {
   const pad = Array.from({ length: 10 }, (_, d) => `<button type="button" class="cb-key" onclick="carryPad(${d})">${d}</button>`).join('');
-  return `<div class="early cb-wrap" id="cbWrap"><div class="carryq${p.kind === 'model' ? ' model' : ''}" id="carryq">
+  return `<div class="early cb-wrap" id="cbWrap"><div class="carryq ${p.kind}" id="carryq">
     <div class="cb-carry" id="cbCarryPv">1</div>
     <div class="cb-pvt">
       <div class="cb-th t">십</div><div class="cb-th o">일</div>
@@ -7783,6 +7820,8 @@ function carryFace(p) {
       <div class="cb-vrow"><span></span><span class="dt" id="cbVAnsT"></span><span class="do" id="cbVAnsO"></span></div>
     </div>
     <div class="cb-pad hidden" id="cbPad">${pad}</div>
+    <div class="cb-tray hidden" id="cbTray"><div class="cb-src" data-k="t"><img class="cb-rod" src="${IMG_CUBE_ROD}" draggable="false" alt=""></div><div class="cb-src" data-k="o"><div class="cb-cube"></div></div></div>
+    <button type="button" class="cb-ok hidden" id="cbOk" onclick="carryFreeDone()" aria-label="다 놓았어요">✓</button>
     <button type="button" class="cb-demo" id="cbDemo" onclick="carryDemoToggle()" title="보여주기(교사)" aria-label="보여주기">▶</button>
   </div></div>`;
 }
@@ -7803,11 +7842,15 @@ function initCarry() {
   carryDemoOn = carryDemoReq === session.idx; carryDemoReq = null;
   $('cbDemo').textContent = carryDemoOn ? '■' : '▶'; $('cbDemo').classList.toggle('on', carryDemoOn);
   q.style.setProperty('--img-cube', `url("${IMG_CUBE_ONE}")`);
-  const rods = $('cbRods'); rods.innerHTML = '';
-  for (let i = 0; i < p.t; i++) rods.appendChild(cbRod());
-  const slot = document.createElement('div'); slot.className = 'cb-rodslot'; rods.appendChild(slot);   // 받아올림 막대 자리(보이지 않게 비움)
-  cbFrame($('cbFrameT'), p.u); cbFrame($('cbFrameB'), p.kind === 'model' ? p.b : 0);
-  if (p.kind !== 'model') { $('cbRt').textContent = p.t; $('cbRo').textContent = p.u; $('cbRb').textContent = p.b; }   // B: 식을 처음부터
+  const build = p.kind === 'build' || p.kind === 'free', rods = $('cbRods'); rods.innerHTML = '';
+  for (let i = 0; i < (build ? 0 : p.t); i++) rods.appendChild(cbRod());
+  if (!build) { const slot = document.createElement('div'); slot.className = 'cb-rodslot'; rods.appendChild(slot); }   // 받아올림 막대 자리(보이지 않게 비움) — build는 완성 뒤 붙임
+  cbFrame($('cbFrameT'), build ? 0 : p.u); cbFrame($('cbFrameB'), p.kind === 'model' ? p.b : 0);
+  if (p.kind === 'expr') { $('cbRt').textContent = p.t; $('cbRo').textContent = p.u; $('cbRb').textContent = p.b; }   // B: 식을 처음부터
+  $('cbTray').classList.toggle('hidden', !build);
+  if (p.kind === 'build') { $('cbRt').dataset.tg = p.t; $('cbRo').dataset.tg = p.u; $('cbRb').dataset.tg = p.b; }   // 목표 숫자는 연한 자리표시(놓으면 실제 숫자로)
+  if (build) cbDragInit();
+  $('cbOk').classList.toggle('hidden', p.kind !== 'free'); $('cbOk').classList.remove('on');
   carryFit();
 }
 /* 1000×500 무대를 카드의 남은 공간에 맞춰 축소 — 바깥 .cb-wrap이 축소된 크기를 차지해 레이아웃이 넘치지 않음 */
@@ -7821,9 +7864,10 @@ function carryFit() {
   const fs = getComputedStyle(face);
   const availH = card.clientHeight - used - parseFloat(fs.paddingTop) - parseFloat(fs.paddingBottom);
   const availW = face.clientWidth;
-  const s = Math.max(.5, Math.min(1, availW / 1000, availH / 500));
+  const W = q.offsetWidth || 1000, H = q.offsetHeight || 500;   // build는 쟁반 때문에 1060 폭(CSS)
+  const s = Math.max(.5, Math.min(1, availW / W, availH / H));
   q.style.transform = s < 1 ? `scale(${s})` : '';
-  wrap.style.width = Math.round(1000 * s) + 'px'; wrap.style.height = Math.round(500 * s) + 'px';
+  wrap.style.width = Math.round(W * s) + 'px'; wrap.style.height = Math.round(H * s) + 'px';
   if (carry) carry.sc = s;
 }
 const cbAlive = tok => carry && carry.tok === tok && $('carryq');
@@ -7835,12 +7879,15 @@ function cbSay(text, then) {
 }
 const cbUnlock = () => { if (!carryDemoOn) locked = false; };   // 시연 중엔 학생 입력 잠금 유지
 function cbTimer(fn, ms) { const tok = itemStart; setTimeout(() => { if (cbAlive(tok)) fn(); }, ms); }
+/* 무대(.carryq) 기준 레이아웃 x(offsetLeft 합) — transform·scale 무시, 전환 중에도 최종 자리 */
+function cbOffX(el) { let x = 0; for (let n = el; n && n.id !== 'carryq'; n = n.offsetParent) x += n.offsetLeft; return x; }
 /* 무대(.carryq) 좌표계 사각형 — 화면 스케일(_sc)과 carryFit 축소(carry.sc)를 함께 보정 */
 function cbRect(el) { const r = el.getBoundingClientRect(), k = (window._sc || 1) * (carry ? carry.sc : 1); return { x: r.left / k, y: r.top / k, w: r.width / k, h: r.height / k }; }
-const carryIntro = p => p.kind === 'model' ? '식을 써요.' : `${p.a} 더하기 ${p.b}${josaEun(p.b)}?`;   // speakProblem(🔊)도 이 문장
+const carryIntro = p => p.kind === 'model' ? '식을 써요.' : p.kind === 'free' ? '막대와 낱개를 놓아서 식을 만들어요.' : p.kind === 'build' ? `${p.a} 더하기 ${p.b}${josaEul(p.b)} 만들어요.` : `${p.a} 더하기 ${p.b}${josaEun(p.b)}?`;   // speakProblem(🔊)도 이 문장
 function carryBegin() {
   if (!carry) return; locked = true;
   if (carry.p.kind === 'model') cbSay(carryIntro(carry.p), () => carryAskRead('rt'));
+  else if (carry.p.kind === 'build' || carry.p.kind === 'free') cbSay(carryIntro(carry.p), carryStartBuild);
   else cbSay(carryIntro(carry.p), carryStartPlace);
 }
 
@@ -7862,6 +7909,7 @@ function carryStartPlace() {
 }
 function carryCellTap(cell) {
   if (!carry || carryDemoOn) return;
+  if (carry.phase === 'build') { if (!locked && (cell === 'ot' || cell === 'ob')) cbSetDest(cell === 'ot' ? 'cbOT' : 'cbOB'); return; }   // 놓을 칸 고르기(사용자 지시): 누른 일 칸이 쟁반 탭의 목적지
   const ph = carry.phase;
   if (locked) { if (cell === 'ob' && ph === 'place' && carry.placed >= carry.p.b) tick(); return; }   // 초과 탭: 딱 소리만(설계 §5.3)
   if (cell === 'ob') {
@@ -7886,7 +7934,7 @@ function cbPlaceOne() {
 function carryStartRaise() {
   carry.phase = 'raise'; $('cbPad').classList.add('hidden');
   $('cbFrameB').querySelectorAll('.cb-cube').forEach(e => e.classList.add('tap'));   // 눌러야 할 낱개 강조
-  cbSay('눌러서 십 만들어요.', () => { cbUnlock(); if (carryDemoOn) cbDemoRaise(); });
+  cbSay(carry.p.noCarry ? '눌러서 위로 올려요.' : '눌러서 십 만들어요.', () => { cbUnlock(); if (carryDemoOn) cbDemoRaise(); });   // 자유 단계의 받아올림 없는 식은 모아 올리기만
 }
 function cbFlip(el, from) {   // 새 부모로 옮긴 뒤 옛 자리에서 미끄러짐
   const to = cbRect(el);
@@ -7904,6 +7952,7 @@ function cbRaiseOne() {
   speakFast(KO_NUM[n] + (n === 10 ? '!' : ''));
   cbTimer(() => {
     if (n >= 10) { ob.querySelectorAll('.cb-cube').forEach(e => e.classList.remove('tap')); carryFuse(); }
+    else if (carry.p.noCarry && !ob.querySelector('.cb-cube')) carryAskSlot('ones');   // 다 올렸고 10 미만: 받아올림 없이 바로 답
     else cbUnlock();
   }, 380);
 }
@@ -7920,7 +7969,9 @@ function carryFuse() {
     r.style.transition = 'none'; r.style.transform = `translate(${from.x + from.w / 2 - to.x - to.w / 2}px,${from.y + from.h - to.y - to.h}px)`;
     r.getBoundingClientRect(); r.style.transition = 'transform .7s ease'; r.style.transform = '';
     cbTimer(() => {
-      $('cbCarryPv').classList.add('on'); $('cbVCarry').classList.add('on');
+      const bd = $('cbCarryPv');   // 받아올림 1은 변신해 들어간 막대 바로 위(사용자 지시) — 이동 애니메이션과 무관한 레이아웃 좌표(offset)로
+      bd.style.left = Math.round(cbOffX(r) + r.offsetWidth / 2 - 14) + 'px';
+      bd.classList.add('on'); $('cbVCarry').classList.add('on');
       cbSay('십 막대 한 개!', () => carryAskSlot('ones'));
     }, 750);
   }, 500);
@@ -7929,13 +7980,14 @@ function carryFuse() {
 function carryAskSlot(slot) {
   carry.phase = slot; locked = true; carry.cnt[slot] = 0;
   cbAnsBox(slot).classList.add('cb-blink'); if (!carryDemoOn) $('cbPad').classList.remove('hidden');
-  cbSay(slot === 'ones' ? (cbAns('ones') === 0 ? '남은 낱개는? 없으면 영.' : '남은 낱개는?') : '십 막대는?', () => { cbUnlock(); if (carryDemoOn) cbDemoAnswer(slot); });
+  cbSay(slot === 'ones' ? (carry.p.noCarry ? '낱개는?' : cbAns('ones') === 0 ? '남은 낱개는? 없으면 영.' : '남은 낱개는?') : '십 막대는?', () => { cbUnlock(); if (carryDemoOn) cbDemoAnswer(slot); });
 }
 /* 세기 숫자 라벨 — 낱개는 한가운데, 막대는 위. 칸(cell) 좌표계 절대배치 */
 const cbTensSlot = s => s === 'tens' || s === 'rt';
-const cbCellOf = s => $(s === 'ro' ? 'cbOT' : cbTensSlot(s) ? 'cbTT' : 'cbOB');
+const cbCellOf = s => $(s === 'ro' || (s === 'ones' && carry && carry.p.noCarry) ? 'cbOT' : cbTensSlot(s) ? 'cbTT' : 'cbOB');   // 받아올림 없는 자유 식은 낱개가 위 칸에
 function cbModelEls(slot) {
   if (slot === 'ro') return [...$('cbFrameT').querySelectorAll('.cb-cube')];
+  if (slot === 'ones' && carry.p.noCarry) return [...$('cbFrameT').querySelectorAll('.cb-cube')];   // 받아올림 없는 식: 모두 위로 올라가 있음
   if (slot === 'rb' || slot === 'ones') return [...$('cbFrameB').querySelectorAll('.cb-cube')];
   return [...$('cbRods').querySelectorAll('.cb-rod')];
 }
@@ -8006,7 +8058,7 @@ function carryFinish() {
   const p = carry.p; carry.phase = 'done'; locked = true; $('cbPad').classList.add('hidden');
   if (!carry.revealed) celebrate($('cbAnsO'));
   if (carryDemoOn) { cbSay(`${p.a} 더하기 ${p.b}${josaEun(p.b)} ${p.ans}.`, () => cbTimer(carryDemoEnd, 1000)); return; }   // 시연: 기록·점수 없이 복귀
-  if (carry.revealed && !p.retry) session.items.push(Object.assign({}, p, { retry: true }));
+  if (carry.revealed && !p.retry) session.items.push(Object.assign({}, p, { retry: true, kind: p.kind === 'free' ? 'model' : p.kind }));   // 자유 식은 같은 수를 모형으로 다시
   afterCorrectSpeak(`${p.a} 더하기 ${p.b}${josaEun(p.b)} ${p.ans}.`, 1000);
 }
 /* routeHint(stage) 경유(점검 도구·공통 라우터용) — 지금 입력 중인 칸에 힌트 */
@@ -8038,6 +8090,95 @@ function cbDemoAnswer(slot) {
     cbFill(slot, cbAns(slot)); chime(true);
     cbTimer(() => { if (carryDemoOn) carryAfterSlot(slot); }, 500);
   }, 800);
+}
+
+/* ---- 183 모형 옮겨 식 만들기(v125): 쟁반의 막대·낱개를 끌어 놓으면 세로셈이 채워진다 ----
+   낱개 목적지(cbSetDest): 위 일 칸이 기본, 일 칸을 누르면 바뀜(노란 강조). 쟁반 낱개 탭은 그 칸으로, 끌기는 놓은 칸으로.
+   끌기(포인터 캡처 없이 document 리스너, 좌표는 _sc×carry.sc 보정) · 6px 미만 이동은 탭 = 자동 배치(막대→십 칸, 낱개→위 일 칸이 목표에 못 미치면 위, 아니면 아래)
+   놓인 조각을 누르면 되돌림. 상한 막대 8·낱개 9(받아올림 자리 확보). 목표(t·u·b)와 같아지면 잠금 → 식 읽기 → ③ 10 만들기 */
+function carryStartBuild() {
+  carry.phase = 'build'; cbUnlock(); $('cbTray').classList.remove('hidden'); cbSetDest('cbOT', true);   // 낱개 목적지: 처음엔 위 일 칸(노란 강조)
+  if (carryDemoOn) cbDemoBuild();
+}
+function cbSetDest(id, silent) {
+  ['cbOT', 'cbOB'].forEach(c => $(c).classList.toggle('cb-dest', c === id));
+  if (carry) carry.dest = id || 'cbOT';
+  if (!silent) tick();
+}
+function cbDragInit() {
+  $('carryq').querySelectorAll('.cb-src').forEach(src => { src.onpointerdown = e => cbDragStart(e, src.dataset.k); });
+}
+function cbDragStart(e, kind) {
+  if (!carry || carry.phase !== 'build' || locked || carryDemoOn) return;
+  e.preventDefault();
+  const q = $('carryq'), k = (window._sc || 1) * carry.sc, qr = q.getBoundingClientRect();
+  const g = kind === 't' ? cbRod() : cbCube(); g.classList.add('cb-ghost'); q.appendChild(g);
+  const at = ev => { g.style.left = ((ev.clientX - qr.left) / k) + 'px'; g.style.top = ((ev.clientY - qr.top) / k) + 'px'; };
+  at(e); const sx = e.clientX, sy = e.clientY; let moved = false;
+  const mv = ev => { if (Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) > 6) moved = true; at(ev); };
+  const up = ev => {
+    document.removeEventListener('pointermove', mv); document.removeEventListener('pointerup', up); document.removeEventListener('pointercancel', up); g.remove();
+    if (!carry || carry.phase !== 'build' || locked) return;
+    let cell = null;
+    if (moved) { const el = document.elementFromPoint(ev.clientX, ev.clientY); const c = el && el.closest ? el.closest('.cb-cell') : null; cell = c ? c.id : null; }
+    else cell = kind === 't' ? 'cbTT' : (carry.dest || 'cbOT');   // 탭 = 미리 고른 칸으로
+    cbBuildAdd(kind, cell);
+  };
+  document.addEventListener('pointermove', mv); document.addEventListener('pointerup', up); document.addEventListener('pointercancel', up);
+}
+function cbBuildAdd(kind, cell) {
+  let el = null, host = null;
+  if (kind === 't') {
+    if (cell !== 'cbTT') { tick(); return; }                                   // 막대는 십 칸에만
+    host = $('cbRods'); if (host.querySelectorAll('.cb-rod').length >= 8) { tick(); return; }
+    el = cbRod(); el.classList.add('new'); host.appendChild(el);
+  } else {
+    if (cell !== 'cbOT' && cell !== 'cbOB') { tick(); return; }                // 낱개는 일 칸(위·아래)에만
+    const frame = $(cell === 'cbOT' ? 'cbFrameT' : 'cbFrameB');
+    if (frame.querySelectorAll('.cb-cube').length >= 9) { tick(); return; }
+    const fcell = [...frame.querySelectorAll('.cb-fcell')].find(f => !f.querySelector('.cb-cube')); if (!fcell) { tick(); return; }
+    el = cbCube(); el.classList.add('pop'); fcell.appendChild(el);
+  }
+  el.onpointerdown = ev => {                                                   // 놓인 조각 누르면 되돌림(build 중에만)
+    if (!carry || carry.phase !== 'build' || locked || carryDemoOn) return;
+    ev.stopPropagation(); el.remove(); tick(); cbBuildUpdate(false);
+  };
+  const n = kind === 't' ? $('cbRods').querySelectorAll('.cb-rod').length : $(cell === 'cbOT' ? 'cbFrameT' : 'cbFrameB').querySelectorAll('.cb-cube').length;
+  speakFast(KO_NUM[n]);
+  cbBuildUpdate(true);
+}
+const cbBuildCounts = () => ({ t: $('cbRods').querySelectorAll('.cb-rod').length, u: $('cbFrameT').querySelectorAll('.cb-cube').length, b: $('cbFrameB').querySelectorAll('.cb-cube').length });
+function cbBuildUpdate(check) {
+  const c = cbBuildCounts(), p = carry.p;
+  $('cbRt').textContent = c.t || ''; $('cbRo').textContent = c.u || ''; $('cbRb').textContent = c.b || '';   // 옮길 때마다 식이 채워진다(0이면 연한 목표 숫자)
+  if (p.kind === 'free') { $('cbOk').classList.toggle('on', cbFreeValid(c)); return; }   // 자유: ✓가 켜질 뿐, 완성은 학생이 ✓로
+  if (!check || c.t !== p.t || c.u !== p.u || c.b !== p.b) return;
+  cbBuildLock();
+  cbTimer(() => cbSay(`${p.a} 더하기 ${p.b}${josaEun(p.b)}?`, carryStartRaise), 500);                     // 완성된 식 읽기 → ③
+}
+/* 놓기 끝: 잠금·쟁반 숨김·되돌리기 해제·받아올림 막대 자리 */
+function cbBuildLock() {
+  locked = true; chime(true); $('cbTray').classList.add('hidden'); $('cbOk').classList.add('hidden'); cbSetDest(null, true);
+  $('cbRods').querySelectorAll('.cb-rod').forEach(r => { r.onpointerdown = null; r.classList.remove('new'); });
+  document.querySelectorAll('#carryq .cb-frame .cb-cube').forEach(cb => { cb.onpointerdown = null; });
+  const slot = document.createElement('div'); slot.className = 'cb-rodslot'; $('cbRods').appendChild(slot);   // 받아올림 막대 자리
+}
+/* 184 자유: 위 낱개 1~9·아래 낱개 1~9(막대 0~8)면 식 성립. ✓ → 수를 확정하고 식을 읽은 뒤 ③(10 미만이면 모아 올리기) */
+const cbFreeValid = c => c.u >= 1 && c.b >= 1;
+function carryFreeDone() {
+  if (!carry || carry.phase !== 'build') return;
+  if (!carry.demoOk && (locked || carryDemoOn)) return;   // 시연은 demoOk로만 통과(시연 중엔 locked가 유지됨)
+  const c = cbBuildCounts(), p = carry.p;
+  if (!cbFreeValid(c)) { tick(); wiggle($('cbOk')); return; }
+  p.t = c.t; p.u = c.u; p.b = c.b; p.a = c.t * 10 + c.u; p.ans = p.a + p.b; p.noCarry = c.u + c.b < 10;
+  cbBuildLock();
+  cbTimer(() => cbSay(`${p.a} 더하기 ${p.b}${josaEun(p.b)}?`, carryStartRaise), 500);
+}
+async function cbDemoBuild() {
+  const tok = itemStart, p = carry.p, cfg = p.kind === 'free' ? carryGen('model', carryU() || 0) : p;   // 자유 단계 시연은 지금 수준의 식 하나를 만들어 보임
+  const steps = [...Array(cfg.t).fill(['t', 'cbTT']), ...Array(cfg.u).fill(['o', 'cbOT']), ...Array(cfg.b).fill(['o', 'cbOB'])];
+  for (const [k, c] of steps) { if (!carryDemoOn || !cbAlive(tok) || carry.phase !== 'build') return; cbBuildAdd(k, c); await cbSleep(600); }
+  if (p.kind === 'free' && carryDemoOn && cbAlive(tok)) { carry.demoOk = true; carryFreeDone(); carry.demoOk = false; }
 }
 
 /* 내장 이미지 (v3에서 이관) */
