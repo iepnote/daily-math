@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 125 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 126 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1106,13 +1106,14 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* ===== 받아올림 연결큐브(14_carry, ver 124) — .carryq 1000×500 고정 배치, carryFit()이 카드 남은 공간에 맞춰 축소 ===== */
 .cb-wrap{ position:relative; width:1000px; height:500px; }
 .carryq{ position:absolute; left:0; top:0; width:1000px; height:500px; transform-origin:0 0; --cw:24px; --cth:21px; --rh:174px; --cbred:#E53935; --cbblue:#1E88E5; --cbline:#9FB3C8; }
-.cb-carry{ position:absolute; left:266px; top:37px; width:28px; height:28px; line-height:28px; text-align:center; border-radius:7px; background:#fff; font-size:21px; font-weight:800; color:var(--cbblue); opacity:0; transition:opacity .4s; z-index:3; }   /* 받아올림 1 — 십 머리 안 흰 배지, 변신한 막대 바로 위(left는 carryFuse가 막대 위치로 계산) */
+.cb-carry{ position:absolute; left:266px; top:11px; width:28px; height:28px; line-height:28px; text-align:center; border-radius:7px; background:#fff; font-size:21px; font-weight:800; color:var(--cbblue); opacity:0; transition:opacity .4s; z-index:3; }   /* 받아올림 1 — 십 머리 안 흰 배지, 변신한 막대 바로 위(left는 carryFuse가 막대 위치로 계산) */
 .cb-carry.on, .cb-vcarry.on{ opacity:1; }
-.cb-pvt{ position:absolute; left:0; top:30px; width:480px; height:396px; box-sizing:border-box; border:3px solid var(--cbline); border-radius:10px; overflow:hidden; background:#fff; }
+.cb-pvt{ position:absolute; left:0; top:4px; width:480px; height:494px; box-sizing:border-box; border:3px solid var(--cbline); border-radius:10px; overflow:hidden; background:#fff; }
 .cb-th{ position:absolute; top:0; height:36px; line-height:36px; text-align:center; font-size:22px; font-weight:800; color:#fff; }
 .cb-th.t{ left:0; width:304px; background:var(--cbblue); } .cb-th.o{ left:304px; width:170px; background:var(--cbred); }
 .cb-cell{ position:absolute; box-sizing:border-box; border-top:3px solid var(--cbline); height:180px; cursor:pointer; touch-action:manipulation; }
 .cb-cell.top{ top:36px; } .cb-cell.bot{ top:216px; }
+.cb-cell.ansrow{ top:396px; height:92px; cursor:default; }   /* v125: 답 칸 줄(표 세 번째 줄, 사용자 이미지) */
 .cb-cell.t{ left:0; width:304px; background:#E3F2FD; } .cb-cell.o{ left:304px; width:170px; background:#FDECEA; border-left:3px solid var(--cbline); }
 .cb-cell.o.top{ z-index:2; }   /* 낱개가 아래 칸에서 올라올 때 가려지지 않게 */
 .cb-cell.cb-blink{ animation:cbBlink .9s ease-in-out infinite; }
@@ -1120,7 +1121,8 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-rods{ position:absolute; inset:0; display:flex; justify-content:flex-end; align-items:flex-end; gap:5px; padding:0 6px 4px 0; box-sizing:border-box; }
 .cb-rod{ width:var(--cw); height:var(--rh); display:block; flex:none; }
 .cb-rodslot{ width:var(--cw); height:var(--rh); flex:none; visibility:hidden; }   /* 받아올림 막대 자리 — 보이지 않게 비움 */
-.cb-rod.new{ filter:drop-shadow(0 0 5px var(--cbblue)); position:relative; z-index:3; }
+.cb-rod.new{ position:relative; z-index:3; filter:drop-shadow(0 0 5px var(--cbblue)); }
+.cb-rod.red{ filter:hue-rotate(135deg) saturate(1.35) drop-shadow(0 0 5px #E53935); }   /* 받아올림 1): 열 개가 뭉친 빨간 막대(파란 그림을 색만 돌림) → 2)에서 파란색으로 */
 .cb-frame{ display:grid; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); grid-template-columns:repeat(2,var(--cw)); grid-template-rows:repeat(5,var(--cth)); grid-auto-flow:column; gap:5px; }   /* 십틀 2열×5행 세로(열 우선) */
 .cb-fcell{ position:relative; width:var(--cw); height:var(--cth); box-sizing:border-box; border:2px dashed var(--cbred); border-radius:4px; opacity:.9; }
 .cb-frame.plain .cb-fcell, .cb-fcell:has(.cb-cube){ border-color:transparent; }
@@ -1134,8 +1136,8 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-lbl{ position:absolute; transform:translate(-50%,-50%); font-size:15px; font-weight:800; color:#fff; text-shadow:0 0 3px #223,0 0 3px #223; pointer-events:none; z-index:4; animation:cbPop .25s ease-out; }
 .cb-lbl.last{ font-size:24px; text-shadow:0 0 3px #fff,0 0 3px #fff; }   /* 마지막 수: 자리 색 글씨, 조금 크게 */
 .cb-lbl.last.o{ color:var(--cbred); } .cb-lbl.last.t{ color:var(--cbblue); }
-.cb-ans{ position:absolute; top:434px; width:64px; height:64px; box-sizing:border-box; border:5px solid; border-radius:14px; background:#fff; font-size:44px; line-height:54px; text-align:center; font-weight:800; }
-.cb-ans.t{ left:236px; border-color:var(--cbblue); color:var(--cbblue); } .cb-ans.o{ left:312px; border-color:var(--cbred); color:var(--cbred); }   /* v125: 기둥 경계(307) 양쪽 — 파란 칸은 십 기둥 안, 빨간 칸은 일 기둥 안(사용자 지시) */
+.cb-ans{ position:absolute; top:420px; width:58px; height:58px; box-sizing:border-box; border:5px solid; border-radius:12px; background:#fff; font-size:38px; line-height:48px; text-align:center; font-weight:800; }
+.cb-ans.t{ left:242px; border-color:var(--cbblue); color:var(--cbblue); } .cb-ans.o{ left:314px; border-color:var(--cbred); color:var(--cbred); }   /* v125: 답 칸 줄 안, 기둥 경계(307) 양쪽(사용자 이미지) */
 .cb-ans.cb-blink{ animation:cbBlink2 .9s ease-in-out infinite; }
 @keyframes cbBlink2{ 50%{ background:#FFF3C4; } }
 .cb-valg{ position:absolute; left:560px; top:30px; font-size:84px; font-weight:800; line-height:1.05; color:var(--ink); }
@@ -1163,7 +1165,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* build(183)는 쟁반이 표 왼쪽(십 칸 바로 옆) — 표·답 칸·배지·식·패드를 170px 오른쪽으로, 무대 폭 1060(carryFit이 offsetWidth로 읽음) */
 .carryq.build, .carryq.free{ width:1060px; }
 .carryq.build .cb-pvt, .carryq.free .cb-pvt{ left:170px; } .carryq.build .cb-carry, .carryq.free .cb-carry{ left:436px; }
-.carryq.build .cb-ans.t, .carryq.free .cb-ans.t{ left:406px; } .carryq.build .cb-ans.o, .carryq.free .cb-ans.o{ left:482px; }
+.carryq.build .cb-ans.t, .carryq.free .cb-ans.t{ left:412px; } .carryq.build .cb-ans.o, .carryq.free .cb-ans.o{ left:484px; }
 .carryq.build .cb-valg, .carryq.build .cb-pad, .carryq.free .cb-valg, .carryq.free .cb-pad{ left:700px; }
 .carryq.free .cb-rod, .carryq.free .cb-frame .cb-cube{ cursor:pointer; }
 /* 184 자유: ✓(쟁반 아래) — 식이 성립하면 켜짐 */
@@ -1173,6 +1175,9 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* 놓을 칸 선택(build·free): 노란 안쪽 테두리가 숨 쉬듯 */
 .cb-cell.cb-dest{ animation:cbDest 1.2s ease-in-out infinite; }
 @keyframes cbDest{ 0%,100%{ box-shadow:inset 0 0 0 6px #FFD54A; } 50%{ box-shadow:inset 0 0 0 3px #FFE58A; } }
+/* 모형 → 수식으로 날아가는 숫자(cbFly) */
+.cb-fly{ position:absolute; transform:translate(-50%,-50%); transition:left .6s ease, top .6s ease; z-index:9; font-weight:800; font-size:56px; line-height:1; pointer-events:none; }
+.cb-fly.t{ color:var(--cbblue); } .cb-fly.o{ color:var(--cbred); } .cb-fly.carry{ font-size:34px; }
 
 </style>
 </head>
@@ -1190,7 +1195,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 125';
+const APP_VERSION = 'ver 126';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -7748,7 +7753,8 @@ function downloadHwpx() {
    14 받아올림 연결큐브 (ver 124) — 단독 앱 받아올림_연결큐브/(v11) 이식. 설계 정본: 받아올림_연결큐브/설계.md
    단계 184 「받아올림 · 자유롭게 식 만들기」(kind free, v125: 목표 없이 놓고 ✓ → 앱이 식을 읽고 이어 풂, 10 미만이면 받아올림 없이 모아서 답) · 183 「받아올림 · 모형 옮겨 식 만들기」(kind build, v125) · 181 「받아올림 · 모형 보고 식 쓰기」(kind model) · 182 「받아올림 · 식 보고 놓기」(kind expr)
    build: 쟁반(오른쪽)의 파란 막대·빨간 낱개를 끌어서 십 칸·일 칸·아래 칸에 놓으면(탭은 자동 배치) 세로셈 숫자가 바로 채워짐. 놓인 조각은 눌러서 되돌림. 목표(a, b)와 같아지면 식을 읽고 ③으로
-   흐름: ①제시 → (A: 식 읽기 rt·ro·rb | B: 낱개 놓기) → ③10 만들기(탭) → ④받아올림(자동) → ⑤일 입력 → ⑥십 입력 → ⑦완료
+   흐름: ①제시 → (A: 식 읽기 rt·ro·rb | B: 낱개 놓기) → ③10 만들기(탭) → ④받아올림(자동, 세분화 v125 6차: 빨간 막대로 십 칸 이동 → 파란 변신+막대 위 1+"십 막대 한 개!" → 1이 수식으로 날아감)
+      → ⑤일 입력(빨간 칸 → 숫자가 수식 일의 자리로 날아감) → ⑥십 입력(파란 칸 → 수식 십의 자리로) → ⑦완료. 원칙: 모형(왼쪽)이 먼저 바뀌고 수식(오른쪽)이 따라온다
    힌트(칸마다 오답 횟수를 따로 셈, strong은 +1): 1회=무음 숫자 라벨+마지막 수만 읽기 · 2회=음성+라벨 세기 · 3회=정답 공개 → 세션 끝에 같은 문제 한 번 더
    오류 태그(기록 item.tags): count·no_regroup·carry_missed·carry_over·other → 대시보드 분류(09_teacher classifyItem)
    발화는 지시·질문만(설계 §7 최소안), 화면 글자 없음. 수 범위는 학생별 적응 student.strat.carryU(9→1, 아래 참고)
@@ -7810,6 +7816,7 @@ function carryFace(p) {
       <div class="cb-cell o top" id="cbOT" onclick="carryCellTap('ot')"><div class="cb-frame" id="cbFrameT"></div></div>
       <div class="cb-cell t bot" id="cbTB"></div>
       <div class="cb-cell o bot" id="cbOB" onclick="carryCellTap('ob')"><div class="cb-frame plain" id="cbFrameB"></div></div>
+      <div class="cb-cell t ansrow"></div><div class="cb-cell o ansrow"></div>
     </div>
     <div class="cb-ans t" id="cbAnsT"></div><div class="cb-ans o" id="cbAnsO"></div>
     <div class="cb-valg">
@@ -7879,8 +7886,15 @@ function cbSay(text, then) {
 }
 const cbUnlock = () => { if (!carryDemoOn) locked = false; };   // 시연 중엔 학생 입력 잠금 유지
 function cbTimer(fn, ms) { const tok = itemStart; setTimeout(() => { if (cbAlive(tok)) fn(); }, ms); }
-/* 무대(.carryq) 기준 레이아웃 x(offsetLeft 합) — transform·scale 무시, 전환 중에도 최종 자리 */
-function cbOffX(el) { let x = 0; for (let n = el; n && n.id !== 'carryq'; n = n.offsetParent) x += n.offsetLeft; return x; }
+/* 무대(.carryq) 기준 레이아웃 사각형(offset 합) — transform·scale 무시, 전환 중에도 최종 자리 */
+function cbOff(el) { let x = 0, y = 0; for (let n = el; n && n.id !== 'carryq'; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; } return { x, y, w: el.offsetWidth, h: el.offsetHeight }; }
+/* 숫자가 from 가운데에서 to 가운데로 날아감(0.4초 머문 뒤 0.6초 이동) → then. 모형 → 수식 방향의 연결 표현 */
+function cbFly(from, to, text, cls, then) {
+  const q = $('carryq'), a = cbOff(from), b = cbOff(to), f = document.createElement('div');
+  f.className = 'cb-fly ' + cls; f.textContent = text; f.style.left = (a.x + a.w / 2) + 'px'; f.style.top = (a.y + a.h / 2) + 'px'; q.appendChild(f);
+  cbTimer(() => { f.getBoundingClientRect(); f.style.left = (b.x + b.w / 2) + 'px'; f.style.top = (b.y + b.h / 2) + 'px'; }, 400);
+  cbTimer(() => { f.remove(); if (then) then(); }, 1050);
+}
 /* 무대(.carryq) 좌표계 사각형 — 화면 스케일(_sc)과 carryFit 축소(carry.sc)를 함께 보정 */
 function cbRect(el) { const r = el.getBoundingClientRect(), k = (window._sc || 1) * (carry ? carry.sc : 1); return { x: r.left / k, y: r.top / k, w: r.width / k, h: r.height / k }; }
 const carryIntro = p => p.kind === 'model' ? '식을 써요.' : p.kind === 'free' ? '막대와 낱개를 놓아서 식을 만들어요.' : p.kind === 'build' ? `${p.a} 더하기 ${p.b}${josaEul(p.b)} 만들어요.` : `${p.a} 더하기 ${p.b}${josaEun(p.b)}?`;   // speakProblem(🔊)도 이 문장
@@ -7956,24 +7970,29 @@ function cbRaiseOne() {
     else cbUnlock();
   }, 380);
 }
-/* ---- ④ 받아올림: 낱개 10개 → 파란 막대 1개가 십 칸 빈 자리로. 표 위 "1"·세로셈 "1" 동시 점등 ---- */
+/* ---- ④ 받아올림(세분화): 1) 낱개 10개가 빨간 막대가 되어 십 칸 빈 자리로 → 2) 1.5초 뒤 파란 막대로 변신 + 막대 위 1 + "십 막대 한 개!"
+   → 4) 막대 위 1이 수식의 받아올림 1 자리로 날아감 → ⑤ ---- */
 function carryFuse() {
   carry.phase = 'fuse';
   const ot = $('cbFrameT'), rods = $('cbRods');
   ot.classList.add('fuse');
   cbTimer(() => {
     const from = cbRect(ot); ot.innerHTML = ''; ot.classList.remove('fuse');   // 받아올림 뒤에는 십틀 빈 칸도 지운다
-    const r = cbRod(); r.classList.add('new'); const slot = rods.querySelector('.cb-rodslot');
-    if (slot) rods.replaceChild(r, slot); else rods.appendChild(r);
+    const r = cbRod(); r.classList.add('new', 'red'); const slot = rods.querySelector('.cb-rodslot');
+    if (slot) rods.replaceChild(r, slot); else rods.appendChild(r);            // 빈 자리에 들어간다(아직 빨간 막대)
     const to = cbRect(r);
     r.style.transition = 'none'; r.style.transform = `translate(${from.x + from.w / 2 - to.x - to.w / 2}px,${from.y + from.h - to.y - to.h}px)`;
-    r.getBoundingClientRect(); r.style.transition = 'transform .7s ease'; r.style.transform = '';
+    r.getBoundingClientRect(); r.style.transition = 'transform .7s ease, filter .7s ease'; r.style.transform = '';
     cbTimer(() => {
-      const bd = $('cbCarryPv');   // 받아올림 1은 변신해 들어간 막대 바로 위(사용자 지시) — 이동 애니메이션과 무관한 레이아웃 좌표(offset)로
-      bd.style.left = Math.round(cbOffX(r) + r.offsetWidth / 2 - 14) + 'px';
-      bd.classList.add('on'); $('cbVCarry').classList.add('on');
-      cbSay('십 막대 한 개!', () => carryAskSlot('ones'));
-    }, 750);
+      const bd = $('cbCarryPv');   // 받아올림 1은 변신해 들어간 막대 바로 위 — 레이아웃 좌표(offset)로
+      bd.style.left = Math.round(cbOff(r).x + r.offsetWidth / 2 - 14) + 'px';
+      r.classList.remove('red'); bd.classList.add('on');                       // 2) 파란 막대로 변신 + 1
+      cbSay('십 막대 한 개!', () => cbTimer(() => {
+        cbFly(bd, $('cbVCarry').querySelector('.dt'), '1', 't carry', () => {   // 4) 1이 수식으로
+          $('cbVCarry').classList.add('on'); cbTimer(() => carryAskSlot('ones'), 300);
+        });
+      }, 500));
+    }, 1500);
   }, 500);
 }
 /* ---- ⑤⑥ 답 입력 ---- */
@@ -8008,17 +8027,19 @@ function cbCountTap(slot) {
   cbLabel(slot, els[i - 1], i, i === els.length);
   speakFast(KO_NUM[i]);
 }
-function cbFill(slot, d) {
+/* 답 칸 채우기 → (⑤⑥) 숫자가 수식의 같은 자리로 날아간 뒤 then. 식 읽기 칸은 바로 then */
+function cbFill(slot, d, then) {
   cbClearLabels();
-  if (cbIsRead(slot)) { const c = cbReadCell(slot); c.textContent = d; c.classList.remove('cb-blink'); return; }
+  if (cbIsRead(slot)) { const c = cbReadCell(slot); c.textContent = d; c.classList.remove('cb-blink'); if (then) then(); return; }
   const box = cbAnsBox(slot); box.textContent = d; box.classList.remove('cb-blink');
-  $(slot === 'ones' ? 'cbVAnsO' : 'cbVAnsT').textContent = d;   // 세로셈 답 자리 동시 채움
+  const cell = $(slot === 'ones' ? 'cbVAnsO' : 'cbVAnsT');
+  cbFly(box, cell, String(d), slot === 'ones' ? 'o' : 't', () => { cell.textContent = d; if (then) then(); });
 }
 function carryPad(d) {
   if (!carry || locked || carryDemoOn) return;
   const slot = carry.phase; if (!(slot === 'ones' || slot === 'tens' || cbIsRead(slot))) return;
   const ans = cbAns(slot); locked = true;
-  if (d === ans) { cbFill(slot, d); chime(true); cbTimer(() => carryAfterSlot(slot), 500); return; }
+  if (d === ans) { chime(true); cbFill(slot, d, () => cbTimer(() => carryAfterSlot(slot), 300)); return; }
   chime(false); wrongCount++; wrongVals.push(d); wrongTags.push(carryDiag(slot, d, carry.p) || 'other');
   carry.wrong[slot] = (carry.wrong[slot] || 0) + 1;
   wiggle(cbIsRead(slot) ? cbReadCell(slot) : cbAnsBox(slot));
@@ -8050,8 +8071,8 @@ function carryHint(slot, n) {
     cbTimer(cbUnlock, Math.max(0, seqEndAt - Date.now()) + 300);
     return;
   }
-  const ans = cbAns(slot); carry.revealed = true; cbFill(slot, ans);   // 3회: 정답 공개 → 발화 끝 1초 뒤 다음 칸
-  cbSay(`정답은 ${ans}${josaYeyo(ans)}.`, () => cbTimer(() => carryAfterSlot(slot), 1000));
+  const ans = cbAns(slot); carry.revealed = true;   // 3회: 정답 공개(칸 → 수식) → 발화 끝 1초 뒤 다음 칸
+  cbFill(slot, ans, () => cbSay(`정답은 ${ans}${josaYeyo(ans)}.`, () => cbTimer(() => carryAfterSlot(slot), 1000)));
 }
 /* ⑦ 완료 — 식 읽기(칭찬 없음, 별가루·효과음이 대신) → 발화 종료 기반 다음 문제. 공개된 문제는 세션 끝에 한 번 더 */
 function carryFinish() {
@@ -8087,8 +8108,8 @@ async function cbDemoRaise() {
 function cbDemoAnswer(slot) {
   cbTimer(() => {
     if (!carryDemoOn) return;
-    cbFill(slot, cbAns(slot)); chime(true);
-    cbTimer(() => { if (carryDemoOn) carryAfterSlot(slot); }, 500);
+    chime(true);
+    cbFill(slot, cbAns(slot), () => cbTimer(() => { if (carryDemoOn) carryAfterSlot(slot); }, 300));
   }, 800);
 }
 
