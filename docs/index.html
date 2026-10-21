@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 126 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 127 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1179,6 +1179,191 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-fly{ position:absolute; transform:translate(-50%,-50%); transition:left .6s ease, top .6s ease; z-index:9; font-weight:800; font-size:56px; line-height:1; pointer-events:none; }
 .cb-fly.t{ color:var(--cbblue); } .cb-fly.o{ color:var(--cbred); } .cb-fly.carry{ font-size:34px; }
 
+/* ===== 시계놀이(15_clock, ver 127) — tools/port_clock.py가 시계놀이/index.html(v52)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
+.ck-wrap{ position:relative; }
+.clockq{ position:absolute; left:0; top:0; width:1600px; height:900px; transform-origin:0 0; font-family:var(--font-main); color:var(--ink); background:#fff; overflow:hidden; user-select:none; -webkit-user-select:none; touch-action:none; --red:#C00000; --blue:#0255D0; --line:#333; --yel:#FFF3B0; }
+.clockq #ck-learn{ position:absolute; inset:0; display:block; }
+.clockq .card{ margin:0; text-align:center; }
+.clockq #ck-nav{ position: absolute; left: 0; right: 0; top: 0; height: 68px; display: flex; align-items: center; gap: 10px; padding: 0 16px; border-bottom: 5px solid #F1E7D2; box-sizing: border-box; }
+.clockq .nb{ height: 45px; padding: 0 18px; border: none; border-radius: 22px; color: #fff; font-family: inherit; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 0 rgba(0,0,0,.18); cursor: pointer; }
+.clockq .nb:active{ transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.18); }
+.clockq .nb svg{ width: 22px; height: 22px; }
+.clockq #ck-brand{ display: flex; align-items: center; gap: 8px; margin-left: 6px; color: #1E88E5; font-size: 28px; font-weight: 900; }
+.clockq #ck-brand svg{ width: 30px; height: 30px; }
+.clockq #ck-badge{ margin-left: 8px; padding: 5px 18px; border-radius: 20px; background: #64B5F6; color: #fff; font-size: 20px; font-weight: 700; }
+.clockq #ck-nav .sp{ flex: 1 1 auto; }
+.clockq #ck-grid{ position: absolute; left: 25px; right: 25px; top: 88px; bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 300px 1fr; gap: 20px; }
+.clockq .card{ position: relative; background: #fff; border: 2px solid #F1E7D2; border-radius: 28px; box-shadow: 0 8px 22px rgba(0,0,0,.12); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 16px; box-sizing: border-box; min-height: 0; min-width: 0; }
+.clockq #ck-cardL{ grid-row: 1 / -1; }
+.clockq #ck-cardRB{ gap: 18px; }
+.clockq #ck-clocks{ display: flex; align-items: center; justify-content: center; gap: 20px; }
+.clockq #ck-analog{ width: 608px; height: 608px; flex: 0 0 auto; }
+.clockq #ck-analog2{ width: 608px; height: 608px; display: none; flex: 0 0 auto; }
+.clockq #ck-arrow{ width: 60px; text-align: center; font-size: 60px; color: #999; display: none; }
+.clockq #ck-ask{ font-size: 48px; font-weight: 700; color: var(--ink-soft); text-align: center; word-break: keep-all; }
+.clockq .face{ width: 100%; height: 100%; display: block; overflow: visible; }
+.clockq .mlab{ font-size: 30px; font-weight: 800; fill: var(--blue); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.clockq .hand{ transition: transform 1.8s cubic-bezier(.4,0,.2,1); transform-origin: 300px 300px; }
+.clockq .hand.blink{ animation: hb 1s infinite; }
+@keyframes hb { 50% { opacity: .25; } }
+.clockq .yb{ animation: hb 1s infinite; }
+.clockq .num{ font-size: 56px; font-weight: 800; fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.clockq .tapn, .clockq .tapt{ fill: transparent; cursor: pointer; pointer-events: none; }
+.clockq .tapn.on, .clockq .tapt.on{ pointer-events: all; stroke: #ffb300; stroke-width: 6; animation: tp 1s infinite; }
+@keyframes tp { 50% { stroke-opacity: .2; } }
+.clockq .hh{ fill: transparent; pointer-events: none; }
+.clockq #ck-analog.drag .hh{ pointer-events: all; cursor: grab; }
+.clockq #ck-analog.drag .hand path{ cursor: grab; }
+.clockq #ck-slots{ display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 62px; font-weight: 800; color: var(--ink); flex: 0 0 auto; }
+.clockq #ck-slots span{ white-space: nowrap; }
+.clockq *{ user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.clockq .slot{ width: 130px; height: 120px; border: 6px dashed #bbb; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: #fafafa; cursor: pointer; position: relative; overflow: hidden; }
+.clockq .strip{ position: absolute; left: 0; right: 0; top: 50%; transition: transform .15s; pointer-events: none; will-change: transform; }
+.clockq .strip .it{ display: flex; align-items: center; justify-content: center; }
+.clockq .strip .it.nb{ opacity: .28; font-size: 40px; }
+.clockq .slot.h{ border-color: var(--red); color: var(--red); }
+.clockq .slot.m{ border-color: var(--blue); color: var(--blue); }
+.clockq #ck-dialM{ margin-left: 50px; }
+.clockq #ck-slots .dial{ position: relative; }
+.clockq .dup, .clockq .ddn, .clockq .d1, .clockq #ck-dialOk{ display: none; border: none; font-family: inherit; font-weight: 800; cursor: pointer; align-items: center; justify-content: center; }
+.clockq .dup, .clockq .ddn{ position: absolute; left: 0; right: 0; height: 44px; background: none; font-size: 38px; line-height: 1; }
+.clockq .dup{ top: -52px; }
+.clockq .ddn{ bottom: -52px; }
+.clockq .dup:active, .clockq .ddn:active{ transform: translateY(3px); opacity: .55; }
+.clockq .d1:active, .clockq #ck-dialOk:active{ transform: translateY(3px); box-shadow: none; }
+.clockq #ck-dialH .dup, .clockq #ck-dialH .ddn{ color: var(--red); }
+.clockq #ck-dialM .dup, .clockq #ck-dialM .ddn{ color: var(--blue); }
+.clockq .d1{ position: absolute; left: 100%; margin-left: 8px; width: 52px; height: 52px; border-radius: 12px; background: #e8eefc; color: var(--blue); font-size: 24px; box-shadow: 0 3px 0 #c5d2ee; }
+.clockq .d1.up{ top: 6px; }
+.clockq .d1.dn{ bottom: 6px; }
+.clockq #ck-dialOk{ width: 256px; height: 68px; border-radius: 34px; background: #2E7D32; color: #fff; font-size: 29px; font-weight: 900; box-shadow: 0 5px 0 #1B5E20; flex: 0 0 auto; }
+.clockq #ck-dialOk.off{ opacity: .45; pointer-events: none; }
+.clockq #ck-learn.dial .dup, .clockq #ck-learn.dial .ddn, .clockq #ck-learn.dial #ck-dialOk{ display: flex; }
+.clockq #ck-learn.dial.m-count1 .d1, .clockq #ck-learn.dial.m-free .d1{ display: flex; }
+.clockq #ck-learn.dial.m-count1 #ck-dialM, .clockq #ck-learn.dial.m-free #ck-dialM{ margin-right: 60px; }
+.clockq #ck-learn.dial.m-set .dup, .clockq #ck-learn.dial.m-set .ddn, .clockq #ck-learn.dial.m-set #ck-dialOk, .clockq #ck-learn.dial.m-free #ck-dialOk, .clockq #ck-learn .dial.off .dup, .clockq #ck-learn .dial.off .ddn, .clockq #ck-learn .dial.off .d1{ display: none; }
+.clockq #ck-slots.off .dup, .clockq #ck-slots.off .ddn, .clockq #ck-slots.off .d1{ opacity: .45; pointer-events: none; }
+.clockq #ck-learn.dial #ck-slots{ margin: 60px 0; }
+.clockq #ck-learn.dial.m-set #ck-slots{ margin: 0; }
+.clockq #ck-learn:not(.dial):not(.m-set):not(.m-build):not(.m-minb) #ck-cardRB{ gap: 24px; }
+.clockq .slot.on{ border-style: solid; animation: blink 1s infinite; box-shadow: 0 0 0 8px rgba(255,220,80,.5); }
+.clockq .slot.done{ border-style: solid; background: #fff; }
+@keyframes blink { 50% { box-shadow: 0 0 0 8px rgba(255,220,80,.1); } }
+.clockq #ck-digital{ width: 495px; height: 229px; }
+.clockq .seg{ fill: #262626; }
+.clockq .seg.on{ fill: #fff; }
+.clockq #ck-pad{ position: absolute; left: 0; top: 0; width: 538px; height: 150px; display: none; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(2, 1fr); gap: 10px; padding: 10px; background: #fff; border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.18); box-sizing: content-box; z-index: 5; }
+.clockq #ck-pad.pop{ display: grid; }
+.clockq #ck-pad.off{ opacity: .45; pointer-events: none; }
+.clockq .key{ border: none; border-radius: 14px; background: #f1f4f9; color: var(--ink); font-size: 36px; font-weight: 800; font-family: inherit; cursor: pointer; box-shadow: 0 3px 0 #cfd6e2; display: flex; align-items: center; justify-content: center; }
+.clockq .key:active{ transform: translateY(3px); box-shadow: 0 1px 0 #cfd6e2; }
+.clockq .key.ok{ background: var(--ok-bg); }
+.clockq .key.del{ background: var(--no-bg); font-size: 36px; }
+.clockq .key:nth-child(6){ order: 7; }
+.clockq .key:nth-child(7){ order: 8; }
+.clockq .key:nth-child(8){ order: 9; }
+.clockq .key:nth-child(9){ order: 10; }
+.clockq .key:nth-child(10){ order: 6; }
+.clockq .key:nth-child(11){ order: 11; }
+.clockq .key:nth-child(12){ order: 12; }
+.clockq #ck-pad .key{ color: var(--ink); }
+.clockq #ck-okBig{ display: none; width: 256px; height: 68px; border: none; border-radius: 34px; background: #2E7D32; color: #fff; font-size: 29px; font-weight: 900; font-family: inherit; cursor: pointer; box-shadow: 0 6px 0 #1B5E20; flex: 0 0 auto; }
+.clockq #ck-okBig:active{ transform: translateY(3px); box-shadow: 0 2px 0 #1B5E20; }
+.clockq #ck-okBig.off{ opacity: .45; pointer-events: none; }
+.clockq .shake{ animation: shake .4s; }
+@keyframes shake { 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+.clockq #ck-prog{ text-align: center; font-size: 24px; letter-spacing: 6px; color: var(--accent); min-height: 30px; }
+.clockq #ck-prog b{ color: #1E88E5; }
+.clockq #ck-learn.m-free #ck-demoBtn{ display: none; }
+.clockq #ck-learn.demo .tapn.on, .clockq #ck-learn.demo .tapt.on{ pointer-events: none; }
+.clockq #ck-learn.m-set #ck-pad{ display: none; }
+.clockq #ck-learn.m-set #ck-okBig{ display: block; }
+.clockq #ck-learn.m-set #ck-dialM, .clockq #ck-learn.m-before #ck-dialM, .clockq #ck-learn.m-elapsed #ck-dialM{ margin-left: 30px; }
+.clockq #ck-learn.m-before #ck-cardRT, .clockq #ck-learn.m-elapsed #ck-cardRT{ display: none; }
+.clockq #ck-learn.m-before #ck-cardRB{ grid-row: 1 / -1; }
+.clockq #ck-learn.m-elapsed #ck-grid{ grid-template-columns: 1fr; grid-template-rows: 1fr 290px; }
+.clockq #ck-learn.m-elapsed #ck-cardL{ grid-row: 1; }
+.clockq #ck-learn.m-elapsed #ck-cardRB{ grid-row: 2; flex-direction: row; gap: 44px; padding: 10px 30px; }
+.clockq #ck-learn.m-elapsed #ck-ask{ max-width: 500px; text-align: left; line-height: 1.35; word-break: keep-all; }
+.clockq #ck-learn.m-elapsed #ck-clocks{ gap: 36px; }
+.clockq #ck-learn.m-elapsed #ck-analog, .clockq #ck-learn.m-elapsed #ck-analog2{ width: 390px; height: 390px; }
+.clockq #ck-learn.m-elapsed #ck-analog2, .clockq #ck-learn.m-elapsed #ck-arrow{ display: block; }
+.clockq #ck-cards{ display: none; grid-template-columns: repeat(4, 124px); gap: 22px; }
+.clockq #ck-learn.m-build #ck-cards, .clockq #ck-learn.m-minb #ck-cards{ display: grid; }
+.clockq #ck-learn.m-build #ck-cardRB, .clockq #ck-learn.m-minb #ck-cardRB{ grid-row: 1 / -1; gap: 40px; }
+.clockq #ck-lvlBtn{ display: none; background: #FB8C00; }
+.clockq #ck-learn.m-build #ck-lvlBtn, .clockq #ck-learn.m-minb #ck-lvlBtn{ display: flex; }
+.clockq #ck-learn.m-build.last #ck-lvlBtn, .clockq #ck-learn.m-minb.last #ck-lvlBtn{ display: none; }
+.clockq .ncard.used{ opacity: .22; pointer-events: none; }
+.clockq #ck-learn.m-build #ck-slots, .clockq #ck-learn.m-build #ck-dialOk, .clockq #ck-learn.m-build #ck-okBig, .clockq #ck-learn.m-build #ck-cardRT, .clockq #ck-learn.m-build #ck-pad, .clockq #ck-learn.m-minb #ck-slots, .clockq #ck-learn.m-minb #ck-dialOk, .clockq #ck-learn.m-minb #ck-okBig, .clockq #ck-learn.m-minb #ck-cardRT, .clockq #ck-learn.m-minb #ck-pad{ display: none; }
+.clockq .ncard.mc{ color: var(--blue); }
+.clockq #ck-learn.m-numf #ck-slots, .clockq #ck-learn.m-numf #ck-dialOk, .clockq #ck-learn.m-numf #ck-okBig, .clockq #ck-learn.m-numf #ck-cardRT, .clockq #ck-learn.m-numf #ck-pad, .clockq #ck-learn.m-handf #ck-slots, .clockq #ck-learn.m-handf #ck-dialOk, .clockq #ck-learn.m-handf #ck-okBig, .clockq #ck-learn.m-handf #ck-cardRT, .clockq #ck-learn.m-handf #ck-pad{ display: none; }
+.clockq #ck-learn.m-numf #ck-cardRB, .clockq #ck-learn.m-handf #ck-cardRB{ grid-row: 1 / -1; gap: 40px; }
+.clockq #ck-learn.m-numf #ck-cards{ display: grid; grid-template-columns: 240px; }
+.clockq .ncard.b1{ width: 240px; height: 240px; border-radius: 40px; font-size: 140px; cursor: default; }
+.clockq #ck-learn.m-numf .hand, .clockq #ck-learn.m-numf .hh{ display: none; }
+.clockq #ck-learn.m-numf .tapn{ pointer-events: all; }
+.clockq #ck-learn.m-handf .hand{ pointer-events: all; cursor: pointer; }
+.clockq #ck-legend{ display: none; flex-direction: column; gap: 30px; }
+.clockq #ck-learn.m-handf #ck-legend{ display: flex; }
+.clockq .lg{ display: flex; align-items: center; gap: 18px; font-size: 44px; color: var(--ink); }
+.clockq .lg i{ font-style: normal; color: #777; font-size: 34px; }
+.clockq #ck-choice{ display: none; gap: 40px; }
+.clockq #ck-learn.m-judge #ck-choice{ display: flex; }
+.clockq .ch{ width: 260px; height: 140px; border: 6px solid var(--choice-border); border-radius: 30px; background: var(--choice-bg); color: var(--ink); font-size: 56px; font-weight: 800; font-family: inherit; cursor: pointer; }
+.clockq .ch:active{ transform: scale(.96); }
+.clockq .ch.ok{ background: var(--ok-bg); border-color: var(--ok); animation: tp 1s infinite; }
+.clockq #ck-choice.off .ch{ opacity: .45; pointer-events: none; }
+.clockq #ck-learn.m-judge #ck-slots, .clockq #ck-learn.m-judge #ck-dialOk, .clockq #ck-learn.m-judge #ck-okBig, .clockq #ck-learn.m-judge #ck-pad, .clockq #ck-learn.m-hnum #ck-slots, .clockq #ck-learn.m-hnum #ck-dialOk, .clockq #ck-learn.m-hnum #ck-okBig, .clockq #ck-learn.m-hnum #ck-cardRT, .clockq #ck-learn.m-hnum #ck-pad, .clockq #ck-learn.m-nexth #ck-slots, .clockq #ck-learn.m-nexth #ck-dialOk, .clockq #ck-learn.m-nexth #ck-okBig, .clockq #ck-learn.m-nexth #ck-cardRT, .clockq #ck-learn.m-nexth #ck-pad{ display: none; }
+.clockq #ck-learn.m-hnum #ck-cardRB, .clockq #ck-learn.m-nexth #ck-cardRB{ grid-row: 1 / -1; }
+.clockq #ck-learn.m-hnum .tapn, .clockq #ck-learn.m-nexth .tapn{ pointer-events: all; }
+.clockq #ck-learn.sub-mo .hourHand, .clockq #ck-learn.sub-mo #ck-dialH, .clockq #ck-learn.sub-mo #ck-lblH{ display: none; }
+.clockq #ck-learn.sub-ho .minHand{ pointer-events: none; }
+.clockq #ck-learn.sub-turn .hourHand{ pointer-events: none; }
+.clockq .hbar{ display: inline-block; height: 22px; border-radius: 11px; }
+.clockq .hbar.hs{ width: 110px; background: var(--red); }
+.clockq .hbar.hm{ width: 200px; background: var(--blue); }
+.clockq #ck-learn.m-minb #ck-analog{ width: 540px; height: 540px; }
+.clockq #ck-learn.m-minb #ck-clocks{ margin-top: 48px; }
+.clockq .mnum{ font-size: 38px; font-weight: 800; fill: var(--blue); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.clockq .mnum.fill{ animation: mf .6s; }
+@keyframes mf { 0% { fill: #2e9b4f; font-size: 50px; } 100% { fill: var(--blue); font-size: 38px; } }
+.clockq #ck-cards.off{ opacity: .5; pointer-events: none; }
+.clockq .ncard{ width: 124px; height: 124px; border-radius: 24px; background: #fff; border: 5px solid var(--accent); box-shadow: 0 6px 0 #BBDEFB; display: flex; align-items: center; justify-content: center; font-size: 66px; font-weight: 800; color: var(--ink); cursor: grab; box-sizing: border-box; }
+.clockq .ncard.sel{ border-color: #ffb300; box-shadow: 0 0 0 8px rgba(255,179,0,.35); }
+.clockq .ncard.lift{ opacity: .3; }
+.clockq #ck-ghost{ display: none; position: absolute; left: 0; top: 0; z-index: 6; pointer-events: none; transform: scale(1.1); box-shadow: 0 12px 24px rgba(0,0,0,.25); }
+.clockq .ncard.fly{ position: absolute; z-index: 7; pointer-events: none; will-change: transform; box-shadow: 0 10px 20px rgba(0,0,0,.22); }
+.clockq .bk{ pointer-events: all; cursor: pointer; }
+.clockq .bk.on{ fill: #FFD54F; animation: bkb 1s infinite; }
+@keyframes bkb { 50% { fill: #FFF3C4; } }
+.clockq .num.fill{ animation: nf .6s; }
+@keyframes nf { 0% { fill: #2e9b4f; font-size: 72px; } 100% { fill: var(--ink); font-size: 56px; } }
+.clockq #ck-learn.m-match #ck-cardL, .clockq #ck-learn.m-match #ck-cardRT, .clockq #ck-learn.m-match #ck-cardRB, .clockq #ck-learn.m-match #ck-pad{ display: none; }
+.clockq #ck-match{ display: none; grid-column: 1 / -1; grid-row: 1 / -1; padding: 0; }
+.clockq #ck-learn.m-match #ck-match{ display: block; }
+.clockq .mini{ position: absolute; width: 240px; }
+.clockq .mini.top{ top: 110px; height: 240px; }
+.clockq .mini.bot{ top: 640px; height: 112px; }
+.clockq .mini.lit svg{ filter: drop-shadow(0 0 14px #ffd54a); }
+.clockq .mini.hl{ animation: hb 1s infinite; }
+.clockq .dot{ position: absolute; width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 6px solid #777; box-sizing: border-box; cursor: pointer; margin-left: -16px; }
+.clockq .dot::after{ content: ''; position: absolute; inset: -22px; }
+.clockq .dot.top{ top: 390px; }
+.clockq .dot.bot{ top: 560px; }
+.clockq .dot.sel{ border-color: #ffb300; box-shadow: 0 0 0 8px rgba(255,179,0,.35); }
+.clockq .dot.done{ border-color: var(--ok); background: var(--ok-bg); }
+.clockq #ck-mlines{ position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.clockq #ck-mlines line{ stroke-width: 10; stroke-linecap: round; }
+.clockq .ln.ok{ stroke: #2e9b4f; }
+.clockq .ln.tmp{ stroke: #ffb300; }
+.clockq .ln.bad{ stroke: var(--red); }
+.clockq #clearBtn.arm{ background: var(--no-bg); border-color: var(--no); color: var(--no); }
+/* 매일수학 안에서는 시계놀이 버튼 바의 처음·브랜드·배지·다시 듣기·기록·전체화면을 숨기고(매일수학 nav·카운터가 대신) 「다음 단계」·「보여주기」만 오른쪽에 — 생성 규칙보다 뒤에 두어 이김 */
+.clockq #ck-homeBtn, .clockq #ck-brand, .clockq #ck-badge, .clockq #ck-spk, .clockq #ck-logBtn, .clockq #ck-fullBtn{ display:none; }
+.clockq #ck-nav{ justify-content:flex-end; border-bottom:none; }
+/* ===== 시계놀이 끝 ===== */
+
 </style>
 </head>
 <body>
@@ -1195,7 +1380,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 126';
+const APP_VERSION = 'ver 127';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1366,6 +1551,38 @@ const LEVELS = [
  { id: 183, g: "1학년 · 받아올림·받아내림", name: "받아올림 · 모형 옮겨 식 만들기", gen: noRep(() => carryGen('build')) },   // v125: 쟁반의 막대·낱개를 옮기면 세로셈이 채워짐(181의 앞 단계)
  { id: 181, g: "1학년 · 받아올림·받아내림", name: "받아올림 · 모형 보고 식 쓰기", gen: noRep(() => carryGen('model')) },
  { id: 182, g: "1학년 · 받아올림·받아내림", name: "받아올림 · 식 보고 놓기", gen: noRep(() => carryGen('expr')) },
+/* v127 시계놀이(15_clock) — 단계 하나 = 시계놀이 유형×단위×서브 하나(설계 시계놀이/설계.md §9·§11.3 차시 순서). 문제 내용은 제시 때 생성(lazy) */
+ { id: 185, g: "2학년 · 시계판 알기", name: "시계판 · 숫자 찾기", gen: clockLv('numf') },
+ { id: 186, g: "2학년 · 시계판 알기", name: "시계판 · 바늘 찾기 (시침·분침)", gen: clockLv('handf') },
+ { id: 187, g: "2학년 · 시계판 알기", name: "시계판 · 시 숫자 넣기", gen: clockLv('build', null, null, 'hour') },
+ { id: 188, g: "2학년 · 시각 알기 (정각)", name: "정각 · 판별", gen: clockLv('judge', 'hour') },
+ { id: 189, g: "2학년 · 시각 알기 (정각)", name: "정각 · 짧은바늘 숫자", gen: clockLv('hnum', 'hour') },
+ { id: 190, g: "2학년 · 시각 알기 (정각)", name: "정각 · 짝짓기", gen: clockLv('match', 'hour') },
+ { id: 191, g: "2학년 · 시각 알기 (정각)", name: "정각 · 읽기", gen: clockLv('read', 'hour') },
+ { id: 192, g: "2학년 · 시각 알기 (정각)", name: "정각 · 짧은바늘만 돌리기", gen: clockLv('set', 'hour', 'ho', null, '짧은바늘만') },
+ { id: 193, g: "2학년 · 시각 알기 (정각)", name: "정각 · 바늘 돌리기", gen: clockLv('set', 'hour') },
+ { id: 194, g: "2학년 · 시각 알기 (30분)", name: "30분 · 판별", gen: clockLv('judge', 'half') },
+ { id: 195, g: "2학년 · 시각 알기 (30분)", name: "30분 · 짧은바늘 숫자 (사이의 작은 수)", gen: clockLv('hnum', 'half') },
+ { id: 196, g: "2학년 · 시각 알기 (30분)", name: "30분 · 짝짓기", gen: clockLv('match', 'half') },
+ { id: 197, g: "2학년 · 시각 알기 (30분)", name: "30분 · 읽기", gen: clockLv('read', 'half') },
+ { id: 198, g: "2학년 · 시각 알기 (30분)", name: "30분 · 긴바늘만 읽기", gen: clockLv('read', 'half', 'mo', null, '긴바늘만') },
+ { id: 199, g: "2학년 · 시각 알기 (30분)", name: "30분 · 바늘 돌리기", gen: clockLv('set', 'half') },
+ { id: 200, g: "2학년 · 시각 알기 (5분)", name: "시계판 · 분 숫자 넣기", gen: clockLv('minb', null, null, 'min') },
+ { id: 201, g: "2학년 · 시각 알기 (5분)", name: "5분 · 긴바늘만 읽기", gen: clockLv('read', 'five', 'mo', null, '긴바늘만') },
+ { id: 202, g: "2학년 · 시각 알기 (5분)", name: "5분 · 짝짓기", gen: clockLv('match', 'five') },
+ { id: 203, g: "2학년 · 시각 알기 (5분)", name: "5분 · 읽기", gen: clockLv('read', 'five') },
+ { id: 204, g: "2학년 · 시각 알기 (5분)", name: "5분 · 바늘 돌리기", gen: clockLv('set', 'five') },
+ { id: 205, g: "2학년 · 시각 알기 (1분)", name: "1분 · 몇 분 세기", gen: clockLv('count1', 'five') },
+ { id: 206, g: "2학년 · 시각 알기 (1분)", name: "1분 · 바늘 돌리기", gen: clockLv('set', 'one') },
+ { id: 207, g: "2학년 · 시각 알기 (15·45분)", name: "15·45분 · 읽기", gen: clockLv('read', 'quarter') },
+ { id: 208, g: "2학년 · 시각 알기 (15·45분)", name: "15·45분 · 바늘 돌리기", gen: clockLv('set', 'quarter') },
+ { id: 209, g: "2학년 · 시간 알기", name: "시간 · 한 바퀴 = 1시간", gen: clockLv('set', 'hour', 'turn', null, '한 바퀴') },
+ { id: 210, g: "2학년 · 시간 알기", name: "시간 · 다음 정각 찾기", gen: clockLv('nexth') },
+ { id: 211, g: "2학년 · 시간 알기", name: "시간 · 몇 분 전 (5·10분 전)", gen: clockLv('before', 'five', 'b10', null, '몇 분 전') },
+ { id: 212, g: "2학년 · 시간 알기", name: "시간 · 몇 분 전 (~25분 전)", gen: clockLv('before', 'five', 'b25', null, '몇 분 전 확장') },
+ { id: 213, g: "2학년 · 시간 알기", name: "시간 · 걸린 시간 (정각)", gen: clockLv('elapsed', 'hour') },
+ { id: 214, g: "2학년 · 시간 알기", name: "시간 · 걸린 시간 (30분)", gen: clockLv('elapsed', 'half') },
+ { id: 215, g: "2학년 · 시간 알기", name: "시간 · 걸린 시간 (5분)", gen: clockLv('elapsed', 'five') },
  { id: 147, g: "1학년 · 받아올림·받아내림", name: "십몇 − (몇) 받아내림", gen: () => { const a = R(11, 18), b = R(a % 10 + 1, 9); return { type: 'binary', a, b, op: '-', ans: a - b }; } },
  { id: 148, g: "1학년 · 받아올림·받아내림", name: "받아올림 있는 덧셈", gen: () => { const ta = R(1, 7), tb = R(1, 8 - ta), ua = R(1, 9), ub = R(10 - ua, 9); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '+', ans: a + b }; } },
  { id: 149, g: "1학년 · 받아올림·받아내림", name: "받아내림 있는 뺄셈", gen: () => { const ta = R(2, 9), ua = R(0, 8), tb = R(1, ta - 1), ub = R(ua + 1, 9); const a = ta * 10 + ua, b = tb * 10 + ub; return { type: 'binary', a, b, op: '-', ans: a - b }; } },
@@ -1409,7 +1626,7 @@ const migrateLv = v => (v >= 101 ? v : (OLD2NEW[v] || LEVEL_ORDER[0]));
 const levelById = id => LEVELS.find(l => l.id === migrateLv(id)) || LEVELS[0];
 /* v101 재부여 후 id = 101 + 교육과정 순이라 지금은 오름차순과 같다.
    새 단계는 165+ 번호로 만들고 이 배열의 원하는 위치에 삽입한다(기존 id 재부여 금지). */
-const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 184, 183, 181, 182, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164];
+const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 184, 183, 181, 182, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 161, 162, 163, 164];
 /* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
@@ -1425,10 +1642,11 @@ const LEVEL_BANDS = [
   { name: '두 자리 수 덧셈·뺄셈', ids: [129, 130, 131, 132, 133, 134, 184, 183, 181, 182, 148, 149] },
   { name: '세 자리 수 덧셈·뺄셈', ids: [150, 151, 152, 153, 164] },
   { name: '곱셈·나눗셈', ids: [154, 155, 156, 157, 158, 159, 160, 161, 162, 163] },
+  { name: '시계', ids: [185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215] },   /* v127 시계놀이 — 진급 순서는 160 뒤·161 앞(5분 단위가 뛰어세기 154에 기댐) */
 ];
 /* 학습지 인쇄 비지원 유형 — 번쩍 보기(105·111)는 잠깐 보여주는 화면 전용 활동이라 지필 불가.
    십틀 10 만들기(139)·자리값 블록 만들기(128)는 조작 활동이라 지면 미지원(v94 규칙: 신규 유형은 NO_PRINT) */
-const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128, 181, 182, 183, 184]);   // 181~184 받아올림 큐브(v124·125)도 조작 활동
+const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215]);   // v127 시계놀이 185~215도 화면 조작 활동   // 181~184 받아올림 큐브(v124·125)도 조작 활동
 /* 같은 수 더하기 계열 단계(v112 사용자 지시, v114에 144 합류): 받아올림 단원이 아니므로 정답칸은 자릿값 칸 없이 **한 칸**,
    전략은 항상 double/near(10 만들기는 자리칸이 필요) */
 const DBL_LEVELS = new Set([143, 165, 144]);
@@ -1464,7 +1682,7 @@ const lsDel = k => { try { localStorage.removeItem(LS + k); } catch (e) { } };
 /* v109 설정 개편(두루책방 런처 구성): vol=소리 크기 0~100(0=음소거, 별도 음소거 항목 없음) · rate=slow|normal|fast ·
    langAt=외국어로 읽을 곳(q 문제·praise 칭찬·hint 힌트) · tapGuard=충동 탭 막기(듣고 시작+오답 잠금, v100 동작을 설정으로) */
 const LANG_AT_DEFAULT = { q: true, praise: true, hint: true };
-const PREFS_DEFAULT = { mode: 'h', size: 'md', vol: 70, rate: 'normal', calm: false, lang: 'ko', langAt: LANG_AT_DEFAULT, flashSec: 2, mask: false, warmup: false, tapGuard: true };
+const PREFS_DEFAULT = { mode: 'h', size: 'md', vol: 70, rate: 'normal', calm: false, lang: 'ko', langAt: LANG_AT_DEFAULT, flashSec: 2, mask: false, warmup: false, tapGuard: true, clockInp: 'dial' };   // v127 clockInp: 시계 단계 입력(dial ▲▼ / pad 키패드)
 const migPrefs = p => {   // 구 soundLevel(off/low/mid/high) → vol, langAt 항상 새 객체(기본 객체 공유 금지)
   if (p.soundLevel) p.vol = ({ off: 0, low: 40, mid: 70, high: 100 })[p.soundLevel] ?? 70;   // 기본값 병합 뒤라 vol은 항상 있음 — 구 키가 남아 있으면 그쪽이 정본
   delete p.soundLevel;
@@ -2472,6 +2690,7 @@ function faceV(p, circ) {
    기초 유형(세기·담기 등)은 11_early의 전용 렌더러로(가로·세로 무관) */
 function buildFace(p, circ) {
   if (p.type === 'carry') return carryFace(p);   // 받아올림 연결큐브(14_carry, v124)
+  if (p.type === 'clock') return clockFace(p);   // 시계놀이(15_clock, v127)
   if (EARLY_TYPES.has(p.type)) return earlyFace(p);
   return (prefs.mode === 'v' && p.op !== '÷') ? faceV(p, circ) : faceH(p, circ);
 }
@@ -2540,6 +2759,7 @@ const qStr = p => {
   if (p.type === 'seq') return p.arr.map((v, i) => i === p.blank ? '☐' : v).join(', ');
   if (p.type === 'word') return `문장제 ${p.a} ${sgn(p.op)} ${p.b}`;
   if (p.type === 'judge') return `${p.a} × ${p.b} = ${p.shown} 채점`;
+  if (p.type === 'clock') return `시계 ${p.label || p.mode}`;   // v127 시계놀이
   if (p.type === 'carry') return `받아올림 큐브 ${p.a} + ${p.b}`;   // v124 — 연산 정규식(^N + M$)에 안 걸리게 접두어(대시보드 분류는 item.tags가 맡음)
   if (p.form === 'subFromTen') return `10 − ☐ = ${p.result}`;
   return `${p.k} + ☐ = 10`;
@@ -2695,6 +2915,7 @@ function renderProblem() {
     speakProblem(open);
     setTimeout(open, lastSpeakMs ? lastSpeakMs + 1200 : 150);   // 보루(음성 이벤트 유실·음소거 대비)
   } else if (p0.type === 'carry') carryBegin();   // v124 받아올림 큐브: 안내 발화 뒤 단계 흐름 시작(14_carry)
+  else if (p0.type === 'clock') clockBegin();     // v127 시계놀이: 엔진이 발문·흐름을 맡음(15_clock)
   else speakProblem();
 }
 /* SEM ④ 가림판(v89, 설정 prefs.mask·기기별) — ㄱ자 반투명 판을 끌어 문제 일부를 가리고 집중.
@@ -2760,10 +2981,11 @@ function paintFace(flip) {
   if (p.type === 'tenfill') initTenFill();        // 십틀 채우기: 칸 눌러 연속 채움
   if (p.type === 'pvread') { initTapCount('#pvT .rod'); initTapCount('#pvU .cdot'); }   // 막대·낱개 각각 짚어 세기
   if (p.type === 'carry') initCarry();            // 받아올림 연결큐브(v124): 모형 그리기 + 상태 초기화
+  if (p.type === 'clock') initClock();            // 시계놀이(v127): 엔진 마운트
 }
 function paintChoices() {
   const p = session.items[session.idx];
-  if (p.type === 'carry') { $('choices').innerHTML = ''; return; }   // 받아올림 큐브: 패드가 얼굴 안에 있음(v124)
+  if (p.type === 'carry' || p.type === 'clock') { $('choices').innerHTML = ''; return; }   // 받아올림 큐브·시계놀이: 입력이 얼굴 안에 있음(v124·v127)
   if (p.type === 'put') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="putSubmit()">다 담았어요 ✓</button>`; return; }
   if (p.type === 'nle') { $('choices').innerHTML = ''; return; }   // 수직선: 선에서 손을 떼는 순간 판정(v116) — 확인 버튼 없음
   if (p.type === 'tenfill') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="tfSubmit()">다 채웠어요 ✓</button>`; return; }
@@ -2845,6 +3067,7 @@ function speakProblem(onEnd) {
   else if (p.type === 'word') t = p.text;
   else if (p.type === 'judge') t = `${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.shown}. 맞으면 동그라미, 틀리면 엑스!`;
   else if (p.type === 'carry') t = carryIntro(p);   // v124: 🔊 다시 듣기 = 시작 안내(식을 써요 / N 더하기 M은?)
+  else if (p.type === 'clock') t = clockIntro(p);   // v127: 시계놀이 발문
   else if (p.form === 'addToTen') t = `${p.k}에 몇을 더하면 10?`;
   else if (p.form === 'partner') t = `${p.k}에 몇을 더하면 10?`;
   else t = `10에서 몇을 빼면 ${p.result}?`;
@@ -3165,6 +3388,7 @@ function routeHint(stage) {
   if (stage >= 2 && p.type === 'binary') retryArm = true;   // ③(v100) 정답까지 유도받은 문제는 재도전 예약
   hintStage = Math.max(hintStage, Math.min(stage, 3));       // ①(v106) 실제 실행된 단계만 기록
 
+  if (p.type === 'clock') return;   // 시계놀이(v127): 힌트는 엔진 내부
   if (p.type === 'carry') { carryRouteHint(stage); return; }   // 받아올림 큐브(v124): 칸별 힌트는 14_carry가 직접 — 여기는 점검 도구 경유
   if (EARLY_TYPES.has(p.type)) { routeEarlyHint(p, h, stage); return; }
   if (p.type === 'triple') { startGuide(p, stage >= 2); return; }
@@ -5227,7 +5451,7 @@ function nextProblem() {
 function toggleMode() {
   prefs.mode = prefs.mode === 'h' ? 'v' : 'h'; savePrefs();
   setNav(studyNav());
-  if (!rt && session && session.items[session.idx] && session.items[session.idx].type === 'carry') return;   // 받아올림 큐브(v124): 가로·세로 구분 없음 — 얼굴을 다시 그리면 조작 상태가 사라짐
+  if (!rt && session && session.items[session.idx] && ['carry', 'clock'].includes(session.items[session.idx].type)) return;   // 받아올림 큐브(v124)·시계놀이(v127): 가로·세로 구분 없음 — 얼굴을 다시 그리면 조작 상태가 사라짐
   if (rt) { const keep = rt.intro; rt.intro = false; renderRetry(); rt.intro = keep; rtPaint(); return; }   // 재도전: 같은 문제를 새 모드로
   if (guide) renderGuideStep(true); else { paintFace(true); if (cadd) redrawColumn(); }
 }
@@ -5345,6 +5569,7 @@ function settingsHtml() {
     <div class="srow">${chk('calm', prefs.calm, '🎨 저자극 (반짝임 끄기)')}</div>
     <div class="srow">${chk('mask', prefs.mask, '🫣 가림판')}<span class="shelp">ㄱ자 판을 끌어 문제 일부를 가리고 지금 보는 곳에 집중해요</span></div>
     <div class="srow">${chk('warmup', prefs.warmup, '⏱️ 타임어택 워밍업')}<span class="shelp">학습 전에 아는 단계 문제 5개를 시간 재며 빠르게 (기록 안 남음)</span></div>
+    <div class="srow"><b>🕒 시계 입력</b><div class="sopts">${on(prefs.clockInp !== 'pad', '▲▼ 돌리기', "setPref('clockInp','dial')")}${on(prefs.clockInp === 'pad', '키패드', "setPref('clockInp','pad')")}</div><span class="shelp">시계 단계에서 시각을 넣는 방법 (읽기·몇 분 세기·몇 분 전·걸린 시간)</span></div>
     <div class="srow">${chk('guard', prefs.tapGuard !== false, '🖐️ 충동 탭 막기')}<span class="shelp">문제를 다 듣고 보기가 열려요 · 틀리면 말이 끝날 때까지 잠겨요</span></div>`;
 }
 function setPref(group, v) {
@@ -5363,6 +5588,7 @@ function setPref(group, v) {
   else if (group === 'lang') prefs.lang = v;
   else if (group === 'langAt') { const la = prefs.langAt = Object.assign({}, LANG_AT_DEFAULT, prefs.langAt || {}); la[v] = la[v] === false; }
   else if (group === 'flash') prefs.flashSec = parseFloat(v);
+  else if (group === 'clockInp') prefs.clockInp = v === 'pad' ? 'pad' : 'dial';   // v127 시계 입력 — 다음 문제부터 적용
   else if (group === 'mask') { prefs.mask = v === 'on'; if ($('study')) { if (prefs.mask) addMask(); else removeMask(); } }
   else if (group === 'warmup') { prefs.warmup = v === 'on'; if (prefs.warmup) warmedUp = false; }   // 켜면 다음 세션에 바로 적용
   else if (group === 'guard') { prefs.tapGuard = v === 'on'; if (!prefs.tapGuard) { const c = $('choices'); if (c) c.classList.remove('listen'); } }   // 끄면 지금 문제의 보기도 바로 열림
@@ -5659,7 +5885,7 @@ function classifyItem(it, accurate) {
   const gs = Array.isArray(it.given) ? it.given : (it.given != null ? [it.given] : []);
   const fast = () => { if (accurate && ms > 0 && ms < 3000) add('careless'); };
   if (Array.isArray(it.tags) && it.tags.length) {   /* v124 받아올림 큐브 — 앱이 판정한 태그 그대로: 세기=count, 미이해=자리값, 누락·과잉=절차 */
-    it.tags.forEach(tg => { if (tg === 'count') add('count'); else if (tg === 'no_regroup') add('place'); else if (tg === 'carry_missed' || tg === 'carry_over') add('proc'); else fast(); });
+    it.tags.forEach(tg => { if (tg === 'count') add('count'); else if (tg === 'no_regroup') add('place'); else if (tg === 'carry_missed' || tg === 'carry_over') add('proc'); else if (['hands_swap', 'hour_next', 'min_raw', 'before_dir', 'elapsed_abs'].includes(tg)) add('strategy'); else fast(); });   // v127 시계 태그 = 개념·전략
     return out;
   }
   if (m) {
@@ -5932,7 +6158,7 @@ async function renderStudentDetail(id) {
   const mkSess = x => {
     const items = (x.items || []).map(it =>
       `<tr class="itemrow"><td>${esc(it.q)} = ${it.ans}</td>
-        <td>${it.wrongs === 0 ? (isSlowItem(it) ? '<span class="tag mid">🐢 맞았지만 느림</span>' : '<span class="tag on">한 번에 정답</span>') : `<span class="tag low">오답 ${it.wrongs}회</span>`}${Array.isArray(it.tags) && it.tags.length ? ` <span class="dim">${[...new Set(it.tags)].map(t => CARRY_TAG_KO[t] || t).join(' · ')}</span>` : ''}</td>
+        <td>${it.wrongs === 0 ? (isSlowItem(it) ? '<span class="tag mid">🐢 맞았지만 느림</span>' : '<span class="tag on">한 번에 정답</span>') : `<span class="tag low">오답 ${it.wrongs}회</span>`}${Array.isArray(it.tags) && it.tags.length ? ` <span class="dim">${[...new Set(it.tags)].map(t => CARRY_TAG_KO[t] || CLOCK_TAG_KO[t] || t).join(' · ')}</span>` : ''}</td>
         <td>${it.hint ? (it.hint >= 2 ? '정답까지 유도' : '단서 힌트') : '—'}${retryTag(it)}</td>
         <td>${it.ms ? Math.round(it.ms / 1000) + '초' : '—'}</td></tr>`).join('');
     const nSlow = (x.items || []).filter(isSlowItem).length;
@@ -8201,6 +8427,987 @@ async function cbDemoBuild() {
   for (const [k, c] of steps) { if (!carryDemoOn || !cbAlive(tok) || carry.phase !== 'build') return; cbBuildAdd(k, c); await cbSleep(600); }
   if (p.kind === 'free' && carryDemoOn && cbAlive(tok)) { carry.demoOk = true; carryFreeDone(); carry.demoOk = false; }
 }
+
+/* =========================================================
+   15 시계놀이 (ver 127) — 단독 앱 시계놀이/index.html(v52) 이식. **이 파일의 엔진 부분은 tools/port_clock.py가 생성한다 — 직접 고치지 말고
+   시계놀이/index.html을 고친 뒤 생성기를 다시 돌릴 것.** 설계 정본: 시계놀이/설계.md(§9 이식 규약).
+   구조: 문제 하나 = 시계놀이 문제 하나. 01_levels의 clockLv()가 {type:'clock', mode, sub, unit, …} 문제를 만들고, 06_study가 clockFace → initClock(마운트)
+   → clockBegin(발문) 순으로 부른다. 엔진은 clockMount(p, H) 안에서 시계놀이 코드 그대로 돌며(id는 전부 ck- 접두, $가 붙임), 끝나면 H.done()으로 06_study의
+   afterCorrect(기록 wrongs·hint·tags)로 돌아온다. 음성은 매일수학 speak/speakFast/tick/chime 공용. 무대 .clockq 1600×900 → clockFit()이 카드에 맞춰 축소(좌표 _sc×sc).
+   시 숫자·분 숫자 넣기의 단계(기준→1→2→3→12)와 연속 정답은 세션 동안 clockSess.build에 유지(세션이 바뀌면 처음부터). 교사 「다음 단계」는 기록 없이 승급.
+   ========================================================= */
+const CLOCK_TAG_KO = { hands_swap: '시·분 바늘 바꿈', hour_next: '다음 숫자', min_raw: '긴바늘 숫자 그대로', count: '세기', before_dir: '몇 분 후로', elapsed_abs: '끝 시각 그대로', other: '기타' };
+let ck = null;            // 마운트된 엔진 {api, p, tok, sc}
+let clockSess = null;     // {startAt, build:{hour:{…}, min:{…}}} — 세션 단위 상태
+function clockSessState() {
+  if (!clockSess || !session || clockSess.startAt !== session.startAt) clockSess = { startAt: session && session.startAt, build: { hour: { lvl: 0, streak: 0, left: [], wrong: 0, sel: null, drag: null }, min: { lvl: 0, streak: 0, left: [], wrong: 0, sel: null, drag: null } } };
+  return clockSess;
+}
+/* 01_levels용 생성기 — 단계 하나 = {mode, sub, unit}. 시 숫자·분 숫자 넣기와 짝짓기는 제시 때 생성(lazy: 세션 단계·문제 순서가 필요) */
+function clockLv(mode, unit, sub, kind, label) {   // 문제 내용은 제시 때 생성(lazy) — 세션 안 순서(i/n)·단계·연속 정답이 필요해서
+  return () => ({ type: 'clock', mode, unit: unit || 'hour', sub: sub || null, lazy: true, kind: kind || (mode === 'minb' ? 'min' : 'hour'), label: label || (CLOCK_MODE_KO[mode] || mode) });
+}
+const CLOCK_MODE_KO = { judge: '판별', hnum: '짧은바늘 숫자', nexth: '다음 정각', numf: '숫자 찾기', handf: '바늘 찾기', build: '시 숫자 넣기', minb: '분 숫자 넣기', read: '읽기', set: '바늘 돌리기', match: '짝짓기', count1: '몇 분 세기', before: '몇 분 전', elapsed: '걸린 시간' };
+function clockFace(p) {
+  return `<div class="early ck-wrap" id="ckWrap"><div class="clockq" id="clockq">  <div id="ck-learn" class="screen">
+    <div id="ck-nav">
+      <button class="nb" id="ck-homeBtn" title="처음으로"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>처음</button>
+      <div id="ck-brand"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>시계놀이</div>
+      <div id="ck-badge"></div>
+      <div class="sp"></div>
+      <button class="nb" id="ck-lvlBtn" title="다음 단계로">다음 단계 ▶</button>
+      <button class="nb" id="ck-spk" title="다시 듣기"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/><path d="M18.5 6.5a8 8 0 010 11"/></svg>다시 듣기</button>
+      <button class="nb" id="ck-demoBtn" title="보여주기"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>보여주기</button>
+      <button class="nb" id="ck-logBtn" title="기록"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>기록</button>
+      <button class="nb" id="ck-fullBtn" title="전체화면">⛶</button>
+    </div>
+    <div id="ck-grid">
+    <div class="card" id="ck-cardL">
+      <div id="ck-prog"></div>
+      <div id="ck-clocks"><div id="ck-analog"></div><div id="ck-arrow">➜</div><div id="ck-analog2"></div></div>
+    </div>
+    <div class="card" id="ck-cardRT"><div id="ck-digital"></div></div>
+    <div class="card" id="ck-cardRB">
+    <div id="ck-ask"></div>
+    <div id="ck-slots">
+      <div class="dial" id="ck-dialH"><button class="dup" data-k="h" data-d="-1">▲</button><div class="slot h" id="ck-slotH" data-k="h"></div><button class="ddn" data-k="h" data-d="1">▼</button></div><span id="ck-lblH">시</span>
+      <div class="dial" id="ck-dialM"><button class="dup" data-k="m" data-d="-1">▲</button><div class="slot m" id="ck-slotM" data-k="m"></div><button class="ddn" data-k="m" data-d="1">▼</button><button class="d1 up" data-k="m" data-d="f1">+1</button><button class="d1 dn" data-k="m" data-d="f-1">−1</button></div><span id="ck-lblM">분</span>
+    </div>
+    <button id="ck-dialOk">✓ 확인</button>
+    <button id="ck-okBig">✓ 확인</button>
+    <div id="ck-cards"></div>
+    <div id="ck-choice"></div>
+    <div id="ck-legend"><div class="lg"><span class="hbar hs"></span><b>짧은바늘</b> = 시침 <i>(시)</i></div><div class="lg"><span class="hbar hm"></span><b>긴바늘</b> = 분침 <i>(분)</i></div></div>
+    </div>
+    <div class="card" id="ck-match"><svg id="ck-mlines"></svg></div>
+    </div>
+    <div id="ck-pad"></div>
+    <div id="ck-ghost" class="ncard"></div>
+  </div>
+</div></div>`;
+}
+/* paintFace 끝에서 — 엔진 마운트(발화 없음). 06_study renderProblem이 clockBegin()으로 발문 시작 */
+function initClock() {
+  const p = session.items[session.idx]; if (!$('clockq')) return;
+  const sess = clockSessState(), tok = itemStart, n = session.items.length;
+  const H = {
+    alive: () => ck && ck.tok === tok,
+    n, i: session.idx, k: session.idx < Math.ceil(n / 2) ? 2 : 4,
+    build: sess.build[p.kind || 'hour'], skipCount: false,
+    done: () => { if (!H.alive()) return; wrongCount = p.first ? 0 : Math.max(1, p.hint || 1); hintStage = p.hint || 0; wrongTags = (p.tags || []).slice(); retryArm = false; afterCorrect(400); },
+    skip: () => { if (!H.alive()) return; session.idx++; saveResume(); advanceProblem(); },
+    retry: q => { if (!H.alive()) return; if (!session.items.some(o => o.retry && o === q)) session.items.push(Object.assign({}, q, { retry: true, first: true, hint: 0, tags: [], ready: true })); },
+  };
+  ck = { p, tok, sc: 1, api: null };
+  ck.api = clockMount(p, H);
+  clockFit();
+}
+function clockBegin() { if (ck && ck.api) ck.api.begin(); }
+function clockIntro(p) { return ck && ck.api ? ck.api.question() : '시계를 보세요.'; }
+function clockDemo() { if (ck && ck.api) ck.api.demo(); }
+/* 1600×900 무대를 카드의 남은 공간에 맞춰 축소(받아올림 carryFit과 같은 문법) */
+function clockFit() {
+  const wrap = $('ckWrap'), q = $('clockq'), face = $('qface'); if (!wrap || !q || !face) return;
+  const card = face.parentNode;
+  wrap.style.width = '0px'; wrap.style.height = '0px';
+  const cs = getComputedStyle(card);
+  let used = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+  [...card.children].forEach(c => { if (c === face) return; const m = getComputedStyle(c); used += c.offsetHeight + parseFloat(m.marginTop) + parseFloat(m.marginBottom); });
+  const fs = getComputedStyle(face);
+  const availH = card.clientHeight - used - parseFloat(fs.paddingTop) - parseFloat(fs.paddingBottom);
+  const availW = face.clientWidth;
+  const s = Math.max(.3, Math.min(1, availW / 1600, availH / 900));
+  q.style.transform = `scale(${s})`;
+  wrap.style.width = Math.round(1600 * s) + 'px'; wrap.style.height = Math.round(900 * s) + 'px';
+  if (ck) { ck.sc = s; if (ck.api) ck.api.setScale(s); }
+}
+window.addEventListener('resize', () => { if ($('clockq')) clockFit(); });
+
+/* ───────── 아래부터 생성된 엔진(시계놀이 v52). 수정 금지 — tools/port_clock.py ───────── */
+function clockMount(p, H) {
+  const show = () => {};
+  let _sc = (window._sc || 1) * (H.sc || 1);
+  const speak = (t, cb) => window.speak(t, cb ? () => { if (H.alive()) cb(); } : undefined);
+  const speakFast = t => window.speakFast(t);
+  const tick = () => window.tick();
+  const bell = () => chime(true);
+  function finish() { H.done(); }
+  const GROUPS = {};
+  const SUB_UNITS = { mo: ['half', 'quarter', 'five'], ho: ['hour'], turn: [], b10: ['five'], b25: ['five'] };
+  const unitsFor = () => (S.sub && SUB_UNITS[S.sub]) || UNITS[S.mode];
+
+  const APP_VERSION = 'v52';
+  const $ = id => document.getElementById('ck-' + id);   // 매일수학 안에서는 모든 id에 ck- 접두
+
+  /* PURE-BEGIN — DOM 없이 돌아가는 부분(tests/clock_check.js가 이 구간을 떼어 검사) */
+  const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const KO_HOUR = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열한', '열두'];
+  const KO_CNT = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열하나', '열둘'];
+  const SINO_T = ['', '십', '이십', '삼십', '사십', '오십', '육십'], SINO_U = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
+  const sino = n => (SINO_T[Math.floor(n / 10)] + SINO_U[n % 10]) || '영';   // 1~59 한자어
+  const tk = (h, m) => m ? `${KO_HOUR[h]} 시 ${m} 분` : `${KO_HOUR[h]} 시`;
+  const timeKo = (h, m) => tk(h, m) + '.';
+  const KO_KAN = ['', '한', '두', '세', '네'];
+  const countOnKo = m => { const f = Math.floor(m / 5) * 5, r = m - f; return `${m} 분은 ${f ? `${f} 분` : '12'}에서 ${KO_KAN[r]} 칸 더 가요.`; };   // v40 몇 분 세기 이어세기(m은 5의 배수 아님)
+  const durKo = (H, M) => (H && M ? `${KO_HOUR[H]} 시간 ${M} 분` : H ? `${KO_HOUR[H]} 시간` : `${M} 분`) + '.';
+  const minNum = m => (m / 5) || 12;   // 긴바늘이 가리키는 숫자(5분 단위)
+  const nextH = h => h % 12 + 1;
+  const MODE_KO = { judge: '판별', hnum: '짧은바늘 숫자', nexth: '다음 정각', numf: '숫자 찾기', handf: '바늘 찾기', build: '시 숫자 넣기', minb: '분 숫자 넣기', free: '시각 만들기', read: '읽기', set: '바늘 돌리기', match: '짝짓기', count1: '몇 분 세기', before: '몇 분 전', elapsed: '걸린 시간' };
+  const UNITS = { judge: ['hour', 'half'], hnum: ['hour', 'half'], nexth: [], numf: [], handf: [], build: [], minb: [], free: [], read: ['hour', 'half', 'quarter', 'five'], set: ['hour', 'half', 'quarter', 'five', 'one'], match: ['hour', 'half', 'quarter', 'five'], count1: [], before: ['five'], elapsed: ['hour', 'half', 'quarter', 'five'] };
+  function genTime(unit) {
+    const h = R(1, 12);
+    const m = unit === 'hour' ? 0 : unit === 'half' ? R(0, 1) * 30 : unit === 'quarter' ? [15, 45, 0, 15, 30, 45][R(0, 5)] : unit === 'one' ? R(0, 11) * 5 + R(1, 4) : R(0, 11) * 5;   // v38 one: 5의 배수가 아닌 1~59분
+    return { h, m };
+  }
+  /* v38 시계 만들기: 단계별 빈칸 수 1 → 2 → 3 → 11(12만 남김). v39: 카드는 1~12 전부 순서대로, 연속 B_NEED회 정답이면 승급 */
+  const B_LV = [1, 1, 2, 3, 12], B_NEED = 3;   // v48: 0단계 = 기준 숫자(12·3·6·9 중 1개)   // v43: 마지막 단계 = 12개 전부 빈칸(1~12 넣기, 도입 애니메이션) · v44: 11개 단계 삭제(3개에서 바로 12개로)
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = R(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function genBuild(lvl, kind = 'hour') {   // v45: kind 'min' = 분 만들기(카드 값은 n×5, 12 자리 = 60)
+    const k = B_LV[lvl], missing = lvl === 0 ? [[12, 3, 6, 9][R(0, 3)]] : k === 12 ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] : shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]).slice(0, k).sort((a, b) => a - b);   // v48: 0단계는 기준 자리(시 12·3·6·9 = 분 60·15·30·45)
+    return { missing, cards: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], lvl, kind, label: lvl === 0 ? '기준 숫자' : k === 12 ? (kind === 'min' ? '5부터 60까지' : '1부터 12까지') : `빈칸 ${k}개`, first: true, hint: 0, tags: [], retry: false };
+  }
+  /* v39 2차 힌트 — 빈칸 1은 "2 앞 숫자는?", 그 밖은 앞 숫자가 보이면 "N 다음은?", 앞 숫자도 빈칸이면 뒤 숫자로 "N 앞 숫자는?" (v43: 12의 뒤 숫자는 1) */
+  function buildHint(target, left, kind = 'hour') {
+    const prev = target === 1 ? 12 : target - 1, next = target === 12 ? 1 : target + 1;
+    if (kind === 'min') return target !== 1 && !left.includes(prev) ? { light: prev, say: `${sino(prev * 5)} 분 다음은 몇 분이에요?` } : { light: next, say: `${sino(next * 5)} 분 앞은 몇 분이에요?` };   // v45 분 만들기
+    return target !== 1 && !left.includes(prev) ? { light: prev, say: `${sino(prev)} 다음은 몇이에요?` } : { light: next, say: `${sino(next)} 앞 숫자는 몇이에요?` };
+  }
+  /* 유형별 문제 생성(설계 §3). ansH/ansM = 입력 정답 */
+  const HAND_KO = { h: ['짧은바늘', '시침'], m: ['긴바늘', '분침'] };   // v48 바늘 찾기: [일상 이름, 교과 용어]
+  const EUL = v => [1, 3, 6, 7, 8, 10, 11].includes(v) ? '을' : '를';   // 숫자 뒤 을/를(일·삼·육·칠·팔·십·십일 = 받침)
+  const GWA = v => [1, 3, 6, 7, 8, 10, 11].includes(v) ? '과' : '와';
+  function genOne(mode, unit, i, n) {
+    if (mode === 'numf') { const v = R(1, 12); return { h: v, m: 0, n: v, label: `숫자 ${v}` }; }   // v48 A1: 시계판 숫자 탭
+    if (mode === 'judge') { const h = R(1, 12), m = R(0, 1) ? 0 : 30; return { h, m, ans: m === 0 ? 0 : 1, label: `${h}:${String(m).padStart(2, '0')} 판별` }; }   // v49 B1-1·B2-1: 정각/30분 2지 선택
+    if (mode === 'hnum') { const h = R(1, 12), m = unit === 'half' ? 30 : 0; return { h, m, ans: h, cue: i < Math.ceil(n / 2), label: `${h}:${String(m).padStart(2, '0')} 짧은바늘` }; }   // v49 B1-2·B2-2: 가리키는 숫자/사이의 작은 수 탭(앞 절반은 부채꼴 단서)
+    if (mode === 'nexth') { const h = R(1, 12), m = R(0, 1) ? 50 : 55; return { h, m, ans: nextH(h), label: `${h}:${m} 다음 정각` }; }   // v49 C2-1: 짧은바늘 다음 숫자 탭
+    if (mode === 'handf') { const t = R(0, 1) ? 'h' : 'm', term = i < Math.ceil(n / 2) ? 0 : 1; return { h: R(1, 11), m: 0, target: t, term, label: `${HAND_KO[t][term]} 찾기` }; }   // v48 A2: 앞 절반은 짧은/긴바늘, 뒤 절반은 시침/분침
+    if (mode === 'count1') { const f = R(0, 11) * 5, r = i < 2 ? R(1, 2) : R(1, 4), h = R(1, 12); return { h, m: f + r, ansH: h, ansM: f + r }; }
+    if (mode === 'before') { const m = unit === 'b10' || i < Math.ceil(n / 3) ? [50, 55][R(0, 1)] : [35, 40, 45, 50, 55][R(0, 4)], h = R(1, 12); return { h, m, ansH: nextH(h), ansM: 60 - m }; }   // v49: unit 'b10' = 5·10분 전만
+    if (mode === 'elapsed') {
+      const q = unit === 'hour' ? 60 : unit === 'half' ? 30 : unit === 'quarter' ? 15 : 5;
+      const s = genTime(unit), diff = unit === 'hour' ? R(1, 5) * 60 : R(1, Math.floor(359 / q)) * q;
+      const tot = s.h * 60 + s.m + diff, h2 = ((Math.floor(tot / 60) - 1) % 12) + 1, m2 = tot % 60;
+      return { h: s.h, m: s.m, h2, m2, diff, ansH: Math.floor(diff / 60), ansM: diff % 60 };
+    }
+    const t = genTime(unit); return { ...t, ansH: t.h, ansM: t.m };
+  }
+  function genItems(mode, unit, n) {
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      let p, tries = 0;
+      do { p = genOne(mode, unit, i, n); tries++; } while (tries < 20 && out.some(o => o.h === p.h && o.m === p.m && o.h2 === p.h2 && o.m2 === p.m2));
+      out.push({ ...p, first: true, hint: 0, tags: [], retry: false });
+    }
+    return out;
+  }
+  function genPairs(unit, k = 4) {   // 짝짓기: 서로 다른 시각 k개(같은 시 2개 이하) · v49: k = 2 또는 4
+    const out = [];
+    let tries = 0;
+    while (out.length < k && tries++ < 200) { const t = genTime(unit); if (!out.some(o => o.h === t.h && o.m === t.m) && out.filter(o => o.h === t.h).length < 2) out.push(t); }
+    while (out.length < k) out.push(genTime(unit));
+    return out;
+  }
+  /* 오류 태그(설계 §5) */
+  function diag(mode, k, v, p) {
+    if (mode === 'before') { if (k === 'h' && v === p.h || k === 'm' && v === p.m) return 'before_dir'; return Math.abs(v - (k === 'h' ? p.ansH : p.ansM)) <= 5 ? 'count' : 'other'; }
+    if (mode === 'elapsed') { if (k === 'h' && v === p.h2 || k === 'm' && v === p.m2) return 'elapsed_abs'; return Math.abs(v - (k === 'h' ? p.ansH : p.ansM)) <= 5 ? 'count' : 'other'; }
+    if (k === 'h') {
+      if (v === minNum(p.m)) return 'hands_swap';
+      if (p.m > 0 && v === nextH(p.h)) return 'hour_next';
+      return (Math.abs(v - p.h) === 1 || Math.abs(v - p.h) === 11) ? 'count' : 'other';
+    }
+    if (v === (p.h % 12) * 5) return 'hands_swap';
+    if (v === minNum(p.m) && p.m > 0) return 'min_raw';
+    return (Math.abs(v - p.m) === 5 || Math.abs(v - p.m) <= 2) ? 'count' : 'other';
+  }
+  /* 긴바늘이 12를 지날 때 시 변화(바늘 돌리기) — ±30분 넘는 점프 = 12 통과 */
+  function hourAfterMin(h, from, to) { const d = to - from; return d < -30 ? nextH(h) : d > 30 ? (h === 1 ? 12 : h - 1) : h; }
+  /* PURE-END */
+
+  /* ---------- 바늘시계 SVG (설계 §1.1) ---------- */
+  const RAD = 300;
+  const pt = (deg, r) => { const a = deg * Math.PI / 180; return [300 + r * Math.sin(a), 300 - r * Math.cos(a)]; };
+  /* 얼굴 마크업. hands = {h, m}이면 고정 바늘(작은 시계·끝 시계), null이면 주 시계(손잡이·탭 과녁 포함) */
+  function faceMarkup(hands) {
+    const parts = [];
+    parts.push(`<circle cx="300" cy="300" r="288" fill="#fff" stroke="#333" stroke-width="12"/>`);
+    parts.push(`<g class="sector"></g>`);
+    for (let i = 0; i < 60; i++) {
+      const big = i % 5 === 0, [x1, y1] = pt(i * 6, 276), [x2, y2] = pt(i * 6, big ? 248 : 262);
+      parts.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#333" stroke-width="${big ? 6 : 3}" stroke-linecap="round"/>`);
+    }
+    for (let n = 1; n <= 12; n++) { const [x, y] = pt(n * 30, RAD * .76); parts.push(`<text class="num" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${n}</text>`); }
+    parts.push(`<g class="marks"></g><g class="labels"></g>`);
+    const hand = (cls, color, len, w, deg) => {
+      const head = w, tail = 4, k = cls === 'hourHand' ? 'h' : 'm';
+      return `<g class="hand ${cls}"${deg != null ? ` style="transform:rotate(${deg}deg)"` : ''}><path d="M300,${300 + tail} L${300 - w / 2},${300 + tail} L${300 - w / 2},${300 - len + head} L${300 - head},${300 - len + head} L300,${300 - len} L${300 + head},${300 - len + head} L${300 + w / 2},${300 - len + head} L${300 + w / 2},${300 + tail} Z" fill="${color}" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>${hands ? '' : `<circle class="hh" data-k="${k}" cx="300" cy="${300 - len + 30}" r="56"/>`}</g>`;
+    };
+    const hd = hands ? (hands.h % 12) * 30 + hands.m * .5 : null, md = hands ? hands.m * 6 : null;
+    parts.push(hand('minHand', 'var(--blue)', RAD * .74, 34, md));   // v20: 두께 24→34
+    parts.push(hand('hourHand', 'var(--red)', RAD * .62, 34, hd));   // v16: 시침이 위(겹쳐도 시침 먼저 잡힘)
+    parts.push(`<circle cx="300" cy="300" r="18" fill="#222"/>`);
+    if (!hands) {
+      parts.push(`<g class="taps">${Array.from({ length: 12 }, (_, i) => { const n = i + 1, [x, y] = pt(n * 30, RAD * .76); return `<circle class="tapn" data-n="${n}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="42"/>`; }).join('')}</g>`);
+      parts.push(`<g class="tapts">${Array.from({ length: 60 }, (_, i) => { const [x, y] = pt(i * 6, 262); return `<circle class="tapt" data-i="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/>`; }).join('')}</g>`);
+    }
+    return `<svg class="face" viewBox="0 0 600 600">${parts.join('')}</svg>`;
+  }
+  function buildAnalog() { $('analog').innerHTML = faceMarkup(null); }
+  const A = sel => $('analog').querySelector(sel);
+  const ang = { h: 0, m: 0 };
+  /* 바늘 각도 — dir +1 앞으로(기본), -1 뒤로, 0 가까운 쪽. turns = 긴바늘 추가 바퀴(걸린 시간) */
+  function setHands(h, m, animate = true, dir = 1, turns = 0, dirH = dir) {   // v37: dirH = 짧은바늘만 따로(시각 만들기에서 분만 바꿀 때 짧은바늘은 가까운 쪽)
+    const th = (h % 12) * 30 + m * .5, tm = m * 6;
+    const go = (cur, t, dd = dir) => { let d = ((t - cur % 360) % 360 + 360) % 360; if (dd < 0) d = d === 0 ? 0 : d - 360; else if (dd === 0 && d > 180) d -= 360; return cur + d; };
+    ang.h = go(ang.h, th, dirH); ang.m = go(ang.m, tm) + (dir < 0 ? -turns * 360 : turns * 360);   // 짧은바늘은 12시간 안이라 앞으로 가는 차이에 바퀴가 이미 포함
+    const hh = A('.hourHand'), mh = A('.minHand');
+    if (!animate) { hh.style.transition = mh.style.transition = 'none'; }
+    hh.style.transform = `rotate(${ang.h}deg)`; mh.style.transform = `rotate(${ang.m}deg)`;
+    if (!animate) requestAnimationFrame(() => { hh.style.transition = mh.style.transition = ''; });
+    if (S.mode === 'set') setDigital(h, m);   // v21: 바늘 돌리기에서는 전자시계가 바늘의 현재 시각을 따라감
+  }
+  /* 힌트 표시(주 시계) — 부채꼴(두 숫자 사이, 테두리까지), 호(띠), 숫자 불, 빨간 동그라미, 눈금 점 */
+  function wedge(a1, a2, r1, r2) {
+    const [x1, y1] = pt(a1, r2), [x2, y2] = pt(a2, r2), big = a2 - a1 > 180 ? 1 : 0;
+    if (!r1) return `M300,300 L${x1},${y1} A${r2},${r2} 0 ${big} 1 ${x2},${y2} Z`;
+    const [x3, y3] = pt(a2, r1), [x4, y4] = pt(a1, r1);
+    return `M${x1},${y1} A${r2},${r2} 0 ${big} 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 ${big} 0 ${x4},${y4} Z`;
+  }
+  function showSector(h) { A('.sector').insertAdjacentHTML('beforeend', `<path class="hsec" d="${wedge(h * 30, h * 30 + 30, 0, 282)}" fill="var(--yel)"/>`); }
+  function showArc(a1, a2, color = 'rgba(2,85,208,.22)', id = 'marc') {   // 각도 a1→a2 띠(a2 ≤ a1이면 지움)
+    let e = A('.' + id); if (!e) { A('.sector').insertAdjacentHTML('beforeend', `<path class="${id}" fill="${color}"/>`); e = A('.' + id); }
+    e.setAttribute('d', a2 - a1 > 0 && a2 - a1 < 360 ? wedge(a1, a2, 196, 280) : a2 - a1 >= 360 ? wedge(a1, a1 + 359.9, 196, 280) : '');
+  }
+  function lightNum(n, color = '#FFE066') { const [x, y] = pt(n * 30, RAD * .76); A('.sector').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="38" fill="${color}"/>`); }
+  function redCircle(n) { const [x, y] = pt(n * 30, RAD * .76); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="40" fill="none" stroke="var(--red)" stroke-width="8" stroke-dasharray="14 11" stroke-linecap="round"/>`); }   // v38: 점선
+  function ringNum(n) { const [x, y] = pt(n * 30, RAD * .76); A('.marks').insertAdjacentHTML('beforeend', `<circle class="yb" cx="${x}" cy="${y}" r="44" fill="none" stroke="#FFC400" stroke-width="9"/>`); }   // v40: 노란 동그라미 깜빡임(읽기 정각 2차)
+  function tickDot(i) { const [x, y] = pt(i * 6, 262); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="9" fill="var(--red)"/>`); }
+  function minLabel(n, text) { const [x, y] = pt(n * 30, 328); A('.labels').insertAdjacentHTML('beforeend', `<text class="mlab" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${text}</text>`); }   // 시계 바깥 작은 분 숫자(v17)
+  function clearMarks() { A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구
+  function armTap(n) { document.querySelectorAll('#ck-analog .tapn').forEach(e => e.classList.toggle('on', +e.dataset.n === n)); }
+  function armTick(i) { document.querySelectorAll('#ck-analog .tapt').forEach(e => e.classList.toggle('on', +e.dataset.i === i)); }
+
+  /* ---------- 전자시계 (7세그먼트) ---------- */
+  const SEG = { 0: 'abcdef', 1: 'bc', 2: 'abged', 3: 'abgcd', 4: 'fgbc', 5: 'afgcd', 6: 'afgedc', 7: 'abc', 8: 'abcdefg', 9: 'abcdfg' };
+  function segDigit(x, y, cls, d) {
+    const w = 64, h = 120, t = 14, L = w - t, p = [], on = d == null ? '' : SEG[d];
+    const bar = (name, px, py, horiz) => {
+      const dd = horiz ? `M${px},${py} l${t / 2},-${t / 2} h${L - t} l${t / 2},${t / 2} l-${t / 2},${t / 2} h-${L - t} z`
+        : `M${px},${py} l${t / 2},${t / 2} v${h / 2 - t} l-${t / 2},${t / 2} l-${t / 2},-${t / 2} v-${h / 2 - t} z`;
+      p.push(`<path class="seg${on.includes(name) ? ' on' : ''}" data-s="${name}" d="${dd}"/>`);
+    };
+    bar('a', x + t / 2, y + t / 2, true); bar('g', x + t / 2, y + h / 2, true); bar('d', x + t / 2, y + h - t / 2, true);
+    bar('f', x + t / 2, y + t / 2, false); bar('b', x + w - t / 2, y + t / 2, false);
+    bar('e', x + t / 2, y + h / 2, false); bar('c', x + w - t / 2, y + h / 2, false);
+    return `<g class="dg" data-d="${cls}">${p.join('')}</g>`;
+  }
+  function digitalMarkup(h, m) {
+    const s = [];
+    s.push(`<rect x="10" y="20" width="520" height="210" rx="28" fill="#fff" stroke="#c9ced6" stroke-width="4"/>`);
+    s.push(`<rect x="175" y="6" width="90" height="26" rx="10" fill="#cfd3da"/><rect x="275" y="6" width="90" height="26" rx="10" fill="#cfd3da"/>`);
+    s.push(`<rect x="40" y="52" width="460" height="150" rx="14" fill="#111"/>`);
+    s.push(segDigit(96, 68, 'h1', h == null || h < 10 ? null : Math.floor(h / 10))); s.push(segDigit(176, 68, 'h0', h == null ? null : h % 10));
+    s.push(`<circle cx="270" cy="110" r="9" fill="#fff"/><circle cx="270" cy="158" r="9" fill="#fff"/>`);
+    s.push(segDigit(300, 68, 'm1', m == null ? null : Math.floor(m / 10))); s.push(segDigit(380, 68, 'm0', m == null ? null : m % 10));
+    return `<svg class="face" viewBox="0 0 540 250">${s.join('')}</svg>`;
+  }
+  function setDigital(h, m) { $('digital').innerHTML = digitalMarkup(h, m); }
+
+  /* ---------- 세션 상태 ---------- */
+  const S = { mode: 'free', unit: 'hour', n: 10, inp: 'dial', items: [], idx: 0, p: null, k: 'h', buf: '', h: null, m: null, wrong: { h: 0, m: 0 }, ok: { h: false, m: false }, locked: false, log: [], counting: null, skipCount: false, E: 0, demo: false };
+
+  /* ---------- 입력 UI ---------- */
+  function renderPad() {
+    const pad = $('pad'), padMode = S.inp !== 'dial', pop = padMode && S.pop && !!S.k;   // v24: 전 유형 공통 팝업 · v25: 키패드 모드에서만
+    pad.className = S.k + (S.locked ? ' off' : '') + (pop ? ' pop' : '');
+    pad.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '✓'].map(k => `<button class="key ${k === '⌫' ? 'del' : k === '✓' ? 'ok' : ''}" data-k="${k}">${k}</button>`).join('');
+    $('slotH').classList.toggle('on', padMode && S.k === 'h'); $('slotM').classList.toggle('on', padMode && S.k === 'm');
+    if (pop) {   // v23: 팝업 키패드를 누른 칸 아래 가운데에(무대 좌표) · v24: 아래 자리가 모자라면 칸 오른쪽에, 무대 안으로 클램프
+      const L = $('learn').getBoundingClientRect(), sr = $(S.k === 'h' ? 'slotH' : 'slotM').getBoundingClientRect(), PW = 558, PH = 170;   // v27: 무대 좌표 = (화면 − learn 원점) / _sc
+      const sx = (sr.left - L.left) / _sc, sy = (sr.top - L.top) / _sc, sw = sr.width / _sc, sh = sr.height / _sc;
+      const cr = $('cardRB').getBoundingClientRect(), cx0 = (cr.left - L.left) / _sc, cx1 = (cr.right - L.left) / _sc, cy0 = (cr.top - L.top) / _sc, cy1 = (cr.bottom - L.top) / _sc;   // 답 칸 카드 안으로 클램프
+      let left = sx + sw / 2 - PW / 2, top = sy + sh + 14;
+      if (top + PH > cy1 - 10) { top = sy - PH - 14; left = (cx0 + cx1) / 2 - PW / 2; }   // v40: 카드 아래 자리가 없으면 칸 위, 카드 가운데에(문제 글 자리를 통째로 덮음 — 반만 가려 보이는 것보다 깔끔)
+      pad.style.left = Math.max(cx0 + 10, Math.min(cx1 - PW - 30, left)) + 'px'; pad.style.top = Math.max(cy0 + 10, Math.min(cy1 - PH - 10, top)) + 'px';
+    }
+  }
+  function renderSlots() {
+    const vh = S.h ?? D.h, vm = S.m ?? D.m;   // v25: 돌리기 임시값(D)도 표시
+    const offH = S.mode !== 'free' && S.ok.h, offM = S.mode !== 'free' && S.ok.m || minFixed(), noDial = S.mode === 'set' || S.mode === 'match';
+    if (S.inp === 'dial' && !noDial) { renderStrip('h', vh, offH); renderStrip('m', vm, offM); }   // v29: 휠 띠
+    else {
+      $('slotH').textContent = S.k === 'h' && S.buf ? S.buf : (vh ?? '');
+      $('slotM').textContent = S.k === 'm' && S.buf ? S.buf : (vm == null ? '' : String(vm).padStart(2, '0'));
+    }
+    $('slotH').classList.toggle('done', S.h != null); $('slotM').classList.toggle('done', S.m != null);
+    $('dialH').classList.toggle('off', offH); $('dialM').classList.toggle('off', offM);
+  }
+  function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); tick(300); }
+  function lock(v) { if (S.demo && !v) return; S.locked = v; $('choice').classList.toggle('off', v); $('pad').classList.toggle('off', v); $('slots').classList.toggle('off', v); $('dialOk').classList.toggle('off', v); $('okBig').classList.toggle('off', v); $('cards').classList.toggle('off', v); $('analog').classList.toggle('drag', S.mode === 'set' && !v); }
+  const D_M0 = () => S.inp === 'dial' ? 0 : null;   // v33: 돌리기 모드의 분 칸은 빈 칸 대신 00에서 시작
+  function resetInput() { S.k = 'h'; S.buf = ''; S.h = null; S.m = null; S.pop = false; D.h = null; D.m = D_M0(); renderPad(); renderSlots(); }
+
+  $('pad').addEventListener('click', e => {
+    const b = e.target.closest('.key'); if (!b || S.locked) return;
+    const k = b.dataset.k, slot = S.k === 'h' ? $('slotH') : $('slotM'); tick();
+    if (k === '⌫') { S.buf = S.buf.slice(0, -1); renderSlots(); return; }
+    if (k === '✓') { if (S.buf === '' || +S.buf === 0 && S.k === 'h' && S.mode !== 'elapsed') { shake(slot); return; } commit(S.k, +S.buf); return; }
+    const nb = S.buf + k;
+    if (S.k === 'h') {
+      if (S.mode === 'elapsed') { if (+nb > 5) { shake(slot); return; } commit('h', +nb); return; }   // 시간 0~5 즉시
+      if (nb === '0' || +nb > 12) { shake(slot); return; }   // 시 1~12: 2~9 즉시, 1은 두 번째 자리(0·1·2) 또는 ✓
+      S.buf = nb; renderSlots();
+      if (nb.length === 2 || +nb >= 2) commit('h', +nb);
+      return;
+    }
+    if (+nb > 59) { shake(slot); return; }
+    S.buf = nb; renderSlots();
+    if (nb.length === 2) commit('m', +nb);
+  });
+  $('slots').addEventListener('click', e => {
+    const s = e.target.closest('.slot'); if (!s || S.locked || S.mode === 'set') return;
+    if (S.mode !== 'free' && S.ok[s.dataset.k]) return;   // 맞다고 판정된 칸은 다시 못 고침
+    if (S.inp === 'dial') { if (!S.wheeled) tick(); S.wheeled = false; return; }   // v25: 돌리기 모드에서는 칸을 눌러도 키패드가 뜨지 않음
+    S.k = s.dataset.k; S.buf = ''; S.pop = true; tick(); renderPad(); renderSlots();
+  });
+  function commit(k, v) { S.buf = ''; S.pop = false; if (S.mode === 'free') freeCommit(k, v); else inputCommit(k, v); }
+
+  /* ---------- v25 돌리기 입력(전자레인지 다이얼식): ▲▼로 값을 돌리고 ✓로 판정. 시각 만들기는 즉시 반영 ---------- */
+  const D = { h: null, m: null };   // ✓ 전 임시값
+  const MSTEP = { hour: 60, half: 30, quarter: 15, five: 5, one: 1 };
+  function dialStep(k) { return k === 'h' ? 1 : (S.mode === 'count1' || S.mode === 'free') ? 5 : (MSTEP[S.unit] || 5); }   // 시각 만들기·몇 분 세기는 5분씩(단위 무관)
+  const minFixed = () => S.unit === 'hour' && (S.mode === 'read' || S.mode === 'elapsed');   // 정각 단위: 분은 0으로 고정, 분 다이얼 숨김
+  function dialTurn(k, d) {   // d: 1·-1 = 한 칸, 'f1'·'f-1' = 1분 미세(몇 분 세기)
+    if (S.locked || S.mode === 'set' || S.mode === 'match') return;
+    if (S.mode !== 'free' && S.ok[k]) return;   // 맞다고 판정된 칸은 고정
+    const fine = typeof d === 'string', dir = fine ? +d.slice(1) : d, step = fine ? 1 : dialStep(k);
+    const v = dialNext(k, S[k] ?? D[k], dir, step);
+    tick(); D[k] = v;
+    const say = k === 'h' ? (v === 0 ? '영' : KO_HOUR[v]) + (S.mode === 'elapsed' ? ' 시간' : ' 시') : `${v} 분${S.mode === 'before' ? ' 전' : ''}`;
+    if (S.mode === 'free') { S[k] = v; const h = S.h ?? 12, m = S.m ?? 0; setHands(h, m, true, 1); setDigital(S.h, S.m == null && S.h == null ? null : m); }   // v40: 바늘은 항상 시계 방향(값이 작아져도 앞으로 돌아 도착)
+    renderSlots(); if (!wheel) roll(k, dir); speak(say);
+  }
+  /* v29 순수 단계 함수: 현재 값(null 가능)에서 dir 방향 한 칸. 시 1~12 순환(걸린 시간 0~5), 분 0~55 순환 */
+  function dialNext(k, v, dir, step = dialStep(k)) {
+    if (k === 'h') {
+      if (S.mode === 'elapsed') return v == null ? (dir > 0 ? 1 : 5) : ((v + dir) % 6 + 6) % 6;
+      return v == null ? (dir > 0 ? 1 : 12) : ((v - 1 + dir) % 12 + 12) % 12 + 1;
+    }
+    return v == null ? (dir > 0 ? step : (60 - step) % 60) : ((v + dir * step) % 60 + 60) % 60;
+  }
+  const fmtV = (k, v) => v == null ? '' : k === 'm' ? String(v).padStart(2, '0') : String(v);
+  /* v29 휠 띠 그리기: 위 +2·+1, 가운데 현재, 아래 −1·−2 (fixed면 이웃 없음). 칸 안쪽 높이 H마다 한 값 */
+  function renderStrip(k, v, fixed) {
+    const s = $(k === 'h' ? 'slotH' : 'slotM'), H = s.clientHeight || 128;
+    const up1 = dialNext(k, v, 1), dn1 = dialNext(k, v, -1);
+    const vals = fixed ? [null, null, v, null, null] : [dialNext(k, up1, 1), up1, v, dn1, dialNext(k, dn1, -1)];
+    s.innerHTML = `<div class="strip" style="height:${H * 5}px;margin-top:${-H * 2.5}px">${vals.map((x, i) => `<div class="it${i === 2 ? '' : ' nb'}" style="height:${H}px">${fmtV(k, x)}</div>`).join('')}</div>`;
+  }
+  function roll(k, dir) {   // ▲▼·마우스 휠: 새 값이 위(커짐)/아래(작아짐)에서 가운데로 굴러 들어옴
+    const st = $(k === 'h' ? 'slotH' : 'slotM').querySelector('.strip'); if (!st) return;
+    const H = st.firstElementChild.offsetHeight;
+    st.style.transition = 'none'; st.style.transform = `translateY(${dir > 0 ? -H : H}px)`;
+    requestAnimationFrame(() => { st.style.transition = 'transform .18s'; st.style.transform = ''; });
+  }
+  $('slots').addEventListener('click', e => { const b = e.target.closest('.dup, .ddn, .d1'); if (b) dialTurn(b.dataset.k, b.dataset.d.startsWith('f') ? b.dataset.d : +b.dataset.d); });
+  /* v28·v29 휠 조작: 돌리기 모드에서 숫자 칸을 끌면 띠가 손가락을 1:1로 따라가고, 반 칸을 넘으면 값 확정 후 이어서 굴림. 위로 = 작아짐, 아래로 = 커짐(사용자 지정). 놓으면 가까운 값에 스냅 */
+  let wheel = null;
+  $('slots').addEventListener('pointerdown', e => {
+    const s = e.target.closest('.slot'); if (!s || S.inp !== 'dial' || S.locked || S.mode === 'set' || S.mode === 'match') return;
+    const k = s.dataset.k; if ($(k === 'h' ? 'dialH' : 'dialM').classList.contains('off')) return;
+    wheel = { k, s, y: e.clientY, off: 0, H: s.clientHeight || 128 }; s.setPointerCapture(e.pointerId); e.preventDefault();
+    const st = s.querySelector('.strip'); if (st) st.style.transition = 'none';
+  });
+  $('slots').addEventListener('pointermove', e => {
+    if (!wheel) return; wheel.off += (e.clientY - wheel.y) / _sc; wheel.y = e.clientY;
+    const H = wheel.H;
+    while (wheel.off >= H / 2) { wheel.off -= H; S.wheeled = true; dialTurn(wheel.k, 1); }    // 아래로 반 칸 넘김 → 커짐
+    while (wheel.off <= -H / 2) { wheel.off += H; S.wheeled = true; dialTurn(wheel.k, -1); }  // 위로 → 작아짐
+    const st = wheel.s.querySelector('.strip'); if (st) { st.style.transition = 'none'; st.style.transform = `translateY(${wheel.off}px)`; }
+  });
+  function wheelEnd() { if (!wheel) return; const st = wheel.s.querySelector('.strip'); if (st) { st.style.transition = 'transform .15s'; st.style.transform = ''; } wheel = null; }
+  $('slots').addEventListener('pointerup', wheelEnd); $('slots').addEventListener('pointercancel', wheelEnd);
+  $('slots').addEventListener('wheel', e => {
+    const s = e.target.closest('.slot'); if (!s || S.inp !== 'dial' || S.locked) return;
+    e.preventDefault(); dialTurn(s.dataset.k, e.deltaY > 0 ? 1 : -1);
+  }, { passive: false });
+  $('dialOk').addEventListener('click', () => {
+    if (S.locked || S.mode === 'free' || S.mode === 'set' || S.mode === 'match') return;
+    const needM = !minFixed();
+    const vh = S.h ?? D.h, vm = needM ? (S.m ?? D.m) : 0;
+    if (vh == null) { shake($('slotH')); return; }
+    if (vm == null) { shake($('slotM')); return; }
+    S.h = vh; S.m = vm; D.h = D.m = null; tick();
+    if (S.mode === 'read' || S.mode === 'count1') setDigital(S.h, S.m);
+    renderSlots(); judgeAll();
+  });
+
+  /* ---------- 유형 1: 시각 만들기(자유 탐색) ---------- */
+  function freeCommit(k, v) {
+    const prev = S[k]; S[k] = v;
+    const h = S.h ?? 12, m = S.m ?? 0;
+    setHands(h, m, true, 1); setDigital(S.h, S.m == null && S.h == null ? null : m);   // v40: 항상 시계 방향(v37의 반시계 회전 철회)
+    S.k = k === 'h' ? 'm' : 'h'; renderPad(); renderSlots();
+    if (S.h != null && S.m != null) setTimeout(() => speak(timeKo(S.h, S.m)), 1800);
+    else speak(k === 'h' ? `${KO_HOUR[v]} 시. 몇 분?` : `${v} 분.`);
+  }
+
+  /* ---------- 모드 시작·공통 ---------- */
+  function layout() {
+    $('learn').className = 'screen on m-' + S.mode + (S.inp === 'dial' ? ' dial' : '') + (S.sub ? ' sub-' + S.sub : '');   // v49: 서브 단계
+    $('lblH').textContent = S.mode === 'elapsed' ? '시간' : '시'; $('lblM').textContent = S.mode === 'before' ? '분 전' : '분';
+  }
+  /* v48: 다음 문제로 넘기는 타이머는 세션 토큰(S.run)으로 보호 — 「처음」을 누르고 다른 유형을 시작한 뒤 이전 유형의 타이머가 늦게 터져 문제를 건너뛰던 것 */
+  function advance() { S.idx++; S.idx < S.items.length ? nextProblem() : finish(); }
+  function laterRun(ms, fn) { const r = S.run; setTimeout(() => { if (S.run === r && !!$('learn')) fn(); }, ms); }
+  function startMode() {
+    S.run = (S.run || 0) + 1; S.items = []; S.idx = 0; S.log = []; S.E = 0;
+    show('learn'); layout(); clearMarks();
+    if (S.mode === 'free') { setHands(12, 0, false); lock(false); resetInput(); S.h = 12; S.m = 0; setDigital(12, 0); renderSlots(); $('prog').innerHTML = ''; renderBadge(); $('ask').textContent = '시각을 만들어 보세요'; return; }   // v38: 12:00을 미리 표시하고 시작
+    if (isBuild()) { B.lvl = 0; B.streak = 0; S.items = [genBuild(0, bkind())]; nextProblem(); return; }   // v38: 빈칸 1개부터, 문제는 풀 때마다 생성
+    S.items = S.mode === 'match' ? Array.from({ length: S.n }, (_, i) => ({ pairs: genPairs(S.unit, i < Math.ceil(S.n / 2) ? 2 : 4), first: true, hint: 0, tags: [], retry: false, label: i < Math.ceil(S.n / 2) ? '짝짓기 2쌍' : '짝짓기 4쌍' })) : genItems(S.mode, S.sub === 'b10' ? 'b10' : S.unit, S.n);   // v49: 짝짓기 앞 절반 2쌍, 몇 분 전 b10
+    if (S.mode === 'set' && S.sub === 'turn') S.items.forEach(p => { p.h0 = p.h === 1 ? 12 : p.h - 1; p.m = 0; p.ansM = 0; p.label = `${p.h0}시 → ${p.h}시 한 바퀴`; });   // v49 C1: h0:00에서 한 바퀴 돌려 h:00
+    nextProblem();
+  }
+  const NAV_MODE = MODE_KO, NAV_UNIT = { hour: '정각', half: '30분', quarter: '15·45분', five: '5분', one: '1분' };
+  function renderBadge() {
+    const prog = isBuild() ? (B.lvl < B_LV.length - 1 ? `${B.lvl === 0 ? '기준 숫자' : `빈칸 ${B_LV[B.lvl]}개`} · 연속 ${B.streak} / ${B_NEED}` : (S.p && S.p.label) || '') : S.items.length ? `${Math.min(S.idx + 1, S.items.length)} / ${S.items.length}` : '';   // v38: 시계 만들기는 단계·연속 정답 · v43: 마지막 단계는 라벨("1부터 12까지")
+    const stepLab = (GROUPS[S.group] && GROUPS[S.group].steps[S.step] || {}).label;   // v49: 서브 단계면 단계 이름으로
+    $('badge').textContent = [S.sub && stepLab ? stepLab : NAV_MODE[S.mode], unitsFor().length ? NAV_UNIT[S.unit] + ' 단위' : '', prog].filter(Boolean).join(' · ');
+  }
+  function renderProg() {
+    $('prog').innerHTML = isBuild() ? (B.lvl < B_LV.length - 1 ? Array.from({ length: B_NEED }, (_, i) => i < B.streak ? '<b>●</b>' : '○').join('') : '') : S.items.map((it, i) => i < S.idx ? '<b>●</b>' : i === S.idx ? '<b>◉</b>' : '○').join('');
+    renderBadge();
+  }
+  function question() {
+    const p = S.p;
+    if (S.mode === 'numf') return `${p.n}${EUL(p.n)} 눌러요.`;   // v48
+    if (S.mode === 'handf') return `${HAND_KO[p.target][p.term]}을 눌러요.`;   // v48
+    if (S.mode === 'build') return p.missing.length === 12 ? '1부터 12까지 넣어요.' : '몇 시일까요?';   // v43
+    if (S.mode === 'minb') return p.missing.length === 12 ? '5부터 60까지 넣어요.' : '몇 분일까요?';   // v45
+    if (S.mode === 'read') return S.sub === 'mo' ? '몇 분이에요?' : p.m === 0 ? '몇 시예요?' : '몇 시 몇 분이에요?';
+    if (S.mode === 'set') return S.sub === 'turn' ? '긴바늘을 한 바퀴 돌려요.' : `${tk(p.h, p.m)}${p.m ? '을' : '를'} 만들어요.`;   // v52: '시'는 받침 없음 → 를
+    if (S.mode === 'judge') return S.unit === 'half' ? '정각이에요, 30분이에요?' : '긴바늘이 12에 있어요?';   // v49
+    if (S.mode === 'hnum') return S.unit === 'half' ? '짧은바늘이 어느 숫자 사이에 있어요? 작은 수를 눌러요.' : '짧은바늘이 가리키는 숫자를 눌러요.';   // v49
+    if (S.mode === 'nexth') return '짧은바늘 다음 숫자를 눌러요.';   // v49
+    if (S.mode === 'match') return '같은 시각끼리 이어요.';
+    if (S.mode === 'count1') return '몇 분이에요?';
+    if (S.mode === 'before') return '몇 시 몇 분 전이에요?';
+    return `${tk(p.h, p.m)}부터 ${tk(p.h2, p.m2)}까지, 얼마나 걸렸어요?`;
+  }
+  function answerKo() { const p = S.p; return S.mode === 'judge' ? (p.m === 0 ? '정각이에요.' : '삼십 분이에요.') : S.mode === 'hnum' ? (S.unit === 'half' ? `${sino(p.h)}${GWA(p.h)} ${sino(nextH(p.h))} 사이. 작은 수 ${sino(p.h)}.` : `${sino(p.h)}. ${KO_HOUR[p.h]} 시.`) : S.mode === 'nexth' ? `다음 숫자는 ${sino(nextH(p.h))}. 다음 정각은 ${KO_HOUR[nextH(p.h)]} 시.` : S.mode === 'read' && S.sub === 'mo' ? `${p.m} 분.` : S.mode === 'set' && S.sub === 'turn' ? `한 바퀴, 한 시간. ${KO_HOUR[p.h]} 시.` : S.mode === 'numf' ? `${sino(p.n)}.` : S.mode === 'handf' ? `${HAND_KO[p.target][0]}, ${HAND_KO[p.target][1]}이에요.` : isBuild() ? '다 채웠어요.' : S.mode === 'elapsed' ? durKo(p.ansH, p.ansM) : S.mode === 'before' ? `${tk(p.ansH, p.ansM)} 전.` : S.mode === 'read' && p.m === 0 ? `${KO_HOUR[p.h]} 시 정각.` : timeKo(p.h, p.m); }   // v40: 읽기 정각은 "N 시 정각."
+  function nextProblem() {
+    S.p = S.items[S.idx]; S.wrong = { h: 0, m: 0 }; S.ok = { h: false, m: false }; S.counting = null; S.E = 0;
+    clearMarks(); renderProg(); resetInput(); lock(true);
+    $('ask').textContent = question();
+    if (S.mode === 'match') { matchSetup(); speak(question(), () => lock(false)); return; }
+    if (S.mode === 'numf') { setHands(12, 0, false); setDigital(null, null); $('cards').innerHTML = `<div class="ncard b1">${S.p.n}</div>`; speak(question(), () => lock(false)); return; }   // v48 A1
+    if (S.mode === 'judge') { const p = S.p; setHands(p.h, p.m, false); setDigital(null, null); $('choice').innerHTML = (S.unit === 'half' ? ['정각', '30분'] : ['예', '아니요']).map((t, i) => `<button class="ch" data-c="${i}">${t}</button>`).join(''); speak(question(), () => lock(false)); return; }   // v49 B1-1·B2-1
+    if (S.mode === 'hnum') { const p = S.p; setHands(p.h, p.m, false); setDigital(null, null); if (S.unit === 'half' && p.cue) showSector(p.h); speak(question(), () => lock(false)); return; }   // v49 B1-2·B2-2
+    if (S.mode === 'nexth') { const p = S.p; setHands(p.h, p.m, false); setDigital(null, null); speak(question(), () => lock(false)); return; }   // v49 C2-1
+    if (S.mode === 'handf') { setHands(S.p.h, 0, false); setDigital(null, null); speak(question(), () => lock(false)); return; }   // v48 A2
+    if (isBuild()) { setHands(12, 0, false); setDigital(null, null); buildSetup(); const ask = () => speak(question(), () => lock(false)); S.p.missing.length === 12 ? buildIntro().then(ok => { if (ok) ask(); }) : ask(); return; }   // v38 · v43: 12개 전부면 도입 애니메이션 뒤에 발문
+    const p = S.p;
+    setHands(p.h, p.m, false);
+    if (S.mode === 'set') { const h0 = S.sub === 'turn' ? p.h0 : 12; cur.h = h0; cur.m = 0; setHands(h0, 0, false); S.h = p.h; S.m = p.m; S.k = ''; renderSlots(); $('slotH').classList.remove('on'); $('slotM').classList.remove('on'); }   // v49: 한 바퀴는 h0:00에서 시작
+    else if (S.mode === 'read' && S.sub === 'mo') { S.h = p.h; S.ok.h = true; S.k = 'm'; setDigital(p.h, null); renderPad(); renderSlots(); }   // v49 B3-3 긴바늘만: 시는 채워 두고 분만
+    else if (S.mode === 'count1') { S.h = p.h; S.ok.h = true; S.k = 'm'; setDigital(p.h, null); renderPad(); renderSlots(); }
+    else if (S.mode === 'elapsed') { $('analog2').innerHTML = faceMarkup({ h: p.h2, m: p.m2 }); setDigital(null, null); if (p.ansH === 0) { S.h = 0; S.ok.h = true; S.k = 'm'; renderPad(); renderSlots(); } }
+    else setDigital(null, null);
+    speak(question(), () => {
+      if (S.mode === 'count1' && !S.skipCount) { startCount('one'); return; }   // 몇 분 세기: 세기가 문제의 일부
+      lock(false);
+    });
+  }
+  /* ( )시 ( )분 입력 → 둘 다 넣으면 판정 (정각 단위 읽기는 시만) */
+  function inputCommit(k, v) {
+    S[k] = v; tick(); if (S.mode === 'read' || S.mode === 'count1') setDigital(S.h, S.m); renderSlots();
+    if (k === 'h' && S.mode === 'read' && S.unit === 'hour') { S.m = 0; setDigital(S.h, 0); renderSlots(); judgeAll(); return; }
+    const other = k === 'h' ? 'm' : 'h';
+    if (S[other] == null) { S.k = other; renderPad(); renderSlots(); return; }
+    judgeAll();
+  }
+  function judgeAll() {
+    const p = S.p, badH = S.h !== p.ansH, badM = S.m !== p.ansM;
+    if (!badH && !badM) { S.ok.h = S.ok.m = true; complete(); return; }
+    p.first = false; lock(true);
+    /* v38: 시가 틀리면 시만 판정(분은 시를 맞힌 뒤 따로) → 칸마다 1차·2차 힌트 + 3차 공개를 온전히 받음. 이전에는 시 오답 때 분 오답도 같이 세어 분이 힌트 없이 공개됐음 */
+    const k = badH ? 'h' : 'm';
+    if (!badH) S.ok.h = true;
+    S.wrong[k]++; p.tags.push(diag(S.mode, k, S[k], p)); shake($(k === 'h' ? 'slotH' : 'slotM'));
+    setTimeout(() => {
+      if (k === 'h') S.h = D.h = null; else { S.m = null; D.m = D_M0(); }
+      S.k = k; S.buf = ''; if (S.mode === 'read' || S.mode === 'count1') setDigital(S.h, S.m); renderPad(); renderSlots();
+      if (S.wrong[k] >= 3) { reveal(k); return; }
+      p.hint = Math.max(p.hint, S.wrong[k]); hint(k, S.wrong[k]);
+    }, 500);
+  }
+  function queueRetry(p) { if (!p.retry) H.retry(p); }   // 매일수학 세션 큐로
+  function reveal(k) {   // 3차: 정답 공개 → 세션 끝에 같은 문제 한 번 더
+    const p = S.p; p.hint = 3; queueRetry(p);
+    const v = k === 'h' ? p.ansH : p.ansM;
+    const say = S.mode === 'elapsed' ? (k === 'h' ? `${KO_HOUR[v]} 시간.` : `${v} 분.`) : k === 'h' ? `${KO_HOUR[v]} 시.` : `${v} 분${S.mode === 'before' ? ' 전' : ''}.`;
+    speak(say, () => {
+      S[k] = v; S.ok[k] = true; clearMarks(); if (S.mode === 'read' || S.mode === 'count1') setDigital(S.h, S.m); renderSlots();
+      const other = k === 'h' ? 'm' : 'h';
+      if (S[other] == null) { S.k = other; renderPad(); renderSlots(); lock(false); return; }
+      judgeAll();
+    });
+  }
+  function complete() {
+    lock(true); S.k = ''; clearMarks(); $('slotH').classList.remove('on'); $('slotM').classList.remove('on'); renderSlots();
+    const p = S.p;
+    if (S.mode === 'read' || S.mode === 'count1') setDigital(S.h, S.m);
+    else if (S.mode === 'before') setHands(p.ansH, 0, true, 0);                        // 다음 정각(9:00)을 보여 줌
+    else if (S.mode === 'elapsed') { const rest = p.diff - S.E; setHands(p.h2, p.m2, true, 1, Math.floor(rest / 60)); }   // 남은 만큼 돌려 끝 시각에 도착(같은 각이면 go()가 0을 주므로 바퀴 수 = rest/60)
+    S.log.push(p);
+    speak(answerKo(), () => laterRun(1100, advance));
+  }
+  /* 힌트 라우팅(설계 §5, fade: 1차 발문+단서 / 2차 조작·시연) */
+  function hint(k, stage) {
+    const p = S.p, done = () => lock(false);
+    if (S.mode === 'read') {
+      if (k === 'h') {
+        if (S.unit === 'hour' || p.m === 0) { A('.hourHand').classList.add('blink'); if (stage === 1) speak('짧은바늘이 숫자 몇을 가리키고 있나요?', done); else { ringNum(p.h); speak('짧은바늘이 가리키는 숫자는?', done); } }   // v36: 정각 문제는 부채꼴 대신 숫자 가리키기 · v40: 2차 = 1부터 세기 대신 그 숫자에 노란 동그라미 깜빡임
+        else if (stage === 1) { showSector(p.h); speak('짧은바늘이 어느 숫자 사이에 있어요?', done); }
+        else { if (!A('.hsec')) showSector(p.h); redCircle(p.h); speak('작은 수를 골라요.', done); }
+        return;
+      }
+      A('.minHand').classList.add('blink');
+      if (stage === 1) speak(S.unit === 'half' ? '긴바늘이 6이면 삼십 분.' : '긴바늘 숫자까지 5씩 세요.', done);
+      else speak('12부터 5씩 세요.', () => startCount('five'));
+      return;
+    }
+    if (S.mode === 'count1') { stage === 1 ? speak('앞 숫자까지 5씩 세고, 몇 칸 더 갔어요?', done) : startCount('one'); return; }   // v40: 이어세기는 말로("N 분에서 r 칸 더")
+    if (S.mode === 'before') {
+      if (k === 'h') {
+        if (stage === 1) { lightNum(12, '#FFC9C9'); speak('긴바늘이 12에 가면 몇 시?', done); }
+        else speak('잘 보세요.', () => { setHands(p.ansH, 0, true, 0); setTimeout(() => speak(`${KO_HOUR[p.ansH]} 시.`, () => { setHands(p.h, p.m, true, -1); setTimeout(done, 1900); }), 1900); });   // 9:00 → 되감아 8:55
+        return;
+      }
+      showArc(p.m * 6, 360, 'rgba(0,0,0,.14)', 'garc');
+      stage === 1 ? speak('12까지 몇 칸 남았어요?', done) : speak('거꾸로 5씩 세요.', () => startCount('back'));
+      return;
+    }
+    if (S.mode === 'elapsed') {
+      if (k === 'h') { stage === 1 ? speak('긴바늘이 몇 바퀴 돌았어요?', done) : speak('한 바퀴씩 세요.', () => startCount('turn')); return; }
+      stage === 1 ? speak('시작부터 5씩 세요.', done) : speak('5씩 세요.', () => startCount('span'));
+    }
+  }
+  /* ---------- 탭 세기(숫자·눈금 과녁) ----------
+     bell: 1~h 차례로(추시계 뎅+하나·둘) · five: 12부터 긴바늘 숫자까지(파란 호+오·십) · one: 앞 숫자까지 5씩 → 작은 눈금 하나씩(빨간 점+십일·십이)
+     back: 긴바늘 숫자 다음부터 12까지 거꾸로(바늘이 5분씩 되감김) · turn: 시작 숫자를 바퀴 수만큼(긴바늘 한 바퀴씩) · span: 시작 숫자 다음부터 끝 숫자까지(시간 띠) */
+  const hourAt = (p, e) => ((Math.floor((p.h * 60 + p.m + e) / 60) - 1) % 12) + 1;   // 시작 시각에서 e분 뒤의 시
+  function startCount(kind) {
+    const p = S.p, st = { kind, c: 0 };
+    if (kind === 'bell') { st.k = p.h; st.next = 1; }
+    else if (kind === 'five') { st.k = p.m / 5; st.next = 1; if (!st.k) { lock(false); return; } }
+    else if (kind === 'one') { st.f = Math.floor(p.m / 5); st.k = st.f; st.next = st.f ? 1 : 0; st.phase = 'five'; st.i = st.f * 5; }   // v40: 5씩 센 뒤는 countOn(눈금 탭 없음)
+    else if (kind === 'back') { st.k = (60 - p.m) / 5; st.next = 11; st.m = 0; setHands(p.ansH, 0, true, 0); }   // 9:00에서 시작, 되감으며 11·10·… 탭
+    else if (kind === 'turn') { st.k = p.ansH; st.next = minNum(p.m); }
+    else if (kind === 'span') { st.k = p.ansM / 5; st.next = minNum(p.m) % 12 + 1; st.a0 = p.m * 6; }
+    S.counting = st; lock(true);
+    if (kind === 'one' && !st.f) { countOn(0); return; }   // v40: 1~4분은 5씩 셀 것이 없으니 바로 "12에서 r 칸 더"
+    armTap(st.next);
+  }
+  function countTap(n) {
+    const st = S.counting, p = S.p; if (!st) return;
+    if (n !== st.next) { shake($('analog')); return; }
+    st.c++;
+    if (st.kind === 'bell') { lightNum(n); bell(); speakFast(KO_CNT[n]); }
+    else if (st.kind === 'five' || st.kind === 'one') { showArc(0, n * 30); minLabel(n, n * 5); speakFast(sino(n * 5)); }
+    else if (st.kind === 'back') { st.m = (st.m + 55) % 60; setHands(p.h, st.m, true, -1); showArc(st.m * 6, 360, 'rgba(2,85,208,.22)', 'marc'); minLabel(n, st.c * 5); speakFast(sino(st.c * 5)); }
+    else if (st.kind === 'turn') { S.E += 60; setHands(hourAt(p, S.E), p.m, true, 1, 1); speakFast(`${KO_HOUR[st.c]} 시간`); }
+    else if (st.kind === 'span') { S.E += 5; setHands(hourAt(p, S.E), (p.m + S.E) % 60, true, 1); showArc(st.a0, st.a0 + st.c * 30); minLabel(n, st.c * 5); speakFast(sino(st.c * 5)); }
+    if (st.c < st.k) { st.next = st.kind === 'turn' ? st.next : st.kind === 'back' ? st.next - 1 : st.next % 12 + 1; armTap(st.next); return; }
+    armTap(0);
+    if (st.kind === 'one') { countOn(st.f); return; }   // v40: 5씩 끝 → 남은 눈금은 점만 찍고 말로 이어세기
+    S.counting = null; if (S.demo) return;
+    const say = st.kind === 'bell' ? `${KO_HOUR[n]} 시.` : st.kind === 'five' ? `${p.m} 분.` : st.kind === 'back' ? `${p.ansM} 분 전.` : st.kind === 'turn' ? `${KO_HOUR[p.ansH]} 시간.` : `${p.ansM} 분.`;
+    setTimeout(() => speak(say, () => lock(false)), 600);
+  }
+  function countOn(f) {   // v40 이어세기: 앞 숫자(f×5분) 다음 눈금들에 빨간 점 → "12 분은 10 분에서 두 칸 더 가요." (학생이 눈금을 하나씩 탭하던 v14~v39 흐름 대체)
+    const p = S.p; for (let i = f * 5 + 1; i <= p.m; i++) tickDot(i);
+    S.counting = null; if (S.demo) return;
+    setTimeout(() => speak(countOnKo(p.m), () => lock(false)), 600);
+  }
+  function countTick(i) {
+    const st = S.counting, p = S.p; if (!st || st.phase !== 'tick' || i !== st.i + 1) { if (st) shake($('analog')); return; }
+    st.i = i; tickDot(i); speakFast(sino(i));
+    if (i < p.m) { armTick(i + 1); return; }
+    armTick(-1); S.counting = null; if (S.demo) return;
+    setTimeout(() => speak(`${p.m} 분.`, () => lock(false)), 600);
+  }
+  $('analog').addEventListener('click', e => {
+    const hd = e.target.closest('.hand'); if (hd && S.mode === 'handf') { handfTry(hd.classList.contains('hourHand') ? 'h' : 'm'); return; }   // v48 A2
+    const c = e.target.closest('.tapn'); if (c) { if (S.mode === 'numf') numfTry(+c.dataset.n); else if (S.mode === 'hnum' || S.mode === 'nexth') tapTry(+c.dataset.n); else countTap(+c.dataset.n); return; }   // v48 A1 · v49 hnum/nexth
+    const t = e.target.closest('.tapt'); if (t) countTick(+t.dataset.i);
+  });
+
+  /* ---------- 유형 3: 바늘 돌리기(설계 §4.2 A안) ---------- */
+  const cur = { h: 12, m: 0 };
+  const STEP = { hour: 15, half: 15, quarter: 15, five: 5, one: 1 };
+  const snapQ = () => S.unit === 'one' ? 1 : 5;   // v38: 1분 단위에서는 긴바늘이 1분 칸으로 스냅·틱
+  function curSet(h, m, animate = false) { cur.h = h; cur.m = m; setHands(h, m, animate, animate ? 0 : 1); }
+  function moveMin(nm) { if (nm === cur.m) return; curSet(hourAfterMin(cur.h, cur.m, nm), nm); tick(); }
+  function moveHour(nh) { if (nh === cur.h) return; curSet(nh, cur.m); tick(); }
+  let drag = null;
+  function angleAt(e) { const r = A('svg').getBoundingClientRect(); const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2); return (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360; }
+  const handsTransition = v => { A('.hourHand').style.transition = v; A('.minHand').style.transition = v; };
+  /* v16 연속 회전: 포인터 각도 변화(±180 보정)를 누적해 바늘을 그대로 돌리고, 놓을 때 가장 가까운 칸(긴바늘 5분·짧은바늘 1시간)으로 스냅
+     v19: 바늘 몸통 어디를 잡아도 되고, 잡는 순간 바늘이 손가락 각도로 맞춰져(tot 초깃값 = 손가락−바늘 차이) 끝까지 손가락을 가리킨다. 짧은바늘을 돌리면 긴바늘이 12배로 같이 돈다(톱니) */
+  $('analog').addEventListener('pointerdown', e => {
+    const g = e.target.closest('.hand'); if (!g || S.mode !== 'set' || S.locked) return;
+    const k = g.classList.contains('hourHand') ? 'h' : 'm', a = angleAt(e);
+    const off = (((a - (k === 'h' ? ang.h : ang.m)) % 360) + 540) % 360 - 180;   // 바늘 위를 잡으므로 몇 도 이내
+    drag = { k, x: e.clientX, y: e.clientY, moved: false, last: a, tot: off, h0: ang.h, m0: ang.m, abs0: (cur.h % 12) * 60 + cur.m };
+    handsTransition('none'); e.target.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  $('analog').addEventListener('pointermove', e => {
+    if (!drag) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+    drag.moved = true; const a = angleAt(e);
+    let dd = a - drag.last; if (dd > 180) dd -= 360; if (dd < -180) dd += 360; drag.last = a;
+    const before = drag.tot; drag.tot += dd;
+    if (drag.k === 'm') {   // 긴바늘: 분 = 6°, 짧은바늘이 1/12로 따라감. 5분 경계마다 틱
+      ang.m = drag.m0 + drag.tot; ang.h = drag.h0 + drag.tot / 12;
+      if (Math.floor((drag.abs0 + before / 6) / snapQ()) !== Math.floor((drag.abs0 + drag.tot / 6) / snapQ())) tick();
+    } else {                // 짧은바늘: 1시간 = 30°, 긴바늘은 12배로 같이 돎(v19 톱니). 1시간 경계마다 틱
+      ang.h = drag.h0 + drag.tot; ang.m = drag.m0 + drag.tot * 12;
+      const qH = MSTEP[S.unit] || 60; if (Math.floor((drag.abs0 + before * 2) / qH) !== Math.floor((drag.abs0 + drag.tot * 2) / qH)) tick();   // v41: 틱도 단위 칸마다
+    }
+    A('.hourHand').style.transform = `rotate(${ang.h}deg)`; A('.minHand').style.transform = `rotate(${ang.m}deg)`;
+    const absm = Math.floor(((drag.abs0 + (drag.k === 'm' ? drag.tot / 6 : drag.tot * 2)) % 720 + 720) % 720);   // v21: 전자시계 실시간(1분 단위)
+    if (absm !== drag.shown) { drag.shown = absm; setDigital(Math.floor(absm / 60) || 12, absm % 60); }
+  });
+  function dragEnd() {
+    if (!drag) return; const d = drag; drag = null;
+    if (!d.moved) { handsTransition(''); if (d.k === 'h') moveHour(nextH(cur.h)); else moveMin((cur.m + STEP[S.unit]) % 60); return; }   // 탭 폴백: 한 칸 앞으로
+    const q = snapQ(), qH = MSTEP[S.unit] || 60, mins = d.k === 'm' ? Math.round(d.tot / 6 / q) * q : Math.round(d.tot * 2 / qH) * qH;   // v41: 짧은바늘도 단위 칸(60·30·15·5·1분)으로 스냅 — 정각으로만 스냅하면 12:30 자리에 놓아도 1:00이 됨(사용자 신고)
+    const abs = ((d.abs0 + mins) % 720 + 720) % 720;
+    cur.h = Math.floor(abs / 60) || 12; cur.m = abs % 60;
+    handsTransition('transform .25s'); setHands(cur.h, cur.m, true, 0); tick();
+    setTimeout(() => handsTransition(''), 300);
+  }
+  $('analog').addEventListener('pointerup', dragEnd); $('analog').addEventListener('pointercancel', dragEnd);
+  $('okBig').addEventListener('click', () => {
+    if (S.mode !== 'set' || S.locked) return;
+    const p = S.p, badH = cur.h !== p.h, badM = cur.m !== p.m;
+    if (!badH && !badM) { complete(); return; }
+    p.first = false; lock(true); shake($('analog'));
+    if (badH) { S.wrong.h++; p.tags.push(diag('set', 'h', cur.h, p)); }
+    if (badM) { S.wrong.m++; p.tags.push(diag('set', 'm', cur.m, p)); }
+    const k = badH ? 'h' : 'm', n = S.wrong[k];
+    p.hint = Math.max(p.hint, Math.min(n, 3));
+    setTimeout(() => {
+      if (n >= 3) { queueRetry(p); curSet(p.h, p.m, true); setTimeout(complete, 1900); return; }
+      clearMarks();
+      if (n === 1) {
+        const fine = p.m % 5 !== 0, mn = Math.floor(p.m / 5) || 12, r = p.m % 5;   // v38 1분 단위: 앞 숫자 불 + 눈금 점, "N에서 r칸 더"
+        if (badH) lightNum(p.h, '#FFC9C9'); if (badM) { lightNum(mn, '#BFD3FF'); if (fine) tickDot(p.m); }
+        speak(S.sub === 'turn' ? '긴바늘을 12까지 한 바퀴 돌려요.' : badH ? `짧은바늘을 ${p.h}로.` : fine ? `긴바늘을 ${mn}에서 ${r} 칸 더.` : `긴바늘을 ${minNum(p.m)}로.`, () => lock(false));
+      }
+      else speak('잘 보세요.', () => { setHands(p.h, p.m, true, 1, S.sub === 'turn' ? 1 : 0); setTimeout(() => speak(S.sub === 'turn' ? '한 바퀴.' : timeKo(p.h, p.m), () => setTimeout(() => { curSet(S.sub === 'turn' ? p.h0 : 12, 0, true); setTimeout(() => speak('직접 해 봐요.', () => lock(false)), 1900); }, 800)), 1900); });   // v49: 한 바퀴는 h0에서 다시
+    }, 500);
+  });
+
+  /* ---------- v48 시계판 알기 A1 숫자 찾기(numf) · A2 바늘 찾기(handf) — 탭 선택 과제, 오답 사다리 공통 ---------- */
+  function pickDone() { lock(true); const p = S.p; S.log.push(p); speak(answerKo(), () => laterRun(1100, advance)); }
+  function pickWrong(say2, reveal) {   // 1차 "다시 봐요." / 2차 정답 강조 + 발문 / 3차 공개(재도전 큐) — S.wrong.h를 오답 수로 씀
+    const p = S.p; p.first = false; S.wrong.h++; const n = S.wrong.h; p.hint = Math.max(p.hint, Math.min(n, 3));
+    shake($('analog')); lock(true);
+    setTimeout(() => { if (n >= 3) { queueRetry(p); reveal(); return; } if (n === 1) { speak('다시 봐요.', () => lock(false)); return; } say2(); }, 500);
+  }
+  function numfTry(v) {
+    if (S.locked || S.mode !== 'numf') return; const p = S.p;
+    if (v === p.n) { tick(); lightNum(v); pickDone(); return; }
+    p.tags.push(Math.abs(v - p.n) === 1 ? 'count' : 'other');
+    pickWrong(() => { ringNum(p.n); speak(`여기 있어요. ${p.n}${EUL(p.n)} 눌러요.`, () => lock(false)); }, () => { ringNum(p.n); lightNum(p.n); pickDone(); });
+  }
+  function handfTry(k) {
+    if (S.locked || S.mode !== 'handf') return; const p = S.p, right = A(p.target === 'h' ? '.hourHand' : '.minHand'), name = HAND_KO[p.target][0];
+    if (k === p.target) { tick(); right.classList.add('blink'); pickDone(); return; }
+    p.tags.push('hands_swap');
+    pickWrong(() => { right.classList.add('blink'); speak(`이게 ${name}이에요. ${name}을 눌러요.`, () => lock(false)); }, () => { right.classList.add('blink'); pickDone(); });
+  }
+
+  /* ---------- v49 판별(judge)·짧은바늘 숫자(hnum)·다음 정각(nexth) — 탭 선택 과제 ---------- */
+  function tapTry(v) {   // hnum·nexth: 시계판 숫자 탭
+    if (S.locked) return; const p = S.p, ans = p.ans;
+    if (v === ans) { tick(); lightNum(ans); if (S.mode === 'hnum' && S.unit === 'half') showSector(p.h); pickDone(); return; }
+    p.tags.push(S.mode === 'hnum' && S.unit === 'half' && v === nextH(p.h) ? 'hour_next' : Math.abs(v - ans) === 1 ? 'count' : 'other');
+    const say2 = S.mode === 'nexth' ? () => { lightNum(12, '#FFC9C9'); ringNum(ans); speak(`긴바늘이 12에 가면 짧은바늘은 여기. ${ans}${EUL(ans)} 눌러요.`, () => lock(false)); }
+      : () => { if (S.unit === 'half') showSector(p.h); ringNum(ans); speak(S.unit === 'half' ? `작은 수를 골라요. ${ans}${EUL(ans)} 눌러요.` : `짧은바늘이 가리키는 숫자. ${ans}${EUL(ans)} 눌러요.`, () => lock(false)); };
+    pickWrong(say2, () => { ringNum(ans); lightNum(ans); pickDone(); });
+  }
+  $('choice').addEventListener('click', e => {   // judge: 2지 버튼
+    const b = e.target.closest('.ch'); if (!b || S.locked || S.mode !== 'judge') return; const p = S.p, c = +b.dataset.c;
+    if (c === p.ans) { tick(); b.classList.add('ok'); pickDone(); return; }
+    p.tags.push('other');
+    pickWrong(() => { A('.minHand').classList.add('blink'); speak(S.unit === 'half' ? '긴바늘이 12면 정각, 6이면 30분.' : '긴바늘을 보세요. 12에 있어요?', () => lock(false)); },
+      () => { A('.minHand').classList.add('blink'); $('choice').querySelector(`.ch[data-c="${p.ans}"]`).classList.add('ok'); pickDone(); });
+  });
+
+  /* ---------- v38 유형 0: 시계 만들기 — 숫자 빈칸에 카드 끌어 넣기(탭 폴백: 카드 탭 → 빈칸 탭). 빈칸 1 → 연속 5회 정답 → 2 → 3 → 11(12만 남김) ---------- */
+  const B = H.build;   // 세션 동안 유지(단계·연속 정답) — 15_clock 머리의 clockSess
+  const numEl = n => document.querySelectorAll('#ck-analog .num')[n - 1];
+  /* v45 분 만들기 공용 분기: kind 'hour' = 시계 안 숫자 1~12 / 'min' = 시계 바깥 둘레(반지름 332)의 분 숫자 5~60 */
+  const isBuild = () => S.mode === 'build' || S.mode === 'minb', bkind = () => S.mode === 'minb' ? 'min' : 'hour';
+  const slotPos = n => bkind() === 'min' ? pt(n * 30, 332) : pt(n * 30, RAD * .76);
+  const slotText = n => bkind() === 'min' ? String(n * 5) : String(n);
+  const slotEl = n => bkind() === 'min' ? A(`.mnum[data-n="${n}"]`) : numEl(n);
+  function slotShow(n, anim) {   // 자리에 숫자를 보이기(anim = 채워지는 연출)
+    if (bkind() === 'hour') { const t = numEl(n); t.style.display = ''; t.classList.remove('fill'); if (anim) { void t.getBBox(); t.classList.add('fill'); } return; }
+    let t = slotEl(n); if (!t) { const [x, y] = slotPos(n); A('.labels').insertAdjacentHTML('beforeend', `<text class="mnum" data-n="${n}" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${n * 5}</text>`); t = slotEl(n); }
+    if (anim) { void t.getBBox(); t.classList.add('fill'); }
+  }
+  function slotHide(n) { if (bkind() === 'hour') numEl(n).style.display = 'none'; else { const t = slotEl(n); if (t) t.remove(); } }
+  function blankMarkup(n) { const [x, y] = slotPos(n); return bkind() === 'min' ? `<rect class="bk" data-n="${n}" x="${(x - 42).toFixed(1)}" y="${(y - 32).toFixed(1)}" width="84" height="64" rx="14" fill="#DDEBFF"/>` : `<rect class="bk" data-n="${n}" x="${(x - 44).toFixed(1)}" y="${(y - 44).toFixed(1)}" width="88" height="88" rx="17" fill="#DDEBFF"/>`; }   // v42: 빈칸은 숫자 카드와 같은 둥근 네모 · v44: 점선 없이 연한 하늘색 채움만(힌트 .on이면 노란 깜빡임)
+  function lightSlot(n) { if (bkind() === 'hour') { lightNum(n); return; } const [x, y] = slotPos(n); A('.sector').insertAdjacentHTML('beforeend', `<rect x="${(x - 42).toFixed(1)}" y="${(y - 32).toFixed(1)}" width="84" height="64" rx="14" fill="#FFE066"/>`); }   // 2차 힌트 이웃 숫자 불
+  function buildSetup() {
+    const p = S.p, K = bkind(); B.left = [...p.missing]; B.wrong = 0; B.sel = null; B.drag = null; $('ghost').style.display = 'none'; $('ghost').classList.toggle('mc', K === 'min');
+    if (K === 'hour') document.querySelectorAll('#ck-analog .num').forEach((t, i) => { t.classList.remove('fill'); t.style.display = p.missing.includes(i + 1) ? 'none' : ''; });
+    else { document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; }); document.querySelectorAll('#ck-analog .mnum').forEach(e => e.remove()); for (let n = 1; n <= 12; n++) if (!p.missing.includes(n)) slotShow(n, false); }
+    p.missing.forEach(n => { A('.marks').insertAdjacentHTML('beforeend', blankMarkup(n)); });
+    $('cards').innerHTML = p.cards.map(n => `<div class="ncard${K === 'min' ? ' mc' : ''}" data-n="${n}">${slotText(n)}</div>`).join('');
+    $('learn').classList.toggle('last', B.lvl === B_LV.length - 1);
+    document.querySelectorAll('.ncard.fly').forEach(f => f.remove()); B.gen = (B.gen || 0) + 1;
+    if (p.missing.length === 12) {   // v43 도입: 숫자는 일단 다 보이고(빈칸·카드는 숨김) buildIntro가 차례로 떨어뜨린다
+      for (let n = 1; n <= 12; n++) slotShow(n, false); document.querySelectorAll('#ck-analog .bk').forEach(b => { b.style.display = 'none'; });
+      $('cards').querySelectorAll('.ncard').forEach(c => { c.style.visibility = 'hidden'; });
+    }
+  }
+  /* v43 12개 전부 빈칸 도입: ① 숫자 전부 보여 주기(0.9초) → ② 숫자 카드가 시계에서 와르르 떨어져 왼쪽 카드 바닥에 흩어짐(틱) → ③ 1부터 차례로 오른쪽 칸으로 날아가 4×3으로 정렬(종). 포인터 좌표는 무대 좌표 = (화면 − learn 원점)/_sc */
+  async function buildIntro() {
+    const gen = B.gen, K = bkind(), alive = () => B.gen === gen && isBuild() && !!$('learn');
+    S.locked = true; $('cards').classList.remove('off'); speechSynthesis.cancel();
+    const L = $('learn').getBoundingClientRect(), toStage = r => ({ x: (r.left - L.left) / _sc, y: (r.top - L.top) / _sc, w: r.width / _sc, h: r.height / _sc });
+    const cl = toStage($('cardL').getBoundingClientRect()), floorY = cl.y + cl.h - 124 - 18;
+    const flyers = [];
+    for (let n = 1; n <= 12; n++) {
+      const r = toStage(slotEl(n).getBoundingClientRect()), f = document.createElement('div');
+      f.className = 'ncard fly' + (K === 'min' ? ' mc' : ''); f.textContent = slotText(n); f.style.left = (r.x + r.w / 2 - 62) + 'px'; f.style.top = (r.y + r.h / 2 - 62) + 'px'; f.style.visibility = 'hidden';
+      $('learn').appendChild(f); flyers.push(f);
+    }
+    const quit = () => { flyers.forEach(f => f.remove()); return false; };
+    await d(900); if (!alive()) return quit(); S.locked = true;   // 앞 발문이 취소되며 lock(false)가 늦게 와도 도입 중엔 잠금
+    const falls = flyers.map((f, i) => d(i * 70).then(async () => {
+      if (!alive()) return; const n = i + 1;
+      slotHide(n); const bk = A(`.bk[data-n="${n}"]`); if (bk) bk.style.display = ''; f.style.visibility = '';
+      const x0 = parseFloat(f.style.left), y0 = parseFloat(f.style.top), x1 = cl.x + 24 + (cl.w - 48 - 124) * ((n - 1) / 11), dx = x1 - x0, dy = floorY - y0, rot = (R(0, 1) ? 1 : -1) * R(12, 40);
+      const a = f.animate([{ transform: 'translate(0,0) rotate(0deg)' }, { transform: `translate(${dx * .4}px, ${dy * .25}px) rotate(${rot * .4}deg)`, offset: .3 }, { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, offset: .78 }, { transform: `translate(${dx}px, ${dy - 28}px) rotate(${rot}deg)`, offset: .89 }, { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)` }], { duration: 820, easing: 'ease-in', fill: 'forwards' });
+      await Promise.race([a.finished.catch(() => {}), d(950)]); if (!alive()) return;   // 탭이 가려져 그리기가 멈춰도 진행(시간 제한)
+      tick(); f.style.left = x1 + 'px'; f.style.top = floorY + 'px'; f.style.transform = `rotate(${rot}deg)`; a.cancel();
+    }));
+    await Promise.all(falls); if (!alive()) return quit(); S.locked = true;
+    await d(500); if (!alive()) return quit();
+    const slots = [...$('cards').querySelectorAll('.ncard')], targets = slots.map(c => toStage(c.getBoundingClientRect()));
+    const flights = flyers.map((f, i) => d(i * 90).then(async () => {
+      if (!alive()) return; const x0 = parseFloat(f.style.left), y0 = parseFloat(f.style.top), t = targets[i];
+      const a = f.animate([{ transform: f.style.transform || 'rotate(0deg)' }, { transform: `translate(${t.x - x0}px, ${t.y - y0}px) rotate(0deg)` }], { duration: 650, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+      await Promise.race([a.finished.catch(() => {}), d(800)]); if (!alive()) return;
+      slots[i].style.visibility = ''; f.remove(); tick();
+    }));
+    await Promise.all(flights); if (!alive()) return quit();
+    bell(); await d(400); return alive();
+  }
+  function buildNextLevel() {   // v39: 「다음 단계」 버튼 — 교사가 임의로 승급
+    if (!isBuild() || B.lvl >= B_LV.length - 1) return;
+    speechSynthesis.cancel(); tick(); B.lvl++; B.streak = 0; H.skip();   // 매일수학: 기록 없이 다음 문제(새 단계로 생성)
+  }
+  $('lvlBtn').onclick = buildNextLevel;
+  function blankAt(e) {   // 포인터 아래 빈칸(가장 가까운 것, 반지름 62 안)
+    const r = A('svg').getBoundingClientRect(), sc = r.width / 600; let best = null;
+    for (const n of B.left) { const [x, y] = slotPos(n), d = Math.hypot(e.clientX - (r.left + x * sc), e.clientY - (r.top + y * sc)); if (d < 62 * sc && (!best || d < best.d)) best = { n, d }; }
+    return best ? best.n : null;
+  }
+  function buildPlace(n) {
+    B.left = B.left.filter(x => x !== n); const bk = A(`.bk[data-n="${n}"]`); if (bk) bk.remove();
+    slotShow(n, true);
+    const c = $('cards').querySelector(`.ncard[data-n="${n}"]`); if (c) { c.classList.add('used'); c.classList.remove('sel'); }   // v39: 카드 자리는 두고 흐리게
+    document.querySelectorAll('#ck-cards .ncard.sel').forEach(x => x.classList.remove('sel')); B.sel = null;
+    if (bkind() === 'min') { showArc(0, n * 30); speakFast(n === 12 ? '육십 분, 한 바퀴' : `${sino(n * 5)} 분`); }   // v45: 12부터 그 숫자까지 파란 호
+    else speakFast(sino(n));
+    if (!B.left.length && !S.demo) buildDone();
+  }
+  function buildTry(n, target) {
+    if (S.locked) return;
+    if (n === target) { tick(); buildPlace(n); return; }
+    const p = S.p; B.wrong++; p.first = false; p.tags.push(Math.abs(n - target) === 1 ? 'count' : 'other'); p.hint = Math.max(p.hint, Math.min(B.wrong, 3));
+    shake($('analog')); lock(true);
+    document.querySelectorAll('#ck-cards .ncard.sel').forEach(x => x.classList.remove('sel')); B.sel = null;
+    setTimeout(() => {
+      if (B.wrong >= 3) { (function step() { if (!B.left.length) return; buildPlace(B.left[0]); if (B.left.length) setTimeout(step, 700); })(); return; }   // 3차: 자동 채움(v46: 700ms — "육십 분, 한 바퀴"가 잘리지 않게)
+      if (B.wrong === 1) { speak('다시 봐요.', () => lock(false)); return; }
+      if (bkind() === 'min') { minCountHint(target); return; }   // v46: 분 만들기 2차 = 앞 자리에서 1분씩 세기
+      const hn = buildHint(target, B.left); lightNum(hn.light); A(`.bk[data-n="${target}"]`).classList.add('on');   // 2차: 이웃 숫자 불 + 발문(v39 buildHint)
+      speak(hn.say, () => lock(false));
+    }, 500);
+  }
+  async function minCountHint(target) {   // v46 분 만들기 2차: 앞 자리(35)에 불 → "삼십오 분에서 하나씩 세요." → 36~40 눈금에 빨간 점 + 1분씩 세기 → "사십 분." (앞 자리가 빈칸이면 숫자를 회색으로 잠깐 보여 주고 지움)
+    const prev = target - 1, from = prev * 5, to = target * 5, gen = B.gen, alive = () => B.gen === gen && isBuild() && S.p && B.left.includes(target);
+    let tmp = null, pbk = prev ? A(`.bk[data-n="${prev}"]`) : null;
+    if (!prev) lightNum(12); else if (!pbk) lightSlot(prev); else { pbk.setAttribute('fill', '#FFE066'); const [x, y] = slotPos(prev); A('.labels').insertAdjacentHTML('beforeend', `<text class="mnum tmp" x="${x.toFixed(1)}" y="${y.toFixed(1)}" style="fill:#8a8a8a">${from}</text>`); tmp = A('.mnum.tmp'); }   // 앞 자리가 빈칸이면 그 칸을 노랗게 + 숫자를 회색으로 잠깐
+    const undo = () => { if (tmp) tmp.remove(); if (pbk) pbk.setAttribute('fill', '#DDEBFF'); };
+    await new Promise(r => speak(from ? `${sino(from)} 분에서 하나씩 세요.` : '12에서 하나씩 세요.', r)); if (!alive()) return undo();
+    for (let i = from + 1; i <= to; i++) { tickDot(i); speakFast(sino(i)); await d(560); if (!alive()) return undo(); }
+    await d(300); undo();
+    A(`.bk[data-n="${target}"]`).classList.add('on');
+    speak(to === 60 ? '육십 분, 한 바퀴.' : `${sino(to)} 분.`, () => lock(false));
+  }
+  function buildDbl(n) {   // v39: 카드 두 번 두드리기 → 그 숫자의 빈칸으로 · v46: 빈칸이 아닌 숫자면 가장 가까운 빈칸에 넣으려 한 것으로 보고 오답 집계(힌트 사다리)
+    if (S.locked || !B.left.length) return;
+    if (B.left.includes(n)) { tick(); buildPlace(n); return; }
+    const target = B.left.reduce((a, b) => Math.abs(b - n) < Math.abs(a - n) ? b : a);
+    buildTry(n, target);
+  }
+  function buildDone() {
+    lock(true); const p = S.p; S.log.push(p); bell();
+    laterRun(1200, () => {   // v47: "다 채웠어요." 없이 종 → 마지막 숫자 읽기가 끝날 만큼(1.2초) → 바로 다음 문제(사용자 지시) · v48: 세션 토큰 보호
+      if (p.first) B.streak++; else B.streak = 0;
+      if (B.lvl === B_LV.length - 1) { finish(); return; }
+      if (B.streak >= B_NEED) { B.lvl++; B.streak = 0; }
+      H.done();   // 매일수학: 다음 문제는 06_study가 제시
+    });
+  }
+  $('cards').addEventListener('pointerdown', e => {
+    const c = e.target.closest('.ncard'); if (!c || !isBuild() || S.locked) return;
+    B.drag = { n: +c.dataset.n, el: c, x: e.clientX, y: e.clientY, moved: false }; $('cards').setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  function ghostTo(e) { const L = $('learn').getBoundingClientRect(), g = $('ghost'); g.style.left = (e.clientX - L.left) / _sc - 62 + 'px'; g.style.top = (e.clientY - L.top) / _sc - 62 + 'px'; }
+  $('cards').addEventListener('pointermove', e => {
+    const d = B.drag; if (!d) return;
+    if (!d.moved) { if (Math.hypot(e.clientX - d.x, e.clientY - d.y) < 6) return; d.moved = true; d.el.classList.add('lift'); const g = $('ghost'); g.textContent = slotText(d.n); g.style.display = 'flex'; }
+    ghostTo(e);
+  });
+  function cardUp(e) {
+    const d = B.drag; if (!d) return; B.drag = null; d.el.classList.remove('lift'); $('ghost').style.display = 'none';
+    if (!d.moved) {   // 탭 = 선택/해제 · v39: 450ms 안에 같은 카드를 다시 두드리면 제자리로
+      const now = Date.now(); if (B.tap && B.tap.n === d.n && now - B.tap.t < 450) { B.tap = null; buildDbl(d.n); return; } B.tap = { n: d.n, t: now };
+      const was = d.el.classList.contains('sel'); document.querySelectorAll('#ck-cards .ncard.sel').forEach(x => x.classList.remove('sel')); B.sel = was ? null : d.n; if (!was) d.el.classList.add('sel'); tick(); return;
+    }
+    const t = blankAt(e); if (t != null) buildTry(d.n, t);
+  }
+  $('cards').addEventListener('pointerup', cardUp); $('cards').addEventListener('pointercancel', cardUp);
+  $('analog').addEventListener('click', e => { const b = e.target.closest('.bk'); if (b && isBuild() && B.sel != null) buildTry(B.sel, +b.dataset.n); });
+
+  /* ---------- 유형 4: 짝짓기(바늘 4 ↔ 전자 4 선 잇기, pptx 배치) ---------- */
+  const MK = () => S.p && S.p.pairs ? S.p.pairs.length : 4, IDX = () => [...Array(MK()).keys()];   // v49: 쌍 수(2 또는 4)
+  const MX = i => 95 + (4 - MK()) * 180 + i * 360 + 120;   // i번째 칸 가운데 x (v27: 카드 폭 1550 기준, v49: 2쌍이면 가운데로)
+  const M = { order: [], done: 0, sel: null, line: null, drag: null, wrong: 0 };
+  function matchSetup() {
+    const p = S.p; M.order = IDX().sort(() => Math.random() - .5); M.done = 0; M.sel = null; M.wrong = 0;
+    $('match').innerHTML = `<svg id="mlines"></svg>` +
+      p.pairs.map((t, i) => `<div class="mini top" data-i="${i}" style="left:${MX(i) - 120}px">${faceMarkup(t)}</div><div class="dot top" data-i="${i}" style="left:${MX(i)}px"></div>`).join('') +
+      M.order.map((pi, j) => `<div class="mini bot" data-j="${j}" style="left:${MX(j) - 120}px">${digitalMarkup(p.pairs[pi].h, p.pairs[pi].m)}</div><div class="dot bot" data-j="${j}" style="left:${MX(j)}px"></div>`).join('');
+  }
+  function mline(cls, x1, y1, x2, y2) { const l = document.createElementNS('http://www.w3.org/2000/svg', 'line'); l.setAttribute('class', 'ln ' + cls); l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); $('mlines').appendChild(l); return l; }
+  const stageXY = e => { const r = $('match').getBoundingClientRect(); return [(e.clientX - r.left) / _sc, (e.clientY - r.top) / _sc]; };   // v27: 짝짓기 카드 기준
+  function matchJudge(i, j) {
+    const p = S.p, pi = M.order[j], ok = pi === i;
+    document.querySelectorAll('#ck-match .dot.sel').forEach(d => d.classList.remove('sel')); M.sel = null;
+    if (ok) {
+      mline('ok', MX(i), 406, MX(j), 576); M.done++;
+      document.querySelector(`.dot.top[data-i="${i}"]`).classList.add('done'); document.querySelector(`.dot.bot[data-j="${j}"]`).classList.add('done');
+      document.querySelector(`.mini.top[data-i="${i}"]`).classList.add('lit'); document.querySelector(`.mini.bot[data-j="${j}"]`).classList.add('lit');
+      speakFast(tk(p.pairs[i].h, p.pairs[i].m));
+      if (M.done === MK() && !S.demo) { lock(true); setTimeout(() => { bell(); setTimeout(bell, 300); S.log.push(p); speak('다 이었어요.', () => laterRun(800, advance)); }, 1600); }   // v46: 마지막 짝의 시각 읽기("세 시 삼십 분")가 끝난 뒤(600ms에서는 잘렸음)
+      return;
+    }
+    p.first = false; M.wrong++; p.tags.push('other'); lock(true);
+    const bad = mline('bad', MX(i), 406, MX(j), 576); bad.classList.add('shake'); setTimeout(() => bad.remove(), 500);
+    const n = M.wrong; p.hint = Math.max(p.hint, Math.min(n, 3));
+    setTimeout(() => {
+      if (n >= 3) { queueRetry(p); matchReveal(); return; }
+      if (n === 1) { speak('다시 봐요.', () => lock(false)); return; }
+      const k = IDX().find(x => !document.querySelector(`.dot.top[data-i="${x}"]`).classList.contains('done')), t = p.pairs[k], s = tk(t.h, t.m);
+      document.querySelectorAll('.mini.hl').forEach(e => e.classList.remove('hl')); document.querySelector(`.mini.top[data-i="${k}"]`).classList.add('hl');
+      speak(`${s}예요. ${s}${t.m ? '을' : '를'} 찾아요.`, () => lock(false));
+    }, 500);
+  }
+  function matchReveal() {   // 3차: 남은 짝 자동 연결
+    lock(true);
+    IDX().forEach((i, idx) => { if (document.querySelector(`.dot.top[data-i="${i}"]`).classList.contains('done')) return; setTimeout(() => matchJudge(i, M.order.indexOf(i)), idx * 500); });
+  }
+  $('match').addEventListener('pointerdown', e => {
+    const d = e.target.closest('.dot'); if (!d || S.locked || d.classList.contains('done')) return;
+    if (d.classList.contains('top')) {
+      const i = +d.dataset.i; if (M.line) M.line.remove();
+      M.line = mline('tmp', MX(i), 406, MX(i), 406); M.drag = { i, x: e.clientX, y: e.clientY, moved: false }; $('match').setPointerCapture(e.pointerId); e.preventDefault();
+    } else if (M.sel != null) { tick(); matchJudge(M.sel, +d.dataset.j); }
+  });
+  $('match').addEventListener('pointermove', e => {
+    if (!M.drag) return; const [x, y] = stageXY(e);
+    if (Math.hypot(e.clientX - M.drag.x, e.clientY - M.drag.y) >= 6) M.drag.moved = true;
+    M.line.setAttribute('x2', x); M.line.setAttribute('y2', y);
+  });
+  function matchUp(e) {
+    if (!M.drag) return; const d = M.drag; M.drag = null; if (M.line) M.line.remove(); M.line = null;
+    if (!d.moved) { document.querySelectorAll('#ck-match .dot.sel').forEach(x => x.classList.remove('sel')); M.sel = d.i; document.querySelector(`.dot.top[data-i="${d.i}"]`).classList.add('sel'); tick(); return; }   // 탭 = 선택
+    const [x, y] = stageXY(e), j = IDX().find(j => Math.hypot(x - MX(j), y - 576) < 70);
+    if (j == null || document.querySelector(`.dot.bot[data-j="${j}"]`).classList.contains('done')) return;
+    matchJudge(d.i, j);
+  }
+  $('match').addEventListener('pointerup', matchUp); $('match').addEventListener('pointercancel', matchUp);
+
+  /* ---------- 교사 ▶ 보여주기(설계 §6) — 같은 문제를 앱이 자동 수행 → 답 읽기 → "직접 해 봐요." → 같은 문제 재제시. 기록·점수 미반영 ---------- */
+  const d = ms => new Promise(r => setTimeout(r, ms));
+  const speakP = t => new Promise(r => speak(t, r));
+  async function taps(kind) {   // 세기 과녁을 앱이 차례로 탭(0.6초 간격)
+    startCount(kind);
+    for (let g = 0; S.counting && g < 80; g++) { const st = S.counting; st.phase === 'tick' ? countTick(st.i + 1) : countTap(st.next); await d(600); }
+  }
+  async function demo() {
+    if (S.mode === 'free' || S.demo || !S.p) return;
+    const p = S.p, gen = ++demo.gen;
+    speechSynthesis.cancel(); S.counting = null; S.demo = true; S.locked = true; $('learn').classList.add('demo'); lock(true); clearMarks();
+    const alive = () => S.demo && demo.gen === gen;   // 🏠로 나가면 중단
+    try {
+      if (S.mode === 'read' || S.mode === 'count1') {
+        resetInput(); S.k = ''; renderPad(); setHands(p.h, p.m, false); setDigital(S.mode === 'count1' ? p.h : null, null);
+        if (S.mode === 'read') {
+          if (S.unit === 'hour' || p.m === 0) { A('.hourHand').classList.add('blink'); ringNum(p.h); await speakP(`${KO_HOUR[p.h]} 시 정각.`); }   // v40: 힌트와 같은 방식(노란 동그라미), 1부터 세기 없음
+          else { showSector(p.h); await d(600); redCircle(p.h); await speakP(`${KO_HOUR[p.h]} 시.`); }
+          if (!alive()) return;
+          S.h = p.h; renderSlots(); setDigital(p.h, p.m ? null : 0); await d(600);
+          if (p.m) await taps('five');
+        } else { S.h = p.h; renderSlots(); await taps('one'); if (!alive()) return; await speakP(countOnKo(p.m)); }   // v40: 5씩 센 뒤 이어세기 문장
+        if (!alive()) return;
+        S.m = p.m; renderSlots(); setDigital(p.h, p.m);
+      } else if (S.mode === 'set') { setHands(p.h, p.m, true, 1, S.sub === 'turn' ? 1 : 0); await d(1900); }
+      else if (S.mode === 'numf') { ringNum(p.n); lightNum(p.n); await d(900); }   // v48
+      else if (S.mode === 'judge') { A('.minHand').classList.add('blink'); $('choice').querySelector(`.ch[data-c="${p.ans}"]`).classList.add('ok'); await d(900); }   // v49
+      else if (S.mode === 'hnum' || S.mode === 'nexth') { if (S.mode === 'hnum' && S.unit === 'half') showSector(p.h); if (S.mode === 'nexth') lightNum(12, '#FFC9C9'); ringNum(p.ans); lightNum(p.ans); await d(900); }   // v49
+      else if (S.mode === 'handf') { A(p.target === 'h' ? '.hourHand' : '.minHand').classList.add('blink'); await d(900); }   // v48
+      else if (isBuild()) { for (const n of [...B.left]) { if (!alive()) return; buildPlace(n); await d(600); } }
+      else if (S.mode === 'match') { for (const i of IDX()) { if (!alive()) return; if (!document.querySelector(`.dot.top[data-i="${i}"]`).classList.contains('done')) matchJudge(i, M.order.indexOf(i)); await d(600); } }
+      else if (S.mode === 'before') { resetInput(); S.k = ''; renderPad(); setHands(p.ansH, 0, true, 0); await d(1900); await speakP(`${KO_HOUR[p.ansH]} 시.`); if (!alive()) return; await taps('back'); S.h = p.ansH; S.m = p.ansM; renderSlots(); }
+      else if (S.mode === 'elapsed') { resetInput(); S.k = ''; renderPad(); setHands(p.h, p.m, false); S.E = 0; if (p.ansH) await taps('turn'); if (!alive()) return; if (p.ansM) await taps('span'); S.h = p.ansH; S.m = p.ansM; renderSlots(); }
+      if (!alive()) return;
+      await d(400); if (!isBuild()) { await speakP(S.mode === 'match' ? '다 이었어요.' : answerKo()); await d(600); } await speakP('직접 해 봐요.');   // v47: 시계·분 만들기는 "다 채웠어요." 없음
+    } finally {
+      if (demo.gen === gen) { S.demo = false; $('learn').classList.remove('demo'); if (!!$('learn')) nextProblem(); }   // 같은 문제 재제시
+    }
+  }
+  demo.gen = 0;
+  $('demoBtn').onclick = demo;
+
+  /* ── 마운트 부트(생성기) ── */
+  S.inp = (typeof prefs !== 'undefined' && prefs.clockInp === 'pad') ? 'pad' : 'dial';
+  S.mode = p.mode; S.sub = p.sub || null; S.unit = p.unit || 'hour'; S.n = H.n; S.skipCount = !!H.skipCount; S.run = 1; S.group = null; S.step = 0;
+  if (p.lazy && !p.ready) {
+    if (isBuild()) Object.assign(p, genBuild(B.lvl, p.kind || bkind()));
+    else if (p.mode === 'match') { p.pairs = genPairs(S.unit, H.k); p.label = H.k === 2 ? '짝짓기 2쌍' : '짝짓기 4쌍'; }
+    else Object.assign(p, genOne(S.mode, S.sub === 'b10' ? 'b10' : S.unit, H.i, H.n));
+    p.first = true; p.hint = 0; p.tags = []; p.retry = !!p.retry; p.ready = true;
+  }
+  if (p.first == null) { p.first = true; p.hint = 0; p.tags = []; }
+  S.items = [p]; S.idx = 0; S.log = [];
+  buildAnalog(); setHands(12, 0, false); setDigital(null, null); renderPad(); renderSlots(); layout(); clearMarks(); renderProg();
+  return { begin: () => nextProblem(), question: () => question(), demo: () => demo(), setScale: s => { _sc = (window._sc || 1) * s; }, S };
+}
+
 
 /* 내장 이미지 (v3에서 이관) */
 const IMG_PRAISE="data:image/png;base64,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hh82bcT06VOxbu0qHi641K5efe99w+9/8+EnHpsTZp1KTExU/g3VzqtYCgC9R48ery9fteyFkE/TOt9QVe3TrB4UbwF0aAiptEiumkoKJimIZKCCQOE6QCQUpxOnCjxY+MM+7M71cQGw+g3quR579JFBDz74yLeXYSEnAOT/vfn2HdOnThmXlXGqZjAY1MvarKzjDTVJ65rlYRdBcBGCTjiCigJOKCwiAIWHQKQCWKLgEzbMW7MNm7LyQmXi4iz33nffxDFjxvx31KhRtKSxn/9rjFBKCSEE7HYHbFaG3Tu346MZH+Kbb5YIgEtKKatatYo/MbHNhx9/PPvJMAZvxIgR6gcffKD/D92eTEpprVG99toTp482rV8mGo/cdhN1BFzwqV4IZoUlaIOkBqW9hCFlRqQEJQSq1QIX7Nh2Mg/Ltx3EeX9AByFK04SmGT2797z99ddfP9i6devLXmjhC09KWeXuu++euXTZyva52edBIHmTCqVYl+a1UDXWCQT8gC4AElaFMqTXuASsKkVWgGDidztlodcjmyck5Py4dWt581K9Xqi5VnmLodstL/kCGAgMEDbnHBaFIbZUJM6eOY7UUS9g0F39xTffLBaUglapUpX17dt307Rp07vNnPnpY4QQEUajT5s2TftfMUApZRhWV7N2neoJECDVKlakVkYgtABUAUAX4ESDFDqYFLCAwKpYYbU54KI2LM/wYsqq7XLW+p08yx+QisWi9O7d58zCBQtvS01NPajrOrtSRJGenq6npKQohJDTaWlpHTr36NPtplY3ZzKLhe04VyCnLt0pvtt5FgUiGtRWCoQZNVIiQmCCQ4FEKKSjtNOJFtUqEAAitzAvds26dclm1ZddN59rFzbhl2glibDkhK7pYApFTKlonMs4jffem425c+dIlyuXA1DKlCmD6tWrb+zbt+/EZ5999vOw8aWnp+vp6en/ywm85vV6goQQS4HXi6DFAWtkLMA4LIyBCQopJfycw61JnLlQiGOZuTh0Jldmuf08BCgWhbEq1avLFi1vmjx39pwUQkh+uPhyNR8gNTVVD08QzP146lIp5Q39Bw4au2H9+vuyMs6Sr3Ye03YdPcduqleJNqkah9KRDlAtAGghCAFYQEGJhE1RAID4An7dG/KdB4Ds7OzrXvDahaMnZNjwLkYXEpxzUEYQFRWFgvx8LPliET766AN57twZAYDFli6NihUq7G3SpEnKrFmzvgjnfderZ8blJqWULW9uuWbLpi1tnBSh5tUqWSrFOkBtKnTOEfSG4OMEF3JzxNl8r8wO6uHdZ5EOO8pXqMCrVKu2+O67h7w1cuTIHwKBwB/a27DxWq1WvP7GhNu+XvLljF07t1bJz8sHAF7VaSV1q5ajtSvGolLpSDgUBiY5jmQUYMHmIyLT70etBvVOHT90pIbg/GrFFK+vq1k7dp6S23eekNt3Hpfbdh6TW7cfltt2HJGHjpyTew8ek2PHvS3r1KkfHu2WkZGRsmnTJtkpKSljpZTlwsZsYiKvLxThQzFv3ry7Gt3QOFxJFMYsQ9FYSfglCYhkVJV16tSTN9/c9lT3Lt2fXbp06c3FeEDptYCPhaFz5q8jH33yv082Tkg4EVumTPgGFgzQy0U4tBurVhR1ypTiEcZzD8aULi3vfeihx6SUNIznvb6u0dq+47jcsfOE3Lb9qNy+46g8cOis3H/wlJwy9WPZokUrCaMHJR0Oh6xdu1Z+7949x+zdu7dK8QLA9V385TJn1LDkm+/ubNfh9mXNWzQX5SqUkzaHU0ZEx8rK1arJWxPby8qVq2zp2rnbNw/cNyJ11rQZHaSUpYvn7Obo1jWvBRQzzOhRr77+eL9+/Y/WqlFDWq12SQgt4jKxWu2yZq06csCgO9+RUtLrl+2f4Qm3HZU7th+Rhw6elYcOnZEzZsyRbW9tL02KZ26xWmTFihX9ffr0+fDQoUMtf1YBvA7uvcwKGxBjDNmu7HpD7hvSsGb9+g1btGjd8PmnUhpIKRuahZxfVFf/JOP7iVcsblBSylLvvjW24cj7hz1fq1rl6T27d3U3ubHxD/369Zv+6aefdTXlva8/7z9jHTqYIQ8dypCzZy+U7dp3lADVAXDKmKxYuZLs0aPH8rlzF3S4GGpdN77fEZpeyXsoANiCBQv+8r39uTEW++/xP/ss15/5n7XmzVsku3XrKQlRTGovIsuWLStvbn3zspSUlE5hpZ6EhAT1z76d/+1e0dw/Gg4zpZT0n3KhSSlJSkpKON8rSkYTEhLU6yHon7xUVSnK+8qWLSsTEhJWPv/887dZLEWM6OS68f3vrWIzkNfXX7Hf5cuXl127dj01cuTIjmbsDwDXk/Dr6/r6K1aHDh0KJk6cOEpKGXvd+K6v6+uvX/8PxmkKvYwPdk4AAAAASUVORK5CYII=";
