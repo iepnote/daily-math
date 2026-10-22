@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 127 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 128 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1179,7 +1179,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-fly{ position:absolute; transform:translate(-50%,-50%); transition:left .6s ease, top .6s ease; z-index:9; font-weight:800; font-size:56px; line-height:1; pointer-events:none; }
 .cb-fly.t{ color:var(--cbblue); } .cb-fly.o{ color:var(--cbred); } .cb-fly.carry{ font-size:34px; }
 
-/* ===== 시계놀이(15_clock, ver 127) — tools/port_clock.py가 시계놀이/index.html(v52)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
+/* ===== 시계놀이(15_clock, ver 127) — tools/port_clock.py가 시계놀이/index.html(v54)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
 .ck-wrap{ position:relative; }
 .clockq{ position:absolute; left:0; top:0; width:1600px; height:900px; transform-origin:0 0; font-family:var(--font-main); color:var(--ink); background:#fff; overflow:hidden; user-select:none; -webkit-user-select:none; touch-action:none; --red:#C00000; --blue:#0255D0; --line:#333; --yel:#FFF3B0; }
 .clockq #ck-learn{ position:absolute; inset:0; display:block; }
@@ -1207,7 +1207,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq .hand.blink{ animation: hb 1s infinite; }
 @keyframes hb { 50% { opacity: .25; } }
 .clockq .yb{ animation: hb 1s infinite; }
-.clockq .num{ font-size: 56px; font-weight: 800; fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.clockq .num{ font-size: 56px; font-weight: 800; font-family: 'NanumSquareNeoExtraBold', var(--font-main); fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .clockq .tapn, .clockq .tapt{ fill: transparent; cursor: pointer; pointer-events: none; }
 .clockq .tapn.on, .clockq .tapt.on{ pointer-events: all; stroke: #ffb300; stroke-width: 6; animation: tp 1s infinite; }
 @keyframes tp { 50% { stroke-opacity: .2; } }
@@ -1325,11 +1325,11 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq .hbar.hm{ width: 200px; background: var(--blue); }
 .clockq #ck-learn.m-minb #ck-analog{ width: 540px; height: 540px; }
 .clockq #ck-learn.m-minb #ck-clocks{ margin-top: 48px; }
-.clockq .mnum{ font-size: 38px; font-weight: 800; fill: var(--blue); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.clockq .mnum{ font-size: 38px; font-weight: 800; font-family: 'NanumSquareNeoExtraBold', var(--font-main); fill: var(--blue); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .clockq .mnum.fill{ animation: mf .6s; }
 @keyframes mf { 0% { fill: #2e9b4f; font-size: 50px; } 100% { fill: var(--blue); font-size: 38px; } }
 .clockq #ck-cards.off{ opacity: .5; pointer-events: none; }
-.clockq .ncard{ width: 124px; height: 124px; border-radius: 24px; background: #fff; border: 5px solid var(--accent); box-shadow: 0 6px 0 #BBDEFB; display: flex; align-items: center; justify-content: center; font-size: 66px; font-weight: 800; color: var(--ink); cursor: grab; box-sizing: border-box; }
+.clockq .ncard{ width: 124px; height: 124px; border-radius: 24px; background: #fff; border: 5px solid var(--accent); box-shadow: 0 6px 0 #BBDEFB; display: flex; align-items: center; justify-content: center; font-size: 66px; font-weight: 800; font-family: 'NanumSquareNeoExtraBold', var(--font-main); color: var(--ink); cursor: grab; box-sizing: border-box; }
 .clockq .ncard.sel{ border-color: #ffb300; box-shadow: 0 0 0 8px rgba(255,179,0,.35); }
 .clockq .ncard.lift{ opacity: .3; }
 .clockq #ck-ghost{ display: none; position: absolute; left: 0; top: 0; z-index: 6; pointer-events: none; transform: scale(1.1); box-shadow: 0 12px 24px rgba(0,0,0,.25); }
@@ -1380,7 +1380,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 127';
+const APP_VERSION = 'ver 128';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -8429,7 +8429,7 @@ async function cbDemoBuild() {
 }
 
 /* =========================================================
-   15 시계놀이 (ver 127) — 단독 앱 시계놀이/index.html(v52) 이식. **이 파일의 엔진 부분은 tools/port_clock.py가 생성한다 — 직접 고치지 말고
+   15 시계놀이 (ver 127) — 단독 앱 시계놀이/index.html(v54) 이식. **이 파일의 엔진 부분은 tools/port_clock.py가 생성한다 — 직접 고치지 말고
    시계놀이/index.html을 고친 뒤 생성기를 다시 돌릴 것.** 설계 정본: 시계놀이/설계.md(§9 이식 규약).
    구조: 문제 하나 = 시계놀이 문제 하나. 01_levels의 clockLv()가 {type:'clock', mode, sub, unit, …} 문제를 만들고, 06_study가 clockFace → initClock(마운트)
    → clockBegin(발문) 순으로 부른다. 엔진은 clockMount(p, H) 안에서 시계놀이 코드 그대로 돌며(id는 전부 ck- 접두, $가 붙임), 끝나면 H.done()으로 06_study의
@@ -8523,7 +8523,7 @@ function clockFit() {
 }
 window.addEventListener('resize', () => { if ($('clockq')) clockFit(); });
 
-/* ───────── 아래부터 생성된 엔진(시계놀이 v52). 수정 금지 — tools/port_clock.py ───────── */
+/* ───────── 아래부터 생성된 엔진(시계놀이 v54). 수정 금지 — tools/port_clock.py ───────── */
 function clockMount(p, H) {
   const show = () => {};
   let _sc = (window._sc || 1) * (H.sc || 1);
@@ -8536,7 +8536,7 @@ function clockMount(p, H) {
   const SUB_UNITS = { mo: ['half', 'quarter', 'five'], ho: ['hour'], turn: [], b10: ['five'], b25: ['five'] };
   const unitsFor = () => (S.sub && SUB_UNITS[S.sub]) || UNITS[S.mode];
 
-  const APP_VERSION = 'v52';
+  const APP_VERSION = 'v54';
   const $ = id => document.getElementById('ck-' + id);   // 매일수학 안에서는 모든 id에 ck- 접두
 
   /* PURE-BEGIN — DOM 없이 돌아가는 부분(tests/clock_check.js가 이 구간을 떼어 검사) */
@@ -8626,7 +8626,7 @@ function clockMount(p, H) {
   /* PURE-END */
 
   /* ---------- 바늘시계 SVG (설계 §1.1) ---------- */
-  const RAD = 300;
+  const RAD = 300, NUMR = RAD * .74;   // v54: 숫자 반지름(.76→.74) — 5분 눈금과 떨어뜨림
   const pt = (deg, r) => { const a = deg * Math.PI / 180; return [300 + r * Math.sin(a), 300 - r * Math.cos(a)]; };
   /* 얼굴 마크업. hands = {h, m}이면 고정 바늘(작은 시계·끝 시계), null이면 주 시계(손잡이·탭 과녁 포함) */
   function faceMarkup(hands) {
@@ -8634,10 +8634,10 @@ function clockMount(p, H) {
     parts.push(`<circle cx="300" cy="300" r="288" fill="#fff" stroke="#333" stroke-width="12"/>`);
     parts.push(`<g class="sector"></g>`);
     for (let i = 0; i < 60; i++) {
-      const big = i % 5 === 0, [x1, y1] = pt(i * 6, 276), [x2, y2] = pt(i * 6, big ? 248 : 262);
+      const big = i % 5 === 0, [x1, y1] = pt(i * 6, 276), [x2, y2] = pt(i * 6, big ? 256 : 262);
       parts.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#333" stroke-width="${big ? 6 : 3}" stroke-linecap="round"/>`);
     }
-    for (let n = 1; n <= 12; n++) { const [x, y] = pt(n * 30, RAD * .76); parts.push(`<text class="num" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${n}</text>`); }
+    for (let n = 1; n <= 12; n++) { const [x, y] = pt(n * 30, NUMR); parts.push(`<text class="num" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${n}</text>`); }
     parts.push(`<g class="marks"></g><g class="labels"></g>`);
     const hand = (cls, color, len, w, deg) => {
       const head = w, tail = 4, k = cls === 'hourHand' ? 'h' : 'm';
@@ -8648,7 +8648,7 @@ function clockMount(p, H) {
     parts.push(hand('hourHand', 'var(--red)', RAD * .62, 34, hd));   // v16: 시침이 위(겹쳐도 시침 먼저 잡힘)
     parts.push(`<circle cx="300" cy="300" r="18" fill="#222"/>`);
     if (!hands) {
-      parts.push(`<g class="taps">${Array.from({ length: 12 }, (_, i) => { const n = i + 1, [x, y] = pt(n * 30, RAD * .76); return `<circle class="tapn" data-n="${n}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="42"/>`; }).join('')}</g>`);
+      parts.push(`<g class="taps">${Array.from({ length: 12 }, (_, i) => { const n = i + 1, [x, y] = pt(n * 30, NUMR); return `<circle class="tapn" data-n="${n}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="42"/>`; }).join('')}</g>`);
       parts.push(`<g class="tapts">${Array.from({ length: 60 }, (_, i) => { const [x, y] = pt(i * 6, 262); return `<circle class="tapt" data-i="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/>`; }).join('')}</g>`);
     }
     return `<svg class="face" viewBox="0 0 600 600">${parts.join('')}</svg>`;
@@ -8679,9 +8679,9 @@ function clockMount(p, H) {
     let e = A('.' + id); if (!e) { A('.sector').insertAdjacentHTML('beforeend', `<path class="${id}" fill="${color}"/>`); e = A('.' + id); }
     e.setAttribute('d', a2 - a1 > 0 && a2 - a1 < 360 ? wedge(a1, a2, 196, 280) : a2 - a1 >= 360 ? wedge(a1, a1 + 359.9, 196, 280) : '');
   }
-  function lightNum(n, color = '#FFE066') { const [x, y] = pt(n * 30, RAD * .76); A('.sector').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="38" fill="${color}"/>`); }
-  function redCircle(n) { const [x, y] = pt(n * 30, RAD * .76); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="40" fill="none" stroke="var(--red)" stroke-width="8" stroke-dasharray="14 11" stroke-linecap="round"/>`); }   // v38: 점선
-  function ringNum(n) { const [x, y] = pt(n * 30, RAD * .76); A('.marks').insertAdjacentHTML('beforeend', `<circle class="yb" cx="${x}" cy="${y}" r="44" fill="none" stroke="#FFC400" stroke-width="9"/>`); }   // v40: 노란 동그라미 깜빡임(읽기 정각 2차)
+  function lightNum(n, color = '#FFE066') { const [x, y] = pt(n * 30, NUMR); A('.sector').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="38" fill="${color}"/>`); }
+  function redCircle(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="40" fill="none" stroke="var(--red)" stroke-width="8" stroke-dasharray="14 11" stroke-linecap="round"/>`); }   // v38: 점선
+  function ringNum(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle class="yb" cx="${x}" cy="${y}" r="44" fill="none" stroke="#FFC400" stroke-width="9"/>`); }   // v40: 노란 동그라미 깜빡임(읽기 정각 2차)
   function tickDot(i) { const [x, y] = pt(i * 6, 262); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="9" fill="var(--red)"/>`); }
   function minLabel(n, text) { const [x, y] = pt(n * 30, 328); A('.labels').insertAdjacentHTML('beforeend', `<text class="mlab" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${text}</text>`); }   // 시계 바깥 작은 분 숫자(v17)
   function clearMarks() { A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구
@@ -9154,7 +9154,7 @@ function clockMount(p, H) {
   const numEl = n => document.querySelectorAll('#ck-analog .num')[n - 1];
   /* v45 분 만들기 공용 분기: kind 'hour' = 시계 안 숫자 1~12 / 'min' = 시계 바깥 둘레(반지름 332)의 분 숫자 5~60 */
   const isBuild = () => S.mode === 'build' || S.mode === 'minb', bkind = () => S.mode === 'minb' ? 'min' : 'hour';
-  const slotPos = n => bkind() === 'min' ? pt(n * 30, 332) : pt(n * 30, RAD * .76);
+  const slotPos = n => bkind() === 'min' ? pt(n * 30, 332) : pt(n * 30, NUMR);
   const slotText = n => bkind() === 'min' ? String(n * 5) : String(n);
   const slotEl = n => bkind() === 'min' ? A(`.mnum[data-n="${n}"]`) : numEl(n);
   function slotShow(n, anim) {   // 자리에 숫자를 보이기(anim = 채워지는 연출)
