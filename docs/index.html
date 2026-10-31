@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 132 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 133 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1179,7 +1179,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-fly{ position:absolute; transform:translate(-50%,-50%); transition:left .6s ease, top .6s ease; z-index:9; font-weight:800; font-size:56px; line-height:1; pointer-events:none; }
 .cb-fly.t{ color:var(--cbblue); } .cb-fly.o{ color:var(--cbred); } .cb-fly.carry{ font-size:34px; }
 
-/* ===== 시계놀이(15_clock, ver 130) — tools/port_clock.py가 시계놀이/index.html(v66)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
+/* ===== 시계놀이(15_clock, ver 130) — tools/port_clock.py가 시계놀이/index.html(v67)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
 .ck-wrap{ position:relative; }
 .clockq{ position:absolute; left:0; top:0; width:1600px; height:850px; transform-origin:0 0; font-family:var(--font-main); color:var(--ink); background:#fff; overflow:hidden; user-select:none; -webkit-user-select:none; touch-action:none; --red:#C00000; --blue:#0255D0; --line:#333; --yel:#FFF3B0; }
 .clockq #ck-learn{ position:absolute; inset:0; display:block; }
@@ -1300,7 +1300,6 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq #ck-learn.m-numf #ck-cardRB, .clockq #ck-learn.m-handf #ck-cardRB{ grid-row: 1 / -1; gap: 40px; }
 .clockq #ck-learn.m-numf #ck-cards{ display: grid; grid-template-columns: 240px; }
 .clockq .ncard.b1{ width: 240px; height: 240px; border-radius: 40px; font-size: 140px; cursor: default; }
-.clockq #ck-learn.m-numf .hand, .clockq #ck-learn.m-numf .hh{ display: none; }
 .clockq #ck-learn.m-numf .tapn{ pointer-events: all; }
 .clockq #ck-learn.m-handf .hand{ pointer-events: all; cursor: pointer; }
 .clockq #ck-legend{ display: none; flex-direction: column; gap: 30px; }
@@ -1405,7 +1404,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 132';
+const APP_VERSION = 'ver 133';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -8474,7 +8473,7 @@ async function cbDemoBuild() {
 }
 
 /* =========================================================
-   15 시계놀이 (ver 129) — 단독 앱 시계놀이/index.html(v66) 이식. **이 파일 전체를 tools/port_clock.py가 생성한다 — 직접 고치지 말고
+   15 시계놀이 (ver 129) — 단독 앱 시계놀이/index.html(v67) 이식. **이 파일 전체를 tools/port_clock.py가 생성한다 — 직접 고치지 말고
    시계놀이/index.html(엔진) 또는 port_clock.py(이 머리)를 고친 뒤 생성기를 다시 돌릴 것.** 설계 정본: 시계놀이/설계.md(§9.1 이식 규약·§12 재편).
    구조: 단계 216~223(묶음, 칸). 01_levels의 clockLv(group)이 {type:'clock', group, lazy} 문제를 만들고, 06_study가 clockFace → initClock(마운트)
    → clockBegin(발문) 순으로 부른다. 문제 내용은 마운트 때 엔진이 지금 칸(curRung)으로 만든다(genItem/genBuild). 엔진은 clockMount(p, H) 안에서
@@ -8600,11 +8599,15 @@ function clockFit() {
 }
 window.addEventListener('resize', () => { if ($('clockq')) clockFit(); });
 
-/* ───────── 아래부터 생성된 엔진(시계놀이 v66). 수정 금지 — tools/port_clock.py ───────── */
+/* ───────── 아래부터 생성된 엔진(시계놀이 v67). 수정 금지 — tools/port_clock.py ───────── */
 function clockMount(p, H) {
   const show = () => {};
   let _sc = (window._sc || 1) * (H.sc || 1);
-  const speak = (t, cb) => window.speak(t, cb ? () => { if (H.alive()) cb(); } : undefined);
+  const speak = (t, cb) => {   // ver 133: 보루 타이머 — 매일수학 speak는 onend만 기다리는데 취소 직후(다음 ▶ → ◀ 이전)엔 크롬·iOS가 끝 신호를 안 줘 잠금이 안 풀렸음. 시계놀이 단독판과 같은 규칙(lastSpeakMs + 1.5초)
+    if (!cb) { window.speak(t); return; }
+    let done = false; const fin = () => { if (done) return; done = true; if (H.alive()) cb(); };
+    window.speak(t, fin); window.setTimeout(fin, (lastSpeakMs || 0) * (prefs.lang && prefs.lang !== 'ko' ? 2 : 1) + 1500);
+  };
   const speakFast = t => window.speakFast(t);
   const tick = () => window.tick();
   const bell = () => chime(true);
@@ -8612,7 +8615,7 @@ function clockMount(p, H) {
   function finish() { H.done(); }
   const setTimeout = (f, ms) => window.setTimeout(() => { if (H.alive()) f(); }, ms);   // 엔진의 모든 지연 동작(오답 뒤 힌트·멈춰! 놓침 1.9초·콤보 시간 끝 등)은 이 마운트가 살아 있을 때만
 
-  const APP_VERSION = 'v66';
+  const APP_VERSION = 'v67';
   const $ = id => document.getElementById('ck-' + id);   // 매일수학 안에서는 모든 id에 ck- 접두
 
   /* PURE-BEGIN — DOM 없이 돌아가는 부분(tests/clock_check.js가 이 구간을 떼어 검사) */
@@ -9063,7 +9066,7 @@ function clockMount(p, H) {
     S.p = S.items[S.idx]; S.mode = S.p.mode; S.unit = S.p.unit; S.sub = S.p.sub; layout(); S.wrong = { h: 0, m: 0 }; S.ok = { h: false, m: false }; S.counting = null; S.E = 0;
     clearMarks(); renderProg(); resetInput(); lock(true);
     $('ask').textContent = question();
-    if (S.mode === 'numf') { setHands(12, 0, false); setDigital(null, null); $('cards').innerHTML = `<div class="ncard b1">${S.p.n}</div>`; askQ(() => lock(false)); return; }   // v48 A1
+    if (S.mode === 'numf') { setHands(S.p.n, 0, false); setDigital(null, null); $('cards').innerHTML = `<div class="ncard b1">${S.p.n}</div>`; askQ(() => lock(false)); return; }   // v48 A1
     if (S.mode === 'nexth') { const p = S.p; setHands(p.h, p.m, false); setDigital(null, null); askQ(() => lock(false)); return; }   // v49 C2-1
     if (S.mode === 'handf') { setHands(S.p.h, 0, false); setDigital(null, null); askQ(() => lock(false)); return; }   // v48 A2
     if (S.mode === 'pick4') { setHands(S.p.h, S.p.m, false); setDigital(null, null); $('choice').innerHTML = S.p.opts.map((o, i) => `<button class="ch ch4" data-c="${i}">${digitalMarkup(o.h, o.m)}</button>`).join(''); askQ(() => lock(false)); return; }   // v56 4지선다
