@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 133 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 134 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1404,7 +1404,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 133';
+const APP_VERSION = 'ver 134';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -5576,7 +5576,11 @@ function openLevelPicker(tabIdx) {
     <div style="text-align:center;margin-top:.6rem"><button class="btn btn--gray" onclick="closeModal()">닫기</button></div>`, '760px');
 }
 async function chooseLevel(id) {
-  if (current) { current.level = id; if (!current.guest) await Store.updateStudent(current); }
+  if (current) {
+    const g = (levelById(id) || {}).group;   // ver 134: 단계 단추로 지금보다 앞선 시계 묶음에 돌아가면 그 묶음은 첫 칸부터(복습 — 사용자 지시). 앞으로 가기·같은 묶음은 그대로
+    if (g && LEVEL_ORDER.indexOf(id) < LEVEL_ORDER.indexOf(current.level)) { const R = clockRungs(); R[g] = 0; if (g === 'face') R._bh = R._bm = 0; }
+    current.level = id; if (!current.guest) await Store.updateStudent(current);
+  }
   closeModal(); clearResume(); startSession();
 }
 /* 설정 패널(v109, 사용자 지시) — 두루책방 런처와 같은 드롭다운 구성. ⚙️ 버튼 아래 붙고, 바깥 클릭·⚙️ 다시 누르면 닫힘.
