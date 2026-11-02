@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 134 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 135 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1179,7 +1179,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-fly{ position:absolute; transform:translate(-50%,-50%); transition:left .6s ease, top .6s ease; z-index:9; font-weight:800; font-size:56px; line-height:1; pointer-events:none; }
 .cb-fly.t{ color:var(--cbblue); } .cb-fly.o{ color:var(--cbred); } .cb-fly.carry{ font-size:34px; }
 
-/* ===== 시계놀이(15_clock, ver 130) — tools/port_clock.py가 시계놀이/index.html(v67)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
+/* ===== 시계놀이(15_clock, ver 130) — tools/port_clock.py가 시계놀이/index.html(v68)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
 .ck-wrap{ position:relative; }
 .clockq{ position:absolute; left:0; top:0; width:1600px; height:850px; transform-origin:0 0; font-family:var(--font-main); color:var(--ink); background:#fff; overflow:hidden; user-select:none; -webkit-user-select:none; touch-action:none; --red:#C00000; --blue:#0255D0; --line:#333; --yel:#FFF3B0; }
 .clockq #ck-learn{ position:absolute; inset:0; display:block; }
@@ -1197,10 +1197,10 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq #ck-cardL{ grid-row: 1 / -1; }
 .clockq #ck-cardRB{ gap: 18px; }
 .clockq #ck-clocks{ display: flex; align-items: center; justify-content: center; gap: 20px; }
-.clockq #ck-analog{ width: 700px; height: 700px; flex: 0 0 auto; }
+.clockq #ck-analog{ width: 700px; height: 700px; flex: 0 0 auto; transition: width .45s, height .45s; }
 .clockq #ck-analog2{ width: 700px; height: 700px; display: none; flex: 0 0 auto; }
 .clockq #ck-arrow{ width: 60px; text-align: center; font-size: 60px; color: #999; display: none; }
-.clockq #ck-ask{ font-size: 48px; font-weight: 700; color: var(--ink-soft); text-align: center; word-break: keep-all; margin-bottom: 28px; }
+.clockq #ck-ask{ font-size: 48px; font-weight: 700; color: var(--ink-soft); text-align: center; word-break: keep-all; margin-bottom: 28px; cursor: pointer; }
 .clockq .face{ width: 100%; height: 100%; display: block; overflow: visible; }
 .clockq .mlab{ font-size: 30px; font-weight: 800; fill: var(--blue); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .clockq .hand{ transition: transform 1.8s cubic-bezier(.4,0,.2,1); transform-origin: 300px 300px; }
@@ -1385,7 +1385,9 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* ver 130: 삽입판은 무대 850 — 여백·진행 점(매일수학 카운터가 대신)을 줄이고 바늘시계를 730px로(왼쪽 카드 안 최대). 걸린 시간 390은 생성 규칙이 이김 */
 .clockq #ck-grid{ top:56px; bottom:12px; left:12px; right:12px; }
 .clockq #ck-prog{ display:none; }
-.clockq #ck-analog, .clockq #ck-analog2{ width:730px; height:730px; }
+.clockq #ck-analog, .clockq #ck-analog2{ width:730px; height:730px; transition:none; }
+/* ver 135: 분 넣기(눈금 세기 포함)는 바깥 분 숫자(반지름 374) 때문에 시계가 작아지는데(시계놀이 540), 삽입판은 진행 점이 없어 위 여백 없이 590까지(카드 안 최대 742px ≥ 590×748/600=736) */
+.clockq #ck-learn.m-minb #ck-analog{ width:590px; height:590px; } .clockq #ck-learn.m-minb #ck-clocks{ margin-top:0; }
 /* ===== 시계놀이 끝 ===== */
 
 </style>
@@ -1404,7 +1406,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 134';
+const APP_VERSION = 'ver 135';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -5577,8 +5579,8 @@ function openLevelPicker(tabIdx) {
 }
 async function chooseLevel(id) {
   if (current) {
-    const g = (levelById(id) || {}).group;   // ver 134: 단계 단추로 지금보다 앞선 시계 묶음에 돌아가면 그 묶음은 첫 칸부터(복습 — 사용자 지시). 앞으로 가기·같은 묶음은 그대로
-    if (g && LEVEL_ORDER.indexOf(id) < LEVEL_ORDER.indexOf(current.level)) { const R = clockRungs(); R[g] = 0; if (g === 'face') R._bh = R._bm = 0; }
+    const g = (levelById(id) || {}).group;   // ver 135: 단계 단추로 시계 묶음을 고르면 앞·뒤·같은 묶음 가리지 않고 **항상 첫 칸부터**(반복 학습 — 사용자 지시). ver 134는 앞선 묶음만이었음. 칸 승급(3연속)은 그대로
+    if (g) { const R = clockRungs(); R[g] = 0; if (g === 'face') R._bh = R._bm = 0; }
     current.level = id; if (!current.guest) await Store.updateStudent(current);
   }
   closeModal(); clearResume(); startSession();
@@ -8477,7 +8479,7 @@ async function cbDemoBuild() {
 }
 
 /* =========================================================
-   15 시계놀이 (ver 129) — 단독 앱 시계놀이/index.html(v67) 이식. **이 파일 전체를 tools/port_clock.py가 생성한다 — 직접 고치지 말고
+   15 시계놀이 (ver 129) — 단독 앱 시계놀이/index.html(v68) 이식. **이 파일 전체를 tools/port_clock.py가 생성한다 — 직접 고치지 말고
    시계놀이/index.html(엔진) 또는 port_clock.py(이 머리)를 고친 뒤 생성기를 다시 돌릴 것.** 설계 정본: 시계놀이/설계.md(§9.1 이식 규약·§12 재편).
    구조: 단계 216~223(묶음, 칸). 01_levels의 clockLv(group)이 {type:'clock', group, lazy} 문제를 만들고, 06_study가 clockFace → initClock(마운트)
    → clockBegin(발문) 순으로 부른다. 문제 내용은 마운트 때 엔진이 지금 칸(curRung)으로 만든다(genItem/genBuild). 엔진은 clockMount(p, H) 안에서
@@ -8603,7 +8605,7 @@ function clockFit() {
 }
 window.addEventListener('resize', () => { if ($('clockq')) clockFit(); });
 
-/* ───────── 아래부터 생성된 엔진(시계놀이 v67). 수정 금지 — tools/port_clock.py ───────── */
+/* ───────── 아래부터 생성된 엔진(시계놀이 v68). 수정 금지 — tools/port_clock.py ───────── */
 function clockMount(p, H) {
   const show = () => {};
   let _sc = (window._sc || 1) * (H.sc || 1);
@@ -8842,6 +8844,15 @@ function clockMount(p, H) {
   function redCircle(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="40" fill="none" stroke="var(--red)" stroke-width="8" stroke-dasharray="14 11" stroke-linecap="round"/>`); }   // v38: 점선
   function ringNum(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle class="yb" cx="${x}" cy="${y}" r="44" fill="none" stroke="#FFC400" stroke-width="9"/>`); }   // v40: 노란 동그라미 깜빡임(읽기 정각 2차)
   function tickDot(i) { const [x, y] = pt(i * 6, 262); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="9" fill="var(--red)"/>`); }
+  /* v68 눈금 세기: 빨간 공이 눈금 i-1 → i로 시계판 바깥(테두리 288 너머, 꼭대기 약 330)을 반원처럼 넘어 뛴다. anim=false면 그 눈금에 그냥 놓음(이어 세기 시작 자리) */
+  function tickHop(i, anim = true) {
+    let b = A('.hopper'); if (!b) { A('.marks').insertAdjacentHTML('beforeend', `<circle class="hopper" r="15" fill="var(--red)" stroke="#fff" stroke-width="3"/>`); b = A('.hopper'); }
+    const [x1, y1] = pt(i * 6, 262);
+    if (!anim || i < 1) { b.innerHTML = ''; b.setAttribute('transform', `translate(${x1.toFixed(1)},${y1.toFixed(1)})`); return; }
+    const [x0, y0] = pt((i - 1) * 6, 262), [cx, cy] = pt((i - .5) * 6, 400);   // 2차 곡선: 가운데 조절점 400 → 꼭대기 ≈ (262+400)/2
+    b.removeAttribute('transform'); b.innerHTML = `<animateMotion begin="indefinite" dur=".38s" fill="freeze" calcMode="spline" keySplines=".3 0 .7 1" path="M${x0.toFixed(1)},${y0.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x1.toFixed(1)},${y1.toFixed(1)}"/>`;
+    b.firstChild.beginElement();
+  }
   function minLabel(n, text) { const [x, y] = pt(n * 30, 328); A('.labels').insertAdjacentHTML('beforeend', `<text class="mlab" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${text}</text>`); }   // 시계 바깥 작은 분 숫자(v17)
   function clearMarks() { A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구
   function armTap(n) { document.querySelectorAll('#ck-analog .tapn').forEach(e => e.classList.toggle('on', +e.dataset.n === n)); }
@@ -9328,14 +9339,14 @@ function clockMount(p, H) {
   function introSetup() {
     const p = S.p; B.left = []; B.wrong = 0; B.sel = null; B.drag = null; $('cards').innerHTML = ''; $('ghost').style.display = 'none'; $('learn').classList.remove('last');
     document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; }); document.querySelectorAll('#ck-analog .mnum').forEach(e => e.remove());
-    for (let n = 1; n * 5 <= p.from; n++) slotShow(n, false); for (let i = 1; i <= p.from; i++) tickDot(i);
+    for (let n = 1; n * 5 <= p.from; n++) slotShow(n, false); tickHop(p.from, false);   // v68: 점 대신 공이 시작 눈금에 앉아 있음
     setHands(12, p.from, false);
   }
   function introStart() { S.counting = { kind: 'intro', i: S.p.from, end: S.p.intro }; armTick(S.p.from + 1); }
   function introTick(i) {
     const st = S.counting; if (!st || st.kind !== 'intro') return;
     if (i !== st.i + 1) { shake($('analog')); return; }
-    st.i = i; tickDot(i); setHands(12, i, true, 1); speakFast(sino(i));
+    st.i = i; tickHop(i); setHands(12, i, true, 1); speakFast(sino(i));   // v68: 공이 한 칸 뛰어감
     if (i < st.end) { armTick(i + 1); return; }
     armTick(-1); S.counting = null; slotShow(i / 5, true); if (S.demo) return;
     speak(`${KO_CNT[i]} 칸, ${sino(i)} 분.`, () => buildDone());
@@ -9404,7 +9415,7 @@ function clockMount(p, H) {
     const c = $('cards').querySelector(`.ncard[data-n="${n}"]`); if (c) { c.classList.add('used'); c.classList.remove('sel'); }   // v39: 카드 자리는 두고 흐리게
     document.querySelectorAll('#ck-cards .ncard.sel').forEach(x => x.classList.remove('sel')); B.sel = null;
     if (bkind() === 'min') { showArc(0, n * 30); speakFast(n === 12 ? '육십 분, 한 바퀴' : `${sino(n * 5)} 분`); }   // v45: 12부터 그 숫자까지 파란 호
-    else speakFast(sino(n));
+    else speakFast(`${KO_HOUR[n]} 시`);   // v68: "일·이" → "한 시·두 시"(사용자)
     if (!B.left.length && !S.demo) buildDone();
   }
   function buildTry(n, target) {
@@ -9585,6 +9596,11 @@ function clockMount(p, H) {
   const RUNGS = H.rungs;   // 묶음별 현재 칸 — 매일수학 이식 때 port_clock이 H.rungs로 바꿈
   function saveRungs() { H.saveRungs(); }
   const RS = H.rs;   // 세션 연속 정답·마지막 발문(lastQ) — 이식 때 H.rs
+  function replayQ() {   // v68: 「다시 듣기」와 문제 글 누르기가 같이 씀(이식 절단선 위 — 매일수학에도 들어감)
+    if (S.mode !== 'free') { speak(question()); return; }
+    if (S.h != null) speak(timeKo(S.h, S.m ?? 0)); else speak('몇 시 몇 분을 넣어요.');
+  }
+  $('ask').onclick = () => { if (!S.demo) replayQ(); };   // v68: 문제를 누르면 소리 재생(사용자)
   function askQ(cb) { const q = question(); if (RS.lastQ === q) { cb(); return; } RS.lastQ = q; speak(q, cb); }   // v65: 같은 발문은 한 활동 안에서 한 번만 읽고 바로 진행(사용자 지시)
   const moreFresh = () => H.more;   // v62: 아직 만들 새 문제가 남았나 — 이식 때 port_clock이 매일수학 세션 기준으로 바꿈
   const rungKey = g => (GROUPS[g] && GROUPS[g].follow) || g;
