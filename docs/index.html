@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 135 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
+<!-- 매일매일 수학 · ver 136 · 이 파일은 build.py가 src/ 에서 자동 생성합니다. 직접 수정하지 말 것 -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1179,7 +1179,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-fly{ position:absolute; transform:translate(-50%,-50%); transition:left .6s ease, top .6s ease; z-index:9; font-weight:800; font-size:56px; line-height:1; pointer-events:none; }
 .cb-fly.t{ color:var(--cbblue); } .cb-fly.o{ color:var(--cbred); } .cb-fly.carry{ font-size:34px; }
 
-/* ===== 시계놀이(15_clock, ver 130) — tools/port_clock.py가 시계놀이/index.html(v68)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
+/* ===== 시계놀이(15_clock, ver 130) — tools/port_clock.py가 시계놀이/index.html(v69)의 학습 화면 CSS를 .clockq로 스코프해 생성. 직접 고치지 말 것 ===== */
 .ck-wrap{ position:relative; }
 .clockq{ position:absolute; left:0; top:0; width:1600px; height:850px; transform-origin:0 0; font-family:var(--font-main); color:var(--ink); background:#fff; overflow:hidden; user-select:none; -webkit-user-select:none; touch-action:none; --red:#C00000; --blue:#0255D0; --line:#333; --yel:#FFF3B0; }
 .clockq #ck-learn{ position:absolute; inset:0; display:block; }
@@ -1290,9 +1290,10 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq #ck-cards{ display: none; grid-template-columns: repeat(4, 124px); gap: 22px; }
 .clockq #ck-learn.m-build #ck-cards, .clockq #ck-learn.m-minb #ck-cards{ display: grid; }
 .clockq #ck-learn.m-build #ck-cardRB, .clockq #ck-learn.m-minb #ck-cardRB{ grid-row: 1 / -1; gap: 40px; }
-.clockq #ck-lvlBtn{ display: none; background: #FB8C00; }
-.clockq #ck-learn.m-build #ck-lvlBtn, .clockq #ck-learn.m-minb #ck-lvlBtn{ display: flex; }
-.clockq #ck-learn.m-build.last #ck-lvlBtn, .clockq #ck-learn.m-minb.last #ck-lvlBtn{ display: none; }
+.clockq #ck-prevBtn, .clockq #ck-lvlBtn{ background: #FB8C00; }
+.clockq #ck-learn.m-free #ck-prevBtn, .clockq #ck-learn.m-free #ck-lvlBtn, .clockq #ck-learn.m-free #ck-rungLab, .clockq #ck-learn.demo #ck-prevBtn, .clockq #ck-learn.demo #ck-lvlBtn{ display: none; }
+.clockq .nb:disabled{ opacity: .35; cursor: default; box-shadow: none; }
+.clockq #ck-rungLab{ display: none; font-size: 20px; font-weight: 800; color: var(--ink-soft); white-space: nowrap; padding: 0 4px; }
 .clockq .ncard.used{ opacity: .22; pointer-events: none; }
 .clockq #ck-learn.m-build #ck-slots, .clockq #ck-learn.m-build #ck-dialOk, .clockq #ck-learn.m-build #ck-okBig, .clockq #ck-learn.m-build #ck-cardRT, .clockq #ck-learn.m-build #ck-pad, .clockq #ck-learn.m-minb #ck-slots, .clockq #ck-learn.m-minb #ck-dialOk, .clockq #ck-learn.m-minb #ck-okBig, .clockq #ck-learn.m-minb #ck-cardRT, .clockq #ck-learn.m-minb #ck-pad{ display: none; }
 .clockq .ncard.mc{ color: var(--blue); }
@@ -1388,6 +1389,8 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq #ck-analog, .clockq #ck-analog2{ width:730px; height:730px; transition:none; }
 /* ver 135: 분 넣기(눈금 세기 포함)는 바깥 분 숫자(반지름 374) 때문에 시계가 작아지는데(시계놀이 540), 삽입판은 진행 점이 없어 위 여백 없이 590까지(카드 안 최대 742px ≥ 590×748/600=736) */
 .clockq #ck-learn.m-minb #ck-analog{ width:590px; height:590px; } .clockq #ck-learn.m-minb #ck-clocks{ margin-top:0; }
+/* ver 136: 활동 이름·순번(시계놀이 배지 대신) — 단독 앱 CSS는 display:none */
+.clockq #ck-rungLab{ display:inline-block; } .clockq #ck-learn.m-free #ck-rungLab{ display:none; }
 /* ===== 시계놀이 끝 ===== */
 
 </style>
@@ -1406,7 +1409,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 135';
+const APP_VERSION = 'ver 136';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -8479,7 +8482,7 @@ async function cbDemoBuild() {
 }
 
 /* =========================================================
-   15 시계놀이 (ver 129) — 단독 앱 시계놀이/index.html(v68) 이식. **이 파일 전체를 tools/port_clock.py가 생성한다 — 직접 고치지 말고
+   15 시계놀이 (ver 129) — 단독 앱 시계놀이/index.html(v69) 이식. **이 파일 전체를 tools/port_clock.py가 생성한다 — 직접 고치지 말고
    시계놀이/index.html(엔진) 또는 port_clock.py(이 머리)를 고친 뒤 생성기를 다시 돌릴 것.** 설계 정본: 시계놀이/설계.md(§9.1 이식 규약·§12 재편).
    구조: 단계 216~223(묶음, 칸). 01_levels의 clockLv(group)이 {type:'clock', group, lazy} 문제를 만들고, 06_study가 clockFace → initClock(마운트)
    → clockBegin(발문) 순으로 부른다. 문제 내용은 마운트 때 엔진이 지금 칸(curRung)으로 만든다(genItem/genBuild). 엔진은 clockMount(p, H) 안에서
@@ -8532,7 +8535,7 @@ function clockFace(p) {
       <div id="ck-brand"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>시계놀이</div>
       <div id="ck-badge"></div>
       <div class="sp"></div>
-      <button class="nb" id="ck-lvlBtn" title="다음 단계로">다음 단계 ▶</button>
+      <button class="nb" id="ck-prevBtn" title="이전 활동으로">◀ 이전 활동</button><span id="ck-rungLab"></span><button class="nb" id="ck-lvlBtn" title="다음 활동으로">다음 활동 ▶</button>
       <button class="nb" id="ck-spk" title="다시 듣기"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4h4l5 4V6L8 10H4z"/><path d="M16 9a4 4 0 010 6"/><path d="M18.5 6.5a8 8 0 010 11"/></svg>다시 듣기</button>
       <button class="nb" id="ck-demoBtn" title="보여주기"><svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>보여주기</button>
       <button class="nb" id="ck-logBtn" title="기록"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>기록</button>
@@ -8577,6 +8580,11 @@ function initClock() {
     build: sess.build[mode === 'minb' ? 'min' : 'hour'], rungs, saveRungs: clockSaveRungs, setBuildLvl: l => { rungs[bk] = l; clockSaveRungs(); }, rs: sess.rs, stopSpd: prefs.clockStop || 'normal',   // setBuildLvl = 숫자 넣기 사다리 단계 저장(_bh/_bm — clockRungOf·대시보드는 묶음 키만 읽음)
     done: () => { if (!H.alive()) return; wrongCount = p.first ? 0 : Math.max(1, p.hint || 1); hintStage = p.hint || 0; wrongTags = (p.tags || []).slice(); retryArm = false; afterCorrect(400); },
     skip: () => { if (!H.alive()) return; session.idx++; saveResume(); advanceProblem(); },
+    jump: b => {   // ver 136: 「◀ 이전 활동·다음 활동 ▶」 — 지금 자리의 문제를 새 칸(b = 숫자 넣기 사다리 {mode, lvl})으로 다시 만들어 그림. 기록 없음, 문제 수 그대로
+      if (!H.alive()) return;
+      if (b) { const k = b.mode === 'minb' ? 'min' : 'hour'; sess.build[k].lvl = b.lvl; sess.build[k].streak = 0; rungs[b.mode === 'minb' ? '_bm' : '_bh'] = b.lvl; clockSaveRungs(); }
+      session.items[session.idx] = clockLv(p.group)(); saveResume(); renderProblem();
+    },
     retry: q => { if (!H.alive()) return; if (!session.items.some(o => o.retry && o === q)) session.items.push(Object.assign({}, q, { retry: true, first: true, hint: 0, tags: [], ready: true })); },
   };
   ck = me;
@@ -8605,7 +8613,7 @@ function clockFit() {
 }
 window.addEventListener('resize', () => { if ($('clockq')) clockFit(); });
 
-/* ───────── 아래부터 생성된 엔진(시계놀이 v68). 수정 금지 — tools/port_clock.py ───────── */
+/* ───────── 아래부터 생성된 엔진(시계놀이 v69). 수정 금지 — tools/port_clock.py ───────── */
 function clockMount(p, H) {
   const show = () => {};
   let _sc = (window._sc || 1) * (H.sc || 1);
@@ -9054,6 +9062,12 @@ function clockMount(p, H) {
     const g = GROUPS[rungKey(S.group)], rg = curRung();
     const prog = isBuild() ? `${(S.p && S.p.label) || ''} · ${B.lvl + 1} / ${bLen(bkind())}` : S.items.length ? `연속 ${RS.streak} / ${RUNG_NEED} · ${Math.min(S.idx + 1, planned())} / ${planned()}` : '';   // v38: 시계 만들기는 단계·연속 정답 · v43: 마지막 단계는 라벨
     $('badge').textContent = [GROUPS[S.group].label, g.rungs.length ? rg.label : '', prog].filter(Boolean).join(' · ');
+    renderHop();
+  }
+  function renderHop() {   // v69: 활동 이름·순번(삽입판에서 보임) · 첫/끝 활동에서는 그쪽 버튼 흐림
+    const n = GROUPS[rungKey(S.group)].rungs.length, r = rungOf(S.group), rg = curRung(), bl = isBuild() ? bLen(bkind()) : 0;
+    $('rungLab').textContent = n ? `${rg.label}${bl ? ` ${B.lvl + 1}/${bl}` : ''} · ${r + 1}/${n}` : '';
+    $('prevBtn').disabled = r === 0 && (!bl || B.lvl === 0); $('lvlBtn').disabled = r === n - 1 && (!bl || B.lvl === bl - 1);
   }
   function renderProg() {
     $('prog').innerHTML = isBuild() ? Array.from({ length: bLen(bkind()) }, (_, i) => i < B.lvl ? '<b>●</b>' : i === B.lvl ? '<b>◉</b>' : '○').join('') : Array.from({ length: planned() }, (_, i) => i < S.idx ? '<b>●</b>' : i === S.idx ? '<b>◉</b>' : '○').join('');
@@ -9398,11 +9412,15 @@ function clockMount(p, H) {
     await Promise.all(flights); if (!alive()) return quit();
     bell(); await d(400); return alive();
   }
-  function buildNextLevel() {   // v39: 「다음 단계」 버튼 — 교사가 임의로 승급
-    if (!isBuild() || B.lvl >= bLen(bkind()) - 1) return;
-    speechSynthesis.cancel(); tick(); B.lvl++; B.streak = 0; H.setBuildLvl(B.lvl); H.skip();   // 매일수학: 기록 없이 다음 문제(새 단계로 생성) · ver 129: 단계는 H.rungs._bh/_bm에 저장
+  function hopRung(d) {   // v69(구 buildNextLevel v39): 「◀ 이전 활동 · 다음 활동 ▶」 — 교사가 칸을 한 칸 오감. 시·분 숫자 넣기는 사다리 단계를 먼저, 끝에서 칸으로. 기록 없이 새 칸의 첫 문제를 바로
+    if (S.group === 'free' || S.demo) return;
+    let lvl = 0;
+    if (isBuild() && B.lvl + d >= 0 && B.lvl + d < bLen(bkind())) lvl = B.lvl + d;
+    else { const r = rungOf(S.group) + d; if (r < 0 || r >= GROUPS[rungKey(S.group)].rungs.length) return; setRung(S.group, r); RS.streak = 0; }
+    speechSynthesis.cancel(); tick(); applyRung(); hopIssue(curRung(), lvl);
   }
-  $('lvlBtn').onclick = buildNextLevel;
+  function hopIssue(rg, lvl) { H.jump(isBuildMode(rg.mode) ? { mode: rg.mode, lvl } : null); }   // 매일수학(ver 136): 같은 자리 문제를 새 칸으로 바꿔 그림 — 기록 없음, 세션 문제 수 그대로. 사다리 단계는 H.rungs._bh/_bm에 저장   // 매일수학 이식 때 port_clock이 H.jump로 바꿈
+  $('prevBtn').onclick = () => hopRung(-1); $('lvlBtn').onclick = () => hopRung(1);
   function blankAt(e) {   // 포인터 아래 빈칸(가장 가까운 것, 반지름 62 안)
     const r = A('svg').getBoundingClientRect(), sc = r.width / 600; let best = null;
     for (const n of B.left) { const [x, y] = slotPos(n), d = Math.hypot(e.clientX - (r.left + x * sc), e.clientY - (r.top + y * sc)); if (d < 62 * sc && (!best || d < best.d)) best = { n, d }; }
