@@ -877,6 +877,15 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cdot.gv{ background-color:#7CB342; border-color:#33691E; }    /* 갈라 줄 만큼 표시하는 연두 동그라미 */
 /* 자유 가르기 */
 .gsplit.free .fdot{ cursor:grab; touch-action:none; user-select:none; transition:none; }
+/* v148 모으기·가르기 옮기기 */
+.gsplit.move .gcell{ gap:5px; flex-wrap:wrap; align-content:flex-start; }
+.gsplit.move.ctr .gcell{ align-content:center; justify-content:center; }
+.gsplit.move .gdot{ cursor:grab; touch-action:none; user-select:none; transition:none; }
+.gsplit.move .gdot.lift{ position:relative; z-index:9; box-shadow:0 10px 18px rgba(0,0,0,.35); cursor:grabbing; }
+.gsplit.move .gcell.drop{ border-style:dashed; }
+.gsplit.move .gcell.gans:has(.cdot) .qblank:not(.answered){ display:none; }
+.gslot{ width:58px; height:58px; border-radius:50%; border:3px dashed var(--line-strong); background:#FAFBFC; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); font-weight:800; font-size:1.3rem; }
+.gslot:has(.cdot){ border:0; background:none; font-size:0; }
 .gsplit.free .fdot.lift{ position:relative; z-index:9; box-shadow:0 10px 18px rgba(0,0,0,.35); cursor:grabbing; }
 .gsplit.free .gcell{ gap:5px; flex-wrap:wrap; align-content:flex-start; }
 .gsplit.free .gcell.drop{ border-style:dashed; }
@@ -1520,6 +1529,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* 모형: 무광 단색 원·평면 막대(십 막대의 10칸 눈금은 뜻이 있어 유지) */
 .cdot{ background-image:none; box-shadow:0 2px 4px rgba(0,0,0,.18); }
 .cdot.red{ background-color:#E4574B; }
+.cdot.gv{ background-color:#7CB342; }   /* 가르기 연두 표시가 빨강 덮어쓰기에 지지 않게 */
 .rod{ background-image:repeating-linear-gradient(to bottom, transparent 0 8.2px, rgba(255,255,255,.55) 8.2px 9.2px); box-shadow:0 2px 4px rgba(0,0,0,.18); }
 .pvrq .rod, .pvbq .rod{ background-image:repeating-linear-gradient(to bottom, transparent 0 12px, rgba(255,255,255,.55) 12px 13px); }
 /* 곱셈의 뜻: 다이얼 역할 색 */
@@ -1553,7 +1563,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 147';
+const APP_VERSION = 'ver 148';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3170,8 +3180,7 @@ function paintFace(flip) {
   if (p.type === 'put') initPut();                // 담기: 드래그/탭 상호작용 연결
   if (p.type === 'count') initCount();            // 세기: 동그라미 누르면 "하나, 둘…" 소리
   /* 탭 세기는 상자별 독립 카운터 — 모으기만 위 두 상자를 이어 셈(2+3=5), 아래·가르기는 상자마다 1부터 */
-  if (p.type === 'gather') { initTapCount('#gA .cdot, #gB .cdot'); initTapCount('#gC .cdot'); }
-  if (p.type === 'split') { initTapCount('#gC .cdot'); initTapCount('#gA .cdot'); initTapCount('#gB .cdot'); }
+  if (p.type === 'gather' || p.type === 'split') initGS();   // v148: 동그라미 옮기기(끌기·탭) + 도착 상자에서 탭 세기
   if (p.type === 'freesplit') initFreeSplit();
   if (p.type === 'onemap') initOneMap();          // 하나씩 나눠 주기: 드래그/탭
   if (p.type === 'mulput') initMulPut();          // v142 접시에 담기: 끌기/탭 → 다 담으면 모두 몇 개
@@ -6789,16 +6798,16 @@ function earlyFace(p) {
       <div class="plate put" id="putplate"></div>
       <div class="puttray" id="puttray" style="min-height:${rows * 58 + (rows - 1) * 15 + 28}px">${'<div class="pdot cdot red"></div>'.repeat(p.max)}</div></div>`;
   }
-  if (p.type === 'gather')   /* 5까지는 상자 가운데 정렬(.ctr) — 수가 적어 왼쪽 정렬이 허전함 */
-    return `<div class="early gsplit ${p.ans <= 5 ? 'ctr' : ''}">
-      <div class="grow2"><div class="gcell" id="gA">${circleStack(p.a, 'red')}</div><div class="gcell" id="gB">${circleStack(p.b, 'red')}</div></div>
+  if (p.type === 'gather')   /* 5까지는 상자 가운데 정렬(.ctr) · v148: 동그라미를 아래 상자로 옮길 수 있음(.gdot, 사용자 지시) */
+    return `<div class="early gsplit ${p.ans <= 5 ? 'ctr' : ''} move">
+      <div class="grow2"><div class="gcell" id="gA">${'<div class="cdot red gdot"></div>'.repeat(p.a)}</div><div class="gcell" id="gB">${'<div class="cdot red gdot"></div>'.repeat(p.b)}</div></div>
       <div class="glink gv"><i></i><i></i></div>
-      <div class="grow1"><div class="gcell gans" id="gC"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
-  if (p.type === 'split')
-    return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''}">
-      <div class="grow1"><div class="gcell" id="gC">${circleStack(p.n, 'red')}</div></div>
+      <div class="grow1"><div class="gcell gans drop" id="gC"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
+  if (p.type === 'split')   /* v148: 위 동그라미를 왼쪽 자리(k개)와 오른쪽 상자로 옮겨 가름 */
+    return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''} move">
+      <div class="grow1"><div class="gcell" id="gC">${'<div class="cdot red gdot"></div>'.repeat(p.n)}</div></div>
       <div class="glink gs"><i></i><i></i></div>
-      <div class="grow2"><div class="gcell" id="gA">${circleStack(p.k, 'red')}</div><div class="gcell gans" id="gB"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
+      <div class="grow2"><div class="gcell drop" id="gA">${Array.from({ length: p.k }, (_, i) => `<div class="gslot">${i + 1}</div>`).join('')}</div><div class="gcell gans drop" id="gB"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
   if (p.type === 'freesplit')   /* 자유 가르기: 위 상자의 동그라미를 아래 두 상자로 스스로 나눔 */
     return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''} free">
       <div class="grow1"><div class="gcell" id="gC">${'<div class="cdot red fdot"></div>'.repeat(p.n)}</div></div>
@@ -7097,64 +7106,79 @@ function hintGS(p, h, stage) {
   if (gather) return hintGather(p, h, stage);
   return hintSplit(p, h, stage);
 }
-/* 모으기 — 1차: 동그라미가 아래 상자로 모이는 애니메이션 / 2차: 모인 것에 번호를 매기며 세기 */
+/* v148 모으기·가르기 동그라미 옮기기(사용자 지시) — 끌기: 놓은 상자로. 탭: 모으기는 위→아래 상자, 가르기는 위→왼쪽 자리(남으면)→오른쪽, 왼쪽→오른쪽.
+   도착 상자(모으기 아래·가르기 오른쪽)에서 탭하면 번호 세기(탭 세기와 같은 규칙). 답은 그대로 보기에서 고름 — 옮기기는 스스로 확인하는 조작 */
+function initGS() {
+  const p = session.items[session.idx], gather = p.type === 'gather';
+  const A = $('gA'), B = $('gB'), C = $('gC'); if (!A || !B || !C) return;
+  const hit = (e, el) => { const r = el.getBoundingClientRect(); return e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom; };
+  const slotFree = () => [...A.querySelectorAll('.gslot')].find(sl => !sl.querySelector('.cdot'));
+  const countTap = d => {
+    const dots = [...d.closest('.gcell').querySelectorAll('.cdot')];
+    if (d.classList.contains('tapped')) { const k = +d.textContent; d.classList.remove('tapped'); d.textContent = ''; dots.forEach(x => { if (x.classList.contains('tapped') && +x.textContent > k) x.textContent = +x.textContent - 1; }); tick(); return; }
+    const n = dots.filter(x => x.classList.contains('tapped')).length + 1; d.textContent = n; d.classList.add('tapped'); speakFast(KO_NUM[n] || String(n));
+  };
+  const place = (d, zone) => {
+    if (!zone) return;
+    const cur = d.closest('.gcell'); if (cur === zone) return;
+    if (zone === A && !gather) { const sl = slotFree(); if (!sl) { wiggle(A); return; } sl.appendChild(d); } else zone.appendChild(d);
+    d.classList.remove('tapped'); d.textContent = ''; gsRenumber(cur);
+    d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 }); tick();
+  };
+  [...document.querySelectorAll('#qface .gdot')].forEach(d => {
+    let drag = null;
+    d.onpointerdown = e => { if (locked) return; try { d.setPointerCapture(e.pointerId); } catch (err) { } drag = { sx: e.clientX, sy: e.clientY, moved: false }; d.classList.add('lift'); };
+    d.onpointermove = e => { if (!drag) return; const sc = window._sc || 1, dx = (e.clientX - drag.sx) / sc, dy = (e.clientY - drag.sy) / sc; if (Math.abs(dx) + Math.abs(dy) > 6) drag.moved = true; d.style.transform = `translate(${dx}px,${dy}px)`; };
+    d.onpointerup = e => {
+      if (!drag) return; const moved = drag.moved; drag = null; d.classList.remove('lift'); d.style.transform = '';
+      if (moved) { place(d, [A, B, C].find(z => hit(e, z)) || null); return; }
+      const dest = gather ? C : B;
+      if (dest.contains(d)) { countTap(d); return; }
+      if (gather) place(d, C); else place(d, A.contains(d) ? B : (slotFree() ? A : B));
+    };
+    d.onpointercancel = () => { drag = null; d.classList.remove('lift'); d.style.transform = ''; };
+  });
+}
+function gsRenumber(box) { if (!box) return; let n = 0; [...box.querySelectorAll('.cdot.tapped')].forEach(x => { x.textContent = ++n; }); }   // 번호 붙은 동그라미가 빠져도 1..k 연속
+/* 모으기 힌트 — 1차: 아직 안 옮긴 동그라미를 아래 상자로 모아 줌 / 2차: 모인 것에 번호를 매기며 세기 */
 function hintGather(p, h, stage) {
+  const C = $('gC'), rest = [...document.querySelectorAll('#gA .gdot, #gB .gdot')];
   h.innerHTML = `<div class="tip">동그라미를 아래 상자에 모아요</div>`;
-  const gC = $('gC');
-  const landed = [...gC.querySelectorAll('.cdot')].filter(d => d.style.visibility !== 'hidden');
-  if (!landed.length) {                                  // 아직 안 모았으면 먼저 모으기(1·2차 공통)
-    const slots = gsSlots(gC, p.ans);
-    const src = [...document.querySelectorAll('#gA .cdot'), ...document.querySelectorAll('#gB .cdot')];
+  if (rest.length) {
     speak('동그라미를 아래 상자에 모아요.');
-    src.forEach((d, i) => setTimeout(() => flyMove(d, slots[i], () => {
-      d.style.visibility = 'hidden'; slots[i].style.visibility = ''; slots[i].classList.add('born');
-    }), 350 + i * 300));
+    rest.forEach((d, i) => setTimeout(() => { C.appendChild(d); d.classList.remove('tapped'); d.textContent = ''; d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 }); tick(); }, 350 + i * 300));
     if (stage < 2) return;
-    setTimeout(() => countGathered(p), 350 + src.length * 300 + 500);   // 2차: 모으기 끝나고 세기
+    setTimeout(() => countGathered(p), 350 + rest.length * 300 + 500);
     return;
   }
-  if (stage >= 2) countGathered(p);
+  if (stage >= 2) countGathered(p); else speak('모은 동그라미를 하나씩 누르며 세어 봐요.');
 }
-/* 모인 동그라미에 번호를 매기며 "하나, 둘…" → "모으면 네 개가 돼요" */
 function countGathered(p) {
-  const ds = [...$('gC').querySelectorAll('.cdot')];   // 이동이 아직 끝나지 않았어도 슬롯 전체를 셈
-  const items = ds.map((d, i) => ({
-    text: KO_NUM[i + 1] || String(i + 1),
-    action: () => { d.style.visibility = ''; d.textContent = i + 1; d.classList.add('tapped'); d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 }); },
-  }));
+  const ds = [...$('gC').querySelectorAll('.cdot')];
+  const items = ds.map((d, i) => ({ text: KO_NUM[i + 1] || String(i + 1), action: () => { d.textContent = i + 1; d.classList.add('tapped'); d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 }); } }));
   items.push({ text: `모으면 ${koCnt(p.ans)} 개가 돼요.` });
   speakSequence(items);
 }
-/* 가르기 — 1차: 갈라 줄 만큼(k개) 색을 바꿔 표시(위·아래 같은 색) / 2차: 그 색 동그라미를 아래로 옮겨 남는 수 세기 */
+/* 가르기 힌트 — 1차: 왼쪽 자리에 갈라 줄 만큼 연두로 표시 / 2차: 연두는 왼쪽 자리, 나머지는 오른쪽으로 옮겨 주고 번호 */
 function hintSplit(p, h, stage) {
-  const top = [...$('gC').querySelectorAll('.cdot')];
+  const A = $('gA'), B = $('gB'), top = [...$('gC').querySelectorAll('.gdot')];
+  const free = [...A.querySelectorAll('.gslot')].filter(sl => !sl.querySelector('.cdot'));
   if (stage === 1) {
-    h.innerHTML = `<div class="tip"><b>연두색 ${koCnt(p.k)} 개</b>를 갈라 주면, <b>빨간 동그라미</b>가 몇 개 남을까요?</div>`;
-    top.slice(0, p.k).forEach(d => d.classList.add('gv'));              // 위 상자: 갈라 줄 만큼 연두
-    [...$('gA').querySelectorAll('.cdot')].forEach(d => d.classList.add('gv'));   // 아래 왼쪽도 같은 색
-    speak(`연두색 ${koCnt(p.k)} 개를 갈라 주면, 빨간 동그라미가 몇 개 남을까요?`);
+    h.innerHTML = `<div class="tip"><b>연두색 ${koCnt(p.k)} 개</b>를 왼쪽 자리에 갈라 주면, <b>빨간 동그라미</b>가 몇 개 남을까요?</div>`;
+    top.slice(0, free.length).forEach(d => d.classList.add('gv')); [...A.querySelectorAll('.cdot')].forEach(d => d.classList.add('gv'));
+    speak(`연두색 ${koCnt(p.k)} 개를 왼쪽 자리에 갈라 주면, 빨간 동그라미가 몇 개 남을까요?`);
     return;
   }
-  /* 2차: 연두 k개는 왼쪽, 빨강 나머지는 오른쪽 상자로 갈라지고 각각 번호를 붙임 */
   h.innerHTML = `<div class="tip">가르고 남은 동그라미가 몇 개인지 세어 봐요</div>`;
-  const gv = top.filter(d => d.classList.contains('gv'));
-  const movers = gv.length ? gv : top.slice(0, p.k);
-  movers.forEach(d => d.classList.add('gv'));
-  const rest = top.filter(d => !movers.includes(d));
-  const slotsA = gsSlots($('gA'), p.k, 'gv');           // 왼쪽=갈라 준 만큼(연두)
-  const slotsB = gsSlots($('gB'), p.ans);              // 오른쪽=남은 만큼(빨강) — 물음표 자리를 대체
-  const fly = (d, slot, i) => setTimeout(() => flyMove(d, slot, () => {
-    d.style.visibility = 'hidden'; slot.style.visibility = ''; slot.classList.add('born');
-  }), i * 240);
+  const movers = top.slice(0, free.length), rest = top.slice(free.length);
+  movers.forEach(d => d.classList.add('gv')); [...A.querySelectorAll('.cdot')].forEach(d => d.classList.add('gv'));
+  const mv = (d, to, i) => setTimeout(() => { to.appendChild(d); d.classList.remove('tapped'); d.textContent = ''; d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 }); tick(); }, i * 240);
   const items = [{
-    text: '연두색은 왼쪽 상자에, 빨간색은 오른쪽 상자에 갈라요.',
-    action: () => { movers.forEach((d, i) => fly(d, slotsA[i], i)); rest.forEach((d, i) => fly(d, slotsB[i], movers.length + i)); },
+    text: '연두색은 왼쪽 자리에, 빨간색은 오른쪽 상자에 갈라요.',
+    action: () => { movers.forEach((d, i) => mv(d, free[i], i)); rest.forEach((d, i) => mv(d, B, movers.length + i)); },
   }, {
     text: `${p.n}${josaEun(p.n)} ${p.k}${josaGwa(p.k)} ${p.ans}${josaRo(p.ans)} 가를 수 있어요.`,
-    action: () => [slotsA, slotsB].forEach(ss => ss.forEach((d, i) => {   // 상자마다 1부터 번호
-      d.style.visibility = ''; d.textContent = i + 1; d.classList.add('tapped');
-      d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 });
-    })),
+    action: () => [A, B].forEach(box => [...box.querySelectorAll('.cdot')].forEach((d, i) => { d.textContent = i + 1; d.classList.add('tapped'); d.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], { duration: 200 }); })),
   }];
   speakSequence(items);
 }
