@@ -1610,7 +1610,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 153';
+const APP_VERSION = 'ver 154';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2098,13 +2098,19 @@ function chime(ok) {
 }
 let _voices = [];
 function refreshVoices() { if ('speechSynthesis' in window) _voices = speechSynthesis.getVoices() || []; }
-if ('speechSynthesis' in window) { refreshVoices(); speechSynthesis.onvoiceschanged = refreshVoices; }
+if ('speechSynthesis' in window) { refreshVoices(); speechSynthesis.onvoiceschanged = () => { refreshVoices(); if (typeof refreshSettings === 'function' && document.getElementById('setpanel')) refreshSettings(); }; }   // v154: 목록이 늦게 오면 설정판도 갱신
+const koVoices = () => _voices.filter(v => v.lang && v.lang.toLowerCase().replace('_', '-').startsWith('ko'));
+/* v154 목소리 고르기(사용자 지시): 설정에서 고른 목소리(prefs.voice = voiceURI) > 자연스러운 이름(신경망·온라인·구글·고급) > 안드로이드 구글 엔진(ko-kr-x-…) > 첫 번째 */
 function pickKoVoice() {
-  const ko = _voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ko'));
-  if (!ko.length) return null;
-  const natural = ko.find(v => /google|neural|online|premium|natural|wavenet/i.test(v.name));
-  return natural || ko[0];
+  const ko = koVoices(); if (!ko.length) return null;
+  if (prefs && prefs.voice) { const c = ko.find(v => v.voiceURI === prefs.voice || v.name === prefs.voice); if (c) return c; }
+  return ko.find(v => /natural|neural/i.test(v.name))   // 신경망(엣지 SunHi·InJoon)이 가장 자연스러움
+    || ko.find(v => /online|google|wavenet|premium|enhanced|고급/i.test(v.name))
+    || ko.find(v => /ko-kr-x|google/i.test(v.voiceURI || ''))
+    || ko[0];
 }
+/* v154 크롬 멈춤 버그 방지 — 탭을 오래 두면 합성기가 일시정지 상태로 남아 말이 안 나옴. 말하기 전에 깨움 */
+function ttsWake() { try { if (speechSynthesis.paused) speechSynthesis.resume(); } catch (e) { } }
 /* 말 빠르기 설정(한글놀이터 이식): 보통/느리게 — 모든 발화 공통 */
 const spRate = base => (typeof prefs !== 'undefined' && prefs.rate === 'slow') ? base * 0.8 : (typeof prefs !== 'undefined' && prefs.rate === 'fast') ? base * 1.25 : base;   // v109: 빠름 추가
 /* 외국어로 읽을 곳(v109, prefs.langAt): q=문제(speakProblem이 _spKind로 표시) · praise=칭찬(PRAISES·PRAISE_HELP) · hint=그 밖의 안내 */
@@ -2138,7 +2144,7 @@ function speak(text, onEnd) {
   lastSpeakMs = (vol() <= 0 || !('speechSynthesis' in window)) ? 0 : speakMs(text, kind);
   if (vol() <= 0 || !('speechSynthesis' in window)) { if (onEnd) setTimeout(onEnd, 0); return; }
   try {
-    speechSynthesis.cancel();
+    ttsWake(); speechSynthesis.cancel();
     const fr = trKo(text, kind);                    // 설정 언어면 같은 내용을 외국어로 한 번 더
     const u = new SpeechSynthesisUtterance(ttsKo(text)); u.lang = 'ko-KR'; u.volume = vol();   // v153 읽기 변환
     const v = pickKoVoice(); if (v) u.voice = v;
@@ -2165,11 +2171,11 @@ function speakFast(text) {
   lastSpeakMs = (vol() <= 0 || !('speechSynthesis' in window)) ? 0 : speakMs(text);
   if (vol() <= 0 || !('speechSynthesis' in window)) return;
   try {
-    speechSynthesis.cancel();
+    ttsWake(); speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(ttsKo(text)); u.lang = 'ko-KR'; u.volume = vol();   // v153 읽기 변환
     /* 자연스러운 음성(온라인 신경망) 우선 — 즉답감은 tick이 담당, 문제 시작 안내(speakProblem)가 엔진을 미리 예열함 */
     const v = pickKoVoice(); if (v) u.voice = v;
-    u.pitch = 1.05; u.rate = spRate(1.1);
+    u.pitch = 1.0; u.rate = spRate(1.08);   // v154: 높낮이 올림 제거(신경망 목소리에서 부자연스러움), 속도만 살짝
     speechSynthesis.speak(u);
     const fr = trKo(text, 'hint'); if (fr) speakForeign(fr);   // 세기 수사(하나→1 등)도 외국어로 한 번 더
   } catch (e) { }
@@ -2178,7 +2184,7 @@ function speakFast(text) {
 function speakSequence(items) {
   seqEndAt = Date.now() + ((vol() > 0 && ('speechSynthesis' in window)) ? items.reduce((s, it) => s + speakMs(it.text, 'hint'), 0) : items.length * 600);
   if (vol() > 0 && ('speechSynthesis' in window)) {
-    speechSynthesis.cancel();
+    ttsWake(); speechSynthesis.cancel();
     items.forEach(it => {
       const u = new SpeechSynthesisUtterance(ttsKo(it.text)); u.lang = 'ko-KR'; u.volume = vol();   // v153 읽기 변환
       const v = pickKoVoice(); if (v) u.voice = v; u.pitch = 1.0; u.rate = spRate(1.0);
@@ -5865,6 +5871,7 @@ function settingsHtml() {
   const rate = prefs.rate === 'slow' ? 'slow' : prefs.rate === 'fast' ? 'fast' : 'normal';
   return `
     <div class="srow"><b>🌐 음성 언어</b><select onchange="setPref('lang',this.value)">${['ko', 'en', 'zh', 'vi', 'ja', 'ru'].map(l => `<option value="${l}"${l === (prefs.lang || 'ko') ? ' selected' : ''}>${LANG_NAME[l]}</option>`).join('')}</select></div>
+    <div class="srow"><b>🗣️ 목소리</b>${(() => { const ko = koVoices(), cur = pickKoVoice(); return ko.length ? `<select onchange="setPref('voice',this.value)"><option value="">자동 (${cur ? esc(cur.name) : '없음'})</option>${ko.map(v => `<option value="${esc(v.voiceURI)}"${prefs.voice === v.voiceURI ? ' selected' : ''}>${esc(v.name)}${/natural|neural|online|google|wavenet|premium|enhanced/i.test(v.name) ? ' ★' : ''}</option>`).join('')}</select><span class="shelp">이 기기의 한국어 목소리예요. 고르면 미리 들려줘요. ★는 자연스러운 목소리</span>` : '<span class="shelp">이 기기에 한국어 목소리가 없어요</span>'; })()}</div>
     <div class="srow"><b>🌐 외국어로 읽을 곳</b><div class="sopts lcb">${on(la.q !== false, '문제', "setPref('langAt','q')")}${on(la.praise !== false, '칭찬', "setPref('langAt','praise')")}${on(la.hint !== false, '힌트', "setPref('langAt','hint')")}</div></div>
     <div class="srow"><b>🔉 소리 크기 <span class="svol">${volLabel()}</span></b><input type="range" min="0" max="100" step="10" value="${+prefs.vol || 0}" oninput="setPref('vol',this.value)" onchange="setPref('volDone',this.value)"></div>
     <div class="srow"><b>🐢 읽는 속도</b><div class="sopts">${on(rate === 'slow', '느림', "setPref('rate','slow')")}${on(rate === 'normal', '보통', "setPref('rate','normal')")}${on(rate === 'fast', '빠름', "setPref('rate','fast')")}</div></div>
@@ -5891,6 +5898,7 @@ function setPref(group, v) {
   else if (group === 'rate') prefs.rate = v;
   else if (group === 'calm') prefs.calm = v === 'on';
   else if (group === 'lang') prefs.lang = v;
+  else if (group === 'voice') prefs.voice = v || '';   // v154 목소리(voiceURI, 기기별 저장)
   else if (group === 'langAt') { const la = prefs.langAt = Object.assign({}, LANG_AT_DEFAULT, prefs.langAt || {}); la[v] = la[v] === false; }
   else if (group === 'flash') prefs.flashSec = parseFloat(v);
   else if (group === 'clockInp') prefs.clockInp = v === 'pad' ? 'pad' : 'dial';   // v127 시계 입력 — 다음 문제부터 적용
@@ -5901,6 +5909,7 @@ function setPref(group, v) {
   savePrefs(); refreshSettings();
   if (group === 'rate') speak('이 빠르기로 말해요.');
   if (group === 'lang') speak('참 잘했어요!');       // trKo가 외국어 칭찬을 이어 말함(미리듣기)
+  if (group === 'voice') speak('참 잘했어요! 이 목소리로 말해요.');   // v154 미리듣기
   if (group === 'size' && $('study')) { $('study').className = 'study sz-' + prefs.size; }
 }
 
