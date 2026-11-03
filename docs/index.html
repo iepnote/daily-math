@@ -1303,6 +1303,13 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq .ncard.b1{ width: 240px; height: 240px; border-radius: 40px; font-size: 140px; cursor: default; }
 .clockq #ck-learn.m-numf .tapn{ pointer-events: all; }
 .clockq #ck-learn.m-handf .hand{ pointer-events: all; cursor: pointer; }
+.clockq .hand .hit{ pointer-events: none; }
+/* v137 바늘 찾기: 바늘 끝 손잡이 원(.hh)과 바늘 둘레 투명 띠(.hit)도 누름 인식 — 바늘 근처만 눌러도 됨 */
+.clockq #ck-learn.m-handf .hh, .clockq #ck-learn.m-handf .hand .hit{ pointer-events: all; cursor: pointer; }
+.clockq #ck-analog .num.cue-h{ fill: var(--red); }
+.clockq .cues{ pointer-events: none; }
+.clockq .cue-m rect{ fill: #fff; stroke: var(--blue); stroke-width: 4; }
+.clockq .cue-m text{ font-size: 42px; font-weight: 900; font-family: 'NanumSquareNeoExtraBold', var(--font-main); fill: var(--blue); text-anchor: middle; dominant-baseline: central; }
 .clockq #ck-legend{ display: none; flex-direction: column; gap: 30px; }
 .clockq #ck-learn.m-handf #ck-legend{ display: flex; }
 .clockq .lg{ display: flex; align-items: center; gap: 18px; font-size: 44px; color: var(--ink); }
@@ -1409,7 +1416,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 136';
+const APP_VERSION = 'ver 137';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -8497,7 +8504,7 @@ const CLOCK_TAG_KO = { hands_swap: '시·분 바늘 바꿈', hour_next: '다음 
 const CLOCK_RUNG_UNITS = ['hour', 'half', 'quarter', 'five', 'one'];   // v55: 단위 순서(사용자 확정) — 5분 단위는 구구단 뒤
 const CLOCK_UNIT_KO = { hour: '정각', half: '30분', quarter: '15·45분', five: '5분', one: '1분' };
 const CLOCK_GROUPS = {
-  face: { label: '시계판 알기', rungs: [{ mode: 'numf', label: '숫자 찾기' }, { mode: 'build', label: '몇 시인지 넣어요' }, { mode: 'handf', sub: 'h', label: '시침을 알아봐요' }, { mode: 'minb', label: '몇 분인지 넣어요' }, { mode: 'handf', sub: 'm', label: '분침을 알아봐요' }] },   // v66: 순서·시침/분침 분리(사용자)
+  face: { label: '시계판 알기', rungs: [{ mode: 'numf', label: '숫자 찾기' }, { mode: 'build', label: '몇 시인지 넣어요' }, { mode: 'handf', sub: 'h', label: '짧은바늘 찾기' }, { mode: 'minb', label: '몇 분인지 넣어요' }, { mode: 'handf', sub: 'm', label: '긴바늘 찾기' }] },   // v66: 순서·시침/분침 분리(사용자) · v137: 칸 이름은 짧은바늘·긴바늘(시침·분침은 정답 음성에서만)
   set: { label: '바늘 돌리기', rungs: [{ mode: 'set', unit: 'hour', sub: 'ho', label: '정각' }, ...CLOCK_RUNG_UNITS.slice(1).map(u => ({ mode: 'set', unit: u, label: CLOCK_UNIT_KO[u] }))] },   // v65: 정각은 짧은바늘만 돌리는 칸 하나(긴바늘은 12 고정) — 「정각·짧은바늘만」+「정각」 둘이면 3번 맞혀도 30분이 안 와 보임
   read: { label: '시각 읽기', rungs: CLOCK_RUNG_UNITS.map(u => ({ mode: 'read', unit: u, label: CLOCK_UNIT_KO[u] })) },
   trip: { label: '시간 여행', rungs: [{ mode: 'set', unit: 'hour', sub: 'turn', label: '한 바퀴' }, { mode: 'nexth', label: '다음 정각' },
@@ -8557,7 +8564,7 @@ function clockFace(p) {
     <button id="ck-okBig">✓ 확인</button>
     <div id="ck-cards"></div>
     <div id="ck-choice"></div>
-    <div id="ck-legend"><div class="lg"><span class="hbar hs"></span><b>짧은바늘</b> = 시침 <i>(시)</i></div><div class="lg"><span class="hbar hm"></span><b>긴바늘</b> = 분침 <i>(분)</i></div></div>
+    <div id="ck-legend"><div class="lg"><span class="hbar hs"></span><b>짧은바늘</b></div><div class="lg"><span class="hbar hm"></span><b>긴바늘</b></div></div>
     </div>
     <div class="card" id="ck-board"></div>
     </div>
@@ -8651,7 +8658,7 @@ function clockMount(p, H) {
   const RUNG_NEED = 3;   // 연속 정답 → 다음 칸
   /* v55 묶음(설계 §12.1) — 학생이 고르는 단계 = 묶음, 단위 = 묶음 안 난이도 칸(rung). 문제는 칸의 {mode, unit, sub}로 만든다. follow = 다른 묶음의 칸을 따라감 */
   const GROUPS = {
-    face: { label: '시계판 알기', rungs: [{ mode: 'numf', label: '숫자 찾기' }, { mode: 'build', label: '몇 시인지 넣어요' }, { mode: 'handf', sub: 'h', label: '시침을 알아봐요' }, { mode: 'minb', label: '몇 분인지 넣어요' }, { mode: 'handf', sub: 'm', label: '분침을 알아봐요' }] },   // v66: 순서·시침/분침 분리(사용자)
+    face: { label: '시계판 알기', rungs: [{ mode: 'numf', label: '숫자 찾기' }, { mode: 'build', label: '몇 시인지 넣어요' }, { mode: 'handf', sub: 'h', label: '짧은바늘 찾기' }, { mode: 'minb', label: '몇 분인지 넣어요' }, { mode: 'handf', sub: 'm', label: '긴바늘 찾기' }] },   // v66: 순서·시침/분침 분리(사용자) · v137: 칸 이름은 짧은바늘·긴바늘(시침·분침은 정답 음성에서만)
     set: { label: '바늘 돌리기', rungs: [{ mode: 'set', unit: 'hour', sub: 'ho', label: '정각' }, ...RUNG_UNITS.slice(1).map(u => ({ mode: 'set', unit: u, label: UNIT_KO[u] }))] },   // v65: 정각은 짧은바늘만 돌리는 칸 하나(긴바늘은 12 고정) — 「정각·짧은바늘만」+「정각」 둘이면 3번 맞혀도 30분이 안 와 보임
     read: { label: '시각 읽기', rungs: RUNG_UNITS.map(u => ({ mode: 'read', unit: u, label: UNIT_KO[u] })) },
     trip: { label: '시간 여행', rungs: [{ mode: 'set', unit: 'hour', sub: 'turn', label: '한 바퀴' }, { mode: 'nexth', label: '다음 정각' },
@@ -8692,10 +8699,17 @@ function clockMount(p, H) {
   const HAND_KO = { h: ['짧은바늘', '시침'], m: ['긴바늘', '분침'] };   // v48 바늘 찾기: [일상 이름, 교과 용어]
   const EUL = v => [1, 3, 6, 7, 8, 10, 11].includes(v) ? '을' : '를';   // 숫자 뒤 을/를(일·삼·육·칠·팔·십·십일 = 받침)
   const GWA = v => [1, 3, 6, 7, 8, 10, 11].includes(v) ? '과' : '와';
+  /* v137 바늘 찾기: term 0 = 촉진 단계(칸의 앞 절반, 최대 HANDF_PROMPT개: 바늘 깜빡임·색 단서·발문에 색 이름), 1 = 촉진 없음. 촉진 단계 정답은 칸 승급 연속 정답에 안 셈(rungStep). 긴바늘 칸은 5분 단위 시각(두 바늘 40° 이상 떨어뜨려 겹쳐 눌리지 않게) */
+  const HANDF_PROMPT = 3;
+  function genHandf(sub, i, n) {
+    const t = sub || (R(0, 1) ? 'h' : 'm'), term = i < Math.min(HANDF_PROMPT, Math.ceil(n / 2)) ? 0 : 1, h = R(1, 11);
+    let m = 0; if (t === 'm') { let tries = 0; do { m = R(1, 11) * 5; tries++; } while (tries < 50 && Math.min(Math.abs((h * 30 + m * .5) - m * 6), 360 - Math.abs((h * 30 + m * .5) - m * 6)) < 40); }
+    return { h, m, target: t, term, label: `${HAND_KO[t][0]} 찾기` };
+  }
   function genOne(mode, unit, i, n) {
     if (mode === 'numf') { const v = R(1, 12); return { h: v, m: 0, n: v, label: `숫자 ${v}` }; }   // v48 A1: 시계판 숫자 탭
     if (mode === 'nexth') { const h = R(1, 12), m = R(0, 1) ? 50 : 55; return { h, m, ans: nextH(h), label: `${h}:${m} 다음 정각` }; }   // v49 C2-1: 짧은바늘 다음 숫자 탭
-    if (mode === 'handf') { const t = R(0, 1) ? 'h' : 'm', term = i < Math.ceil(n / 2) ? 0 : 1; return { h: R(1, 11), m: 0, target: t, term, label: `${HAND_KO[t][term]} 찾기` }; }   // v48 A2: 앞 절반은 짧은/긴바늘, 뒤 절반은 시침/분침
+    if (mode === 'handf') return genHandf(null, i, n);   // v48 A2 · v137: genHandf
     if (mode === 'elapsed') {
       const q = unit === 'hour' ? 60 : unit === 'half' ? 30 : unit === 'quarter' ? 15 : 5;
       const s = genTime(unit), diff = unit === 'hour' ? R(1, 5) * 60 : R(1, Math.floor(359 / q)) * q;
@@ -8771,9 +8785,8 @@ function clockMount(p, H) {
     const base = { mode: rg.mode, unit: rg.unit || 'hour', sub: rg.sub || null, first: true, hint: 0, tags: [], retry: false };
     if (rg.sub === 'day') return { ...base, ...genDay(rg.unit, i) };   // v61: 하루 일과는 고정 순서 → 중복 회피 루프를 타지 않음(elapsed는 mode를 덮음)
     const pk = rg.mode === 'read' && i < PICK4_N;   // v56: 앞 2문제 4지선다도 같은 중복 회피 루프를 탐
-    const one = () => { if (pk) return genPick4(rg.unit); if (rg.mode === 'stop') return genStop(rg.unit); if (rg.sub === 'trip') return genTrip(rg.ds, rg.dir); if (rg.sub !== 'turn') return genOne(rg.mode, rg.unit || 'hour', i, n); const p = genOne('set', 'hour', i, n), h0 = p.h === 1 ? 12 : p.h - 1; return { ...p, m: 0, ansM: 0, h0, m0: 0, label: `${h0}시 → ${p.h}시 한 바퀴` }; };
+    const one = () => { if (pk) return genPick4(rg.unit); if (rg.mode === 'handf') return genHandf(rg.sub, i, n); if (rg.mode === 'stop') return genStop(rg.unit); if (rg.sub === 'trip') return genTrip(rg.ds, rg.dir); if (rg.sub !== 'turn') return genOne(rg.mode, rg.unit || 'hour', i, n); const p = genOne('set', 'hour', i, n), h0 = p.h === 1 ? 12 : p.h - 1; return { ...p, m: 0, ansM: 0, h0, m0: 0, label: `${h0}시 → ${p.h}시 한 바퀴` }; };
     let p = one(); for (let t = 0; prev && t < 20 && ['h', 'm', 'h2', 'm2', 'n'].every(k => p[k] === prev[k]); t++) p = one();
-    if (rg.mode === 'handf' && rg.sub) { p.target = rg.sub; p.label = `${HAND_KO[rg.sub][p.term]} 찾기`; }   // v66: 시침만/분침만
     return { ...base, ...(pk ? { mode: 'pick4' } : {}), ...p };
   }
   /* 오류 태그(설계 §5) */
@@ -8810,12 +8823,12 @@ function clockMount(p, H) {
     parts.push(`<g class="marks"></g><g class="labels"></g>`);
     const hand = (cls, color, len, w, deg) => {
       const head = w, tail = 4, k = cls === 'hourHand' ? 'h' : 'm';
-      return `<g class="hand ${cls}"${deg != null ? ` style="transform:rotate(${deg}deg)"` : ''}><path d="M300,${300 + tail} L${300 - w / 2},${300 + tail} L${300 - w / 2},${300 - len + head} L${300 - head},${300 - len + head} L300,${300 - len} L${300 + head},${300 - len + head} L${300 + w / 2},${300 - len + head} L${300 + w / 2},${300 + tail} Z" fill="${color}" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>${hands ? '' : `<circle class="hh" data-k="${k}" cx="300" cy="${300 - len + 30}" r="56"/>`}</g>`;
+      return `<g class="hand ${cls}"${deg != null ? ` style="transform:rotate(${deg}deg)"` : ''}>${hands ? '' : `<line class="hit" x1="300" y1="${300 + tail}" x2="300" y2="${300 - len}" stroke="transparent" stroke-width="80" stroke-linecap="round"/>`}<path d="M300,${300 + tail} L${300 - w / 2},${300 + tail} L${300 - w / 2},${300 - len + head} L${300 - head},${300 - len + head} L300,${300 - len} L${300 + head},${300 - len + head} L${300 + w / 2},${300 - len + head} L${300 + w / 2},${300 + tail} Z" fill="${color}" stroke="#fff" stroke-width="3" stroke-linejoin="round"/>${hands ? '' : `<circle class="hh" data-k="${k}" cx="300" cy="${300 - len + 30}" r="56"/>`}</g>`;
     };
     const hd = hands ? (hands.h % 12) * 30 + hands.m * .5 : null, md = hands ? hands.m * 6 : null;
     parts.push(hand('minHand', 'var(--blue)', RAD * .74, 34, md));   // v20: 두께 24→34
     parts.push(hand('hourHand', 'var(--red)', RAD * .62, 34, hd));   // v16: 시침이 위(겹쳐도 시침 먼저 잡힘)
-    parts.push(`<circle cx="300" cy="300" r="18" fill="#222"/>`);
+    parts.push(`<circle cx="300" cy="300" r="18" fill="#222"/><g class="cues"></g>`);   // v137: .cues = 바늘 위에 그리는 표지(바늘 찾기 파란 「15분」)
     if (!hands) {
       parts.push(`<g class="taps">${Array.from({ length: 12 }, (_, i) => { const n = i + 1, [x, y] = pt(n * 30, NUMR); return `<circle class="tapn" data-n="${n}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="42"/>`; }).join('')}</g>`);
       parts.push(`<g class="tapts">${Array.from({ length: 60 }, (_, i) => { const [x, y] = pt(i * 6, 262); return `<circle class="tapt" data-i="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/>`; }).join('')}</g>`);
@@ -8862,7 +8875,13 @@ function clockMount(p, H) {
     b.firstChild.beginElement();
   }
   function minLabel(n, text) { const [x, y] = pt(n * 30, 328); A('.labels').insertAdjacentHTML('beforeend', `<text class="mlab" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${text}</text>`); }   // 시계 바깥 작은 분 숫자(v17)
-  function clearMarks() { A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구
+  function clearMarks() { A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; A('.cues').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill', 'cue-h'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구 · v137: 빨간 숫자 단서도
+  /* v137 바늘 찾기 색 단서 — 짧은바늘: 가리키는 숫자가 빨간색 / 긴바늘: 바늘 끝 바깥에 파란 「15분」. blink = 바늘 깜빡임도 함께 */
+  function handCue(p, blink) {
+    if (p.target === 'h') document.querySelectorAll('#ck-analog .num')[p.h - 1].classList.add('cue-h');
+    else if (!A('.cue-m')) { const [x, y] = pt(p.m * 6, 130), w = 124, h = 60; A('.cues').insertAdjacentHTML('beforeend', `<g class="cue-m"><rect x="${(x - w / 2).toFixed(1)}" y="${(y - h / 2).toFixed(1)}" width="${w}" height="${h}" rx="16"/><text x="${x.toFixed(1)}" y="${y.toFixed(1)}">${p.m}분</text></g>`); }   // 긴바늘 가운데(반지름 130)에 흰 바탕 파란 글자 표지 — 시계 바깥은 카드 밖으로 넘침
+    if (blink) A(p.target === 'h' ? '.hourHand' : '.minHand').classList.add('blink');
+  }
   function armTap(n) { document.querySelectorAll('#ck-analog .tapn').forEach(e => e.classList.toggle('on', +e.dataset.n === n)); }
   function armTick(i) { document.querySelectorAll('#ck-analog .tapt').forEach(e => e.classList.toggle('on', +e.dataset.i === i)); }
 
@@ -9076,7 +9095,7 @@ function clockMount(p, H) {
   function question() {
     const p = S.p;
     if (S.mode === 'numf') return `${KO_HOUR[p.n]} 시를 눌러요.`;   // v48 · v66: "한 시를 눌러요"(사용자)
-    if (S.mode === 'handf') return `${HAND_KO[p.target][p.term]}을 눌러요.`;   // v48
+    if (S.mode === 'handf') return `${p.term ? '' : p.target === 'h' ? '빨간 ' : '파란 '}${HAND_KO[p.target][0]}을 눌러요.`;   // v48 · v137: 짧은바늘·긴바늘만, 촉진 단계는 색 이름을 앞에
     if (S.mode === 'build') return p.missing.length === 12 ? '몇 시인지 넣어요.' : '몇 시일까요?';   // v43 · v66 문구
     if (S.mode === 'minb') return p.intro ? (p.from ? `${p.from}에서 이어서 눈금을 눌러요.` : '눈금 한 칸은 1분이에요. 12부터 눈금을 하나씩 눌러요.') : p.missing.length === 12 ? '몇 분인지 넣어요.' : '몇 분일까요?';   // v45 · v66 눈금 세기·문구
     if (S.mode === 'pick4') return '같은 시각을 골라요.';   // v56
@@ -9089,7 +9108,7 @@ function clockMount(p, H) {
     if (S.mode === 'nexth') return '짧은바늘 다음 숫자를 눌러요.';   // v49
     return `${tk(p.h, p.m)}부터 ${tk(p.h2, p.m2)}까지, 얼마나 걸렸어요?`;
   }
-  function answerKo() { const p = S.p; return S.mode === 'flip' ? '다 찾았어요.' : S.mode === 'nexth' ? `다음 숫자는 ${sino(nextH(p.h))}. 다음 정각은 ${KO_HOUR[nextH(p.h)]} 시.` : S.sub === 'day' ? `${p.scene.name}, ${tk(p.h, p.m)}.` : S.mode === 'set' && S.sub === 'turn' ? `한 바퀴, 한 시간. ${KO_HOUR[p.h]} 시.` : S.mode === 'set' && S.sub === 'trip' ? `${p.d} 분 ${p.dir > 0 ? '뒤는' : '전은'} ${tk(p.h, p.m)}.` : S.mode === 'numf' ? `${KO_HOUR[p.n]} 시.` : S.mode === 'handf' ? `${HAND_KO[p.target][0]}, ${HAND_KO[p.target][1]}이에요.` : isBuild() ? '다 채웠어요.' : S.mode === 'elapsed' ? durKo(p.ansH, p.ansM) : (S.mode === 'read' || S.mode === 'pick4') && p.m === 0 ? `${KO_HOUR[p.h]} 시 정각.` : timeKo(p.h, p.m); }   // v40: 읽기 정각은 "N 시 정각."
+  function answerKo() { const p = S.p; return S.mode === 'flip' ? '다 찾았어요.' : S.mode === 'nexth' ? `다음 숫자는 ${sino(nextH(p.h))}. 다음 정각은 ${KO_HOUR[nextH(p.h)]} 시.` : S.sub === 'day' ? `${p.scene.name}, ${tk(p.h, p.m)}.` : S.mode === 'set' && S.sub === 'turn' ? `한 바퀴, 한 시간. ${KO_HOUR[p.h]} 시.` : S.mode === 'set' && S.sub === 'trip' ? `${p.d} 분 ${p.dir > 0 ? '뒤는' : '전은'} ${tk(p.h, p.m)}.` : S.mode === 'numf' ? `${KO_HOUR[p.n]} 시.` : S.mode === 'handf' ? `${HAND_KO[p.target][0]}, ${HAND_KO[p.target][1]}. ${p.target === 'h' ? `${KO_HOUR[p.h]} 시` : `${sino(p.m)} 분`}.` : isBuild() ? '다 채웠어요.' : S.mode === 'elapsed' ? durKo(p.ansH, p.ansM) : (S.mode === 'read' || S.mode === 'pick4') && p.m === 0 ? `${KO_HOUR[p.h]} 시 정각.` : timeKo(p.h, p.m); }   // v40: 읽기 정각은 "N 시 정각."
   function nextProblem() {
     stopHalt(); comboStop();   // v58: 돌던 긴바늘이 다음 문제에 남지 않게 · v60: 콤보 타이머도
     S.p = S.items[S.idx]; S.mode = S.p.mode; S.unit = S.p.unit; S.sub = S.p.sub; layout(); S.wrong = { h: 0, m: 0 }; S.ok = { h: false, m: false }; S.counting = null; S.E = 0;
@@ -9097,7 +9116,7 @@ function clockMount(p, H) {
     $('ask').textContent = question();
     if (S.mode === 'numf') { setHands(S.p.n, 0, false); setDigital(null, null); $('cards').innerHTML = `<div class="ncard b1">${S.p.n}</div>`; askQ(() => lock(false)); return; }   // v48 A1
     if (S.mode === 'nexth') { const p = S.p; setHands(p.h, p.m, false); setDigital(null, null); askQ(() => lock(false)); return; }   // v49 C2-1
-    if (S.mode === 'handf') { setHands(S.p.h, 0, false); setDigital(null, null); askQ(() => lock(false)); return; }   // v48 A2
+    if (S.mode === 'handf') { setHands(S.p.h, S.p.m, false); setDigital(null, null); if (!S.p.term) handCue(S.p, true); askQ(() => lock(false)); return; }   // v48 A2 · v137: 촉진 단계는 바늘 깜빡임 + 색 단서
     if (S.mode === 'pick4') { setHands(S.p.h, S.p.m, false); setDigital(null, null); $('choice').innerHTML = S.p.opts.map((o, i) => `<button class="ch ch4" data-c="${i}">${digitalMarkup(o.h, o.m)}</button>`).join(''); askQ(() => lock(false)); return; }   // v56 4지선다
     if (S.mode === 'flip') { flipSetup(); askQ(() => lock(false)); return; }   // v59 짝 뒤집기
     if (S.mode === 'stop') { const p0 = S.p; setDigital(p0.h, p0.m); $('cards').innerHTML = '<span class="star">⭐</span>'.repeat(3); stopPlace(p0.abs0); askQ(() => { if (S.p !== p0) return; lock(false); stopStart(); }); return; }   // v58 멈춰!: 출발 자리에 놓고 발문이 끝나면 돌기 시작
@@ -9226,7 +9245,7 @@ function clockMount(p, H) {
       () => { $('choice').querySelector(`.ch[data-c="${p.ans}"]`).classList.add('ok'); pickDone(); });
   });
   $('analog').addEventListener('click', e => {
-    const hd = e.target.closest('.hand'); if (hd && S.mode === 'handf') { handfTry(hd.classList.contains('hourHand') ? 'h' : 'm'); return; }   // v48 A2
+    if (S.mode === 'handf') { const hd = e.target.closest('.hand'); handfTry(hd ? (hd.classList.contains('hourHand') ? 'h' : 'm') : null); return; }   // v48 A2 · v137: 빗나간 터치도 handfTry(null)
     const c = e.target.closest('.tapn'); if (c) { if (S.mode === 'numf') numfTry(+c.dataset.n); else if (S.mode === 'nexth') tapTry(+c.dataset.n); else countTap(+c.dataset.n); return; }   // v48 A1 · v49 nexth
     const t = e.target.closest('.tapt'); if (t) { if (S.counting && S.counting.kind === 'intro') introTick(+t.dataset.i); else countTick(+t.dataset.i); }   // v66 눈금 세기
   });
@@ -9319,10 +9338,11 @@ function clockMount(p, H) {
     pickWrong(() => { ringNum(p.n); speak(`여기 있어요. ${p.n}${EUL(p.n)} 눌러요.`, () => lock(false)); }, () => { ringNum(p.n); lightNum(p.n); pickDone(); });
   }
   function handfTry(k) {
-    if (S.locked || S.mode !== 'handf') return; const p = S.p, right = A(p.target === 'h' ? '.hourHand' : '.minHand'), name = HAND_KO[p.target][0];
-    if (k === p.target) { tick(); right.classList.add('blink'); pickDone(); return; }
+    if (S.locked || S.mode !== 'handf') return; const p = S.p, name = HAND_KO[p.target][0];
+    if (k === p.target) { tick(); handCue(p, true); pickDone(); return; }   // v137: 정답이면 색 단서(빨간 숫자·파란 분)로 바늘의 뜻을 보여 줌
+    if (k === null) { lock(true); speak('바늘을 눌러요.', () => lock(false)); return; }   // v137: 바늘이 아닌 곳 — 오답으로 세지 않음
     p.tags.push('hands_swap');
-    pickWrong(() => { right.classList.add('blink'); speak(`이게 ${name}이에요. ${name}을 눌러요.`, () => lock(false)); }, () => { right.classList.add('blink'); pickDone(); });
+    pickWrong(() => { handCue(p, true); speak(`이게 ${name}이에요. ${name}을 눌러요.`, () => lock(false)); }, () => { handCue(p, true); pickDone(); });
   }
 
   /* ---------- v49 다음 정각(nexth) — 탭 선택 과제 ---------- */
@@ -9556,7 +9576,7 @@ function clockMount(p, H) {
       else if (S.mode === 'set') { setHands(p.h, p.m, true, S.sub === 'trip' ? p.dir : 1, S.sub === 'turn' ? 1 : 0); await d(1900); }   // v57: 시간 여행은 뒤·전 방향 그대로
       else if (S.mode === 'numf') { ringNum(p.n); lightNum(p.n); await d(900); }   // v48
       else if (S.mode === 'nexth') { lightNum(12, '#FFC9C9'); ringNum(p.ans); lightNum(p.ans); await d(900); }   // v49
-      else if (S.mode === 'handf') { A(p.target === 'h' ? '.hourHand' : '.minHand').classList.add('blink'); await d(900); }   // v48
+      else if (S.mode === 'handf') { handCue(p, true); await d(900); }   // v48 · v137: 색 단서도
       else if (isBuild()) { if (S.p.intro) { for (let i = S.p.from + 1; i <= S.p.intro; i++) { if (!alive()) return; introTick(i); await d(500); } } else for (const n of [...B.left]) { if (!alive()) return; buildPlace(n); await d(600); } }   // v66 눈금 세기 시연
       else if (S.mode === 'elapsed') { resetInput(); S.k = ''; renderPad(); setHands(p.h, p.m, false); S.E = 0; if (p.ansH) await taps('turn'); if (!alive()) return; if (p.ansM) await taps('span'); S.h = p.ansH; S.m = p.ansM; renderSlots(); }
       if (!alive()) return;
@@ -9627,7 +9647,7 @@ function clockMount(p, H) {
   function setRung(g, r) { RUNGS[rungKey(g)] = r; saveRungs(); S.rungFresh = 0; }   // 칸이 바뀌면 칸 안 순번 0부터
   function applyRung() { const rg = curRung(); S.mode = rg.mode; S.unit = rg.unit || 'hour'; S.sub = rg.sub || null; }
   function rungStep(p) {   // 문제 하나 끝(재도전 제외): 연속 정답 → 승급(종). 다음 문제부터 새 칸 — pushFresh가 curRung을 읽고 nextProblem이 p.mode를 적용
-    const k = rungKey(S.group), last = GROUPS[k].rungs.length - 1; if (last < 0 || isBuildMode(p.mode)) return;   // 시·분 숫자 넣기는 B 사다리(buildDone)가 승급
+    const k = rungKey(S.group), last = GROUPS[k].rungs.length - 1; if (last < 0 || isBuildMode(p.mode) || (p.mode === 'handf' && !p.term)) return;   // 시·분 숫자 넣기는 B 사다리(buildDone)가 승급 · v137: 바늘 찾기 촉진 단계는 연속 정답에 안 셈(촉진 없이 3번 맞혀야 승급)
     const a = rungAfter(RS.streak, p.first, rungOf(S.group), S.group === 'day' && moreFresh() ? rungOf(S.group) : last); RS.streak = a.streak;   // v61: 하루 일과는 이야기 도중 칸이 바뀌면 장면이 처음부터 다시 → 마지막 문제에서만 승급
     if (a.r !== rungOf(S.group)) { setRung(S.group, a.r); bell(); }   // applyRung 안 함: 지금 문제의 정답 음성(answerKo)이 S.mode를 씀(숫자 찾기→바늘 찾기 승급 때 HAND_KO[undefined] 오류)
   }
