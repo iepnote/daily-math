@@ -1313,12 +1313,15 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq .zoomMask{ pointer-events: none; transition: opacity .6s; }
 .clockq .zoomMask .zm{ fill: #fff; }
 .clockq .zoomMask .ze{ fill: none; stroke: #ccc; stroke-width: 3; stroke-dasharray: 12 9; }
-/* v138 눈금 세기 바깥 반원 화살표 */
-.clockq .carc{ pointer-events: none; }
-.clockq .carc-line{ stroke: var(--red); stroke-width: 14; stroke-linecap: round; }
-.clockq .carc-prev{ stroke: var(--red); stroke-width: 14; stroke-linecap: round; opacity: .3; }
-.clockq .carc-head{ transform-origin: 300px 300px; transition: transform .35s cubic-bezier(.3,0,.7,1); }
-.clockq .carc-head polygon{ fill: var(--red); stroke: #fff; stroke-width: 2; stroke-linejoin: round; }
+/* v140 눈금 세기: 시계 바깥 1분 아치(뛰어간 자국) */
+.clockq .chops{ pointer-events: none; }
+.clockq .chop{ fill: none; stroke: var(--red); stroke-width: 8; stroke-linecap: round; }
+.clockq .chop.prev{ opacity: .3; }
+/* v139 눈금 세기 부채꼴 확대: 확대 중·확대 상태는 보이는 영역 밖을 자름(평소엔 바깥 분 숫자 때문에 visible) */
+.clockq .face.zooming{ overflow: hidden; }
+.clockq .zoomMask{ pointer-events: none; transition: opacity .6s; }
+.clockq .zoomMask .zm{ fill: #fff; }
+.clockq .zoomMask .ze{ fill: none; stroke: #ccc; stroke-width: 3; stroke-dasharray: 12 9; }
 .clockq .cue-m rect{ fill: #fff; stroke: var(--blue); stroke-width: 4; }
 .clockq .cue-m text{ font-size: 42px; font-weight: 900; font-family: 'NanumSquareNeoExtraBold', var(--font-main); fill: var(--blue); text-anchor: middle; dominant-baseline: central; }
 .clockq #ck-legend{ display: none; flex-direction: column; gap: 30px; }
@@ -1427,7 +1430,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 139';
+const APP_VERSION = 'ver 140';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -8895,23 +8898,17 @@ function clockMount(p, H) {
   function redCircle(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="40" fill="none" stroke="var(--red)" stroke-width="8" stroke-dasharray="14 11" stroke-linecap="round"/>`); }   // v38: 점선
   function ringNum(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle class="yb" cx="${x}" cy="${y}" r="44" fill="none" stroke="#FFC400" stroke-width="9"/>`); }   // v40: 노란 동그라미 깜빡임(읽기 정각 2차)
   function tickDot(i) { const [x, y] = pt(i * 6, 262); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="9" fill="var(--red)"/>`); }
-  /* v138 눈금 세기(사용자 지시): 시계 바깥(테두리 294와 분 숫자 313 사이, 반지름 303)에 빨간 반원 화살표가 시작 눈금(from)부터 눈금 i까지 그려지고, 한 칸 누를 때마다 1분(6°)씩 자란다.
-     anim=false면 그 길이로 바로 그림(이어 세기 시작 자리). 화살촉은 호 끝에서 .35초 동안 돌아가고, 호는 마지막 6°가 stroke-dashoffset으로 자라남 */
-  const ARC_R = 303;
+  /* v140 눈금 세기(사용자 그림): 시계 테두리 바깥에 눈금 i-1 → i를 잇는 작은 반원 아치가 1분마다 하나씩 쌓인다(뛰어간 자국). 새 아치는 .3초 동안 그려지고,
+     이어 세기(from > 0)는 이미 센 아치(1..from)를 연하게 미리 그린다. anim=false면 현재 길이까지 바로 그림 */
+  const HOP_R = 300, HOP_H = 28;   // 발 자리 반지름(테두리 294 바로 밖)·아치 높이(2차 곡선 조절점은 2배 높이)
+  const hopPath = i => { const [x0, y0] = pt((i - 1) * 6, HOP_R), [x1, y1] = pt(i * 6, HOP_R), [cx, cy] = pt((i - .5) * 6, HOP_R + HOP_H * 2); return `M${x0.toFixed(1)},${y0.toFixed(1)} Q${cx.toFixed(1)},${cy.toFixed(1)} ${x1.toFixed(1)},${y1.toFixed(1)}`; };
   function tickArc(i, anim = true) {
-    const from = (S.p && S.p.from) || 0, a0 = from * 6, a1 = i * 6, span = a1 - a0;
-    let g = A('.carc');
-    if (!g) {   // 이어 세기(from > 0)면 이미 센 0→from 호를 연하게 먼저 그림
-      const prev = a0 > 0 ? (() => { const [px, py] = pt(0, ARC_R), [qx, qy] = pt(a0, ARC_R); return `<path class="carc-prev" fill="none" d="M${px.toFixed(1)},${py.toFixed(1)} A${ARC_R},${ARC_R} 0 ${a0 > 180 ? 1 : 0} 1 ${qx.toFixed(1)},${qy.toFixed(1)}"/>`; })() : '';
-      A('.marks').insertAdjacentHTML('beforeend', `<g class="carc">${prev}<path class="carc-line" fill="none"/><g class="carc-head"><polygon points="300,-17 322,-3 300,11"/></g></g>`); g = A('.carc');
+    const from = (S.p && S.p.from) || 0;
+    let g = A('.chops'); if (!g) { A('.marks').insertAdjacentHTML('beforeend', `<g class="chops">${Array.from({ length: from }, (_, k) => `<path class="chop prev" d="${hopPath(k + 1)}"/>`).join('')}</g>`); g = A('.chops'); }
+    for (let k = g.querySelectorAll('.chop:not(.prev)').length + from + 1; k <= i; k++) {
+      g.insertAdjacentHTML('beforeend', `<path class="chop" data-i="${k}" d="${hopPath(k)}" pathLength="1"/>`);
+      if (anim && k === i) { const e = g.lastElementChild; e.setAttribute('stroke-dasharray', '1'); e.innerHTML = `<animate attributeName="stroke-dashoffset" from="1" to="0" dur=".3s" fill="freeze" calcMode="spline" keySplines=".2 0 .6 1"/>`; e.firstChild.beginElement(); }
     }
-    const line = g.querySelector('.carc-line'), head = g.querySelector('.carc-head');
-    if (span > 0) { const [x0, y0] = pt(a0, ARC_R), [x1, y1] = pt(a1, ARC_R); line.setAttribute('d', `M${x0.toFixed(1)},${y0.toFixed(1)} A${ARC_R},${ARC_R} 0 ${span > 180 ? 1 : 0} 1 ${x1.toFixed(1)},${y1.toFixed(1)}`); line.setAttribute('pathLength', span); line.setAttribute('stroke-dasharray', span); }
-    else line.removeAttribute('d');
-    line.innerHTML = ''; line.setAttribute('stroke-dashoffset', 0);
-    if (!anim) { head.style.transition = 'none'; head.style.transform = `rotate(${a1}deg)`; void head.getBBox(); head.style.transition = ''; return; }
-    head.style.transform = `rotate(${a1}deg)`;
-    if (span > 0) { line.innerHTML = `<animate attributeName="stroke-dashoffset" from="${Math.min(6, span)}" to="0" dur=".35s" fill="freeze" calcMode="spline" keySplines=".3 0 .7 1"/>`; line.firstChild.beginElement(); }
   }
   function minLabel(n, text) { const [x, y] = pt(n * 30, 328); A('.labels').insertAdjacentHTML('beforeend', `<text class="mlab" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${text}</text>`); }   // 시계 바깥 작은 분 숫자(v17)
   function clearMarks() { A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; A('.cues').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill', 'cue-h'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구 · v137: 빨간 숫자 단서도
@@ -9412,7 +9409,7 @@ function clockMount(p, H) {
   function introSetup() {
     const p = S.p; B.left = []; B.wrong = 0; B.sel = null; B.drag = null; $('cards').innerHTML = ''; $('ghost').style.display = 'none'; $('learn').classList.remove('last');
     document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; }); document.querySelectorAll('#ck-analog .mnum').forEach(e => e.remove());
-    for (let n = 1; n * 5 <= p.from; n++) slotShow(n, false); tickArc(p.from, false);   // v138: 화살촉이 시작 눈금에 놓여 있음(이어 세기는 0→from 호도 미리)
+    for (let n = 1; n * 5 <= p.from; n++) slotShow(n, false); tickArc(p.from, false);   // v140: 이어 세기는 이미 센 아치를 연하게 미리
     setHands(12, p.from, false);
     faceZoom(true);   // v139: 발문이 나오는 동안 12~3 부채꼴로 확대
   }
@@ -9420,7 +9417,7 @@ function clockMount(p, H) {
   function introTick(i) {
     const st = S.counting; if (!st || st.kind !== 'intro') return;
     if (i !== st.i + 1) { shake($('analog')); return; }
-    st.i = i; tickArc(i); setHands(12, i, true, 1); speakFast(sino(i));   // v138: 바깥 화살표가 1분 자람
+    st.i = i; tickArc(i); setHands(12, i, true, 1); speakFast(sino(i));   // v140: 바깥에 아치 하나 추가(1분 뛰어감)
     if (i < st.end) { armTick(i + 1); return; }
     armTick(-1); S.counting = null; slotShow(i / 5, true); if (S.demo) return;
     lock(true); const p0 = S.p; speak(`${KO_CNT[i]} 칸, ${sino(i)} 분.`, () => { if (S.p !== p0) return; faceZoom(false).then(() => { if (S.p === p0) setTimeout(buildDone, 800); }); });   // v139: 전체 시계로 돌아와 화살표·긴바늘을 한 번 더 보여 준 뒤 다음으로
