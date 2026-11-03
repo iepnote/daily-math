@@ -1562,6 +1562,38 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .vans-cells .ansbox{ border-left-width:0; }
 .vans-cells .ansbox + .ansbox{ border-left:.06em solid var(--line); }   /* 세로셈 답 칸: 바깥은 한 상자, 안쪽 칸막이는 옅게 */
 .qblank-cells .ansbox + .ansbox{ border-left:.06em solid var(--line); }
+/* ---- v151 디자인 체계 3단계: 시작·종료·설정 화면 ---- */
+.note{ background:#F6F5F2; border:1px solid #E6E3DC; color:var(--ink-soft); }
+.note.soft{ text-align:center; font-size:1.02rem; line-height:1.5; }
+.note .more{ margin-top:.35rem; }
+.note .more summary{ cursor:pointer; font-weight:800; color:var(--accent-strong); list-style:none; display:inline-block; }
+.note .more summary::after{ content:' ▾'; font-size:.9em; }
+.note .more[open] summary::after{ content:' ▴'; }
+.pickside input#in-code{ border:2px solid var(--line-strong); border-radius:16px; padding:.55rem 1rem; outline:none; box-shadow:var(--shadow); }
+.pickside input#in-code:focus{ border-color:var(--accent-strong); }
+.ph-ops{ color:rgba(255,255,255,.55); }
+.ph-stamps .st.on{ box-shadow:none; }
+.calband{ background:#EAF3FC; color:var(--accent-strong); }
+.fin-title{ font-size:2.4rem; font-weight:800; margin-top:.3rem; }
+.fin-score{ display:flex; flex-direction:column; align-items:center; margin:.2rem 0 .1rem; line-height:1.1; }
+.fin-score .n{ font-size:4.4rem; font-weight:900; color:var(--accent-strong); }
+.fin-score .of{ font-size:1.4rem; font-weight:800; color:var(--ink-soft); margin-top:.1rem; }
+.fin-score .stars{ font-size:1.7rem; letter-spacing:.1em; margin-top:.35rem; }
+.linkbtn{ font-family:inherit; background:none; border:0; color:var(--ink-soft); font-size:1.05rem; font-weight:700; cursor:pointer; margin-top:.9rem; text-decoration:underline; text-underline-offset:3px; }
+.scorepop{ border:0; box-shadow:0 16px 40px rgba(0,0,0,.22); padding:1.2rem 2.2rem; }
+.scorepop .big{ font-size:3.2rem; color:var(--accent-strong); }
+.setpanel{ border:1px solid var(--line); border-radius:20px; box-shadow:0 16px 40px rgba(0,0,0,.18); width:360px; padding:1rem 1.2rem; }
+.setpanel .srow{ margin-bottom:1rem; padding-bottom:.85rem; border-bottom:1px solid #EEF1F5; }
+.setpanel .srow:last-child{ border-bottom:0; padding-bottom:0; }
+.setpanel .srow b{ font-size:1.02rem; color:var(--ink-soft); margin-bottom:.45rem; }
+.setpanel .sopts button, .setpanel .sopts.lcb button{ border:2px solid var(--line); background:#fff; color:var(--ink); border-radius:12px; }
+.setpanel .sopts button.on, .setpanel .sopts.lcb button.on{ background:var(--accent-strong); border-color:var(--accent-strong); color:#fff; }
+.setpanel select{ border:2px solid var(--line); background:#fff; border-radius:12px; padding:.45rem .6rem; }
+.setpanel input[type=range]{ accent-color:var(--accent-strong); }
+.setpanel label input{ accent-color:var(--accent-strong); width:1.25rem; height:1.25rem; }
+.setpanel .shelp{ margin-left:1.75rem; }
+.ghome{ padding-bottom:2.6rem; }
+.ghome .credit{ max-width:92%; }
 </style>
 </head>
 <body>
@@ -1578,7 +1610,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 150';
+const APP_VERSION = 'ver 151';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -5905,10 +5937,10 @@ function renderCalendar(justFinished, keepMonth) {
   }
 }
 function changeMonth(d) { const dt = new Date(calY, calM + d, 1); calY = dt.getFullYear(); calM = dt.getMonth(); renderCalendar(false, true); }
-function showScorePop(s) {
+function showScorePop(s, noPop) {   // v151: noPop = 화면에 점수가 이미 크게 있을 때(손님 종료) 말만
   const pop = document.createElement('div'); pop.className = 'scorepop' + (s.promo === 2 ? ' stay5' : '');
   pop.innerHTML = `<div>오늘 점수</div><div class="big">⭐ ${s.got} / ${s.total}</div>${s.promo === 2 ? `<div class="lvup">🎉 다음 단계로 올라갔어요!</div>` : ''}`;
-  $('stage').appendChild(pop);
+  if (!noPop) $('stage').appendChild(pop);
   speak(`${s.total}개 중 ${s.got}개 맞았어요.`
     + (s.promo === 2 ? ` 다음 단계로 올라가요! 이제 ${s.levelName}.`
       : s.promo === 1 ? ' 한 번 더 잘하면 다음 단계!' : ''));
@@ -5924,19 +5956,20 @@ function renderGuestHome(justFinished) {
     <button class="lvl" onclick="openLevelPicker()">📚 단계</button>
     <button class="quit" onclick="exitGuest()">🚪 나가기</button>
     <button class="set" onclick="openSettings()" title="설정" aria-label="설정">⚙️</button>`);
-  $('wrap').innerHTML = `<div class="card card--accent" style="max-width:640px;margin:0 auto;position:relative;">
+  $('wrap').innerHTML = `<div class="card card--accent ghome" style="max-width:640px;margin:0 auto;position:relative;">
     <div class="calband">매일매일 수학 · 🎈 손님 모드</div>
-    <div class="read-sentence">${justFinished ? '다 했어요!' : '🎈 손님으로 해보는 중'}</div>
+    <div class="read-sentence fin-title">${justFinished ? '다 했어요!' : '🎈 손님으로 해보는 중'}</div>
+    ${justFinished && lastScore ? `<div class="fin-score"><span class="n">${lastScore.got}</span><span class="of">/ ${lastScore.total}</span><div class="stars">${'⭐'.repeat(Math.max(1, Math.round(lastScore.got / lastScore.total * 5)))}</div></div>` : ''}
     <div class="sub">${esc(levelById(current.level).name)}</div>
     <div style="display:flex;gap:.8rem;justify-content:center;margin-top:1.2rem;flex-wrap:wrap">
       <button class="btn btn--orange" style="font-weight:800" onclick="startSession()">다시 해보기</button>
       <button class="btn btn--teal" style="font-weight:800" onclick="openLevelPicker()">📚 다른 단계</button>
-      <button class="btn btn--gray" style="font-weight:800" onclick="exitGuest()">나가기</button>
     </div>
-    <div class="note" style="margin-top:1rem">손님 모드예요. <b>기록이 저장되지 않아</b> 학생 진도에 영향을 주지 않습니다.</div>
+    <button class="linkbtn" onclick="exitGuest()">나가기</button>
+    <div class="note soft" style="margin-top:.8rem">손님 모드는 기록이 저장되지 않아 학생 진도에 영향을 주지 않아요.</div>
     <div class="credit">${APP_VERSION} · 민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다.</div>
   </div>`;
-  if (justFinished && lastScore) showScorePop(lastScore);
+  if (justFinished && lastScore) showScorePop(lastScore, true);
 }
 
 /* =========================================================
@@ -5962,7 +5995,8 @@ function renderStart() {
         <button class="btn btn--gray" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" onclick="renderTeacherLogin()">선생님 모드</button>
         <button class="btn btn--teal" style="font-size:1.2rem;padding:.6rem 1.4rem;font-weight:800" title="기록 저장 안 함" onclick="startGuest()">🎈 손님 모드</button>
       </div>
-      <div class="note" style="max-width:460px">📌 <b>크롬(Chrome) 브라우저</b>로 접속해 주세요.<br>교실 코드는 선생님이 알려 줘요.<br>처음이라면 선생님 모드에서 [새 교실 만들기]를 눌러 주세요.<br>🎈 손님 모드는 코드 없이 해볼 수 있어요(기록 저장 안 함).</div>
+      <div class="note soft" style="max-width:460px">교실 코드는 선생님이 알려 줘요. 🎈 손님 모드는 코드 없이 해볼 수 있어요(기록 저장 안 함).
+        <details class="more"><summary>처음이세요?</summary>크롬(Chrome) 브라우저로 접속해 주세요. 처음이라면 선생님 모드에서 [새 교실 만들기]를 눌러 주세요.</details></div>
     </div>
     <div class="credit">${APP_VERSION} · ${Store.mode() === 'remote' ? '온라인 저장' : '이 기기에만 저장'} · 민예원선생님(iepnote@gmail.com)이 조금씩 수정하고 있습니다. · 그림상징: ARASAAC(arasaac.org) · 저작자 Sergio Palao · 소유 Government of Aragón · CC BY-NC-SA</div>
   </div>`;
