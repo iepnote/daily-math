@@ -1549,6 +1549,19 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .pslot.mps{ border:0; background:#fff; box-shadow:inset 0 3px 6px rgba(0,0,0,.12); } .pslot.mps:has(.mpitem){ box-shadow:none; }
 .mmdial.db .dbtn{ background:#E8F2FC; }
 .credit{ max-width:60%; text-align:right; line-height:1.3; }
+/* ---- v150 디자인 체계 2단계: 문제 화면 구성 — 식을 키우고 조금 내려 보기와 한 장면으로, 보기 단추·힌트 글자 확대, 세로셈 답 칸 한 상자 ---- */
+.study.sz-sm .qface{ font-size:3.8rem; } .study.sz-md .qface{ font-size:5.4rem; } .study.sz-lg .qface{ font-size:6.2rem; }
+.study-card .qface{ padding-top:3rem; }
+.study-card .qface:has(.facev){ padding-top:1.8rem; }
+.study-card{ padding:.8rem 2rem 1.2rem; }
+.choice-row{ gap:1.4rem; margin-top:.6rem; margin-bottom:.3rem; }
+.btn-choice{ padding:.55rem 1.4rem; min-width:150px; }
+.study.sz-sm .btn-choice{ font-size:2.3rem; } .study.sz-md .btn-choice{ font-size:3rem; } .study.sz-lg .btn-choice{ font-size:3.4rem; }
+.hint .tip{ font-size:1.35rem; text-align:center; }
+.counter{ background:#EAF3FC; color:var(--accent-strong); font-weight:800; }
+.vans-cells .ansbox{ border-left-width:0; }
+.vans-cells .ansbox + .ansbox{ border-left:.06em solid var(--line); }   /* 세로셈 답 칸: 바깥은 한 상자, 안쪽 칸막이는 옅게 */
+.qblank-cells .ansbox + .ansbox{ border-left:.06em solid var(--line); }
 </style>
 </head>
 <body>
@@ -1565,7 +1578,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 149';
+const APP_VERSION = 'ver 150';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
