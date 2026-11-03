@@ -1308,6 +1308,11 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq #ck-learn.m-handf .hh, .clockq #ck-learn.m-handf .hand .hit{ pointer-events: all; cursor: pointer; }
 .clockq #ck-analog .num.cue-h{ fill: var(--red); }
 .clockq .cues{ pointer-events: none; }
+/* v139 눈금 세기 부채꼴 확대: 확대 중·확대 상태는 보이는 영역 밖을 자름(평소엔 바깥 분 숫자 때문에 visible) */
+.clockq .face.zooming{ overflow: hidden; }
+.clockq .zoomMask{ pointer-events: none; transition: opacity .6s; }
+.clockq .zoomMask .zm{ fill: #fff; }
+.clockq .zoomMask .ze{ fill: none; stroke: #ccc; stroke-width: 3; stroke-dasharray: 12 9; }
 /* v138 눈금 세기 바깥 반원 화살표 */
 .clockq .carc{ pointer-events: none; }
 .clockq .carc-line{ stroke: var(--red); stroke-width: 14; stroke-linecap: round; }
@@ -1422,7 +1427,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 138';
+const APP_VERSION = 'ver 139';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -8839,9 +8844,28 @@ function clockMount(p, H) {
       parts.push(`<g class="taps">${Array.from({ length: 12 }, (_, i) => { const n = i + 1, [x, y] = pt(n * 30, NUMR); return `<circle class="tapn" data-n="${n}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="42"/>`; }).join('')}</g>`);
       parts.push(`<g class="tapts">${Array.from({ length: 60 }, (_, i) => { const [x, y] = pt(i * 6, 262); return `<circle class="tapt" data-i="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="30"/>`; }).join('')}</g>`);
     }
+    if (!hands) parts.push(`<g class="zoomMask" style="opacity:0"><path class="zm" fill-rule="evenodd" d="M-200,-200 H800 V800 H-200 Z M300,300 L249.2,-61.4 A365,365 0 0 1 665,300 Z"/><path class="ze" d="M249.2,-61.4 L300,300 L665,300"/></g>`);   // v139 눈금 세기 부채꼴 확대 가림막(12~3 사이만 남김)
     return `<svg class="face" viewBox="0 0 600 600">${parts.join('')}</svg>`;
   }
   function buildAnalog() { $('analog').innerHTML = faceMarkup(null); }
+  /* v139 눈금 세기 부채꼴 확대(사용자 지시): 전체 시계 → 중심을 꼭짓점으로 12보다 8° 앞에서 3까지 부채꼴(viewBox 237,-70,428,428 = 약 1.4배)로 ms 동안 확대, 가림막이 함께 나타남. on=false면 전체로 되돌림. ms=0이면 즉시 */
+  const ZOOM_FULL = [0, 0, 600, 600], ZOOM_WEDGE = [237, -70, 428, 428];
+  function faceZoom(on, ms = 600) {
+    const svg = A('.face'), mask = A('.zoomMask'); if (!svg) return Promise.resolve();
+    const to = on ? ZOOM_WEDGE : ZOOM_FULL, from = (svg.getAttribute('viewBox') || '0 0 600 600').split(' ').map(Number), gen = faceZoom.gen = (faceZoom.gen || 0) + 1;
+    svg.classList.add('zooming'); if (mask) { mask.style.transitionDuration = ms + 'ms'; mask.style.opacity = on ? 1 : 0; }
+    if (!ms || from.join(' ') === to.join(' ')) { svg.setAttribute('viewBox', to.join(' ')); if (!on) svg.classList.remove('zooming'); return Promise.resolve(); }
+    return new Promise(res => {
+      const t0 = performance.now();
+      const step = now => {
+        if (faceZoom.gen !== gen || !svg.isConnected) { res(); return; }
+        const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+        svg.setAttribute('viewBox', from.map((v, i) => (v + (to[i] - v) * e).toFixed(1)).join(' '));
+        if (k < 1) requestAnimationFrame(step); else { if (!on) svg.classList.remove('zooming'); res(); }
+      };
+      requestAnimationFrame(step);
+    });
+  }
   const A = sel => $('analog').querySelector(sel);
   const ang = { h: 0, m: 0 };
   /* 바늘 각도 — dir +1 앞으로(기본), -1 뒤로, 0 가까운 쪽. turns = 긴바늘 추가 바퀴(걸린 시간) */
@@ -9127,7 +9151,7 @@ function clockMount(p, H) {
   function nextProblem() {
     stopHalt(); comboStop();   // v58: 돌던 긴바늘이 다음 문제에 남지 않게 · v60: 콤보 타이머도
     S.p = S.items[S.idx]; S.mode = S.p.mode; S.unit = S.p.unit; S.sub = S.p.sub; layout(); S.wrong = { h: 0, m: 0 }; S.ok = { h: false, m: false }; S.counting = null; S.E = 0;
-    clearMarks(); renderProg(); resetInput(); lock(true);
+    clearMarks(); renderProg(); resetInput(); lock(true); faceZoom(false, 0);   // v139: 부채꼴 확대 즉시 해제
     $('ask').textContent = question();
     if (S.mode === 'numf') { setHands(S.p.n, 0, false); setDigital(null, null); $('cards').innerHTML = `<div class="ncard b1">${S.p.n}</div>`; askQ(() => lock(false)); return; }   // v48 A1
     if (S.mode === 'nexth') { const p = S.p; setHands(p.h, p.m, false); setDigital(null, null); askQ(() => lock(false)); return; }   // v49 C2-1
@@ -9390,6 +9414,7 @@ function clockMount(p, H) {
     document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; }); document.querySelectorAll('#ck-analog .mnum').forEach(e => e.remove());
     for (let n = 1; n * 5 <= p.from; n++) slotShow(n, false); tickArc(p.from, false);   // v138: 화살촉이 시작 눈금에 놓여 있음(이어 세기는 0→from 호도 미리)
     setHands(12, p.from, false);
+    faceZoom(true);   // v139: 발문이 나오는 동안 12~3 부채꼴로 확대
   }
   function introStart() { S.counting = { kind: 'intro', i: S.p.from, end: S.p.intro }; armTick(S.p.from + 1); }
   function introTick(i) {
@@ -9398,7 +9423,7 @@ function clockMount(p, H) {
     st.i = i; tickArc(i); setHands(12, i, true, 1); speakFast(sino(i));   // v138: 바깥 화살표가 1분 자람
     if (i < st.end) { armTick(i + 1); return; }
     armTick(-1); S.counting = null; slotShow(i / 5, true); if (S.demo) return;
-    speak(`${KO_CNT[i]} 칸, ${sino(i)} 분.`, () => buildDone());
+    lock(true); const p0 = S.p; speak(`${KO_CNT[i]} 칸, ${sino(i)} 분.`, () => { if (S.p !== p0) return; faceZoom(false).then(() => { if (S.p === p0) setTimeout(buildDone, 800); }); });   // v139: 전체 시계로 돌아와 화살표·긴바늘을 한 번 더 보여 준 뒤 다음으로
   }
   function buildSetup() {
     const p = S.p, K = bkind(); B.left = [...p.missing]; B.wrong = 0; B.sel = null; B.drag = null; $('ghost').style.display = 'none'; $('ghost').classList.toggle('mc', K === 'min');
@@ -9592,7 +9617,7 @@ function clockMount(p, H) {
       else if (S.mode === 'numf') { ringNum(p.n); lightNum(p.n); await d(900); }   // v48
       else if (S.mode === 'nexth') { lightNum(12, '#FFC9C9'); ringNum(p.ans); lightNum(p.ans); await d(900); }   // v49
       else if (S.mode === 'handf') { handCue(p, true); await d(900); }   // v48 · v137: 색 단서도
-      else if (isBuild()) { if (S.p.intro) { introSetup(); S.counting = { kind: 'intro', i: S.p.from, end: S.p.intro }; for (let i = S.p.from + 1; i <= S.p.intro; i++) { if (!alive()) return; introTick(i); await d(500); } } else for (const n of [...B.left]) { if (!alive()) return; buildPlace(n); await d(600); } }   // v66 눈금 세기 시연 · v138: 시연 전 시작 상태(호·분 숫자)와 세기 상태를 되살림(전에는 S.counting이 비어 introTick이 바로 돌아가 아무것도 안 보였음)
+      else if (isBuild()) { if (S.p.intro) { introSetup(); S.counting = { kind: 'intro', i: S.p.from, end: S.p.intro }; for (let i = S.p.from + 1; i <= S.p.intro; i++) { if (!alive()) return; introTick(i); await d(500); } if (!alive()) return; await faceZoom(false); } else for (const n of [...B.left]) { if (!alive()) return; buildPlace(n); await d(600); } }   // v66 눈금 세기 시연 · v138: 시연 전 시작 상태(호·분 숫자)와 세기 상태를 되살림(전에는 S.counting이 비어 introTick이 바로 돌아가 아무것도 안 보였음)
       else if (S.mode === 'elapsed') { resetInput(); S.k = ''; renderPad(); setHands(p.h, p.m, false); S.E = 0; if (p.ansH) await taps('turn'); if (!alive()) return; if (p.ansM) await taps('span'); S.h = p.ansH; S.m = p.ansM; renderSlots(); }
       if (!alive()) return;
       await d(400); if (!isBuild()) { await speakP(answerKo()); await d(600); } await speakP('직접 해 봐요.');   // v47: 시계·분 만들기는 "다 채웠어요." 없음
