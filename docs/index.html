@@ -895,6 +895,8 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .fcnt{ font-size:1.9rem; font-weight:800; min-width:1.8rem; text-align:center; }
 .fcnt.ga, .fsent b.ga{ color:#33691E; }                 /* 왼쪽 = 초록(연두 동그라미와 짝) */
 .fcnt.gb, .fsent b.gb{ color:#C62828; }                 /* 오른쪽 = 빨강 */
+.fcnt.gc{ color:var(--accent-strong); }                /* v149 모으기 아래 상자 = 파랑 */
+.gsplit.move .fwrap .gcell{ margin-bottom:0; }
 .fsent{ margin-top:2.5rem; font-size:1.9rem; font-weight:700; color:var(--ink); }   /* 문장 30% 확대 + 위로 한 줄 여백 */
 
 /* ===== 수감각(50~54) — 수 이전 감각 활동 ===== */
@@ -1041,8 +1043,8 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .pvrq .rod{ width:34px; height:130px; display:flex; align-items:center; justify-content:center;
   color:#fff; font-weight:800; font-size:1.15rem; cursor:pointer; }
 .pvrq .cstack{ min-height:64px; justify-content:center; }
-.pvrq .cdot{ width:58px; height:58px; display:flex; align-items:center; justify-content:center;
-  color:#fff; font-weight:800; font-size:1.6rem; cursor:pointer; }
+.pvrq .cdot{ width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:800; font-size:1.25rem; cursor:pointer; }   /* v149: 십 막대(폭 34)에 견줘 작게(사용자 지시) */
 .pvglab{ font-weight:800; font-size:1.25rem; }
 .pvglab.t{ color:var(--accent-shadow); }
 .pvglab.u{ color:#C62828; }
@@ -1054,7 +1056,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .pvbq .pvrods{ min-height:134px; flex:1; align-items:center; }
 .pvbq .rod{ width:34px; height:130px; cursor:pointer; touch-action:manipulation; }
 .pvbq .cstack{ min-height:64px; flex:1; justify-content:center; }
-.pvbq .cdot{ width:58px; height:58px; cursor:pointer; touch-action:manipulation; }
+.pvbq .cdot{ width:40px; height:40px; cursor:pointer; touch-action:manipulation; }   /* v149 */
 .pvtarget{ font-size:2.2rem; color:var(--accent-strong); }
 /* 십틀 10 만들기(60, v94): 미리 채워진 칸은 고정 표시 */
 .tf.pre{ cursor:default; box-shadow:inset 0 0 0 3px rgba(255,255,255,.55); }
@@ -1563,7 +1565,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 148';
+const APP_VERSION = 'ver 149';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -6800,14 +6802,14 @@ function earlyFace(p) {
   }
   if (p.type === 'gather')   /* 5까지는 상자 가운데 정렬(.ctr) · v148: 동그라미를 아래 상자로 옮길 수 있음(.gdot, 사용자 지시) */
     return `<div class="early gsplit ${p.ans <= 5 ? 'ctr' : ''} move">
-      <div class="grow2"><div class="gcell" id="gA">${'<div class="cdot red gdot"></div>'.repeat(p.a)}</div><div class="gcell" id="gB">${'<div class="cdot red gdot"></div>'.repeat(p.b)}</div></div>
+      <div class="grow2"><div class="fwrap"><div class="gcell" id="gA">${'<div class="cdot red gdot"></div>'.repeat(p.a)}</div><div class="fcnt" id="fa">${p.a}</div></div><div class="fwrap"><div class="gcell" id="gB">${'<div class="cdot red gdot"></div>'.repeat(p.b)}</div><div class="fcnt" id="fb">${p.b}</div></div></div>
       <div class="glink gv"><i></i><i></i></div>
-      <div class="grow1"><div class="gcell gans drop" id="gC"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
+      <div class="grow1"><div class="fwrap"><div class="gcell gans drop" id="gC"><span class="qblank plain" id="qslot">?</span></div><div class="fcnt gc" id="fc">0</div></div></div></div>`;
   if (p.type === 'split')   /* v148: 위 동그라미를 왼쪽 자리(k개)와 오른쪽 상자로 옮겨 가름 */
     return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''} move">
-      <div class="grow1"><div class="gcell" id="gC">${'<div class="cdot red gdot"></div>'.repeat(p.n)}</div></div>
+      <div class="grow1"><div class="fwrap"><div class="gcell" id="gC">${'<div class="cdot red gdot"></div>'.repeat(p.n)}</div><div class="fcnt" id="fc">${p.n}</div></div></div>
       <div class="glink gs"><i></i><i></i></div>
-      <div class="grow2"><div class="gcell drop" id="gA">${Array.from({ length: p.k }, (_, i) => `<div class="gslot">${i + 1}</div>`).join('')}</div><div class="gcell gans drop" id="gB"><span class="qblank plain" id="qslot">?</span></div></div></div>`;
+      <div class="grow2"><div class="fwrap"><div class="gcell drop" id="gA">${Array.from({ length: p.k }, (_, i) => `<div class="gslot">${i + 1}</div>`).join('')}</div><div class="fcnt ga" id="fa">0</div></div><div class="fwrap"><div class="gcell gans drop" id="gB"><span class="qblank plain" id="qslot">?</span></div><div class="fcnt gb" id="fb">0</div></div></div></div>`;
   if (p.type === 'freesplit')   /* 자유 가르기: 위 상자의 동그라미를 아래 두 상자로 스스로 나눔 */
     return `<div class="early gsplit ${p.n <= 5 ? 'ctr' : ''} free">
       <div class="grow1"><div class="gcell" id="gC">${'<div class="cdot red fdot"></div>'.repeat(p.n)}</div></div>
@@ -7139,14 +7141,15 @@ function initGS() {
     d.onpointercancel = () => { drag = null; d.classList.remove('lift'); d.style.transform = ''; };
   });
 }
-function gsRenumber(box) { if (!box) return; let n = 0; [...box.querySelectorAll('.cdot.tapped')].forEach(x => { x.textContent = ++n; }); }   // 번호 붙은 동그라미가 빠져도 1..k 연속
+function gsRenumber(box) { if (box) { let n = 0; [...box.querySelectorAll('.cdot.tapped')].forEach(x => { x.textContent = ++n; }); } gsCounts(); }   // 번호 붙은 동그라미가 빠져도 1..k 연속 · v149: 상자 아래 개수 갱신
+function gsCounts() { [['gA', 'fa'], ['gB', 'fb'], ['gC', 'fc']].forEach(([g, f]) => { const box = $(g), lab = $(f); if (box && lab) lab.textContent = box.querySelectorAll('.cdot').length; }); }   // v149 자유 가르기처럼 상자마다 개수
 /* 모으기 힌트 — 1차: 아직 안 옮긴 동그라미를 아래 상자로 모아 줌 / 2차: 모인 것에 번호를 매기며 세기 */
 function hintGather(p, h, stage) {
   const C = $('gC'), rest = [...document.querySelectorAll('#gA .gdot, #gB .gdot')];
   h.innerHTML = `<div class="tip">동그라미를 아래 상자에 모아요</div>`;
   if (rest.length) {
     speak('동그라미를 아래 상자에 모아요.');
-    rest.forEach((d, i) => setTimeout(() => { C.appendChild(d); d.classList.remove('tapped'); d.textContent = ''; d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 }); tick(); }, 350 + i * 300));
+    rest.forEach((d, i) => setTimeout(() => { C.appendChild(d); d.classList.remove('tapped'); d.textContent = ''; d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 }); tick(); gsCounts(); }, 350 + i * 300));
     if (stage < 2) return;
     setTimeout(() => countGathered(p), 350 + rest.length * 300 + 500);
     return;
@@ -7172,7 +7175,7 @@ function hintSplit(p, h, stage) {
   h.innerHTML = `<div class="tip">가르고 남은 동그라미가 몇 개인지 세어 봐요</div>`;
   const movers = top.slice(0, free.length), rest = top.slice(free.length);
   movers.forEach(d => d.classList.add('gv')); [...A.querySelectorAll('.cdot')].forEach(d => d.classList.add('gv'));
-  const mv = (d, to, i) => setTimeout(() => { to.appendChild(d); d.classList.remove('tapped'); d.textContent = ''; d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 }); tick(); }, i * 240);
+  const mv = (d, to, i) => setTimeout(() => { to.appendChild(d); d.classList.remove('tapped'); d.textContent = ''; d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 200 }); tick(); gsCounts(); }, i * 240);
   const items = [{
     text: '연두색은 왼쪽 자리에, 빨간색은 오른쪽 상자에 갈라요.',
     action: () => { movers.forEach((d, i) => mv(d, free[i], i)); rest.forEach((d, i) => mv(d, B, movers.length + i)); },
