@@ -1458,6 +1458,85 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq #ck-rungLab{ display:inline-block; } .clockq #ck-learn.m-free #ck-rungLab{ display:none; }
 /* ===== 시계놀이 끝 ===== */
 
+
+/* =====================================================================
+   v144 디자인 체계(사용자 지시 「심플하지만 고급스럽게」) — 뒤에 두어 위 규칙을 덮어씀.
+   색 역할: 바탕(중립 회백)·주조(파랑 하나)·정답(초록)·오답(빨강)·강조(주황 = 개씩). 윤곽 두 가지: 면+얕은 그림자 / 선 하나.
+   3D 눌림 그림자·점선·광택 그라데이션 제거. 상단 메뉴는 중립 한 색, 「다음」만 주조색(단추 구성은 사용자 지시로 유지).
+   ===================================================================== */
+:root{ --bg-soft:#F6F5F2; --line:#D9DEE5; --line-strong:#B9C4D3; --shadow:0 4px 12px rgba(0,0,0,.10); --warm:#F57C00;
+  --choice-bg:#FFFFFF; --choice-border:#C9D6E6; --accent:#9CC9F2; --r-card:24px; --r-btn:16px; --r-pill:12px; }
+.ca{ color:var(--warm); } .cb{ color:var(--accent-strong); }   /* 역할 색: 개씩(주황) · 묶음(파랑) */
+/* 상단 메뉴 */
+.nav{ border-bottom:1px solid var(--line); }
+.nav button{ background:#F1F3F6; color:var(--ink); box-shadow:none; border-radius:12px; font-weight:700; }
+.nav button:active{ transform:scale(.96); box-shadow:none; }
+.nav .home,.nav .retry,.nav .prev,.nav .mode,.nav .set,.nav .full,.nav .lvl{ background:#F1F3F6; color:var(--ink); }
+.nav .next{ background:var(--accent-strong); color:#fff; }
+.nav .quit{ background:#fff; color:var(--no); box-shadow:inset 0 0 0 2px #F0C9C9; }
+.nav .brand{ background:none; box-shadow:none; }
+/* 단추 두 종류: 채움(주조) / 윤곽(중립) */
+.btn{ box-shadow:var(--shadow); font-weight:800; }
+.btn:active{ transform:scale(.97); }
+.btn--orange{ background:var(--accent-strong); box-shadow:var(--shadow); }
+.btn--green{ background:var(--ok); box-shadow:var(--shadow); }
+.btn--teal,.btn--purple{ background:#fff; color:var(--accent-strong); box-shadow:inset 0 0 0 2px var(--accent-strong), var(--shadow); }
+.btn--gray{ background:#F1F3F6; color:var(--ink-soft); box-shadow:none; }
+.btn-sm{ box-shadow:none; }
+.btn-name,.btn-name.pk{ border:2px solid var(--line); background:#fff; box-shadow:var(--shadow); }
+.btn-name.pk.done,.btn-name.done{ border-color:var(--ok); background:var(--ok-bg); box-shadow:var(--shadow); }
+.mbtn,.mbtn.mprev,.mbtn.mnext{ box-shadow:none; background:#F1F3F6; color:var(--ink); }
+.mbtn:active{ transform:scale(.96); }
+/* 보기·답 칸·숫자패드 */
+.btn-choice{ background:#fff; border:2px solid var(--line); box-shadow:var(--shadow); border-radius:18px; letter-spacing:0; font-variant-numeric:tabular-nums; }
+.btn-choice:active{ transform:scale(.97); }
+.btn-choice.correct{ background:var(--ok-bg); border-color:var(--ok); }
+.btn-choice.wrong{ background:var(--no-bg); border-color:var(--no); opacity:.55; }
+.btn-choice.mkc .op{ color:var(--ink-soft); margin:0 .25em; font-weight:800; }
+.qblank{ border:3px solid var(--line-strong); border-radius:14px; background:#FAFBFC; }
+.qblank-cells{ border:none; background:none; }
+.qblank-cells .ansbox{ border:.06em solid var(--line-strong); border-left-width:0; background:#FAFBFC; }
+.qblank-cells .ansbox:first-child{ border-left-width:.06em; }
+.vans-cells .ansbox{ border:.06em solid var(--line-strong); border-left-width:0; background:#FAFBFC; }
+.vans-cells .ansbox:first-child, .vans-cells .vd:not(.ansbox) + .ansbox{ border-left-width:.06em; }
+.vans-cells.answered .ansbox{ border-color:transparent; background:none; }
+.chk-key{ box-shadow:none; border:2px solid var(--line); background:#fff; }
+.chk-key:active{ transform:scale(.96); box-shadow:none; }
+.chk-del{ background:#FFF3E0; border-color:#FFDFB0; box-shadow:none; }
+.chk-ok{ background:var(--ok-bg); border-color:#A5D6A7; box-shadow:none; }
+/* 카드·틀·상자: 두꺼운 테두리를 얇게, 점선은 실선으로 */
+.card{ box-shadow:var(--shadow); }
+.card--accent{ border:3px solid var(--accent); }
+.plate{ border-width:4px; } .gcell{ border-width:3px; } .cmp{ border-width:3px; } .seqbox{ border-width:3px; } .wtext{ border-width:3px; }
+.oplate{ border-width:4px; } .flashcard{ border-width:4px; } .fcover{ inset:-4px; border-width:4px; } .pvgrp{ border-width:3px; }
+.omtray{ border:3px solid var(--line); background:#FAFBFC; }
+.pslot{ border:3px solid var(--line-strong); background:#FAFBFC; }
+.tf{ border:3px solid var(--line); background:#F1F3F6; }
+.opt{ border:2px solid var(--line); background:#fff; box-shadow:var(--shadow); letter-spacing:0; }
+.opt.sel{ background:var(--accent-strong); border-color:var(--accent-strong); color:#fff; }
+.lvtab{ border:2px solid var(--line); background:#fff; color:var(--ink); }
+.lvtab.sel{ background:var(--accent-strong); border-color:var(--accent-strong); color:#fff; }
+.modal .box{ box-shadow:0 12px 32px rgba(0,0,0,.22); }
+/* 모형: 무광 단색 원·평면 막대(십 막대의 10칸 눈금은 뜻이 있어 유지) */
+.cdot{ background-image:none; box-shadow:0 2px 4px rgba(0,0,0,.18); }
+.cdot.red{ background-color:#E4574B; }
+.rod{ background-image:repeating-linear-gradient(to bottom, transparent 0 8.2px, rgba(255,255,255,.55) 8.2px 9.2px); box-shadow:0 2px 4px rgba(0,0,0,.18); }
+.pvrq .rod, .pvbq .rod{ background-image:repeating-linear-gradient(to bottom, transparent 0 12px, rgba(255,255,255,.55) 12px 13px); }
+/* 곱셈의 뜻: 다이얼 역할 색 */
+.mmdial.da .dval{ color:var(--warm); box-shadow:0 5px 12px rgba(0,0,0,.18), inset 0 0 0 4px #FFCC80; }
+.mmdial.da .dbtn{ color:var(--warm); background:#FFF3E0; box-shadow:0 5px 0 #FFD9A8; }
+.mmdial.da .mmword{ color:var(--warm); }
+.mmdial.db .dval{ color:var(--accent-strong); box-shadow:0 5px 12px rgba(0,0,0,.18), inset 0 0 0 4px #9CC9F2; }
+.mmdial.db .mmword{ color:var(--accent-strong); }
+.dbtn{ box-shadow:none; } .dbtn:active{ transform:scale(.95); box-shadow:none; }
+.mmdial.da .dbtn{ box-shadow:none; }
+.mplate{ border:0; } .mulpick .mgrp{ background:#FFF3E0; }
+.early-q .putn.ca{ color:var(--warm); } .early-q .putn.cb{ color:var(--accent-strong); }
+.btn-choice .ca{ color:var(--warm); } .btn-choice .cb{ color:var(--accent-strong); }
+.puttray{ border:3px solid var(--line); background:#FAFBFC; }
+.pslot.mps{ border:0; background:#fff; box-shadow:inset 0 3px 6px rgba(0,0,0,.12); } .pslot.mps:has(.mpitem){ box-shadow:none; }
+.mmdial.db .dbtn{ background:#E8F2FC; }
+.credit{ max-width:60%; text-align:right; line-height:1.3; }
 </style>
 </head>
 <body>
@@ -1474,7 +1553,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 143';
+const APP_VERSION = 'ver 144';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1535,7 +1614,7 @@ const MUL_ITEMS = [['사과', '🍎'], ['딸기', '🍓'], ['쿠키', '🍪'], [
 /* v142 곱셈식 고르기 — 보기 3개: 정답 a×b, 덧셈 혼동 a+b(symbol), 묶음 수 ±1 a×(b±1)(fact). ans = 섞은 뒤 정답 위치 */
 function mulPickGen() {
   const a = R(2, 5), b = R(2, 5), b2 = b === 5 ? 4 : (b === 2 ? 3 : (R(0, 1) ? b + 1 : b - 1));
-  const opts = shuffle([{ t: `${a} × ${b}`, tag: null }, { t: `${a} + ${b}`, tag: 'symbol' }, { t: `${a} × ${b2}`, tag: 'fact' }]);
+  const opts = shuffle([{ t: `${a} × ${b}`, x: a, op: '×', y: b, tag: null }, { t: `${a} + ${b}`, x: a, op: '+', y: b, tag: 'symbol' }, { t: `${a} × ${b2}`, x: a, op: '×', y: b2, tag: 'fact' }]);   // v144: x·op·y = 보기에 역할 색(개씩 주황·묶음 파랑)
   return { type: 'mulpick', a, b, opts, ans: opts.findIndex(o => !o.tag) };
 }
 const gugu = dans => { const a = dans[R(0, dans.length - 1)], b = R(1, 9); return { type: 'binary', a, b, op: '×', ans: a * b }; };
@@ -3131,7 +3210,7 @@ function paintChoices() {
     return;
   }
   if (p.type === 'mulput' || p.type === 'mulmach') { $('choices').innerHTML = ''; return; }   // v142: 접시·다이얼이 조작 대상(담기 끝나면 mpAsk가 보기를 냄)
-  if (p.type === 'mulpick') { $('choices').innerHTML = p.opts.map((o, i) => `<button class="btn-choice mkc" data-v="${i}" onclick="answer(this,${p.ans})">${o.t}</button>`).join(''); return; }   // v142
+  if (p.type === 'mulpick') { $('choices').innerHTML = p.opts.map((o, i) => `<button class="btn-choice mkc" data-v="${i}" onclick="answer(this,${p.ans})"><b class="ca">${o.x}</b><span class="op">${o.op}</span><b class="cb">${o.y}</b></button>`).join(''); return; }   // v142 · v144 역할 색
   if (p.type === 'judge') {
     $('choices').innerHTML = `<button class="btn-choice jbtn" data-v="1" onclick="answer(this,${p.ans})">⭕ 맞아요</button>
       <button class="btn-choice jbtn" data-v="0" onclick="answer(this,${p.ans})">❌ 틀려요</button>`;
@@ -6744,7 +6823,7 @@ function earlyFace(p) {
   }
   if (p.type === 'mulput')   /* v142 접시에 담기 — 접시 b개(자리 a개씩) + 트레이 a×b개. 다 담으면 아래 물음이 열림 */
     return `<div class="early mulput">
-      <div class="early-q mpq">${p.emoji} <b class="putn">${p.a}</b>개씩 <b class="putn">${p.b}</b>접시</div>
+      <div class="early-q mpq">${p.emoji} <b class="putn ca">${p.a}</b>개씩 <b class="putn cb">${p.b}</b>접시</div>
       <div class="mprow" id="mprow">${Array.from({ length: p.b }, (_, k) => `<div class="mplate" data-k="${k}">${'<div class="pslot mps"></div>'.repeat(p.a)}</div>`).join('')}</div>
       <div class="puttray mptray" id="mptray">${`<div class="mpitem">${p.emoji}</div>`.repeat(p.a * p.b)}</div>
       <div class="early-q mpq2 hidden" id="mpq2">모두 <span class="qblank" id="qslot">?</span> 개</div></div>`;
@@ -6755,10 +6834,10 @@ function earlyFace(p) {
         <div class="mmmine" id="mmmine"><div class="mulrow" id="mmrow">${mulGroups(1, 1, 'mm')}</div></div>
         <div class="mmeq" id="mmeq"></div></div>
       <div class="mmdials">
-        <div class="mmdial"><button class="dbtn" onclick="mmTurn('a',1)">▲</button><div class="dval" id="mmA">1</div><button class="dbtn" onclick="mmTurn('a',-1)">▼</button><span class="mmword">씩</span></div>
-        <div class="mmdial"><button class="dbtn" onclick="mmTurn('b',1)">▲</button><div class="dval" id="mmB">1</div><button class="dbtn" onclick="mmTurn('b',-1)">▼</button><span class="mmword">묶음</span></div></div></div>`;
+        <div class="mmdial da"><button class="dbtn" onclick="mmTurn('a',1)">▲</button><div class="dval" id="mmA">1</div><button class="dbtn" onclick="mmTurn('a',-1)">▼</button><span class="mmword">씩</span></div>
+        <div class="mmdial db"><button class="dbtn" onclick="mmTurn('b',1)">▲</button><div class="dval" id="mmB">1</div><button class="dbtn" onclick="mmTurn('b',-1)">▼</button><span class="mmword">묶음</span></div></div></div>`;
   if (p.type === 'mulpick')   /* v142 곱셈식 고르기 — 묶음 그림 + 말, 보기는 renderChoices */
-    return `<div class="early mulpick"><div class="mulrow" id="mkrow">${mulGroups(p.a, p.b, 'mk')}</div><div class="early-q mkq">${p.a}씩 ${p.b}묶음</div></div>`;
+    return `<div class="early mulpick"><div class="mulrow" id="mkrow">${mulGroups(p.a, p.b, 'mk')}</div><div class="early-q mkq"><b class="ca">${p.a}</b>씩 <b class="cb">${p.b}</b>묶음</div></div>`;
   if (p.type === 'onemap')   /* 하나씩 나눠 주기(일대일 대응) — 트레이의 그림을 접시마다 하나씩 */
     return `<div class="early onewrap">
       <div class="omrow" id="omrow">${'<div class="oplate"></div>'.repeat(p.n)}</div>
@@ -7674,7 +7753,7 @@ function mmTurn(k, d) {
 }
 function mmDone(p) {
   mm.done = true; locked = true; chime(true); celebrate($('mmmine'));
-  const eq = $('mmeq'); if (eq) { eq.innerHTML = `<span>${p.a}</span><span class="op">×</span><span>${p.b}</span><span class="op">=</span><span class="ans">${p.ans}</span>`; eq.classList.add('show'); }
+  const eq = $('mmeq'); if (eq) { eq.innerHTML = `<span class="ca">${p.a}</span><span class="op">×</span><span class="cb">${p.b}</span><span class="op">=</span><span class="ans">${p.ans}</span>`; eq.classList.add('show'); }
   afterCorrectSpeak(eqSay(p), 600);
 }
 function hintMulMach(p, h, stage) {
