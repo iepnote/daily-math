@@ -907,37 +907,48 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .omitem{ font-size:3.3rem; line-height:1; cursor:grab; touch-action:none; user-select:none; }
 .oplate .omitem{ font-size:2.7rem; }
 .omitem.lift{ position:relative; z-index:9; cursor:grabbing; filter:drop-shadow(0 10px 12px rgba(0,0,0,.35)); }
-/* v142 곱셈의 뜻 — 접시에 담기(.mulput) · 곱셈 기계(.mulmach) · 곱셈식 고르기(.mulpick) */
-.mulput{ gap:.5rem; }
-.mpq .putn{ font-size:3rem; }
-.mprow{ display:flex; flex-wrap:wrap; justify-content:center; gap:.6rem .8rem; max-width:920px; }
-.mplate{ display:flex; gap:6px; padding:.5rem .6rem; background:#fff; border:5px solid var(--accent); border-radius:1.4rem; transition:border-color .3s, background .3s; }
-.mplate.full{ border-color:var(--ok); background:#F1F8E9; }
+/* v142 곱셈의 뜻 — 접시에 담기(.mulput) · 곱셈 기계(.mulmach) · 곱셈식 고르기(.mulpick) · v143 크게·접시 타원·음영(사용자 지시) */
+.mulput{ gap:1.3rem; }
+.mpq{ font-size:3rem; }
+.mpq .putn{ font-size:3.8rem; }
+.mprow{ display:flex; flex-wrap:wrap; justify-content:center; gap:1.3rem 1.6rem; max-width:1000px; }
+.mplate{ display:flex; gap:10px; padding:1rem 1.6rem; background:#FFF3E0; border:4px solid #FFD9A8; border-radius:50%; transition:border-color .3s, background .3s;
+  box-shadow:0 6px 12px rgba(0,0,0,.14), inset 0 -8px 14px rgba(0,0,0,.05); }
+.mplate.full{ border-color:#A5D6A7; background:#E8F5E9; }
 .mplate.tapg{ cursor:pointer; touch-action:manipulation; }
 .mplate.on{ border-color:var(--accent-strong); background:var(--choice-bg); }
-.mps{ width:46px; height:46px; display:flex; align-items:center; justify-content:center; }
-.mps:has(.mpitem){ border-style:solid; border-color:var(--accent-strong); opacity:1; background:#fff; }
-.mptray{ min-height:70px; }
-.mpitem{ width:46px; height:46px; font-size:2.1rem; line-height:1; display:flex; align-items:center; justify-content:center; cursor:grab; touch-action:none; user-select:none; }
+.mps{ width:66px; height:66px; display:flex; align-items:center; justify-content:center; background:#fff; border:0; border-radius:50%; opacity:1; box-shadow:inset 0 3px 6px rgba(0,0,0,.12); }
+.mps:has(.mpitem){ box-shadow:none; }
+.mptray{ min-height:92px; gap:18px; padding:.9rem 1.4rem; }
+.mpitem{ width:66px; height:66px; font-size:2.9rem; line-height:1; display:flex; align-items:center; justify-content:center; cursor:grab; touch-action:none; user-select:none; }
 .mpitem.lift{ position:relative; z-index:9; cursor:grabbing; filter:drop-shadow(0 10px 12px rgba(0,0,0,.35)); }
-.mpq2{ margin-top:.2rem; }
-.mulmach{ gap:.4rem; }
-.mmtarget{ border:4px dashed var(--accent); border-radius:1.2rem; padding:.3rem .8rem .5rem; background:#FAFAFA; }
-.mmlab{ font-weight:800; color:var(--ink-soft); font-size:1.15rem; text-align:center; }
-.mmmine{ min-height:96px; min-width:280px; border:4px solid var(--accent); border-radius:1.2rem; padding:.3rem .8rem; display:flex; align-items:center; justify-content:center; }
-.mmdials{ display:flex; align-items:center; gap:.6rem; margin-top:.2rem; }
-.mmdial{ display:flex; flex-direction:column; align-items:center; gap:.1rem; }
-.dbtn{ width:84px; height:52px; border:0; border-radius:.9rem; background:var(--choice-bg); color:var(--accent-strong); font-size:1.9rem; font-weight:900; cursor:pointer; box-shadow:0 4px 0 var(--choice-border); font-family:inherit; }
+.mpq2{ margin-top:.3rem; font-size:3rem; }
+.mulmach{ flex-direction:row; align-items:center; justify-content:center; gap:2.4rem; }
+.mmleft{ display:flex; flex-direction:column; align-items:center; gap:1rem; }
+.mmtarget{ border:0; border-radius:1.4rem; padding:.6rem 1.4rem 1rem; background:#F3F6FA; box-shadow:inset 0 2px 6px rgba(0,0,0,.08); }
+.mmlab{ font-weight:800; color:var(--ink-soft); font-size:1.35rem; text-align:center; margin-bottom:.3rem; }
+.mmmine{ min-height:130px; min-width:360px; border:0; border-radius:1.4rem; padding:.8rem 1.4rem; background:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 14px rgba(0,0,0,.16); }
+.mulmach .mulrow, .mulpick .mulrow{ gap:1rem; }
+.mulmach .mgrp, .mulpick .mgrp{ border:0; background:#fff; box-shadow:0 4px 10px rgba(0,0,0,.16); padding:.7rem .9rem; }
+.mulmach .mgrp.on, .mulpick .mgrp.on{ background:var(--choice-bg); box-shadow:0 0 0 4px var(--accent-strong), 0 4px 10px rgba(0,0,0,.16); }
+.mulmach .cstack .cdot{ width:36px; height:36px; }
+.mmdials{ display:flex; align-items:flex-start; gap:1.4rem; }
+.mmdial{ display:flex; flex-direction:column; align-items:center; gap:.3rem; }
+.dbtn{ width:104px; height:62px; border:0; border-radius:1rem; background:var(--choice-bg); color:var(--accent-strong); font-size:2.2rem; font-weight:900; cursor:pointer; box-shadow:0 5px 0 var(--choice-border); font-family:inherit; }
 .dbtn:active{ transform:translateY(3px); box-shadow:none; }
-.dval{ width:84px; height:84px; display:flex; align-items:center; justify-content:center; font-size:3.2rem; font-weight:900; color:var(--accent-strong); border:5px solid var(--accent); border-radius:1rem; background:#fff; }
-.mmword{ font-size:2.2rem; font-weight:800; color:var(--ink); margin-right:.6rem; }
-.mmeq{ display:none; margin-left:1rem; font-size:3rem; font-weight:900; color:var(--ok); gap:.4rem; align-items:center; }
+.dval{ width:104px; height:104px; display:flex; align-items:center; justify-content:center; font-size:4rem; font-weight:900; color:var(--accent-strong); border-radius:1.1rem; background:#fff; box-shadow:0 5px 12px rgba(0,0,0,.18), inset 0 0 0 4px var(--accent); }
+.mmword{ font-size:2.1rem; font-weight:800; color:var(--ink); margin-top:.2rem; }
+.mmeq{ display:none; font-size:3.4rem; font-weight:900; color:var(--ok); gap:.5rem; align-items:center; min-height:1.3em; }
 .mmeq.show{ display:flex; animation:eqPop .5s; }
 .mmeq .op{ color:var(--ink-soft); }
 .mmeq .ans{ color:var(--no); }
 @keyframes eqPop { 0% { transform:scale(.4); opacity:0; } 70% { transform:scale(1.15); } 100% { transform:scale(1); opacity:1; } }
-.mkq{ margin-top:.3rem; }
-.btn-choice.mkc{ font-size:2rem; letter-spacing:.05em; }
+.mulpick{ gap:1.4rem; }
+.mulpick .mgrp{ border-radius:50%; padding:1.1rem 1.7rem; background:#FFF8E1; box-shadow:0 6px 12px rgba(0,0,0,.14), inset 0 -8px 14px rgba(0,0,0,.05); }
+.mulpick .cstack .cdot{ width:44px; height:44px; }
+.mulpick .cstack{ gap:8px; } .mulpick .crow5{ gap:8px; }
+.mkq{ margin-top:.2rem; font-size:3rem; }
+.btn-choice.mkc{ font-size:2.2rem; letter-spacing:.02em; }
 .btn-choice.pulse{ animation:needPulse 1.1s ease-in-out infinite; border-color:var(--accent-strong); }
 /* 같은 수 찾기: 위 견본 상자 + 주사위 배열 보기 */
 .samq{ gap:1.2rem; }
@@ -1463,7 +1474,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 142';
+const APP_VERSION = 'ver 143';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -6739,12 +6750,13 @@ function earlyFace(p) {
       <div class="early-q mpq2 hidden" id="mpq2">모두 <span class="qblank" id="qslot">?</span> 개</div></div>`;
   if (p.type === 'mulmach')   /* v142 곱셈 기계 — 위 목표 그림, 아래 내 그림 + 다이얼(씩·묶음) */
     return `<div class="early mulmach">
-      <div class="mmtarget"><div class="mmlab">이 그림과 같게 만들어요</div><div class="mulrow" id="mmtrow">${mulGroups(p.a, p.b, 'mt')}</div></div>
-      <div class="mmmine" id="mmmine"><div class="mulrow" id="mmrow">${mulGroups(1, 1, 'mm')}</div></div>
+      <div class="mmleft">
+        <div class="mmtarget"><div class="mmlab">이 그림과 같게 만들어요</div><div class="mulrow" id="mmtrow">${mulGroups(p.a, p.b, 'mt')}</div></div>
+        <div class="mmmine" id="mmmine"><div class="mulrow" id="mmrow">${mulGroups(1, 1, 'mm')}</div></div>
+        <div class="mmeq" id="mmeq"></div></div>
       <div class="mmdials">
-        <div class="mmdial"><button class="dbtn" onclick="mmTurn('a',1)">▲</button><div class="dval" id="mmA">1</div><button class="dbtn" onclick="mmTurn('a',-1)">▼</button></div><span class="mmword">씩</span>
-        <div class="mmdial"><button class="dbtn" onclick="mmTurn('b',1)">▲</button><div class="dval" id="mmB">1</div><button class="dbtn" onclick="mmTurn('b',-1)">▼</button></div><span class="mmword">묶음</span>
-        <div class="mmeq" id="mmeq"></div></div></div>`;
+        <div class="mmdial"><button class="dbtn" onclick="mmTurn('a',1)">▲</button><div class="dval" id="mmA">1</div><button class="dbtn" onclick="mmTurn('a',-1)">▼</button><span class="mmword">씩</span></div>
+        <div class="mmdial"><button class="dbtn" onclick="mmTurn('b',1)">▲</button><div class="dval" id="mmB">1</div><button class="dbtn" onclick="mmTurn('b',-1)">▼</button><span class="mmword">묶음</span></div></div></div>`;
   if (p.type === 'mulpick')   /* v142 곱셈식 고르기 — 묶음 그림 + 말, 보기는 renderChoices */
     return `<div class="early mulpick"><div class="mulrow" id="mkrow">${mulGroups(p.a, p.b, 'mk')}</div><div class="early-q mkq">${p.a}씩 ${p.b}묶음</div></div>`;
   if (p.type === 'onemap')   /* 하나씩 나눠 주기(일대일 대응) — 트레이의 그림을 접시마다 하나씩 */
