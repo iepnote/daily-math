@@ -793,12 +793,12 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .gsplit{ gap:.15rem; }
 .grow1,.grow2{ display:flex; gap:2.6rem; justify-content:center; }
 /* 상자 크기 고정(내용 수와 무관하게 세 상자 동일) + 동그라미 왼쪽부터 5개씩 — 담기와 같은 문법 */
-.gcell{ width:228px; height:112px; border:4px solid var(--accent); border-radius:1.1rem;
-  display:flex; align-items:flex-start; justify-content:flex-start; padding:.7rem .9rem; background:#fff; }
+.gcell{ width:344px; height:152px; border:4px solid var(--accent); border-radius:1.1rem;
+  display:flex; align-items:flex-start; justify-content:flex-start; padding:.7rem .8rem; background:#fff; }   /* v147: 동그라미를 수 세기(58px)와 같은 크기로 — 5개 한 줄·두 줄이 들어가게 상자 확대 */
 .gcell.gans{ align-items:center; justify-content:center; }   /* ? 상자만 중앙 */
-.gcell .cdot{ width:34px; height:34px; display:flex; align-items:center; justify-content:center;
-  color:#fff; font-weight:800; font-size:1.15rem; cursor:pointer; }
-.gcell.gans .qblank{ font-size:2.2rem; }
+.gcell .cdot{ width:58px; height:58px; display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:800; font-size:1.7rem; cursor:pointer; }
+.gcell.gans .qblank{ font-size:2.8rem; }
 .glink{ display:flex; gap:4rem; height:38px; align-items:stretch; }
 .glink i{ width:5px; background:var(--accent); border-radius:3px; }
 .glink.gv i:first-child,.glink.gs i:last-child{ transform:rotate(-27deg); }
@@ -1553,7 +1553,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 146';
+const APP_VERSION = 'ver 147';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
