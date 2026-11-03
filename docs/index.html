@@ -1610,7 +1610,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 151';
+const APP_VERSION = 'ver 152';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3241,6 +3241,32 @@ function paintFace(flip) {
   if (p.type === 'carry') initCarry();            // 받아올림 연결큐브(v124): 모형 그리기 + 상태 초기화
   if (p.type === 'clock') initClock();            // 시계놀이(v127): 엔진 마운트
 }
+/* v152 오답 뒤 보기 새로 내기(사용자 지시) — 보기 3개 유형은 2차 오답이면 소거로 정답만 남아 추측이 통했다.
+   오답마다 보기를 다시 만들되, 이미 고른 오답값은 다시 넣지 않는다. 숫자패드(연산 2차 이후)나 보기 없는 조작형은 건드리지 않음.
+   곱셈식 고르기(mulpick)는 보기가 문제에 박혀 있어 오답 종류를 바꿔 다시 만든다 */
+function rerollChoices(p) {
+  const box = $('choices'); if (!box || pad || !box.querySelector('.btn-choice') || box.querySelector('.anspad')) return;
+  if (!session || session.items[session.idx] !== p) return;
+  if (p.type === 'judge') return;   // ○× 두 개는 다시 낼 게 없음
+  if (p.type === 'mulpick') {
+    const a = p.a, b = p.b, chosen = new Set(p.chosen || []);
+    const pool = [{ x: a, op: '+', y: b, tag: 'symbol' }, { x: a, op: '×', y: b - 1, tag: 'fact' }, { x: a, op: '×', y: b + 1, tag: 'fact' }, { x: a + 1, op: '×', y: b, tag: 'fact' }, { x: a - 1, op: '×', y: b, tag: 'fact' }]
+      .filter(o => o.y >= 1 && o.x >= 1).map(o => ({ ...o, t: `${o.x} ${o.op} ${o.y}` })).filter(o => !chosen.has(o.t));
+    const pick = shuffle(pool).slice(0, 2);
+    p.opts = shuffle([{ t: `${a} × ${b}`, x: a, op: '×', y: b, tag: null }, ...pick]); p.ans = p.opts.findIndex(o => !o.tag);
+    paintChoices(); return;
+  }
+  if (typeof p.ans !== 'number') return;
+  paintChoices();   // 유형별 보기 생성(무작위) 다시
+  const used = new Set([...box.querySelectorAll('.btn-choice')].map(b => +b.dataset.v)), small = p.ans < 20;
+  const fresh = () => { for (const d of [1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 10, -10, 20, -20, 100, -100]) { const v = p.ans + d; if (v >= 0 && (!small || v < 20) && !used.has(v) && !wrongVals.includes(v)) { used.add(v); return v; } } return null; };
+  box.querySelectorAll('.btn-choice').forEach(b => {
+    const v = +b.dataset.v; if (v === p.ans || !wrongVals.includes(v)) return;
+    const nv = fresh(); if (nv === null) return;
+    b.dataset.v = nv; b.textContent = nv;   // 이미 고른 오답값은 새 값으로(정답은 그대로)
+  });
+  box.classList.remove('listen');
+}
 function paintChoices() {
   const p = session.items[session.idx];
   if (p.type === 'carry' || p.type === 'clock') { $('choices').innerHTML = ''; return; }   // 받아올림 큐브·시계놀이: 입력이 얼굴 안에 있음(v124·v127)
@@ -3408,7 +3434,7 @@ function judgeAnswer(btn, v, ans) {
   } else {
     if (btn) { btn.classList.add('wrong'); btn.disabled = true; } else padPaint();   // 패드 입력은 지우고 다시
     chime(false); wrongCount++; wrongVals.push(v); wiggle($('qface'));
-    if (p.type === 'mulpick') wrongTags.push(p.opts[v] && p.opts[v].tag || 'other');   // v142: 덧셈 혼동=symbol, 묶음 수=fact
+    if (p.type === 'mulpick') { wrongTags.push(p.opts[v] && p.opts[v].tag || 'other'); (p.chosen = p.chosen || []).push(p.opts[v] && p.opts[v].t); }   // v142: 덧셈 혼동=symbol, 묶음 수=fact · v152: 고른 식은 다시 안 냄
     if (p.type === 'mulput') wrongTags.push(v === p.a + p.b ? 'symbol' : (v === p.a * (p.b - 1) || v === p.a * (p.b + 1)) ? 'fact' : 'count');
     /* v121 ①(사용자 지시): 오답 상한 3회(보기 2 + 패드 1) — 패드(v107)는 보기 소거 같은 자연 상한이 없어 같은 발문·시연이 끝없이 재시작됐다.
        정답을 채워 공개하고 발화 종료 기반으로 다음 문제(수직선 v115와 같은 규칙). 재도전 큐는 nextStep이 wrongCount≥2로 자동 처리 */
@@ -3420,7 +3446,7 @@ function judgeAnswer(btn, v, ans) {
     }
     /* ①(v100) 오답 잠금 — 피드백 발화가 끝날 때까지 연타 무효(빠른 찍기의 속도 이득 제거). v109: 설정 '충동 탭 막기' 끄면 잠그지 않음 */
     locked = prefs.tapGuard !== false;
-    const unlock = () => { locked = false; };
+    const unlock = () => { locked = false; rerollChoices(p); };   // v152: 오답 뒤 보기를 새로 섞어 냄(소거로 정답만 남는 것 방지, 사용자 지시)
     const lv = (current && current.hintLv) || 'fade';   // 학생별 힌트 수준(IEP 개별화)
     /* v107 ① 2차 오답부터 직접 입력 — 보기 소거로 정답만 남는 구조 차단(세 수는 단계 안내가 보기를 직접 씀 → 제외) */
     if (wrongCount >= 2 && !pad) showAnswerPad();
@@ -3455,7 +3481,7 @@ function judgeAnswer(btn, v, ans) {
     let started = false; const tokIdx = session.idx;
     const go = () => {
       if (started || session.idx !== tokIdx) return;   // v121: 정답·공개로 문제가 넘어간 뒤 늦게 온 보루 타이머 무시
-      started = true; locked = false; routeHint(stage);
+      started = true; locked = false; rerollChoices(p); routeHint(stage);   // v152: 힌트 전에 보기 새로(힌트의 정답 강조는 새 보기를 가리킴)
       /* v121 ②: 시연(speakSequence)이 도는 동안 입력 잠금 — 시연 중 오답이 cancel()로 시연을 끊고 처음부터 재시작하던 문제.
          힌트가 스스로 잠근 경우(startColumn 등)는 건드리지 않음. 설정 '충동 탭 막기' 끄면 잠그지 않음(상한 ①이 방어) */
       const wait = seqEndAt - Date.now();
