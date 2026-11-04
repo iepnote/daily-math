@@ -1635,7 +1635,9 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* v158 곱셈구구(사용자 지시): 동그라미는 「개」 주황 한 색, 묶음 번호는 「묶음」 파랑. 식의 앞 수(개씩)·뒷 수(묶음)도 같은 색. 그림 힌트는 왼쪽 세로 기둥 */
 .cdot.o{ background-color:var(--warm); }
 .mgrp{ display:flex; align-items:center; gap:.45rem; }
-.gno{ font-style:normal; width:26px; height:26px; border-radius:50%; background:var(--accent-strong); color:#fff; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.mgrp.gtap{ cursor:pointer; touch-action:manipulation; position:relative; }
+.gno{ font-style:normal; position:absolute; left:-12px; top:-12px; width:28px; height:28px; border-radius:50%; background:var(--accent-strong); color:#fff; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.2); z-index:2; }
+.gno.pop{ animation:eqPop .35s; }
 .quad .gno{ width:20px; height:20px; font-size:12px; }
 .study.mulq #qface [data-t="n0"]{ color:var(--warm); } .study.mulq #qface [data-t="n1"]{ color:var(--accent-strong); }
 .study.mulside .study-card{ display:grid; grid-template-columns:300px minmax(0,1fr); grid-template-rows:auto minmax(0,1fr) auto; grid-template-areas:"top top" "hint face" "ch ch"; column-gap:1rem; }
@@ -1673,7 +1675,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 158';
+const APP_VERSION = 'ver 159';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -5588,12 +5590,24 @@ function hintTenFrame(p, h, stage) {
 /* a×b = a씩 b묶음. 1차: 작은 곱은 묶음 동그라미, 큰 곱은 뛰어세기 안내.
    2차: 뛰어세기 칸을 음성과 함께 채우고 정답 안내.
    mode(v71, 전략 설정): 'group'=묶음 세기 고정(2차는 묶음을 세며 진행) / 'skip'=뛰어 세기 고정 / 없음=자동 */
+/* v159 묶음 누르기(사용자 지시): 번호는 처음엔 없고, 묶음을 누르면 그 자리에 파란 번호 배지가 떠 「몇 묶음」을 센다(하나, 둘…). 다시 누르면 지움·뒤 번호 당김(탭 세기와 같은 규칙) */
+function initGroupTap(root) {
+  const gs = [...root.querySelectorAll('.mgrp.gtap')];
+  gs.forEach(g => g.onpointerdown = e => {
+    if (locked) return; e.preventDefault();
+    const had = g.querySelector('.gno');
+    if (had) { const k = +had.textContent; had.remove(); gs.forEach(x => { const b = x.querySelector('.gno'); if (b && +b.textContent > k) b.textContent = +b.textContent - 1; }); tick(); return; }
+    const n = gs.filter(x => x.querySelector('.gno')).length + 1;
+    g.insertAdjacentHTML('beforeend', `<i class="gno pop">${n}</i>`); speakFast(KO_NUM[n] || String(n));
+  });
+}
 function hintMul(p, h, stage, mode) {
   const a = p.a, b = p.b;
   if (mode !== 'skip' && a * b <= 30 && (stage === 1 || mode === 'group')) {
-    let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp" id="mg${k}"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`;   // v158: 개=주황 동그라미, 묶음=파란 번호
+    let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp gtap" id="mg${k}">${circleStack(a, 'o')}</div>`;   // v158: 개=주황 동그라미 · v159: 묶음 번호는 처음엔 없고 누르면 뜸(사용자 지시)
     $('study') && $('study').classList.add('mulside');   // v158: 그림 힌트는 왼쪽 세로 기둥(아래는 보기·패드 자리)
     h.innerHTML = `<div class="mulrow">${g}</div><div class="tip"><b class="ca">${a}</b>씩 <b class="cb">${b}</b>묶음, 모두 몇 개일까요?</div>`;
+    initGroupTap(h);
     if (stage === 1) { speak(`${a}씩 ${b}묶음이에요. 모두 몇 개일까요?`); return; }
     /* 묶음 세기(동수누가) 2차: 묶음을 하나씩 켜며 누적 개수를 말한다 */
     const items = [];
@@ -5628,7 +5642,7 @@ function hintMul(p, h, stage, mode) {
 /* 곱셈 묶음 세기 1차(v84) — 학생이 묶음을 하나씩 누르며 a씩 센다 (조작 문법: 세기=탭) */
 function groupTapMul(p, h) {
   const a = p.a, b = p.b;
-  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp tapg"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`;   // v158
+  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp tapg">${circleStack(a, 'o')}</div>`;   // v158 · v159: 번호 없음(누르면 누적 개수 배지)
   $('study') && $('study').classList.add('mulside');
   h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">묶음을 하나씩 누르면서 <b class="ca">${a}</b>씩 세어 봐요</div>`;
   speak(`묶음을 눌러 ${a}씩 세요.`);
@@ -5697,7 +5711,7 @@ function repeatSubDiv(p, h, stage) {
 /* 곱셈 4분면 표상 — 한 식을 말·그림·덧셈식·답 네 방식으로 (v72, strat.mul='quad', 최윤경 연수자료 p25) */
 function quadMul(p, h, stage) {
   const a = p.a, b = p.b, prod = a * b;
-  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp" id="qg${k}"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`;   // v158
+  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp gtap" id="qg${k}">${circleStack(a, 'o')}</div>`;   // v158 · v159
   const word = `${a}개씩 ${b}묶음`;
   h.innerHTML = `<div class="quad">
     <div class="qcell" id="qc0"><div class="qtag">말</div><div class="qbig" id="qw">${stage < 2 ? word : ''}</div></div>
@@ -5705,6 +5719,7 @@ function quadMul(p, h, stage) {
     <div class="qcell" id="qc2"><div class="qtag">덧셈식</div><div class="qeq hidden" id="qeq">${Array(b).fill(a).join(' + ')}</div></div>
     <div class="qcell" id="qc3"><div class="qtag">답</div><div class="qbig qans hidden" id="qa">${prod}</div></div>
   </div>`;
+  initGroupTap(h);   // v159
   if (stage < 2) { $('qc0').classList.add('on'); speak(`${a} 곱하기 ${b}${josaEun(b)} 어떤 뜻일까요? ${word}이에요.`); return; }
   const items = [];
   items.push({ text: `${a}개씩 ${b}묶음이에요.`, action: () => { $('qw').textContent = word; $('qc0').classList.add('on'); } });
@@ -7918,7 +7933,7 @@ function hintMore(p, h, stage) {
   hintCompare(p, h, stage);                 // 2차: 짝지어 세기 + 많은 쪽 표시(크기 비교와 동일)
 }
 /* ===== v142 곱셈의 뜻(224~226) — 접시에 담기(mulput)·곱셈 기계(mulmach)·곱셈식 고르기(mulpick) ===== */
-const mulGroups = (a, b, id) => Array.from({ length: b }, (_, k) => `<div class="mgrp" id="${id}${k}"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`).join('');   // v158: 개=주황, 묶음=파란 번호
+const mulGroups = (a, b, id) => Array.from({ length: b }, (_, k) => `<div class="mgrp" id="${id}${k}">${circleStack(a, 'o')}</div>`).join('');   // v158: 개=주황 · v159: 묶음 번호 없음
 let mp = null;   // 접시에 담기 상태 {done}
 function initMulPut() {
   mp = { done: false };
