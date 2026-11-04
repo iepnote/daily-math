@@ -1593,6 +1593,46 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .setpanel label input{ accent-color:var(--accent-strong); width:1.25rem; height:1.25rem; }
 .setpanel .shelp{ margin-left:1.75rem; }
 .ghome{ padding-bottom:2.6rem; }
+/* ---- v155 게임형 문제 화면: 모험 길·별 주머니·친구 칸 ---- */
+.study{ max-width:1220px; }
+.study-row{ flex:1; display:flex; gap:16px; min-height:0; }
+.study-row .study-card{ flex:1 1 auto; min-width:0; }
+.adv-top{ display:flex; align-items:center; gap:14px; padding:2px 6px 8px; }
+.trail{ flex:1 1 auto; display:flex; align-items:center; justify-content:center; }
+.stone{ width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:19px; flex:0 0 auto; }
+.stone.todo{ background:#fff; border:3px solid var(--line); color:#9AA5B1; }
+.stone.gold,.stone.done{ background:#F5B301; box-shadow:0 4px 10px rgba(0,0,0,.12); }
+.stone.done{ background:#C9D6E6; }
+.stone.now{ width:54px; height:54px; background:#fff; border:5px solid var(--accent-strong); color:var(--accent-strong); font-size:22px; font-weight:900; box-shadow:0 0 0 8px rgba(30,136,229,.18); }
+.stone.md{ width:36px; height:36px; font-size:15px; } .stone.now.md{ width:42px; height:42px; font-size:17px; }
+.stone.sm{ width:26px; height:26px; font-size:0; } .stone.now.sm{ width:32px; height:32px; font-size:13px; }
+.stone.sm svg{ width:14px; height:14px; }
+.link{ width:46px; height:6px; border-radius:3px; background:var(--line); flex:0 0 auto; } .link.on{ background:#F5B301; } .link.md{ width:28px; } .link.sm{ width:12px; height:4px; }
+.chest{ width:56px; height:48px; border-radius:14px; background:#fff; border:3px solid var(--line); display:flex; align-items:center; justify-content:center; margin-left:4px; flex:0 0 auto; }
+.chest.open{ border-color:#FFD9A8; background:#FFF0E0; } .chest.sm{ width:40px; height:34px; } .chest.sm svg{ width:20px; height:20px; }
+.pouch{ display:flex; align-items:center; gap:8px; background:#fff; border-radius:16px; padding:8px 16px; box-shadow:var(--shadow); flex:0 0 auto; }
+.pouch b{ font-size:22px; font-weight:900; } .pouch span{ font-size:14px; color:var(--ink-soft); }
+.pouch.pop{ animation:pouchPop .6s; } @keyframes pouchPop{ 30%{ transform:scale(1.18); } 100%{ transform:scale(1); } }
+.buddy-col{ flex:0 0 270px; display:flex; flex-direction:column; gap:14px; }
+.streak-card,.buddy-card{ background:#fff; border-radius:24px; box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; gap:8px; }
+.streak-card .lbl{ font-size:15px; font-weight:700; color:var(--ink-soft); }
+.streak-card .big{ display:flex; align-items:flex-end; gap:6px; } .streak-card .big b{ font-size:50px; font-weight:900; color:var(--warm); line-height:1; } .streak-card .big span{ font-size:17px; font-weight:700; color:var(--ink-soft); padding-bottom:7px; }
+.streak-card .bars{ display:flex; gap:6px; } .streak-card .bars i{ flex:1 1 0; height:12px; border-radius:6px; background:#EDE9E3; } .streak-card .bars i.on{ background:var(--warm); }
+.streak-card .sub{ font-size:13px; color:var(--ink-soft); }
+.buddy-card{ flex:1 1 auto; align-items:center; justify-content:center; text-align:center; gap:10px; }
+.buddy-card .bubble{ background:#F6F5F2; border-radius:16px; padding:10px 14px; font-size:16px; font-weight:700; line-height:1.4; min-height:2.6em; display:flex; align-items:center; }
+.helpbtn{ display:flex; align-items:center; gap:8px; border:0; border-radius:999px; background:#EAF3FC; color:var(--accent-strong); font-family:inherit; font-size:16px; font-weight:700; padding:10px 18px; cursor:pointer; }
+.helpbtn:active{ transform:scale(.96); }
+.study.calm .buddy-face,.study.calm .bubble{ display:none; } .study.calm .pouch.pop{ animation:none; } .study.calm .stone.now{ box-shadow:none; }   /* 저자극: 캐릭터·말풍선·반짝임 없이 길만 */
+.choice-row .btn-choice{ box-shadow:0 8px 0 var(--line), 0 10px 18px rgba(0,0,0,.08); border:0; }   /* 징검다리 돌판 */
+.choice-row .btn-choice:active{ transform:translateY(4px); box-shadow:0 4px 0 var(--line); }
+/* 모험 길이 차지하는 높이만큼 세로셈·힌트가 눌리지 않게: 길을 낮추고 세로셈 글자를 조금 줄임 */
+.adv-top{ padding:0 6px 4px; }
+.stone{ width:40px; height:40px; font-size:17px; } .stone.now{ width:46px; height:46px; font-size:19px; }
+.link{ width:40px; } .chest{ width:50px; height:42px; } .chest svg{ width:26px; height:26px; }
+.pouch{ padding:6px 14px; } .pouch b{ font-size:20px; }
+.study-card .qface:has(.facev){ padding-top:.6rem; }
+.study.sz-md .qface:has(.facev){ font-size:4.8rem; } .study.sz-lg .qface:has(.facev){ font-size:5.4rem; }
 .ghome .credit{ max-width:92%; }
 </style>
 </head>
@@ -1610,7 +1650,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 154';
+const APP_VERSION = 'ver 155';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3151,6 +3191,34 @@ function quitStudy() {
 }
 
 /* ---- 문제 그리기 ---- */
+/* ===== v155 게임형 문제 화면(사용자 승인 시안) — 모험 길(징검다리)·오늘 별 주머니·연속 정답 게이지·친구 말풍선·도와줘 ===== */
+const ICON_STAR = (c, sz) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="${c}" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>`;
+const ICON_CHEST = (c, sz) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="18" height="11" rx="2"/><path d="M3 12h18M12 9v11M5 9V7a7 7 0 0 1 14 0v2"/></svg>`;
+const ICON_BULB = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg>`;
+const BUDDY_SVG = `<svg width="88" height="88" viewBox="0 0 96 96" role="img" aria-label="친구"><circle cx="48" cy="52" r="36" fill="#9CC9F2"/><circle cx="36" cy="46" r="5" fill="#2D3436"/><circle cx="60" cy="46" r="5" fill="#2D3436"/><path d="M36 62q12 10 24 0" stroke="#2D3436" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="26" cy="58" r="5" fill="#FFB3A7"/><circle cx="70" cy="58" r="5" fill="#FFB3A7"/><path d="M48 16v-8" stroke="#1E88E5" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="6" r="5" fill="#F57C00"/></svg>`;
+/* 연속 정답(이 세션, 첫 시도 정답이 이어진 수) · 오늘 별 = 첫 시도 정답 + 3연속 보너스 */
+function sessionStreak() { let k = 0; for (let i = session.idx - 1; i >= 0; i--) { const it = session.log[i]; if (it && it.wrongs === 0) k++; else break; } return k; }
+function sessionStars() { const log = (session.log || []).filter(Boolean); return log.filter(it => it.wrongs === 0).length + (session.bonus || 0); }
+function streakBarsHtml() { const k = sessionStreak() % 3; return [0, 1, 2].map(i => `<i class="${i < k ? 'on' : ''}"></i>`).join(''); }
+function trailHtml() {
+  const n = session.items.length, cur = session.idx, sm = n > 8 ? 'sm' : n > 6 ? 'md' : '';
+  let h = '';
+  for (let i = 0; i < n; i++) {
+    const it = session.log[i], done = i < cur && it;
+    const cls = i === cur ? 'now' : done ? (it.wrongs === 0 ? 'gold' : 'done') : 'todo';
+    h += `<div class="stone ${cls} ${sm}">${cls === 'gold' ? ICON_STAR('#fff', 26) : cls === 'done' ? ICON_STAR('#fff', 22) : (i + 1)}</div>`;
+    h += `<div class="link ${i < cur ? 'on' : ''} ${sm}"></div>`;
+  }
+  return h + `<div class="chest ${cur >= n ? 'open' : ''} ${sm}">${ICON_CHEST(cur >= n ? '#F57C00' : '#9AA5B1', 30)}</div>`;
+}
+function refreshAdventure(bonus) {
+  const t = $('trail'); if (t) t.innerHTML = trailHtml();
+  const sN = $('streakN'); if (sN) sN.textContent = sessionStreak(); const b = $('streakBars'); if (b) b.innerHTML = streakBarsHtml();
+  const pN = $('pouchN'); if (pN) { pN.textContent = sessionStars(); if (bonus) { const po = $('pouch'); if (po) { po.classList.remove('pop'); void po.offsetWidth; po.classList.add('pop'); } } }
+}
+function buddySay(t) { const b = $('bubble'); if (b && t) b.textContent = String(t).replace(/<[^>]+>/g, ''); }
+/* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) */
+function helpHint() { if (locked || !session) return; const st = Math.min(2, (hintStage || 0) + 1); buddySay(st === 1 ? '같이 생각해 봐요' : '이렇게 해 봐요'); routeHint(st); }
 function renderProblem() {
   wrongCount = 0; wrongVals = []; wrongTags = []; locked = false; guide = null; mguide = null; cadd = null; curCirc = null; pad = null; itemStart = Date.now();
   retryArm = false; rt = null;                             // ③(v100) 재도전 예약·상태 초기화
@@ -3160,7 +3228,12 @@ function renderProblem() {
   if (PIC_LEVELS.has(session.levelId) && p0.type === 'binary')   // 5 이하 단계는 그림+식(v119: 167~169 합류)
     curCirc = p0.op === '-' ? [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'gray' }] : [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'red' }];
   setNav(studyNav());
-  $('wrap').innerHTML = `<div class="study sz-${prefs.size}" id="study">
+  $('wrap').innerHTML = `<div class="study sz-${prefs.size}${prefs.calm ? ' calm' : ''}" id="study">
+    <div class="adv-top">
+      <div class="trail" id="trail">${trailHtml()}</div>
+      <div class="pouch" id="pouch" title="오늘 모은 별">${ICON_STAR('#F5B301', 24)}<b id="pouchN">${sessionStars()}</b><span>오늘 별</span></div>
+    </div>
+    <div class="study-row">
     <div class="card card--accent study-card">
       <div style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.2rem">
         <button type="button" class="speak-icon" onclick="speakProblem()" aria-label="문제 읽어 주기" style="font-size:1.6rem">🔊</button>
@@ -3169,6 +3242,12 @@ function renderProblem() {
       <div class="qface" id="qface"></div>
       <div class="hint hidden" id="hint"></div>
       <div class="choice-row" id="choices"></div>
+    </div>
+    <aside class="buddy-col" id="buddyCol">
+      <div class="streak-card"><div class="lbl">연속 정답</div><div class="big"><b id="streakN">${sessionStreak()}</b><span>번째</span></div><div class="bars" id="streakBars">${streakBarsHtml()}</div><div class="sub">3번 연속이면 별 하나 더</div></div>
+      <div class="buddy-card"><div class="buddy-face">${BUDDY_SVG}</div><div class="bubble" id="bubble">잘 보고 골라요</div>
+        ${['clock', 'carry'].includes(p0.type) ? '' : '<button type="button" class="helpbtn" onclick="helpHint()">' + ICON_BULB + '<span>도와줘</span></button>'}</div>
+    </aside>
     </div>
   </div>`;
   paintFace(false);
@@ -3399,6 +3478,7 @@ function logItem() {
 }
 function afterCorrect(ms) {
   logItem(); session.idx++; saveResume();
+  if (sessionStreak() > 0 && sessionStreak() % 3 === 0) { session.bonus = (session.bonus || 0) + 1; refreshAdventure(true); buddySay('3번 연속! 별 하나 더!'); } else { refreshAdventure(false); buddySay(session.log[session.idx - 1] && session.log[session.idx - 1].wrongs === 0 ? '잘했어요!' : '같이 해냈어요!'); }   // v155 모험 길·별 주머니·연속 정답 갱신
   setTimeout(nextStep, ms || Math.max(1100, lastSpeakMs + 300));
 }
 /* ③(v100) 재도전 관문 — 유도 힌트를 받았거나(2차, retryArm)
@@ -3473,7 +3553,7 @@ function judgeAnswer(btn, v, ans) {
     /* ④(v106) strong 학생은 명령형 — 의문형('~볼까요?')을 '선택 가능'으로 해석하는 자폐 학생 배려.
        외국어는 trKo가 원 의문형 번역으로 폴백 */
     if (lv === 'strong') cue = cue.replace(/볼까요\?$/, '보세요.');   // 진단 문장·폴백 문자열용(전략 발문은 위에서 처리)
-    cueFlash(p, diag);
+    cueFlash(p, diag); buddySay(cue);   // v155 친구 말풍선에 같은 발문
     if (stage < 1) {
       /* v112(사용자 지시): 같은 수 더하기의 1차 피드백 = 닻 그림(동그라미 모형·입력칸은 2차부터). 오류 유형 발문(diag)이 있으면 그쪽 우선 */
       const sm = Math.min(p.a, p.b), df = Math.abs(p.a - p.b);
