@@ -1613,7 +1613,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .pouch{ display:flex; align-items:center; gap:8px; background:#fff; border-radius:16px; padding:8px 16px; box-shadow:var(--shadow); flex:0 0 auto; }
 .pouch b{ font-size:22px; font-weight:900; } .pouch span{ font-size:14px; color:var(--ink-soft); }
 .pouch.pop{ animation:pouchPop .6s; } @keyframes pouchPop{ 30%{ transform:scale(1.18); } 100%{ transform:scale(1); } }
-.buddy-col{ flex:0 0 270px; display:flex; flex-direction:column; gap:14px; }
+.buddy-col{ flex:0 0 270px; display:flex; flex-direction:column; gap:14px; margin-bottom:.6rem; }   /* v160: 문제 카드의 아래 여백(.card margin-bottom)과 맞춰 도우미 칸이 더 내려오지 않게 */
 .streak-card,.buddy-card{ background:#fff; border-radius:24px; box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; gap:8px; }
 .streak-card .lbl{ font-size:15px; font-weight:700; color:var(--ink-soft); }
 .streak-card .big{ display:flex; align-items:flex-end; gap:6px; } .streak-card .big b{ font-size:50px; font-weight:900; color:var(--warm); line-height:1; } .streak-card .big span{ font-size:17px; font-weight:700; color:var(--ink-soft); padding-bottom:7px; }
@@ -1650,6 +1650,45 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .mgrp,.dgrp{ border:0; background:#fff; box-shadow:0 4px 10px rgba(0,0,0,.14); }   /* v157: 곱셈·나눗셈 힌트 묶음도 점선 대신 면+그림자 */
 .dgrp.on,.mgrp.on{ background:var(--choice-bg); box-shadow:0 0 0 4px var(--accent-strong), 0 4px 10px rgba(0,0,0,.14); }
 .buddy-card .bubble b{ color:var(--accent-strong); }
+/* v161 곱셈구구 학습지 반영 */
+.addmul{ gap:1.7rem; }
+/* v163: 그림과 식 사이 한 줄 여백(사용자 지시) */
+.addmul .mulrow{ margin-bottom:1.6rem; }
+.mulpick .mulrow{ margin-bottom:1.4rem; }
+.seqfillq .early-q{ margin-bottom:1rem; }
+.chantq .chant-head{ margin-bottom:1rem; }
+.addmul .mulrow{ gap:1rem; }
+.addmul .mulrow .cstack .cdot{ width:34px; height:34px; } .addmul .mulrow .mgrp{ padding:.5rem .7rem; }
+.ameq{ display:flex; align-items:center; gap:.6rem; font-size:3.4rem; font-weight:900; }
+.ameq .lbl{ font-size:1.25rem; font-weight:700; color:var(--ink-soft); background:#F1F3F6; border-radius:999px; padding:5px 14px; margin-right:.6rem; }
+.ameq i{ font-style:normal; color:var(--ink-soft); }
+.ameq.add{ font-size:2.7rem; }
+.stepslot{ min-width:1.5em; }
+.stepslot.done{ color:var(--ok); border-color:transparent; }
+.gridq{ flex-direction:row; align-items:center; justify-content:center; gap:3.5rem; }   /* v162: 격자 왼쪽, 식 오른쪽 */
+.gq-side{ display:flex; flex-direction:column; align-items:flex-start; gap:1.1rem; }
+.gq-eq{ display:flex; align-items:center; gap:.6rem; font-size:3.6rem; font-weight:900; }
+.gq-eq i{ font-style:normal; color:var(--ink-soft); } .gq-txt{ font-size:1.8rem; font-weight:700; color:var(--ink-soft); }
+.gq-grid{ display:grid; gap:4px; touch-action:none; user-select:none; }
+.gq-corner{ } .gq-ch{ height:24px; font-size:15px; font-weight:800; color:var(--warm); text-align:center; line-height:24px; }
+.gq-rh{ width:30px; height:38px; font-size:16px; font-weight:800; color:#9AA5B1; display:flex; align-items:center; justify-content:center; border-radius:8px; }
+.gq-rh.on{ color:var(--accent-strong); } .gq-rh.need{ background:#EAF3FC; color:var(--accent-strong); }
+.gq-cell{ width:38px; height:38px; background:#F1F3F6; border-radius:7px; cursor:pointer; }
+.gq-cell.on{ background:var(--warm); }
+.chantq{ gap:1rem; align-items:stretch; }
+.chant-head{ font-size:1.8rem; font-weight:800; color:var(--ink-soft); text-align:center; }
+.chant-tbl{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px 30px; }
+.chant-row{ display:flex; align-items:center; justify-content:center; gap:.35rem; font-size:2.2rem; font-weight:800; padding:6px 14px; border-radius:14px; background:#fff; color:#9AA5B1; min-height:56px; }
+.chant-row b{ color:#B9C4D3; } .chant-row i{ font-style:normal; }
+.chant-row.done{ color:var(--ink); } .chant-row.done b{ color:var(--ink); } .chant-row.done b.ca{ color:var(--warm); } .chant-row.done b.cb{ color:var(--accent-strong); }
+.chant-row.cur{ background:#EAF3FC; color:var(--ink); box-shadow:inset 0 0 0 3px var(--accent-strong); font-size:2.6rem; }
+.chant-row.cur b.ca{ color:var(--warm); } .chant-row.cur b.cb{ color:var(--accent-strong); } .chant-row.cur b{ color:var(--ink); }
+.chant-row .qblank{ font-size:2rem; min-width:1.4em; }
+.seqrow.sf{ display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:.6rem; max-width:900px; }
+.seqfillq{ gap:1.8rem; }
+.seqfillq .early-q{ font-size:2.1rem !important; } .seqfillq .early-q b{ font-size:2.8rem !important; }
+.seqrow.sf .seqbox{ min-width:80px; font-size:2.3rem; padding:.5rem .3rem; text-align:center; }
+.seqrow.sf .seqbox.stepslot.done{ color:var(--ok); border-color:var(--line); border-style:solid; }
 .streakpill{ display:inline-flex; align-items:center; gap:4px; background:#FFF6D6; color:#8A5A00; border-radius:999px; padding:2px 10px; font-size:1rem; font-weight:800; margin-left:.3rem; vertical-align:middle; }
 /* 모험 길이 차지하는 높이만큼 세로셈·힌트가 눌리지 않게: 길을 낮추고 세로셈 글자를 조금 줄임 */
 .adv-top{ padding:0 6px 4px; }
@@ -1675,7 +1714,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 159';
+const APP_VERSION = 'ver 163';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -1738,6 +1777,29 @@ function mulPickGen() {
   const a = R(2, 5), b = R(2, 5), b2 = b === 5 ? 4 : (b === 2 ? 3 : (R(0, 1) ? b + 1 : b - 1));
   const opts = shuffle([{ t: `${a} × ${b}`, x: a, op: '×', y: b, tag: null }, { t: `${a} + ${b}`, x: a, op: '+', y: b, tag: 'symbol' }, { t: `${a} × ${b2}`, x: a, op: '×', y: b2, tag: 'fact' }]);   // v144: x·op·y = 보기에 역할 색(개씩 주황·묶음 파랑)
   return { type: 'mulpick', a, b, opts, ans: opts.findIndex(o => !o.tag) };
+}
+/* v161 뛰어세기 10칸: s씩 열 칸(s·2s·…·10s), 빈칸 셋(첫 칸 제외) — 빈칸을 앞에서부터 차례로 채움(여러 단계 답) */
+function seqFillGen() {
+  const st = [2, 5, 10][R(0, 2)], arr = Array.from({ length: 10 }, (_, i) => st * (i + 1));
+  const blanks = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 3).sort((x, y) => x - y);
+  return { type: 'seqfill', st, arr, blanks, stepAns: blanks.map(i => arr[i]), step: 0, ans: arr[blanks[0]] };
+}
+/* v161 단 순서대로(구구표 완성): 한 세션 = 한 단의 9줄. 칸(chantLv) 0 순서대로 → 1 섞어서 → 2 곱하는 수 찾기(a × ☐ = 곱). 세션 첫 시도 정답 8/9 이상이면 다음 칸 */
+let chantState = null, genSeed = 0;
+const chantKey = () => 'chant:' + ((current && !current.guest && current.id) || 'guest');
+const chantLvOf = a => { const m = lsGet(chantKey(), {}); return Math.max(0, Math.min(2, +m[a] | 0)); };
+function chantGen(dans) {
+  if (!chantState || chantState.seed !== genSeed || chantState.i >= 9) {
+    const a = dans[R(0, dans.length - 1)], lv = chantLvOf(a);
+    chantState = { seed: genSeed, a, lv, order: lv === 0 ? [1, 2, 3, 4, 5, 6, 7, 8, 9] : shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]), i: 0 };
+  }
+  const st = chantState, k = st.order[st.i++], mode = st.lv === 2 ? 'factor' : st.lv === 1 ? 'mix' : 'order';
+  return { type: 'chant', a: st.a, k, mode, rows: st.order.slice(), ans: mode === 'factor' ? k : st.a * k };
+}
+function chantAfterSession(items, log) {   // finishSession이 부름: 표 세션이 잘 끝났으면 칸 올림
+  if (!items.length || items[0].type !== 'chant') return;
+  const a = items[0].a, ok = log.filter(it => it && it.wrongs === 0).length;
+  if (ok >= Math.ceil(items.length * 0.85)) { const m = lsGet(chantKey(), {}); m[a] = Math.min(2, (+m[a] | 0) + 1); if (!(current && current.guest)) lsSet(chantKey(), m); }
 }
 const gugu = dans => { const a = dans[R(0, dans.length - 1)], b = R(1, 9); return { type: 'binary', a, b, op: '×', ans: a * b }; };
 
@@ -1889,6 +1951,15 @@ const LEVELS = [
  { id: 224, g: "2학년 · 곱셈구구", name: "접시에 담기 (몇씩 몇 접시)", gen: () => { const a = R(2, 5), b = R(2, 5), [item, emoji] = MUL_ITEMS[R(0, MUL_ITEMS.length - 1)]; return { type: 'mulput', a, b, item, emoji, ans: a * b }; } },
  { id: 225, g: "2학년 · 곱셈구구", name: "곱셈 기계 (식 돌려 맞추기)", gen: () => { const a = R(2, 5), b = R(2, 5); return { type: 'mulmach', a, b, ans: a * b }; } },
  { id: 226, g: "2학년 · 곱셈구구", name: "곱셈식 고르기 (묶음을 식으로)", gen: mulPickGen },
+ /* v161 곱셈구구 학습지(사용자 자료) 반영 — 덧셈식→곱셈식, 격자(배열) 모형 두 가지, 단 순서대로 외우기(표), 뛰어세기 10칸. 곱하는 수는 1~9 */
+ { id: 234, g: "2학년 · 곱셈구구", name: "뛰어세기 10칸 (2·5·10씩)", gen: seqFillGen },
+ { id: 227, g: "2학년 · 곱셈구구", name: "덧셈식을 곱셈식으로", gen: () => { const a = R(2, 9), b = R(2, 5); return { type: 'addmul', a, b, stepAns: [b, a * b], step: 0, ans: b }; } },
+ { id: 228, g: "2학년 · 곱셈구구", name: "격자 색칠하기 (식 보고)", gen: () => { const a = R(2, 9), b = R(1, 9); return { type: 'gridfill', a, b, ans: a * b }; } },
+ { id: 229, g: "2학년 · 곱셈구구", name: "격자 보고 곱셈식", gen: () => { const a = R(2, 9), b = R(1, 9); return { type: 'gridread', a, b, stepAns: [b, a * b], step: 0, ans: b }; } },
+ { id: 230, g: "2학년 · 곱셈구구", name: "2단·5단 순서대로", gen: () => chantGen([2, 5]), count: 9 },
+ { id: 231, g: "2학년 · 곱셈구구", name: "3단·6단 순서대로", gen: () => chantGen([3, 6]), count: 9 },
+ { id: 232, g: "2학년 · 곱셈구구", name: "4단·8단 순서대로", gen: () => chantGen([4, 8]), count: 9 },
+ { id: 233, g: "2학년 · 곱셈구구", name: "7단·9단 순서대로", gen: () => chantGen([7, 9]), count: 9 },
  { id: 155, g: "2학년 · 곱셈구구", name: "곱셈구구 2단·5단", gen: () => gugu([2, 5]) },
  { id: 156, g: "2학년 · 곱셈구구", name: "곱셈구구 3단·6단", gen: () => gugu([3, 6]) },
  { id: 157, g: "2학년 · 곱셈구구", name: "곱셈구구 4단·8단", gen: () => gugu([4, 8]) },
@@ -1911,7 +1982,7 @@ const migrateLv = v => (CLOCK_OLD2NEW[v] || (v >= 101 ? v : (OLD2NEW[v] || LEVEL
 const levelById = id => LEVELS.find(l => l.id === migrateLv(id)) || LEVELS[0];
 /* v101 재부여 후 id = 101 + 교육과정 순이라 지금은 오름차순과 같다.
    새 단계는 165+ 번호로 만들고 이 배열의 원하는 위치에 삽입한다(기존 id 재부여 금지). */
-const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 184, 183, 181, 182, 147, 148, 149, 150, 151, 152, 153, 154, 224, 225, 226, 155, 156, 157, 158, 159, 160, 216, 217, 218, 219, 220, 221, 222, 223, 161, 162, 163, 164];
+const LEVEL_ORDER = [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 167, 168, 169, 120, 174, 175, 176, 121, 122, 170, 171, 172, 173, 123, 177, 178, 179, 180, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 165, 166, 143, 144, 145, 146, 184, 183, 181, 182, 147, 148, 149, 150, 151, 152, 153, 154, 234, 224, 225, 226, 227, 228, 229, 230, 155, 231, 156, 232, 157, 233, 158, 159, 160, 216, 217, 218, 219, 220, 221, 222, 223, 161, 162, 163, 164];
 /* 표시 번호 = 교육과정 순(LEVEL_ORDER 위치) */
 const lvlNo = id => LEVEL_ORDER.indexOf(id) + 1;
 const orderedLevels = () => LEVEL_ORDER.map(levelById);
@@ -1926,12 +1997,12 @@ const LEVEL_BANDS = [
   { name: '세 수·10 만들기·십몇', ids: [135, 136, 137, 140, 141, 142, 165, 166, 143, 144, 145, 146, 147] },
   { name: '두 자리 수 덧셈·뺄셈', ids: [129, 130, 131, 132, 133, 134, 184, 183, 181, 182, 148, 149] },
   { name: '세 자리 수 덧셈·뺄셈', ids: [150, 151, 152, 153, 164] },
-  { name: '곱셈·나눗셈', ids: [154, 224, 225, 226, 155, 156, 157, 158, 159, 160, 161, 162, 163] },
+  { name: '곱셈·나눗셈', ids: [154, 234, 224, 225, 226, 227, 228, 229, 230, 155, 231, 156, 232, 157, 233, 158, 159, 160, 161, 162, 163] },
   { name: '시계', ids: [216, 217, 218, 219, 220, 221, 222, 223] },   /* v127 시계놀이(v129 묶음 216~223) — 진급 순서는 160 뒤·161 앞(5분 단위가 뛰어세기 154에 기댐) */
 ];
 /* 학습지 인쇄 비지원 유형 — 번쩍 보기(105·111)는 잠깐 보여주는 화면 전용 활동이라 지필 불가.
    십틀 10 만들기(139)·자리값 블록 만들기(128)는 조작 활동이라 지면 미지원(v94 규칙: 신규 유형은 NO_PRINT) */
-const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128, 181, 182, 183, 184, 224, 225, 226, 216, 217, 218, 219, 220, 221, 222, 223]);   // v129 시계놀이 216~223도 화면 조작 활동(옛 185~215 삭제)   // 181~184 받아올림 큐브(v124·125)도 조작 활동
+const NO_PRINT_IDS = new Set([105, 111, 166, 139, 128, 181, 182, 183, 184, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 216, 217, 218, 219, 220, 221, 222, 223]);   // v129 시계놀이 216~223도 화면 조작 활동(옛 185~215 삭제)   // 181~184 받아올림 큐브(v124·125)도 조작 활동
 /* 같은 수 더하기 계열 단계(v112 사용자 지시, v114에 144 합류): 받아올림 단원이 아니므로 정답칸은 자릿값 칸 없이 **한 칸**,
    전략은 항상 double/near(10 만들기는 자리칸이 필요) */
 const DBL_LEVELS = new Set([143, 165, 144]);
@@ -3092,6 +3163,11 @@ const qStr = p => {
   if (p.type === 'word') return `문장제 ${p.a} ${sgn(p.op)} ${p.b}`;
   if (p.type === 'judge') return `${p.a} × ${p.b} = ${p.shown} 채점`;
   if (p.type === 'mulput') return `접시에 담기 ${p.a}씩 ${p.b}`;   // v142(연산 정규식에 안 걸리게 접두어 — 분류는 tags)
+  if (p.type === 'addmul') return `덧셈식→곱셈식 ${p.a}씩 ${p.b}`;   // v161
+  if (p.type === 'gridfill') return `격자 색칠 ${p.a}×${p.b}`;
+  if (p.type === 'gridread') return `격자 읽기 ${p.a}×${p.b}`;
+  if (p.type === 'chant') return p.mode === 'factor' ? `${p.a} × ☐ = ${p.a * p.k}` : `${p.a} × ${p.k}`;   // 순서·섞기는 연산 정규식에 걸려 사실 회상으로 분류
+  if (p.type === 'seqfill') return `${p.st}씩 10칸 ` + p.arr.map((v, i) => p.blanks.includes(i) ? '☐' : v).join(',');
   if (p.type === 'mulmach') return `곱셈 기계 ${p.a}씩 ${p.b}`;
   if (p.type === 'mulpick') return `곱셈식 고르기 ${p.a}씩 ${p.b}`;
   if (p.type === 'clock') return `시계 ${p.label || p.mode}`;   // v127 시계놀이
@@ -3104,7 +3180,8 @@ const qStr = p => {
 function startSession() {
   /* SEM ⑤ 타임어택 워밍업(v90): 켜져 있으면 오늘 첫 세션 앞에 숙달 단계 빨리 풀기 */
   if (prefs.warmup && !warmedUp && !(current && current.guest) && startWarmup()) return;
-  const lvl = levelById(current.level), n = lvl.group === 'day' ? clockDayLen() : (current.daily || DAILY_DEFAULT);   // v129 하루 일과: 문제 수 = 지금 칸의 장면 수(이야기 한 바퀴)
+  const lvl = levelById(current.level), n = lvl.group === 'day' ? clockDayLen() : lvl.count || (current.daily || DAILY_DEFAULT);   // v129 하루 일과: 문제 수 = 지금 칸의 장면 수(이야기 한 바퀴) · v161 표 단계는 9줄
+  genSeed = Date.now();   // v161 단 순서대로: 세션마다 새 표
   session = { items: Array.from({ length: n }, () => lvl.gen()), idx: 0, levelId: lvl.id, levelName: lvl.name, log: [], startAt: Date.now() };
   renderProblem();
 }
@@ -3356,6 +3433,8 @@ function paintFace(flip) {
   if (p.type === 'freesplit') initFreeSplit();
   if (p.type === 'onemap') initOneMap();          // 하나씩 나눠 주기: 드래그/탭
   if (p.type === 'mulput') initMulPut();          // v142 접시에 담기: 끌기/탭 → 다 담으면 모두 몇 개
+  if (p.type === 'gridfill') initGridFill();      // v161 격자 색칠
+  if (p.type === 'addmul') initGroupTap($('qface'));   // v161 묶음 눌러 세기
   if (p.type === 'mulmach') initMulMach();        // v142 곱셈 기계: 다이얼
   if (p.type === 'mulpick') initTapCount('#mkrow .cdot');   // v142 묶음 그림 짚어 세기
   if (p.type === 'flash') initFlash();            // 번쩍 보기: 잠깐 뒤 가림
@@ -3415,6 +3494,11 @@ function paintChoices() {
     return;
   }
   if (p.type === 'mulput' || p.type === 'mulmach') { $('choices').innerHTML = ''; return; }   // v142: 접시·다이얼이 조작 대상(담기 끝나면 mpAsk가 보기를 냄)
+  if (p.type === 'gridfill') { $('choices').innerHTML = `<button class="btn btn--orange" style="font-size:1.25rem;font-weight:800" onclick="gfSubmit()">다 칠했어요 ✓</button>`; return; }   // v161
+  if (p.type === 'chant' || p.type === 'addmul' || p.type === 'gridread' || p.type === 'seqfill') {   // v161: 이웃 구구(한 묶음 차이)를 보기에 심음
+    const seed = p.type === 'seqfill' ? p.ans + p.st : p.type === 'chant' && p.mode === 'factor' ? null : (p.type === 'chant' ? p.a * (p.k + (p.k < 9 ? 1 : -1)) : (p.step === 1 ? p.a * (p.b + 1) : null));
+    $('choices').innerHTML = makeChoices(p.ans, 3, seed).map(c => `<button class="btn-choice" data-v="${c}" onclick="answer(this,${p.ans})">${c}</button>`).join(''); return;
+  }
   if (p.type === 'mulpick') { $('choices').innerHTML = p.opts.map((o, i) => `<button class="btn-choice mkc" data-v="${i}" onclick="answer(this,${p.ans})"><b class="ca">${o.x}</b><span class="op">${o.op}</span><b class="cb">${o.y}</b></button>`).join(''); return; }   // v142 · v144 역할 색
   if (p.type === 'judge') {
     $('choices').innerHTML = `<button class="btn-choice jbtn" data-v="1" onclick="answer(this,${p.ans})">⭕ 맞아요</button>
@@ -3478,6 +3562,11 @@ function speakProblem(onEnd) {
   else if (p.type === 'word') t = p.text;
   else if (p.type === 'judge') t = `${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.shown}. 맞으면 동그라미, 틀리면 엑스!`;
   else if (p.type === 'mulput') t = mp && mp.done ? '모두 몇 개?' : `${p.item} ${koCnt(p.a)} 개씩 ${koCnt(p.b)} 접시에 담아요.`;   // v142
+  else if (p.type === 'addmul') t = p.step === 0 ? `${Array(p.b).fill(p.a).join(' 더하기 ')}${josaEun(p.a)} ${p.a * p.b}. 곱셈식으로 쓰면, ${p.a} 곱하기 몇?` : `${p.a} 곱하기 ${p.b}${josaEun(p.b)}?`;   // v161
+  else if (p.type === 'gridfill') t = `${p.a} 곱하기 ${p.b}만큼 색칠해요. 한 줄에 ${koCnt(p.a)} 칸씩, ${koCnt(p.b)} 줄.`;
+  else if (p.type === 'gridread') t = p.step === 0 ? `색칠한 줄이 몇 줄이에요? ${p.a} 곱하기 몇?` : `${p.a} 곱하기 ${p.b}${josaEun(p.b)}?`;
+  else if (p.type === 'chant') t = p.mode === 'factor' ? `${p.a} 곱하기 몇이 ${p.a * p.k}?` : `${p.a} 곱하기 ${p.k}${josaEun(p.k)}?`;
+  else if (p.type === 'seqfill') t = p.step === 0 ? `${p.st}씩 뛰어 세요. 빈칸을 채워요.` : '다음 빈칸은?';
   else if (p.type === 'mulmach') t = '위 그림과 똑같이 만들어요. 몇씩 몇 묶음?';
   else if (p.type === 'mulpick') t = `${p.a}씩 ${p.b}묶음. 곱셈식을 골라요.`;
   else if (p.type === 'carry') t = carryIntro(p);   // v124: 🔊 다시 듣기 = 시작 안내(식을 써요 / N 더하기 M은?)
@@ -3549,7 +3638,8 @@ function judgeAnswer(btn, v, ans) {
     const slot = $('qslot'); if (slot) { fillSlot(slot, ans); celebrate(slot); }
     if (p.type === 'flash') { flashOpen = true; const c = $('fcover'); if (c) c.classList.add('hidden'); }   // 직산: 정답 후 열어서 눈으로 확인
     chime(true);
-    if (p.type === 'mulpick' || p.type === 'mulput') { if (p.type === 'mulpick') mkLight(p.ans); afterCorrectSpeak(eqSay(p)); return; }   // v142: 묶음 → 식으로 잇는 종결 음성
+    if (p.stepAns && p.step < p.stepAns.length - 1) { stepAdvance(p); return; }   // v161: 빈칸이 여럿인 문제는 다음 빈칸으로
+    if (p.type === 'mulpick' || p.type === 'mulput' || p.type === 'addmul' || p.type === 'gridread' || p.type === 'chant' || p.type === 'seqfill') { if (p.type === 'mulpick') mkLight(p.ans); afterCorrectSpeak(eqSay(p)); return; }   // v142·v161: 식으로 잇는 종결 음성
     /* 채점 놀이: 틀린 식을 잘 찾았으면 바르게 고쳐서 보여주고 읽어 줌(토도 G7 문법) */
     if (p.type === 'judge' && p.ans === 0) {
       const j = $('jshown'); if (j) { j.innerHTML = `<s>${p.shown}</s> ${p.a * p.b}`; j.classList.add('jfix'); }
@@ -5004,7 +5094,7 @@ const pulseDot = d => d && d.animate([{ transform: 'scale(1.45)' }, { transform:
 /* v122 규칙 5(사용자 지시): 시연·공개의 정답 종결은 식 그대로 — 문제 읽기 "3 빼기 2는?"의 짝 "3 빼기 2는 1.".
    식이 없는 유형(보수·세기 등)은 "정답은 N이에요." 유지 */
 const OP_KO = { '+': '더하기', '-': '빼기', '×': '곱하기', '÷': '나누기' };
-const eqSay = p => p.type === 'mulput' ? `${p.a}씩 ${p.b}묶음, 모두 ${koCnt(p.ans)} 개.` : p.type === 'mulpick' || p.type === 'mulmach' ? `${p.a}씩 ${p.b}묶음은 ${p.a} 곱하기 ${p.b}. ${p.a * p.b}${josaYeyo(p.a * p.b)}.`   // v142(고르기의 ans는 보기 위치라 곱은 a×b로)
+const eqSay = p => p.type === 'addmul' || p.type === 'gridread' || p.type === 'chant' ? `${p.a} 곱하기 ${p.type === 'chant' ? p.k : p.b}${josaEun(p.type === 'chant' ? p.k : p.b)} ${p.type === 'chant' ? p.a * p.k : p.a * p.b}.` : p.type === 'gridfill' ? `${p.a}씩 ${p.b}줄, 모두 ${koCnt(p.ans)} 칸. ${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.ans}.` : p.type === 'seqfill' ? `${p.st}씩 뛰어 세면 ${p.arr.join(', ')}.` : p.type === 'mulput' ? `${p.a}씩 ${p.b}묶음, 모두 ${koCnt(p.ans)} 개.` : p.type === 'mulpick' || p.type === 'mulmach' ? `${p.a}씩 ${p.b}묶음은 ${p.a} 곱하기 ${p.b}. ${p.a * p.b}${josaYeyo(p.a * p.b)}.`   // v142(고르기의 ans는 보기 위치라 곱은 a×b로)
   : p.type === 'triple' ? `${p.a} ${OP_KO[p.op]} ${p.b} ${OP_KO[p.op2]} ${p.c}${josaEun(p.c)} ${p.ans}.`
   : (p.type === 'binary' && OP_KO[p.op]) ? `${p.a} ${OP_KO[p.op]} ${p.b}${josaEun(p.b)} ${p.ans}.` : `정답은 ${p.ans}${josaYeyo(p.ans)}.`;
 /* 가족 사실 연결(v106 ②) — 십몇−몇 유도 종결부에 덧셈 사실과 묶어 강화(뺄셈구구 신설 대신 합의된 대안).
@@ -5910,6 +6000,7 @@ async function finishSession() {
   const log = session.log.filter(Boolean);
   const got = log.filter(it => it.wrongs === 0).length;
   clearResume();
+  chantAfterSession(session.items, log);   // v161
   if (current.guest) {                                  // 손님: 달력 도장·세션 기록 없이 점수만
     lastScore = { got, total: session.items.length, promo: 0, levelName: levelById(current.level).name };
     speak('다 했어요! 잘했어요.');
@@ -6993,7 +7084,8 @@ function wsProblemH(p, num) {
 const EARLY_TYPES = new Set(['count', 'put', 'gather', 'split', 'compare', 'seq', 'word', 'judge', 'freesplit',
   'bigpick', 'more', 'onemap', 'samepick', 'flash',   // 수감각(50~54)
   'nle', 'tenfill', 'pvread', 'pvbuild',             // 수감각도구 이식(55~61): 수직선 추정·십틀 채우기/10 만들기·자리값 읽기/만들기
-  'mulput', 'mulmach', 'mulpick']);                  // v142 곱셈의 뜻(224~226): 접시에 담기·곱셈 기계·곱셈식 고르기
+  'mulput', 'mulmach', 'mulpick',                    // v142 곱셈의 뜻(224~226): 접시에 담기·곱셈 기계·곱셈식 고르기
+  'addmul', 'gridfill', 'gridread', 'chant', 'seqfill']);   // v161 학습지 반영(227~234)
 
 /* 주사위 눈 배치(1~6) — 직산·같은 수 찾기: 줄 세기와 다른 배열로 '양이 같음'을 보게 함 */
 const DICE_POS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
@@ -7054,6 +7146,18 @@ function earlyFace(p) {
       <button class="cmp bigc" data-v="0" onclick="answer(this,${p.ans})"><span class="bge ${sz[0]}">${p.emoji}</span></button>
       <button class="cmp bigc" data-v="1" onclick="answer(this,${p.ans})"><span class="bge ${sz[1]}">${p.emoji}</span></button></div>`;
   }
+  if (p.type === 'addmul')   /* v161 덧셈식 → 곱셈식: 묶음 그림 + 덧셈식(합 보임) + 곱셈식의 묶음 수·곱을 차례로 */
+    return `<div class="early addmul"><div class="mulrow" id="amrow">${mulGroups(p.a, p.b, 'am').replace(/class="mgrp"/g, 'class="mgrp gtap"')}</div>
+      <div class="ameq add"><span class="lbl">덧셈식</span>${Array(p.b).fill(`<b class="ca">${p.a}</b>`).join('<i>+</i>')}<i>=</i><b>${p.a * p.b}</b></div>
+      <div class="ameq mul"><span class="lbl">곱셈식</span><b class="ca">${p.a}</b><i>×</i><span class="qblank plain stepslot" id="qslot" data-step="0">?</span><i>=</i><span class="qblank plain stepslot" data-step="1">?</span></div></div>`;
+  if (p.type === 'gridfill')   /* v161 격자 색칠: 가로 a칸 × 9줄, 줄 번호는 파랑(묶음), 가로 칸 수는 주황(개) */
+    return `<div class="early gridq">${gridHtml(p.a, 0)}<div class="gq-side"><div class="gq-eq"><b class="ca">${p.a}</b><i>×</i><b class="cb">${p.b}</b></div><div class="gq-txt">만큼 색칠해요</div><div class="gq-eq"><i>=</i><span class="qblank plain" id="qslot">?</span></div></div></div>`;
+  if (p.type === 'gridread')   /* v161 격자 읽기: b줄이 칠해져 있음 → a × ☐ = ☐ */
+    return `<div class="early gridq">${gridHtml(p.a, p.b)}<div class="gq-side"><div class="gq-eq"><b class="ca">${p.a}</b><i>×</i><span class="qblank plain stepslot" id="qslot" data-step="0">?</span></div><div class="gq-eq"><i>=</i><span class="qblank plain stepslot" data-step="1">?</span></div></div></div>`;
+  if (p.type === 'chant')   /* v161 단 순서대로(구구표): 9줄 표, 푼 줄은 값, 지금 줄은 빈칸 */
+    return `<div class="early chantq"><div class="chant-head"><b class="ca">${p.a}</b>단 ${p.mode === 'order' ? '순서대로' : p.mode === 'mix' ? '섞어서' : '곱하는 수 찾기'}</div><div class="chant-tbl">${chantRows(p)}</div></div>`;
+  if (p.type === 'seqfill')   /* v161 뛰어세기 10칸: 빈칸 셋을 차례로 */
+    return `<div class="early seqfillq"><div class="early-q" style="font-size:1.6rem;color:var(--ink-soft)"><b class="ca" style="font-size:2.2rem">${p.st}</b>씩 뛰어 세요</div><div class="seqrow sf">${p.arr.map((v, i) => { const bi = p.blanks.indexOf(i); return bi < 0 ? `<div class="seqbox">${v}</div>` : `<div class="seqbox qblank stepslot" data-step="${bi}"${bi === 0 ? ' id="qslot"' : ''}>?</div>`; }).join('')}</div></div>`;
   if (p.type === 'mulput')   /* v142 접시에 담기 — 접시 b개(자리 a개씩) + 트레이 a×b개. 다 담으면 아래 물음이 열림 */
     return `<div class="early mulput">
       <div class="early-q mpq">${p.emoji} <b class="putn ca">${p.a}</b>개씩 <b class="putn cb">${p.b}</b>접시</div>
@@ -7242,6 +7346,11 @@ function routeEarlyHint(p, h, stage) {
   if (p.type === 'more') return hintMore(p, h, stage);
   if (p.type === 'onemap') return hintOneMap(p, h, stage);
   if (p.type === 'mulput') return hintMulPut(p, h, stage);   // v142
+  if (p.type === 'addmul') return hintAddMul(p, h, stage);   // v161
+  if (p.type === 'gridfill') return hintGridFill(p, h, stage);
+  if (p.type === 'gridread') return hintGridRead(p, h, stage);
+  if (p.type === 'chant') return hintChant(p, h, stage);
+  if (p.type === 'seqfill') return hintSeqFill(p, h, stage);
   if (p.type === 'mulmach') return hintMulMach(p, h, stage);
   if (p.type === 'mulpick') return hintMulPick(p, h, stage);
   if (p.type === 'samepick') return hintSame(p, h, stage);
@@ -7931,6 +8040,101 @@ function hintMore(p, h, stage) {
     return;
   }
   hintCompare(p, h, stage);                 // 2차: 짝지어 세기 + 많은 쪽 표시(크기 비교와 동일)
+}
+/* ===== v161 곱셈구구 학습지 반영(227~234) ===== */
+/* 여러 빈칸 문제: 지금 칸을 채우고 다음 칸을 qslot으로 — 보기는 새 답으로 다시, 발문은 유형별 */
+function stepAdvance(p) {
+  const cur = document.querySelector('#qface .stepslot[data-step="' + p.step + '"]'); if (cur) { cur.removeAttribute('id'); cur.classList.add('done'); }
+  p.step++; p.ans = p.stepAns[p.step];
+  const nx = document.querySelector('#qface .stepslot[data-step="' + p.step + '"]'); if (nx) { nx.id = 'qslot'; nx.classList.add('cur'); }
+  if (p.type === 'seqfill') { const b = $('qface').querySelector('.seqbox.cur'); if (b) b.classList.add('on'); }
+  paintChoices(); const h = $('hint'); if (h) { h.classList.add('hidden'); h.innerHTML = ''; }
+  locked = false; setTimeout(() => speakProblem(), 350);
+}
+const gridHtml = (a, filled) => `<div class="gq-grid" id="gqGrid" style="grid-template-columns:30px repeat(${a}, 38px)"><div class="gq-corner"></div>${Array.from({ length: a }, (_, c) => `<div class="gq-ch">${c + 1}</div>`).join('')}${Array.from({ length: 9 }, (_, r) => `<div class="gq-rh${r < filled ? ' on' : ''}">${r + 1}</div>` + Array.from({ length: a }, (_, c) => `<div class="gq-cell${r < filled ? ' on' : ''}" data-r="${r}" data-c="${c}"></div>`).join('')).join('')}</div>`;
+let gfDrag = false;
+function initGridFill() {
+  const g = $('gqGrid'); if (!g) return; gfDrag = false;
+  const paint = (cell, on) => { if (!cell || !cell.classList.contains('gq-cell')) return; cell.classList.toggle('on', on); };
+  g.onpointerdown = e => { if (locked) return; const c = e.target.closest('.gq-cell'); if (!c) return; gfDrag = !c.classList.contains('on'); paint(c, gfDrag); tick(); e.preventDefault(); };
+  g.onpointermove = e => { if (locked || e.buttons === 0) return; const el = document.elementFromPoint(e.clientX, e.clientY); const c = el && el.closest('.gq-cell'); if (c && c.classList.contains('on') !== gfDrag) { paint(c, gfDrag); tick(); } };
+  g.onpointerup = () => { gfCount(); };
+}
+function gfCount() { const g = $('gqGrid'); if (!g) return 0; const n = g.querySelectorAll('.gq-cell.on').length; const p = session.items[session.idx]; [...g.querySelectorAll('.gq-rh')].forEach((h, r) => h.classList.toggle('on', [...g.querySelectorAll(`.gq-cell[data-r="${r}"]`)].every(c => c.classList.contains('on')))); return n; }
+function gfSubmit() {
+  if (locked) return;
+  const p = session.items[session.idx], n = gfCount();
+  if (n === p.ans) { locked = true; chime(true); const s = $('qslot'); if (s) { fillSlot(s, p.ans); celebrate(s); } afterCorrectSpeak(eqSay(p)); return; }
+  chime(false); wrongCount++; wrongVals.push(n); wiggle($('gqGrid'));
+  const msg = n < p.ans ? `${n ? `${koCntAny(n)} 칸 칠했어요. ` : ''}아직 모자라요. 한 줄에 ${koCnt(p.a)} 칸씩, ${koCnt(p.b)} 줄 칠해요.` : `너무 많아요. 한 줄에 ${koCnt(p.a)} 칸씩, ${koCnt(p.b)} 줄만 칠해요.`;
+  buddySay(msg);
+  const lv = (current && current.hintLv) || 'fade';
+  if (lv === 'off') { speak(msg); return; }
+  const stage = lv === 'fade' ? wrongCount - 1 : wrongCount + (lv === 'strong' ? 1 : 0);
+  if (stage < 1) { speak(msg); return; }
+  let started = false; const go = () => { if (started) return; started = true; routeHint(stage); };
+  speak(msg, go); setTimeout(go, lastSpeakMs + 1200);
+}
+function hintGridFill(p, h, stage) {
+  const g = $('gqGrid'); h.innerHTML = `<div class="tip">왼쪽 번호 <b class="cb">1</b>부터 <b class="cb">${p.b}</b>까지, 한 줄에 <b class="ca">${p.a}</b>칸씩 칠해요</div>`;
+  [...g.querySelectorAll('.gq-rh')].forEach((e, r) => e.classList.toggle('need', r < p.b));
+  if (stage === 1) { speak(`왼쪽 번호 1부터 ${p.b}까지, 한 줄에 ${koCnt(p.a)} 칸씩 칠해요.`); return; }
+  g.querySelectorAll('.gq-cell').forEach(c => c.classList.remove('on'));
+  const items = [];
+  for (let r = 0; r < p.b; r++) items.push({ text: String(p.a * (r + 1)), action: () => { g.querySelectorAll(`.gq-cell[data-r="${r}"]`).forEach(c => c.classList.add('on')); gfCount(); } });
+  items.push({ text: `${koCnt(p.b)} 줄, 모두 ${koCnt(p.ans)} 칸. 다 칠했어요를 눌러요.` });
+  speakSequence(items);
+}
+function hintGridRead(p, h, stage) {
+  const g = $('gqGrid'), rows = [...g.querySelectorAll('.gq-rh.on')];
+  if (p.step === 0) {
+    h.innerHTML = `<div class="tip">색칠된 줄의 <b class="cb">번호</b>를 세어 봐요</div>`;
+    if (stage === 1) { rows.forEach(r => r.classList.add('need')); speak('색칠된 줄의 왼쪽 번호를 세어 봐요.'); return; }
+    const items = rows.map((r, i) => ({ text: KO_NUM[i + 1], action: () => r.classList.add('need') })); items.push({ text: `${koCnt(p.b)} 줄. ${p.a} 곱하기 ${p.b}.` }); speakSequence(items); return;
+  }
+  h.innerHTML = `<div class="tip">한 줄에 <b class="ca">${p.a}</b>칸씩, <b class="ca">${p.a}</b>씩 뛰어 세어 봐요</div>`;
+  if (stage === 1) { speak(`한 줄에 ${koCnt(p.a)} 칸씩이에요. ${p.a}씩 뛰어 세어 봐요.`); return; }
+  rows.forEach(r => r.classList.remove('need'));
+  const items = rows.map((r, i) => ({ text: String(p.a * (i + 1)), action: () => r.classList.add('need') })); items.push({ text: eqSay(p) }); speakSequence(items);
+}
+function hintAddMul(p, h, stage) {
+  const gs = [...document.querySelectorAll('#amrow .mgrp')];
+  if (p.step === 0) {
+    h.innerHTML = `<div class="tip"><b class="ca">${p.a}</b>씩 더한 묶음이 몇 개인지 눌러 세어 봐요</div>`;
+    if (stage === 1) { speak(`${p.a}씩 더한 묶음이 몇 개인지, 묶음을 눌러 세어 봐요.`); return; }
+    gs.forEach(g => { const b = g.querySelector('.gno'); if (b) b.remove(); });
+    const items = gs.map((g, i) => ({ text: KO_NUM[i + 1], action: () => g.insertAdjacentHTML('beforeend', `<i class="gno pop">${i + 1}</i>`) })); items.push({ text: `${koCnt(p.b)} 묶음. ${p.a} 곱하기 ${p.b}.` }); speakSequence(items); return;
+  }
+  hintMul(p, h, stage, 'group');
+}
+/* 단 순서대로 표: 9줄 중 푼 줄은 이 세션의 기록에서 값을 채움 */
+function chantRows(p) {
+  const done = {}; (session.items || []).forEach((it, i) => { if (i < session.idx && it.type === 'chant' && it.a === p.a) done[it.k] = true; });
+  return p.rows.map(k => {
+    const cur = k === p.k, d = done[k];
+    const prod = p.a * k;
+    if (p.mode === 'factor') return `<div class="chant-row${cur ? ' cur' : d ? ' done' : ''}"><b class="ca">${p.a}</b><i>×</i>${cur ? `<span class="qblank plain" id="qslot">?</span>` : `<b class="cb">${d ? k : ''}</b>`}<i>=</i><b>${prod}</b></div>`;
+    return `<div class="chant-row${cur ? ' cur' : d ? ' done' : ''}"><b class="ca">${p.a}</b><i>×</i><b class="cb">${k}</b><i>=</i>${cur ? `<span class="qblank plain" id="qslot">?</span>` : `<b>${d ? prod : ''}</b>`}</div>`;
+  }).join('');
+}
+function hintChant(p, h, stage) {
+  const prev = p.rows.filter(k => k < p.k && [...(session.items || [])].some((it, i) => i < session.idx && it.a === p.a && it.k === k));
+  if (p.mode !== 'factor') {
+    const q = { ...p, b: p.k, op: '×', type: 'binary' };
+    h.innerHTML = `<div class="tip"><b class="ca">${p.a}</b>씩 <b class="cb">${p.k}</b>번 뛰어 세어 봐요</div>`;
+    if (stage === 1 && prev.length) { const k0 = Math.max(...prev); speak(`바로 위 줄, ${p.a} 곱하기 ${k0}${josaEun(k0)} ${p.a * k0}. 거기서 ${p.a} 더 가면?`); return; }
+    hintMul(q, h, stage, 'skip'); return;
+  }
+  h.innerHTML = `<div class="tip"><b class="ca">${p.a}</b>씩 뛰어 세어서 <b>${p.a * p.k}</b>이 나올 때까지, 몇 번?</div>`;
+  if (stage === 1) { speak(`${p.a}씩 뛰어 세어서 ${p.a * p.k}${josaIga(p.a * p.k)} 나올 때까지 몇 번인지 세어 봐요.`); return; }
+  const items = []; for (let i = 1; i <= p.k; i++) items.push({ text: String(p.a * i) }); items.push({ text: `${koCnt(p.k)} 번. ${p.a} 곱하기 ${p.k}${josaEun(p.k)} ${p.a * p.k}.` }); speakSequence(items);
+}
+function hintSeqFill(p, h, stage) {
+  const i = p.blanks[p.step], prevV = p.arr[i - 1];
+  h.innerHTML = `<div class="tip">수가 <b class="ca">${p.st}</b>씩 커져요. 앞 칸 <b>${prevV}</b>에서 <b class="ca">${p.st}</b> 더 가면?</div>`;
+  if (stage === 1) { speak(`수가 ${p.st}씩 커져요. 앞 칸 ${prevV}에서 ${p.st} 더 가면?`); return; }
+  const boxes = [...document.querySelectorAll('#qface .seqbox')];
+  const items = []; for (let j = 0; j <= i; j++) items.push({ text: String(p.arr[j]), action: () => boxes[j] && boxes[j].classList.add('on') }); items.push({ text: `빈칸은 ${p.ans}${josaYeyo(p.ans)}.` }); speakSequence(items);
 }
 /* ===== v142 곱셈의 뜻(224~226) — 접시에 담기(mulput)·곱셈 기계(mulmach)·곱셈식 고르기(mulpick) ===== */
 const mulGroups = (a, b, id) => Array.from({ length: b }, (_, k) => `<div class="mgrp" id="${id}${k}">${circleStack(a, 'o')}</div>`).join('');   // v158: 개=주황 · v159: 묶음 번호 없음
@@ -9176,7 +9380,7 @@ function clockMount(p, H) {
   const KO_CNT = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉', '열', '열하나', '열둘'];
   const SINO_T = ['', '십', '이십', '삼십', '사십', '오십', '육십'], SINO_U = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
   const sino = n => (SINO_T[Math.floor(n / 10)] + SINO_U[n % 10]) || '영';   // 1~59 한자어
-  const tk = (h, m) => m ? `${KO_HOUR[h]} 시 ${m} 분` : `${KO_HOUR[h]} 시`;
+  const tk = (h, m) => m ? `${KO_HOUR[h]} 시 ${sino(m)} 분` : `${KO_HOUR[h]} 시`;   // v162: 분도 한글로(사용자 지시 — 숫자 힌트는 아래 칸에 있음)
   const timeKo = (h, m) => tk(h, m) + '.';
   const KO_KAN = ['', '한', '두', '세', '네'];
   const countOnKo = m => { const f = Math.floor(m / 5) * 5, r = m - f; return `${m} 분은 ${f ? `${f} 분` : '12'}에서 ${KO_KAN[r]} 칸 더 가요.`; };   // v40 몇 분 세기 이어세기(m은 5의 배수 아님)
@@ -9658,11 +9862,11 @@ function clockMount(p, H) {
     if (S.mode === 'read') return p.m === 0 ? '몇 시예요?' : '몇 시 몇 분이에요?';
     if (S.sub === 'day') return `${p.scene.name}. ${tk(p.h, p.m)}${p.m ? '을' : '를'} 만들어요.`;   // v61
     if (S.mode === 'elapsed' && p.scene) return `${p.scene.name} 얼마나 걸렸어요?`;   // v61
-    if (S.mode === 'set') return S.sub === 'turn' ? '긴바늘을 한 바퀴 돌려요.' : S.sub === 'trip' ? `지금 ${tk(p.h0, p.m0)}. ${p.d} 분 ${p.dir > 0 ? '뒤로' : '전으로'} 돌려요.` : `${tk(p.h, p.m)}${p.m ? '을' : '를'} 만들어요.`;   // v52: '시'는 받침 없음 → 를
+    if (S.mode === 'set') return S.sub === 'turn' ? '긴바늘을 한 바퀴 돌려요.' : S.sub === 'trip' ? `지금 ${tk(p.h0, p.m0)}. ${sino(p.d)} 분 ${p.dir > 0 ? '뒤로' : '전으로'} 돌려요.` : `${tk(p.h, p.m)}${p.m ? '을' : '를'} 만들어요.`;   // v52: '시'는 받침 없음 → 를
     if (S.mode === 'nexth') return '짧은바늘 다음 숫자를 눌러요.';   // v49
     return `${tk(p.h, p.m)}부터 ${tk(p.h2, p.m2)}까지, 얼마나 걸렸어요?`;
   }
-  function answerKo() { const p = S.p; return S.mode === 'flip' ? '다 찾았어요.' : S.mode === 'nexth' ? `다음 숫자는 ${sino(nextH(p.h))}. 다음 정각은 ${KO_HOUR[nextH(p.h)]} 시.` : S.sub === 'day' ? `${p.scene.name}, ${tk(p.h, p.m)}.` : S.mode === 'set' && S.sub === 'turn' ? `한 바퀴, 한 시간. ${KO_HOUR[p.h]} 시.` : S.mode === 'set' && S.sub === 'trip' ? `${p.d} 분 ${p.dir > 0 ? '뒤는' : '전은'} ${tk(p.h, p.m)}.` : S.mode === 'numf' ? `${KO_HOUR[p.n]} 시.` : S.mode === 'handf' ? `${HAND_KO[p.target][0]}, ${HAND_KO[p.target][1]}. ${p.target === 'h' ? `${KO_HOUR[p.h]} 시` : `${sino(p.m)} 분`}.` : isBuild() ? '다 채웠어요.' : S.mode === 'elapsed' ? durKo(p.ansH, p.ansM) : (S.mode === 'read' || S.mode === 'pick4') && p.m === 0 ? `${KO_HOUR[p.h]} 시 정각.` : timeKo(p.h, p.m); }   // v40: 읽기 정각은 "N 시 정각."
+  function answerKo() { const p = S.p; return S.mode === 'flip' ? '다 찾았어요.' : S.mode === 'nexth' ? `다음 숫자는 ${sino(nextH(p.h))}. 다음 정각은 ${KO_HOUR[nextH(p.h)]} 시.` : S.sub === 'day' ? `${p.scene.name}, ${tk(p.h, p.m)}.` : S.mode === 'set' && S.sub === 'turn' ? `한 바퀴, 한 시간. ${KO_HOUR[p.h]} 시.` : S.mode === 'set' && S.sub === 'trip' ? `${sino(p.d)} 분 ${p.dir > 0 ? '뒤는' : '전은'} ${tk(p.h, p.m)}.` : S.mode === 'numf' ? `${KO_HOUR[p.n]} 시.` : S.mode === 'handf' ? `${HAND_KO[p.target][0]}, ${HAND_KO[p.target][1]}. ${p.target === 'h' ? `${KO_HOUR[p.h]} 시` : `${sino(p.m)} 분`}.` : isBuild() ? '다 채웠어요.' : S.mode === 'elapsed' ? durKo(p.ansH, p.ansM) : (S.mode === 'read' || S.mode === 'pick4') && p.m === 0 ? `${KO_HOUR[p.h]} 시 정각.` : timeKo(p.h, p.m); }   // v40: 읽기 정각은 "N 시 정각."
   function nextProblem() {
     stopHalt(); comboStop();   // v58: 돌던 긴바늘이 다음 문제에 남지 않게 · v60: 콤보 타이머도
     S.p = S.items[S.idx]; S.mode = S.p.mode; S.unit = S.p.unit; S.sub = S.p.sub; layout(); S.wrong = { h: 0, m: 0 }; S.ok = { h: false, m: false }; S.counting = null; S.E = 0;
