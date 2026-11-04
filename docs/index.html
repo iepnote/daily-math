@@ -506,7 +506,7 @@ th{ color:var(--ink-soft); font-size:.95rem; font-weight:700; }
 td select{ font-size:1rem; padding:.3rem .4rem; }
 .tag{ display:inline-block; font-size:.9rem; font-weight:800; padding:.15rem .7rem; border-radius:999px; }
 .tag.on{ background:var(--ok-bg); color:var(--ok); } .tag.off{ background:#EEE; color:#999; }
-.tag.mid{ background:#FFF3DD; color:#B26A00; } .tag.low{ background:var(--no-bg); color:var(--no); }
+.tag.mid{ background:#FFF3DD; color:#B26A00; } .tag.low{ background:var(--no-bg); color:var(--no); } .tag.dim{ background:#F1F3F6; color:var(--ink-soft); }   /* v164 무응답 */
 .mini{ display:inline-flex; gap:3px; } .mini i{ width:10px; height:10px; border-radius:3px; background:#E5DBC4; }
 .mini i.on{ background:var(--teal); }
 .del{ background:none; border:none; color:#E53935; font-weight:800; cursor:pointer; text-decoration:underline; font-size:.95rem; }
@@ -1603,6 +1603,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .stone.todo{ background:#fff; border:3px solid var(--line); color:#9AA5B1; }
 .stone.gold,.stone.done{ background:#F5B301; box-shadow:0 4px 10px rgba(0,0,0,.12); }
 .stone.done{ background:#C9D6E6; }
+.stone.skip{ background:#fff; border:3px dashed var(--line-strong); color:#9AA5B1; }   /* v164 무응답 */
 .stone.now{ width:54px; height:54px; background:#fff; border:5px solid var(--accent-strong); color:var(--accent-strong); font-size:22px; font-weight:900; box-shadow:0 0 0 8px rgba(30,136,229,.18); }
 .stone.md{ width:36px; height:36px; font-size:15px; } .stone.now.md{ width:42px; height:42px; font-size:17px; }
 .stone.sm{ width:26px; height:26px; font-size:0; } .stone.now.sm{ width:32px; height:32px; font-size:13px; }
@@ -1714,7 +1715,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 163';
+const APP_VERSION = 'ver 164';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3307,8 +3308,8 @@ function trailHtml() {
   let h = '';
   for (let i = 0; i < n; i++) {
     const it = session.log[i], done = i < cur && it;
-    const cls = i === cur ? 'now' : done ? (it.wrongs === 0 ? 'gold' : 'done') : 'todo';
-    h += `<div class="stone ${cls} ${sm}">${cls === 'gold' ? ICON_STAR('#fff', 26) : cls === 'done' ? ICON_STAR('#fff', 22) : (i + 1)}</div>`;
+    const cls = i === cur ? 'now' : done ? (it.skipped ? 'skip' : it.wrongs === 0 ? 'gold' : 'done') : 'todo';   // v164: 건너뛴 문제는 회색 빈 돌
+    h += `<div class="stone ${cls} ${sm}">${cls === 'gold' ? ICON_STAR('#fff', 26) : cls === 'done' ? ICON_STAR('#fff', 22) : cls === 'skip' ? '–' : (i + 1)}</div>`;
     if (i < n - 1) h += `<div class="link ${i < cur ? 'on' : ''} ${sm}"></div>`;
   }
   return h;   // v156: 끝의 보물 상자 삭제(사용자 지시) — 매일 꾸준함은 달력이 맡음
@@ -3600,7 +3601,7 @@ function logItem() {
   if (wrongTags.length) session.log[session.idx].tags = wrongTags.slice(0, 6);
 }
 function afterCorrect(ms) {
-  logItem(); session.idx++; saveResume();
+  advancing = true; logItem(); session.idx++; saveResume();
   if (sessionStreak() > 0 && sessionStreak() % 3 === 0) { session.bonus = (session.bonus || 0) + 1; refreshAdventure(true); buddySay('3번 연속! 별 하나 더!'); } else { refreshAdventure(false); buddySay(session.log[session.idx - 1] && session.log[session.idx - 1].wrongs === 0 ? '잘했어요!' : '같이 해냈어요!'); }   // v155 모험 길·별 주머니·연속 정답 갱신
   setTimeout(nextStep, ms || Math.max(1100, lastSpeakMs + 300));
 }
@@ -3608,6 +3609,7 @@ function afterCorrect(ms) {
    오답 2회 이상으로 끝난(보기 소거로 마지막 버튼만 남은) 연산 문제는 큐에 모아 두고,
    **오늘 문제를 다 푼 뒤** 동형 문제를 숫자패드로 스스로 푼다(사용자 지시 — 흐름 중간 난이도 급변 방지) */
 function nextStep() {
+  advancing = false;
   const p = session && session.items[session.idx - 1];
   if ((retryArm || wrongCount >= 2) && p && p.type === 'binary') (session.retryQ = session.retryQ || []).push(session.idx - 1);
   retryArm = false;
@@ -3623,7 +3625,7 @@ function advanceProblem() {
    다음 문제 speakProblem()의 cancel()이 멘트를 끊고 먼저 재생됨(pvbuild·tenfill·judge에서 발생).
    음성 이벤트 유실 대비 보루 병행(finishColumnAdd와 같은 문법). */
 function afterCorrectSpeak(msg, gapMs) {
-  logItem(); session.idx++; saveResume();
+  advancing = true; logItem(); session.idx++; saveResume();
   let moved = false; const go = () => { if (moved) return; moved = true; setTimeout(nextStep, gapMs || 800); };
   speak(msg, go);
   setTimeout(go, lastSpeakMs + 1200);
@@ -5968,9 +5970,16 @@ function animateStep(p, step) {
 function goHome() { cadd = null; pad = null; guide = null; mguide = null; rt = null; if (current) renderCalendar(false); else renderStart(); }   // 진행 중 힌트 상태 해제(v107)
 function prevProblem() { if (rt) return; if (session.idx > 0) { session.idx--; renderProblem(); } }   // 재도전 화면: 이전 문제 없음
 function retryProblem() { if (rt) { rt.tries = 0; rt.typed = ''; rt.follow = false; rt.fi = 0; renderRetry(); return; } renderProblem(); }
+let advancing = false;   // v164: 정답 처리 뒤 다음 문제로 넘어가는 중(그 사이 「다음」은 무시)
 function nextProblem() {
   if (rt) { rt = null; advanceProblem(); return; }        // 재도전 건너뛰기 → 남은 재도전 또는 세션 마무리
-  logItem(); session.idx++; saveResume(); if (session.idx >= session.items.length) finishSession(); else renderProblem();
+  if (advancing) return;
+  logSkip(); session.idx++; saveResume(); if (session.idx >= session.items.length) finishSession(); else renderProblem();   // v164: 「다음」은 정답이 아니라 무응답(사용자 지시)
+}
+/* v164 무응답 기록 — wrongs -1·skipped: 첫 시도 정답(wrongs 0)으로 세지 않고, 대시보드에서 오류로도 세지 않는다. 다시 돌아와 답하면 덮어씀 */
+function logSkip() {
+  const p = session.items[session.idx];
+  session.log[session.idx] = { q: qStr(p), ans: p.ans, wrongs: -1, skipped: true, hint: hintStage, ms: Date.now() - itemStart, given: wrongVals.slice(0, 5) };
 }
 function toggleMode() {
   prefs.mode = prefs.mode === 'h' ? 'v' : 'h'; savePrefs();
@@ -6420,6 +6429,7 @@ function errAccuracy(win) {
 /* 문항 1개 → 오류 유형 키 배열(오답 값마다 최대 1개) */
 function classifyItem(it, accurate) {
   const out = [], add = k => out.push(k);
+  if (it.skipped || it.wrongs < 0) return out;   // v164 무응답은 신호 아님
   const q = String(it.q || ''), ans = it.ans, ms = it.ms || 0;
   const m = q.match(/^(\d+)\s*([+−×÷-])\s*(\d+)$/);
   if (it.wrongs === 0) {                                  // 정답인데 오래 걸림 = 인출·전략 신호
@@ -6704,7 +6714,7 @@ async function renderStudentDetail(id) {
   const mkSess = x => {
     const items = (x.items || []).map(it =>
       `<tr class="itemrow"><td>${esc(it.q)} = ${it.ans}</td>
-        <td>${it.wrongs === 0 ? (isSlowItem(it) ? '<span class="tag mid">🐢 맞았지만 느림</span>' : '<span class="tag on">한 번에 정답</span>') : `<span class="tag low">오답 ${it.wrongs}회</span>`}${Array.isArray(it.tags) && it.tags.length ? ` <span class="dim">${[...new Set(it.tags)].map(t => CARRY_TAG_KO[t] || CLOCK_TAG_KO[t] || t).join(' · ')}</span>` : ''}</td>
+        <td>${it.skipped || it.wrongs < 0 ? `<span class="tag dim">무응답${it.given && it.given.length ? ` (오답 ${it.given.length}회 뒤)` : ''}</span>` : it.wrongs === 0 ? (isSlowItem(it) ? '<span class="tag mid">🐢 맞았지만 느림</span>' : '<span class="tag on">한 번에 정답</span>') : `<span class="tag low">오답 ${it.wrongs}회</span>`}${Array.isArray(it.tags) && it.tags.length ? ` <span class="dim">${[...new Set(it.tags)].map(t => CARRY_TAG_KO[t] || CLOCK_TAG_KO[t] || t).join(' · ')}</span>` : ''}</td>
         <td>${it.hint ? (it.hint >= 2 ? '정답까지 유도' : '단서 힌트') : '—'}${retryTag(it)}</td>
         <td>${it.ms ? Math.round(it.ms / 1000) + '초' : '—'}</td></tr>`).join('');
     const nSlow = (x.items || []).filter(isSlowItem).length;
