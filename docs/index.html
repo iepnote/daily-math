@@ -1626,6 +1626,15 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .study.calm .buddy-face,.study.calm .bubble{ display:none; } .study.calm .pouch.pop{ animation:none; } .study.calm .stone.now{ box-shadow:none; }   /* 저자극: 캐릭터·말풍선·반짝임 없이 길만 */
 .choice-row .btn-choice{ box-shadow:0 8px 0 var(--line), 0 10px 18px rgba(0,0,0,.08); border:0; }   /* 징검다리 돌판 */
 .choice-row .btn-choice:active{ transform:translateY(4px); box-shadow:0 4px 0 var(--line); }
+.study:not(.calm) .study-row #hint .tip{ display:none; }   /* v157: 힌트 글은 친구 말풍선이 보여 줌 */
+.study-row .hint{ margin-top:.8rem; }   /* v157 전수조사: 세로셈 곱셈 힌트 묶음이 답 칸에 8px 닿던 것 */
+.study-card:has(#hint:not(.hidden)) .qface:has(.facev){ font-size:4rem; }   /* v157 전수조사: 세로셈에 힌트(묶음 그림 두 줄)가 뜨면 식을 조금 줄여 겹치지 않게 */
+.study.sz-lg .study-card:has(#hint:not(.hidden)) .qface:has(.facev){ font-size:4.6rem; }
+.study-row .hint .mulrow .cstack .cdot{ width:22px; height:22px; } .study-row .hint .mulrow .crow5, .study-row .hint .mulrow .cstack{ gap:4px; }
+.study-row .hint .mulrow{ gap:.5rem; margin:.1rem 0; } .study-row .hint .mgrp{ padding:.3rem .45rem; }
+.mgrp,.dgrp{ border:0; background:#fff; box-shadow:0 4px 10px rgba(0,0,0,.14); }   /* v157: 곱셈·나눗셈 힌트 묶음도 점선 대신 면+그림자 */
+.dgrp.on,.mgrp.on{ background:var(--choice-bg); box-shadow:0 0 0 4px var(--accent-strong), 0 4px 10px rgba(0,0,0,.14); }
+.buddy-card .bubble b{ color:var(--accent-strong); }
 .streakpill{ display:inline-flex; align-items:center; gap:4px; background:#FFF6D6; color:#8A5A00; border-radius:999px; padding:2px 10px; font-size:1rem; font-weight:800; margin-left:.3rem; vertical-align:middle; }
 /* 모험 길이 차지하는 높이만큼 세로셈·힌트가 눌리지 않게: 길을 낮추고 세로셈 글자를 조금 줄임 */
 .adv-top{ padding:0 6px 4px; }
@@ -1651,7 +1660,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 156';
+const APP_VERSION = 'ver 157';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3218,6 +3227,14 @@ function refreshAdventure(bonus) {
   const pN = $('pouchN'); if (pN) { pN.textContent = sessionStars(); if (bonus) { const po = $('pouch'); if (po) { po.classList.remove('pop'); void po.offsetWidth; po.classList.add('pop'); } } }
 }
 function buddySay(t) { const b = $('bubble'); if (b && t) b.textContent = String(t).replace(/<[^>]+>/g, ''); }
+/* v157 오류 피드백을 친구 자리에(사용자 지시): 힌트 칸(#hint)에 쓰인 글(.tip)을 말풍선이 받아 보여 주고 힌트 칸에는 그림·패드만 남긴다(CSS로 .tip 숨김). 글이 늦게 바뀌어도 따라가게 변화를 지켜봄 */
+let _tipObs = null;
+function watchHintTip() {
+  if (_tipObs) { _tipObs.disconnect(); _tipObs = null; }
+  const h = $('hint'); if (!h || !$('bubble')) return;
+  const sync = () => { const tip = h.querySelector('.tip'); if (tip && tip.textContent.trim()) buddySay(tip.innerHTML.replace(/<br\s*\/?>/gi, ' ')); };
+  _tipObs = new MutationObserver(sync); _tipObs.observe(h, { childList: true, subtree: true, characterData: true }); sync();
+}
 /* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) */
 function helpHint() { if (locked || !session) return; const st = Math.min(2, (hintStage || 0) + 1); buddySay(st === 1 ? '같이 생각해 봐요' : '이렇게 해 봐요'); routeHint(st); }
 function renderProblem() {
@@ -3253,6 +3270,7 @@ function renderProblem() {
   </div>`;
   paintFace(false);
   paintChoices();
+  watchHintTip();   // v157
   if (prefs.mask) addMask();               // SEM 가림판(v89) — setNav가 지우므로 문제마다 다시 붙임
   /* ②(v100) 듣고 시작 — 문제 읽기가 끝나야 보기가 눌린다(듣기 전 충동 탭 차단). 보기 없는 조작형은 그대로 */
   const cbox = $('choices');
