@@ -1728,6 +1728,97 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 /* v167: 큰 글자 설정에서 번쩍 보고 알기 카드(주사위 둘)가 위 안내줄에 닿던 것 → 카드 안 칸을 조금 작게 */
 .flashcard .dice:not(.d5){ grid-template-columns:repeat(3,70px); grid-auto-rows:70px; } .flashcard .cdot{ width:52px; height:52px; }   /* 기본 크기도 주사위 둘 카드가 안내줄에 3px 닿던 것 */
 .study.sz-lg .flashcard{ padding:.9rem 1.4rem; } .study.sz-lg .flashcard .dice:not(.d5){ grid-template-columns:repeat(3,64px); grid-auto-rows:64px; } .study.sz-lg .flashcard .dice.d5{ grid-template-columns:repeat(5,66px); grid-auto-rows:66px; } .study.sz-lg .flashcard .cdot{ width:48px; height:48px; }
+
+/* ===== v168 디자인 척도(사용자 승인 제안): 글자 4단계 · 그림 3단계 · 세 띠 배치 · 상태색 4종 · 8px 여백 ===== */
+.study{ --t-eq:5.5rem; --t-q:3rem; --t-guide:1.5rem; --t-tag:1rem; --u-hand:56px; --u-eye:40px; --u-hint:24px; --st-here:#1E88E5; --st-tap:#F57C00; --st-done:#43A047; --st-off:#D9DEE5; }
+.study.sz-sm{ --t-eq:4.5rem; --t-q:2.5rem; --u-hand:48px; --u-eye:36px; }
+.study.sz-lg{ --t-eq:6.5rem; --t-q:3.5rem; --u-hand:64px; --u-eye:44px; }
+/* 글자: 수식·답 */
+.study.sz-sm .qface, .study.sz-md .qface, .study.sz-lg .qface{ font-size:var(--t-eq); }
+.judge .faceh{ font-size:var(--t-eq); }
+.study.sz-sm .btn-choice, .study.sz-md .btn-choice, .study.sz-lg .btn-choice{ font-size:2.75rem; }
+/* 글자: 물음 */
+.study .early-q, .mpq, .mkq, .mmq, .mpq2{ font-size:var(--t-q); font-weight:800; }
+.early-q .putn, .mpq .putn{ font-size:1.15em; }
+.seqfillq .early-q{ font-size:var(--t-q) !important; color:var(--accent-strong) !important; } .seqfillq .early-q b{ font-size:1.15em !important; }
+.mmq{ color:var(--accent-strong); margin:0; }
+.gcell.gans .qblank{ font-size:1em; }
+/* 글자: 안내 */
+.hint .tip, .study .hint .tip{ font-size:var(--t-guide); }
+.buddy-card .bubble{ font-size:var(--t-guide); padding:10px 12px; line-height:1.35; }
+.mmword{ font-size:var(--t-guide); }
+.streak-card .big span{ font-size:var(--t-guide); }
+/* 글자: 꼬리표 */
+.study .counter{ font-size:var(--t-tag); }
+.streak-card .lbl, .streak-card .sub, .pouch span{ font-size:var(--t-tag); }
+/* 그림: 손(직접 누르는 낱개) */
+.plate .cdot, .gcell .cdot, .cmp .cdot, .gdot, .m10src .cdot, .contap .cdot{ width:var(--u-hand); height:var(--u-hand); }
+.cdot.gv{ width:var(--u-hand); height:var(--u-hand); }
+.mps, .mpitem{ width:var(--u-hand); height:var(--u-hand); } .mpitem{ font-size:calc(var(--u-hand) * .74); }
+.mplate{ gap:8px; padding:.8rem 1.4rem; }
+.tenframe.tf-big{ width:316px; max-width:316px; gap:8px; }
+.oplate .omitem{ font-size:3.4rem; }
+/* 그림: 눈(보고 세는 묶음) */
+.mulmach .cstack .cdot, .mulpick .cstack .cdot, .addmul .mulrow .cstack .cdot{ width:var(--u-eye); height:var(--u-eye); }
+.flashcard .cdot{ width:var(--u-eye); height:var(--u-eye); }
+.flashcard .dice:not(.d5){ grid-template-columns:repeat(3,56px); grid-auto-rows:56px; } .flashcard .dice.d5{ grid-template-columns:repeat(5,56px); grid-auto-rows:56px; }
+.study.sz-lg .flashcard .dice:not(.d5){ grid-template-columns:repeat(3,60px); grid-auto-rows:60px; } .study.sz-lg .flashcard .dice.d5{ grid-template-columns:repeat(5,60px); grid-auto-rows:60px; }
+.wem{ font-size:2.5rem; }
+/* 그림: 힌트 축소판 */
+.study-row .hint .mulrow .cstack .cdot, .study-row .hint .dgrp .cdot, .quad .cdot{ width:var(--u-hint); height:var(--u-hint); }
+.study-row .hint .mulrow .crow5, .study-row .hint .mulrow .cstack{ gap:4px; }
+/* 세 띠 배치: 물음 띠(위) · 무대 띠(가운데) · 답 띠(아래) */
+.study-card .qface, .study-card .qface:has(.facev){ padding-top:8px; }
+.study-card .qface:has(.early){ padding-top:8px; align-items:stretch; }
+.qface .early{ min-height:100%; gap:16px; }
+.qface .early:not(.ck-wrap):not(.cb-wrap):not(.wordq) > .early-q:not(.mpq2), .qface .early.judge > .faceh{ order:-1; flex:0 0 auto; min-height:72px; margin:0; justify-content:center; }   /* 문장제는 글을 읽고 답하므로 답 칸을 아래 그대로 */
+.qface .early:not(.ck-wrap):not(.cb-wrap)::before, .qface .early:not(.ck-wrap):not(.cb-wrap)::after{ content:''; flex:1 1 0; min-height:0; }
+.qface .early.mulmach{ flex-direction:column; align-items:center; }
+.mmbody{ display:flex; align-items:center; justify-content:center; gap:40px; }
+.mmbody .mmdials{ margin-top:0; }
+.study .choice-row, #choices{ min-height:120px; display:flex; align-items:center; justify-content:center; gap:24px; margin-top:16px; margin-bottom:0; }
+#choices:empty{ min-height:0; margin-top:0; }
+.study-card:has(.mulput) #choices:empty{ min-height:120px; }
+.study-card .qface:has(.ck-wrap), .study-card .qface:has(.cb-wrap){ padding-top:.2rem; align-items:center; }
+/* 상태색: 지금 여기(파랑) · 눌러 봐(주황) · 다 됐어(초록) · 아직 아님(회색) */
+.gbox{ border-color:var(--st-here); background:rgba(30,136,229,.10); }
+.btn-choice.pulse{ border-color:var(--st-tap); box-shadow:0 0 0 6px rgba(245,124,0,.22); }
+.mplate.hl{ box-shadow:0 0 0 4px var(--st-tap), 0 6px 12px rgba(0,0,0,.14); }
+.mplate.full{ border-color:#66BB6A; background:#E8F5E9; }
+.tf.hl:not(.fill){ border-color:var(--st-tap); background:#FFF3E0; }
+.tf.need{ background:#FFF3E0; border-color:var(--st-tap); }
+.tf.fill{ background:var(--warm); border-color:var(--warm); }
+.clockq #ck-analog .num.cue-h{ fill:var(--st-tap); }
+.cb-cube.tap{ filter:drop-shadow(0 0 6px var(--st-tap)) brightness(1.1); }
+.mgrp.on, .dgrp.on{ box-shadow:0 0 0 4px var(--st-here), 0 4px 10px rgba(0,0,0,.14); }
+/* 여백 리듬: 8 · 16 · 24 · 40 */
+.mulrow{ gap:16px; margin:0; } .study.mulside .mulrow{ gap:8px; }
+.cmprow, .samq .cmprow{ gap:40px; } .onewrap{ gap:24px; } .samq{ gap:16px; } .wordq{ gap:8px; }
+.mulput{ gap:24px; } .mprow{ gap:16px 24px; } .mulpick{ gap:24px; } .mmleft{ gap:16px; } .addmul{ gap:24px; } .addmul .mulrow{ margin-bottom:24px; }
+.buddy-col{ gap:16px; } .study-row .hint{ margin-top:16px; } .study-row{ gap:16px; }
+.cstack{ gap:8px; } .crow5{ gap:8px; } .study-row .hint .mulrow .cstack, .study-row .hint .mulrow .crow5, .quad .crow5, .seqmodel .cstack, .seqmodel .crow5, .hangmodel .cstack, .hangmodel .crow5{ gap:4px; }
+
+/* v168-2 전수조사 반영: 띠 높이 조정 · 담기 나란히 · 모으기 라벨 옆으로 · 격자 칸 · 큰 글자 덧셈식→곱셈식 */
+.study-card .qface, .study-card .qface:has(.facev), .study-card .qface:has(.early){ padding-top:12px; }
+.qface .early{ gap:12px; }
+.qface .early:not(.ck-wrap):not(.cb-wrap):not(.wordq) > .early-q:not(.mpq2), .qface .early.judge > .faceh{ min-height:56px; }
+.study .choice-row, #choices{ min-height:104px; margin-top:12px; } .study-card:has(.mulput) #choices:empty{ min-height:104px; }
+.putbody{ display:flex; align-items:center; justify-content:center; gap:24px; }
+.plate.big{ min-width:520px; min-height:300px; }
+.gsplit .fwrap{ display:flex; flex-direction:row; align-items:center; gap:8px; } .gsplit .fcnt{ font-size:1.6rem; min-width:1.4rem; }
+.flashcard{ padding:.8rem 1.2rem; }
+.gq-cell{ width:34px; height:34px; }
+.study.sz-lg .addmul .mulrow .cstack .cdot{ width:36px; height:36px; }
+
+/* v168-3 */
+.study-card .qface:not(:has(.early)){ padding-top:20px; }   /* 자리 이름 꼬리표가 안내줄에 닿지 않게 */
+.study-row #hint:not(.hidden):not(:has(> :not(.tip))){ display:none; }   /* 글만 있는 힌트는 말풍선이 보여 주므로 칸 자체를 접음 */
+.plate.big{ padding:.6rem 1.4rem; }
+.gq-cell{ width:32px; height:32px; }
+.study.sz-lg .flashcard .dice:not(.d5){ grid-template-columns:repeat(3,56px); grid-auto-rows:56px; } .study.sz-lg .flashcard .dice.d5{ grid-template-columns:repeat(5,56px); grid-auto-rows:56px; }
+.gq-grid{ gap:3px; } .gq-side{ gap:.8rem; } .addmul .mulrow{ margin-bottom:16px; }   /* v168-4: 격자·덧셈식→곱셈식 몇 px 넘침 */
+.study-card:has(.facev) .hint .anchor{ margin-top:8px; } .study-card:has(.facev) .hint .anchor .aimg{ height:120px; width:120px; }   /* v168-5: 세로셈에서 동물 그림이 답 칸에 닿던 것 */
+.facev .hangmodel.big .rod{ height:64px; }   /* v168-6: 세로셈에서 윗수 막대가 아랫수 모형에 10px 겹치던 것(20−14처럼 일의 자리가 0일 때, 이전부터 있던 문제) */
 </style>
 </head>
 <body>
@@ -1744,7 +1835,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 167';
+const APP_VERSION = 'ver 168';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -7152,8 +7243,8 @@ function earlyFace(p) {
     const rows = Math.ceil(p.max / 5);                    // 트레이 높이 고정(동그라미가 줄어도 안 변함)
     return `<div class="early putwrap">
       <div class="early-q"><b class="putn">${p.n}</b>개를 접시에 담아요</div>
-      <div class="plate put" id="putplate"></div>
-      <div class="puttray" id="puttray" style="min-height:${rows * 58 + (rows - 1) * 15 + 28}px">${'<div class="pdot cdot red"></div>'.repeat(p.max)}</div></div>`;
+      <div class="putbody"><div class="plate put" id="putplate"></div>
+      <div class="puttray" id="puttray" style="min-height:${rows * 58 + (rows - 1) * 15 + 28}px">${'<div class="pdot cdot red"></div>'.repeat(p.max)}</div></div></div>`;   // v168: 접시와 트레이를 나란히(세 띠 안에 들어오게)
   }
   if (p.type === 'gather')   /* 5까지는 상자 가운데 정렬(.ctr) · v148: 동그라미를 아래 상자로 옮길 수 있음(.gdot, 사용자 지시) */
     return `<div class="early gsplit ${p.ans <= 5 ? 'ctr' : ''} move">
@@ -7204,14 +7295,15 @@ function earlyFace(p) {
       <div class="early-q mpq2 hidden" id="mpq2">모두 <span class="qblank" id="qslot">?</span> 개</div></div>`;   // v165: 트레이 없이 접시를 누르면 a개씩 담김(사용자 지시: 큰 수에서 겹치던 것)
   if (p.type === 'mulmach')   /* v142 곱셈 기계 — 위 목표 그림, 아래 내 그림 + 다이얼(씩·묶음) */
     return `<div class="early mulmach">
+      <div class="early-q mmq">이 그림과 같게 만들어요</div>
+      <div class="mmbody">
       <div class="mmleft">
-        <div class="mmq">이 그림과 같게 만들어요</div>
         <div class="mmtarget"><div class="mulrow" id="mmtrow">${mulGroups(p.a, p.b, 'mt')}</div></div>
         <div class="mmmine" id="mmmine"><div class="mulrow" id="mmrow">${mulGroups(1, 1, 'mm')}</div></div>
         <div class="mmeq" id="mmeq"></div></div>
       <div class="mmdials">
         <div class="mmdial da"><button class="dbtn" onclick="mmTurn('a',1)">▲</button><div class="dval" id="mmA">1</div><button class="dbtn" onclick="mmTurn('a',-1)">▼</button><span class="mmword">씩</span></div>
-        <div class="mmdial db"><button class="dbtn" onclick="mmTurn('b',1)">▲</button><div class="dval" id="mmB">1</div><button class="dbtn" onclick="mmTurn('b',-1)">▼</button><span class="mmword">묶음</span></div></div></div>`;
+        <div class="mmdial db"><button class="dbtn" onclick="mmTurn('b',1)">▲</button><div class="dval" id="mmB">1</div><button class="dbtn" onclick="mmTurn('b',-1)">▼</button><span class="mmword">묶음</span></div></div></div></div>`;
   if (p.type === 'mulpick')   /* v142 곱셈식 고르기 — 묶음 그림 + 말, 보기는 renderChoices */
     return `<div class="early mulpick"><div class="mulrow" id="mkrow">${mulGroups(p.a, p.b, 'mk')}</div><div class="early-q mkq"><b class="ca">${p.a}</b>씩 <b class="cb">${p.b}</b>묶음</div></div>`;
   if (p.type === 'onemap')   /* 하나씩 나눠 주기(일대일 대응) — 트레이의 그림을 접시마다 하나씩 */
