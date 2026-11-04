@@ -1190,6 +1190,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-lbl{ position:absolute; transform:translate(-50%,-50%); font-size:15px; font-weight:800; color:#fff; text-shadow:0 0 3px #223,0 0 3px #223; pointer-events:none; z-index:4; animation:cbPop .25s ease-out; }
 .cb-lbl.last{ font-size:24px; text-shadow:0 0 3px #fff,0 0 3px #fff; }   /* 마지막 수: 자리 색 글씨, 조금 크게 */
 .cb-lbl.last.o{ color:var(--cbred); } .cb-lbl.last.t{ color:var(--cbblue); }
+.cb-lbl.in, .cb-lbl.last.t.in, .cb-lbl.last.o.in{ color:#fff; text-shadow:0 0 3px #223,0 0 3px #223; }   /* v166: 막대 안에 놓인 라벨은 흰 글씨 */
 .cb-ans{ position:absolute; top:420px; width:58px; height:58px; box-sizing:border-box; border:5px solid; border-radius:12px; background:#fff; font-size:38px; line-height:48px; text-align:center; font-weight:800; }
 .cb-ans.t{ left:242px; border-color:var(--cbblue); color:var(--cbblue); } .cb-ans.o{ left:314px; border-color:var(--cbred); color:var(--cbred); }   /* v125: 답 칸 줄 안, 기둥 경계(307) 양쪽(사용자 이미지) */
 .cb-ans.cb-blink{ animation:cbBlink2 .9s ease-in-out infinite; }
@@ -1740,7 +1741,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 165';
+const APP_VERSION = 'ver 166';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -9062,7 +9063,9 @@ function cbLabel(slot, el, n, last) {
   const cell = cbCellOf(slot), tens = cbTensSlot(slot), r = cbRect(el), c = cbRect(cell);
   const lb = document.createElement('div'); lb.className = 'cb-lbl' + (last ? ' last ' + (tens ? 't' : 'o') : ''); lb.textContent = n;
   lb.style.left = (r.x - c.x + r.w / 2) + 'px';
-  lb.style.top = (tens ? r.y - c.y - (last ? 16 : 12) : r.y - c.y + r.h / 2) + 'px';
+  let top = tens ? r.y - c.y - (last ? 16 : 12) : r.y - c.y + r.h / 2;
+  if (tens && top < (last ? 14 : 10)) { top = last ? 14 : 10; lb.classList.add('in'); }   // v166: 막대가 칸 위까지 닿으면 라벨이 「십」 머리띠에 겹치던 것 → 막대 안쪽 위로
+  lb.style.top = top + 'px';
   cell.appendChild(lb);
 }
 /* 학생 주도 세기 탭 — 입력 단계에서 모형을 누르면 하나씩 읽고 라벨. 다 세면 다음 탭에 처음부터 */
