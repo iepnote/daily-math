@@ -1632,6 +1632,19 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .study.sz-lg .study-card:has(#hint:not(.hidden)) .qface:has(.facev){ font-size:4.6rem; }
 .study-row .hint .mulrow .cstack .cdot{ width:22px; height:22px; } .study-row .hint .mulrow .crow5, .study-row .hint .mulrow .cstack{ gap:4px; }
 .study-row .hint .mulrow{ gap:.5rem; margin:.1rem 0; } .study-row .hint .mgrp{ padding:.3rem .45rem; }
+/* v158 곱셈구구(사용자 지시): 동그라미는 「개」 주황 한 색, 묶음 번호는 「묶음」 파랑. 식의 앞 수(개씩)·뒷 수(묶음)도 같은 색. 그림 힌트는 왼쪽 세로 기둥 */
+.cdot.o{ background-color:var(--warm); }
+.mgrp{ display:flex; align-items:center; gap:.45rem; }
+.gno{ font-style:normal; width:26px; height:26px; border-radius:50%; background:var(--accent-strong); color:#fff; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.quad .gno{ width:20px; height:20px; font-size:12px; }
+.study.mulq #qface [data-t="n0"]{ color:var(--warm); } .study.mulq #qface [data-t="n1"]{ color:var(--accent-strong); }
+.study.mulside .study-card{ display:grid; grid-template-columns:300px minmax(0,1fr); grid-template-rows:auto minmax(0,1fr) auto; grid-template-areas:"top top" "hint face" "ch ch"; column-gap:1rem; }
+.study.mulside .study-card > div:first-child{ grid-area:top; }
+.study.mulside #qface{ grid-area:face; }
+.study.mulside #hint{ grid-area:hint; margin:0; align-self:start; justify-self:center; padding-top:.4rem; }
+.study.mulside #choices{ grid-area:ch; }
+.study.mulside .mulrow{ flex-direction:column; flex-wrap:nowrap; align-items:flex-start; gap:.35rem; margin:0; }
+.study.mulside .study-row .hint .mgrp{ padding:.25rem .55rem .25rem .35rem; }
 .mgrp,.dgrp{ border:0; background:#fff; box-shadow:0 4px 10px rgba(0,0,0,.14); }   /* v157: 곱셈·나눗셈 힌트 묶음도 점선 대신 면+그림자 */
 .dgrp.on,.mgrp.on{ background:var(--choice-bg); box-shadow:0 0 0 4px var(--accent-strong), 0 4px 10px rgba(0,0,0,.14); }
 .buddy-card .bubble b{ color:var(--accent-strong); }
@@ -1660,7 +1673,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 157';
+const APP_VERSION = 'ver 158';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3232,7 +3245,7 @@ let _tipObs = null;
 function watchHintTip() {
   if (_tipObs) { _tipObs.disconnect(); _tipObs = null; }
   const h = $('hint'); if (!h || !$('bubble')) return;
-  const sync = () => { const tip = h.querySelector('.tip'); if (tip && tip.textContent.trim()) buddySay(tip.innerHTML.replace(/<br\s*\/?>/gi, ' ')); };
+  const sync = () => { const tip = h.querySelector('.tip'); if (tip && tip.textContent.trim()) { const b = $('bubble'); if (b) b.innerHTML = tip.innerHTML.replace(/<br\s*\/?>/gi, ' '); } };   // v158: 역할 색(<b class=ca/cb>) 유지
   _tipObs = new MutationObserver(sync); _tipObs.observe(h, { childList: true, subtree: true, characterData: true }); sync();
 }
 /* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) */
@@ -3246,7 +3259,7 @@ function renderProblem() {
   if (PIC_LEVELS.has(session.levelId) && p0.type === 'binary')   // 5 이하 단계는 그림+식(v119: 167~169 합류)
     curCirc = p0.op === '-' ? [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'gray' }] : [{ n: p0.a, cls: 'red' }, { n: p0.b, cls: 'red' }];
   setNav(studyNav());
-  $('wrap').innerHTML = `<div class="study sz-${prefs.size}${prefs.calm ? ' calm' : ''}" id="study">
+  $('wrap').innerHTML = `<div class="study sz-${prefs.size}${prefs.calm ? ' calm' : ''}${p0.type === 'binary' && p0.op === '×' ? ' mulq' : ''}" id="study">
     <div class="adv-top">
       <div class="trail" id="trail">${trailHtml()}</div>
       <div class="pouch" id="pouch" title="오늘 모은 별">${ICON_STAR('#F5B301', 24)}<b id="pouchN">${sessionStars()}</b><span>오늘 별</span></div>
@@ -5578,8 +5591,9 @@ function hintTenFrame(p, h, stage) {
 function hintMul(p, h, stage, mode) {
   const a = p.a, b = p.b;
   if (mode !== 'skip' && a * b <= 30 && (stage === 1 || mode === 'group')) {
-    let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp" id="mg${k}">${circleStack(a, k % 2 ? 'b' : '')}</div>`;
-    h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">${a}씩 ${b}묶음, 모두 몇 개일까요?</div>`;
+    let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp" id="mg${k}"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`;   // v158: 개=주황 동그라미, 묶음=파란 번호
+    $('study') && $('study').classList.add('mulside');   // v158: 그림 힌트는 왼쪽 세로 기둥(아래는 보기·패드 자리)
+    h.innerHTML = `<div class="mulrow">${g}</div><div class="tip"><b class="ca">${a}</b>씩 <b class="cb">${b}</b>묶음, 모두 몇 개일까요?</div>`;
     if (stage === 1) { speak(`${a}씩 ${b}묶음이에요. 모두 몇 개일까요?`); return; }
     /* 묶음 세기(동수누가) 2차: 묶음을 하나씩 켜며 누적 개수를 말한다 */
     const items = [];
@@ -5614,8 +5628,9 @@ function hintMul(p, h, stage, mode) {
 /* 곱셈 묶음 세기 1차(v84) — 학생이 묶음을 하나씩 누르며 a씩 센다 (조작 문법: 세기=탭) */
 function groupTapMul(p, h) {
   const a = p.a, b = p.b;
-  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp tapg">${circleStack(a, k % 2 ? 'b' : '')}</div>`;
-  h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">묶음을 하나씩 누르면서 ${a}씩 세어 봐요</div>`;
+  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp tapg"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`;   // v158
+  $('study') && $('study').classList.add('mulside');
+  h.innerHTML = `<div class="mulrow">${g}</div><div class="tip">묶음을 하나씩 누르면서 <b class="ca">${a}</b>씩 세어 봐요</div>`;
   speak(`묶음을 눌러 ${a}씩 세요.`);
   let n = 0;
   [...h.querySelectorAll('.mgrp')].forEach(e => {
@@ -5682,7 +5697,7 @@ function repeatSubDiv(p, h, stage) {
 /* 곱셈 4분면 표상 — 한 식을 말·그림·덧셈식·답 네 방식으로 (v72, strat.mul='quad', 최윤경 연수자료 p25) */
 function quadMul(p, h, stage) {
   const a = p.a, b = p.b, prod = a * b;
-  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp" id="qg${k}">${circleStack(a, k % 2 ? 'b' : '')}</div>`;
+  let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp" id="qg${k}"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`;   // v158
   const word = `${a}개씩 ${b}묶음`;
   h.innerHTML = `<div class="quad">
     <div class="qcell" id="qc0"><div class="qtag">말</div><div class="qbig" id="qw">${stage < 2 ? word : ''}</div></div>
@@ -7903,7 +7918,7 @@ function hintMore(p, h, stage) {
   hintCompare(p, h, stage);                 // 2차: 짝지어 세기 + 많은 쪽 표시(크기 비교와 동일)
 }
 /* ===== v142 곱셈의 뜻(224~226) — 접시에 담기(mulput)·곱셈 기계(mulmach)·곱셈식 고르기(mulpick) ===== */
-const mulGroups = (a, b, id) => Array.from({ length: b }, (_, k) => `<div class="mgrp" id="${id}${k}">${circleStack(a, k % 2 ? 'b' : '')}</div>`).join('');
+const mulGroups = (a, b, id) => Array.from({ length: b }, (_, k) => `<div class="mgrp" id="${id}${k}"><i class="gno">${k + 1}</i>${circleStack(a, 'o')}</div>`).join('');   // v158: 개=주황, 묶음=파란 번호
 let mp = null;   // 접시에 담기 상태 {done}
 function initMulPut() {
   mp = { done: false };
