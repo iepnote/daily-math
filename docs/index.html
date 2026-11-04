@@ -1626,6 +1626,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .study.calm .buddy-face,.study.calm .bubble{ display:none; } .study.calm .pouch.pop{ animation:none; } .study.calm .stone.now{ box-shadow:none; }   /* 저자극: 캐릭터·말풍선·반짝임 없이 길만 */
 .choice-row .btn-choice{ box-shadow:0 8px 0 var(--line), 0 10px 18px rgba(0,0,0,.08); border:0; }   /* 징검다리 돌판 */
 .choice-row .btn-choice:active{ transform:translateY(4px); box-shadow:0 4px 0 var(--line); }
+.streakpill{ display:inline-flex; align-items:center; gap:4px; background:#FFF6D6; color:#8A5A00; border-radius:999px; padding:2px 10px; font-size:1rem; font-weight:800; margin-left:.3rem; vertical-align:middle; }
 /* 모험 길이 차지하는 높이만큼 세로셈·힌트가 눌리지 않게: 길을 낮추고 세로셈 글자를 조금 줄임 */
 .adv-top{ padding:0 6px 4px; }
 .stone{ width:40px; height:40px; font-size:17px; } .stone.now{ width:46px; height:46px; font-size:19px; }
@@ -1650,7 +1651,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 155';
+const APP_VERSION = 'ver 156';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3207,9 +3208,9 @@ function trailHtml() {
     const it = session.log[i], done = i < cur && it;
     const cls = i === cur ? 'now' : done ? (it.wrongs === 0 ? 'gold' : 'done') : 'todo';
     h += `<div class="stone ${cls} ${sm}">${cls === 'gold' ? ICON_STAR('#fff', 26) : cls === 'done' ? ICON_STAR('#fff', 22) : (i + 1)}</div>`;
-    h += `<div class="link ${i < cur ? 'on' : ''} ${sm}"></div>`;
+    if (i < n - 1) h += `<div class="link ${i < cur ? 'on' : ''} ${sm}"></div>`;
   }
-  return h + `<div class="chest ${cur >= n ? 'open' : ''} ${sm}">${ICON_CHEST(cur >= n ? '#F57C00' : '#9AA5B1', 30)}</div>`;
+  return h;   // v156: 끝의 보물 상자 삭제(사용자 지시) — 매일 꾸준함은 달력이 맡음
 }
 function refreshAdventure(bonus) {
   const t = $('trail'); if (t) t.innerHTML = trailHtml();
@@ -6013,6 +6014,13 @@ async function photoFor(name, code) {
     return p || null;
   } catch (e) { return null; }
 }
+/* v156 연속 학습 일수 — 오늘(또는 아직 안 했으면 어제)부터 거꾸로 이어진 완료 날짜 수. 매일 꾸준함을 보상(사용자 지시) */
+function streakDays(dates) {
+  const set = new Set(dates || []); let d = new Date(); const key = x => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+  if (!set.has(key(d))) d.setDate(d.getDate() - 1);
+  let k = 0; while (set.has(key(d)) && k < 400) { k++; d.setDate(d.getDate() - 1); }
+  return k;
+}
 function renderCalendar(justFinished, keepMonth) {
   document.querySelectorAll('#stage .grpring, #stage .gbox').forEach(e => e.remove());   // 마지막 문제의 힌트 잔여물 정리(노란 묶음이 완료 화면에 남던 버그)
   if (!keepMonth) { const t = new Date(); calY = t.getFullYear(); calM = t.getMonth(); }
@@ -6038,7 +6046,7 @@ function renderCalendar(justFinished, keepMonth) {
     <div class="calband">매일매일 수학 · ${esc(current.name)} 어린이, 반가워요!</div>
     ${justFinished ? `<img class="praiseimg" src="${IMG_PRAISE}" alt="참 잘했어요"><img class="cheerstamp" src="${IMG_STAMP}" alt="참 잘했어요">` : ''}
     <div class="read-sentence">${justFinished ? '오늘 학습 완료!' : '나의 달력'}</div>
-    <div class="sub">${monthCount}일 학습했어요</div>
+    <div class="sub">${monthCount}일 학습했어요${(() => { const k = streakDays(current.completedDates); return k >= 2 ? ` · <b class="streakpill">${ICON_STAR('#F5B301', 16)} 연속 ${k}일째</b>` : ''; })()}</div>
     <div class="monthnav">
       <button class="mbtn mprev" onclick="changeMonth(-1)">◀ 지난달</button>
       <span class="mtitle">${y}년 ${m + 1}월</span>
