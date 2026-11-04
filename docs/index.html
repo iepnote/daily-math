@@ -839,7 +839,7 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .wem.on{ transform:scale(1.2); }
 .wem.slash{ filter:grayscale(1); opacity:.35; }
 /* 채점 놀이 */
-.judge .faceh{ font-size:3rem; }
+.judge .faceh{ font-size:6rem; }   /* v165: 2배(사용자 지시) */
 .jshown{ color:var(--accent-strong); }
 .jshown.jfix s{ color:var(--no); margin-right:.4rem; }
 .jbtn{ font-size:1.5rem; }
@@ -1621,7 +1621,7 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .streak-card .bars{ display:flex; gap:6px; } .streak-card .bars i{ flex:1 1 0; height:12px; border-radius:6px; background:#EDE9E3; } .streak-card .bars i.on{ background:var(--warm); }
 .streak-card .sub{ font-size:13px; color:var(--ink-soft); }
 .buddy-card{ flex:1 1 auto; align-items:center; justify-content:center; text-align:center; gap:10px; }
-.buddy-card .bubble{ background:#F6F5F2; border-radius:16px; padding:10px 14px; font-size:16px; font-weight:700; line-height:1.4; min-height:2.6em; display:flex; align-items:center; }
+.buddy-card .bubble{ background:#F6F5F2; border-radius:16px; padding:10px 14px; font-size:16px; font-weight:700; line-height:1.4; min-height:2.6em; display:block; align-content:center; width:100%; box-sizing:border-box; }   /* v165: flex였을 때 <b>마다 낱말이 끊겨 '2 씩 2 묶음'처럼 보이던 것 → 글 흐름 그대로 */
 .helpbtn{ display:flex; align-items:center; gap:8px; border:0; border-radius:999px; background:#EAF3FC; color:var(--accent-strong); font-family:inherit; font-size:16px; font-weight:700; padding:10px 18px; cursor:pointer; }
 .helpbtn:active{ transform:scale(.96); }
 .study.calm .buddy-face,.study.calm .bubble{ display:none; } .study.calm .pouch.pop{ animation:none; } .study.calm .stone.now{ box-shadow:none; }   /* 저자극: 캐릭터·말풍선·반짝임 없이 길만 */
@@ -1699,6 +1699,31 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .study-card .qface:has(.facev){ padding-top:.6rem; }
 .study.sz-md .qface:has(.facev){ font-size:4.8rem; } .study.sz-lg .qface:has(.facev){ font-size:5.4rem; }
 .ghome .credit{ max-width:92%; }
+
+/* ===== v165 (사용자 지시 7가지) ===== */
+.buddy-col{ min-height:0; } .buddy-card{ min-height:0; overflow:hidden; } .streak-card{ flex:0 0 auto; }   /* 도우미 칸이 문제 카드보다 아래로 내려오지 않게(내용이 넘치면 안에서 자름) */
+.buddy-card .bubble br{ display:block; }
+.buddy-card .bubble b.ca{ color:var(--warm); } .buddy-card .bubble b.cb{ color:var(--accent-strong); }   /* 말풍선 안에서도 개=주황, 묶음=파랑 */
+.study-row .hint .mulrow .cstack .cdot{ width:18px; height:18px; } .study-row .hint .mulrow .crow5, .study-row .hint .mulrow .cstack{ gap:3px; }   /* 곱셈·나눗셈 그림 힌트 더 작게 */
+.study.mulside #hint{ padding-top:1.6rem; }   /* 문장(위 안내줄)과 그림 사이 한 줄 여백 */
+.study-row .hint .mulrow{ margin-top:.4rem; }
+.mkq{ margin-top:1.3rem; }   /* 곱셈식 고르기: 그림과 문장 사이 한 줄 */
+/* 곱셈 기계: 물음은 상자 위 가운데, 다이얼 숫자는 작게 */
+.mmq{ font-size:2.2rem; font-weight:900; color:var(--ink); text-align:center; margin-bottom:.2rem; }
+.mmtarget{ padding:1rem 1.4rem; }
+.dval{ width:84px; height:84px; font-size:3rem; border-radius:1rem; }
+.dbtn{ width:84px; height:54px; font-size:1.9rem; }
+.mmword{ font-size:1.8rem; }
+/* 접시에 담기: 누르면 채워지는 접시(트레이 없음) */
+.mpq{ margin-top:.6rem; }
+.mulput{ gap:1.6rem; }
+.mprow{ gap:1.2rem 1.5rem; max-width:980px; }
+.mps{ width:var(--mps,58px); height:var(--mps,58px); }
+.mpitem{ width:var(--mps,58px); height:var(--mps,58px); font-size:calc(var(--mps,58px)*.74); cursor:default; }
+.mpitem.pop{ animation:eqPop .3s; }
+.mplate.tapfill{ cursor:pointer; touch-action:manipulation; }
+.mplate.hl{ animation:needPulse 1.1s ease-in-out infinite; }
+.mplate.full{ cursor:default; }
 </style>
 </head>
 <body>
@@ -1715,7 +1740,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 164';
+const APP_VERSION = 'ver 165';
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -3325,7 +3350,7 @@ let _tipObs = null;
 function watchHintTip() {
   if (_tipObs) { _tipObs.disconnect(); _tipObs = null; }
   const h = $('hint'); if (!h || !$('bubble')) return;
-  const sync = () => { const tip = h.querySelector('.tip'); if (tip && tip.textContent.trim()) { const b = $('bubble'); if (b) b.innerHTML = tip.innerHTML.replace(/<br\s*\/?>/gi, ' '); } };   // v158: 역할 색(<b class=ca/cb>) 유지
+  const sync = () => { const tip = h.querySelector('.tip'); if (tip && tip.textContent.trim()) { const b = $('bubble'); if (b) b.innerHTML = tip.innerHTML; } };   // v158: 역할 색(<b class=ca/cb>) 유지 · v165: 줄바꿈(<br>)도 그대로
   _tipObs = new MutationObserver(sync); _tipObs.observe(h, { childList: true, subtree: true, characterData: true }); sync();
 }
 /* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) */
@@ -3562,7 +3587,7 @@ function speakProblem(onEnd) {
   else if (p.type === 'seq') t = p.step === -1 ? '거꾸로 세요. 빈칸은?' : p.step === 1 ? '빈칸의 수는?' : `${p.step}씩 뛰어 세요. 빈칸은?`;
   else if (p.type === 'word') t = p.text;
   else if (p.type === 'judge') t = `${p.a} 곱하기 ${p.b}${josaEun(p.b)} ${p.shown}. 맞으면 동그라미, 틀리면 엑스!`;
-  else if (p.type === 'mulput') t = mp && mp.done ? '모두 몇 개?' : `${p.item} ${koCnt(p.a)} 개씩 ${koCnt(p.b)} 접시에 담아요.`;   // v142
+  else if (p.type === 'mulput') t = mp && mp.done ? '모두 몇 개?' : `${p.item} ${koCnt(p.a)} 개씩 ${koCnt(p.b)} 접시. 접시를 눌러 담아요.`;   // v142 · v165 누르기
   else if (p.type === 'addmul') t = p.step === 0 ? `${Array(p.b).fill(p.a).join(' 더하기 ')}${josaEun(p.a)} ${p.a * p.b}. 곱셈식으로 쓰면, ${p.a} 곱하기 몇?` : `${p.a} 곱하기 ${p.b}${josaEun(p.b)}?`;   // v161
   else if (p.type === 'gridfill') t = `${p.a} 곱하기 ${p.b}만큼 색칠해요. 한 줄에 ${koCnt(p.a)} 칸씩, ${koCnt(p.b)} 줄.`;
   else if (p.type === 'gridread') t = p.step === 0 ? `색칠한 줄이 몇 줄이에요? ${p.a} 곱하기 몇?` : `${p.a} 곱하기 ${p.b}${josaEun(p.b)}?`;
@@ -5698,7 +5723,7 @@ function hintMul(p, h, stage, mode) {
   if (mode !== 'skip' && a * b <= 30 && (stage === 1 || mode === 'group')) {
     let g = ''; for (let k = 0; k < b; k++) g += `<div class="mgrp gtap" id="mg${k}">${circleStack(a, 'o')}</div>`;   // v158: 개=주황 동그라미 · v159: 묶음 번호는 처음엔 없고 누르면 뜸(사용자 지시)
     $('study') && $('study').classList.add('mulside');   // v158: 그림 힌트는 왼쪽 세로 기둥(아래는 보기·패드 자리)
-    h.innerHTML = `<div class="mulrow">${g}</div><div class="tip"><b class="ca">${a}</b>씩 <b class="cb">${b}</b>묶음, 모두 몇 개일까요?</div>`;
+    h.innerHTML = `<div class="mulrow">${g}</div><div class="tip"><b class="ca">${a}</b>씩 <b class="cb">${b}</b>묶음.<br>모두 몇 개일까요?</div>`;
     initGroupTap(h);
     if (stage === 1) { speak(`${a}씩 ${b}묶음이에요. 모두 몇 개일까요?`); return; }
     /* 묶음 세기(동수누가) 2차: 묶음을 하나씩 켜며 누적 개수를 말한다 */
@@ -7171,13 +7196,13 @@ function earlyFace(p) {
   if (p.type === 'mulput')   /* v142 접시에 담기 — 접시 b개(자리 a개씩) + 트레이 a×b개. 다 담으면 아래 물음이 열림 */
     return `<div class="early mulput">
       <div class="early-q mpq">${p.emoji} <b class="putn ca">${p.a}</b>개씩 <b class="putn cb">${p.b}</b>접시</div>
-      <div class="mprow" id="mprow">${Array.from({ length: p.b }, (_, k) => `<div class="mplate" data-k="${k}">${'<div class="pslot mps"></div>'.repeat(p.a)}</div>`).join('')}</div>
-      <div class="puttray mptray" id="mptray">${`<div class="mpitem">${p.emoji}</div>`.repeat(p.a * p.b)}</div>
-      <div class="early-q mpq2 hidden" id="mpq2">모두 <span class="qblank" id="qslot">?</span> 개</div></div>`;
+      <div class="mprow" id="mprow" style="--mps:${p.a <= 3 ? 64 : p.a === 4 ? 58 : 52}px">${Array.from({ length: p.b }, (_, k) => `<div class="mplate tapfill" data-k="${k}">${'<div class="pslot mps"></div>'.repeat(p.a)}</div>`).join('')}</div>
+      <div class="early-q mpq2 hidden" id="mpq2">모두 <span class="qblank" id="qslot">?</span> 개</div></div>`;   // v165: 트레이 없이 접시를 누르면 a개씩 담김(사용자 지시: 큰 수에서 겹치던 것)
   if (p.type === 'mulmach')   /* v142 곱셈 기계 — 위 목표 그림, 아래 내 그림 + 다이얼(씩·묶음) */
     return `<div class="early mulmach">
       <div class="mmleft">
-        <div class="mmtarget"><div class="mmlab">이 그림과 같게 만들어요</div><div class="mulrow" id="mmtrow">${mulGroups(p.a, p.b, 'mt')}</div></div>
+        <div class="mmq">이 그림과 같게 만들어요</div>
+        <div class="mmtarget"><div class="mulrow" id="mmtrow">${mulGroups(p.a, p.b, 'mt')}</div></div>
         <div class="mmmine" id="mmmine"><div class="mulrow" id="mmrow">${mulGroups(1, 1, 'mm')}</div></div>
         <div class="mmeq" id="mmeq"></div></div>
       <div class="mmdials">
@@ -8150,47 +8175,38 @@ function hintSeqFill(p, h, stage) {
 const mulGroups = (a, b, id) => Array.from({ length: b }, (_, k) => `<div class="mgrp" id="${id}${k}">${circleStack(a, 'o')}</div>`).join('');   // v158: 개=주황 · v159: 묶음 번호 없음
 let mp = null;   // 접시에 담기 상태 {done}
 function initMulPut() {
-  mp = { done: false };
-  const p = session.items[session.idx], tray = $('mptray'), plates = [...document.querySelectorAll('#mprow .mplate')]; if (!tray || !plates.length) return;
-  const hit = (e, el) => { const r = el.getBoundingClientRect(); return e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom; };
-  const emptySlot = pl => [...pl.querySelectorAll('.mps')].find(sl => !sl.querySelector('.mpitem'));
-  const place = (d, pl) => {
-    const sl = emptySlot(pl); if (!sl) { wiggle(pl); return false; }
-    sl.appendChild(d); d.animate([{ transform: 'scale(1.35)' }, { transform: 'scale(1)' }], { duration: 220 }); tick();
-    if (!emptySlot(pl)) { pl.classList.add('full'); pl.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 380 }); speakFast(`${koCnt(p.a)} 개`); }   // 접시가 다 참
-    if (!tray.querySelector('.mpitem')) mpAsk(p);
-    return true;
-  };
-  [...document.querySelectorAll('#qface .mpitem')].forEach(d => {
-    let drag = null;
-    d.onpointerdown = e => { if (locked || mp.done) return; try { d.setPointerCapture(e.pointerId); } catch (err) { } drag = { sx: e.clientX, sy: e.clientY, moved: false }; d.classList.add('lift'); };
-    d.onpointermove = e => { if (!drag) return; const sc = window._sc || 1, dx = (e.clientX - drag.sx) / sc, dy = (e.clientY - drag.sy) / sc; if (Math.abs(dx) + Math.abs(dy) > 6) drag.moved = true; d.style.transform = `translate(${dx}px,${dy}px)`; };
-    d.onpointerup = e => {
-      if (!drag) return; const moved = drag.moved; drag = null; d.classList.remove('lift'); d.style.transform = '';
-      const inTray = tray.contains(d);
-      if (moved) { const pl = plates.find(x => hit(e, x)); if (pl) { if (!(d.parentNode && d.parentNode.classList.contains('mps') && pl.contains(d))) place(d, pl); } else if (!inTray && hit(e, tray)) { const old = d.parentNode.closest('.mplate'); tray.appendChild(d); if (old) old.classList.remove('full'); tick(); } return; }
-      if (inTray) { const pl = plates.find(x => emptySlot(x)); if (pl) place(d, pl); }   // 탭: 자리가 남은 첫 접시로
-      else { const old = d.parentNode.closest('.mplate'); tray.appendChild(d); if (old) old.classList.remove('full'); tick(); }   // 접시에서 탭: 트레이로
-    };
-    d.onpointercancel = () => { drag = null; d.classList.remove('lift'); d.style.transform = ''; };
-  });
+  mp = { done: false, busy: false };
+  const p = session.items[session.idx], plates = [...document.querySelectorAll('#mprow .mplate')]; if (!plates.length) return;
+  plates.forEach(pl => { pl.onpointerdown = e => { e.preventDefault(); if (locked || mp.done || mp.busy) return; if (pl.classList.contains('full')) { wiggle(pl); return; } fillPlate(p, pl); }; });
+}
+/* v165 접시를 누르면 a개가 차례로 담긴다(조작 문법: 세기=탭). 다 차면 "N개", 접시가 모두 차면 모두 몇 개인지 묻는다 */
+function fillPlate(p, pl) {
+  mp.busy = true; pl.classList.remove('hl');
+  const slots = [...pl.querySelectorAll('.mps')];
+  slots.forEach((sl, i) => setTimeout(() => { if (!session || session.items[session.idx] !== p) return; sl.innerHTML = `<div class="mpitem pop">${p.emoji}</div>`; tick(); }, i * 150));
+  setTimeout(() => {
+    if (!session || session.items[session.idx] !== p) return;
+    pl.classList.add('full'); pl.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 380 }); speakFast(`${koCnt(p.a)} 개`);
+    mp.busy = false;
+    if ([...document.querySelectorAll('#mprow .mplate')].every(x => x.classList.contains('full'))) setTimeout(() => { if (session && session.items[session.idx] === p && !mp.done) mpAsk(p); }, 500);
+  }, slots.length * 150 + 120);
 }
 /* 다 담으면: 접시를 눌러 3, 6, 9… 누적으로 세고, 모두 몇 개인지 보기에서 고름 */
 function mpAsk(p) {
   mp.done = true; const q = $('mpq2'); if (q) q.classList.remove('hidden');
-  document.querySelectorAll('#mprow .mplate').forEach((pl, k) => { pl.classList.add('tapg'); pl.onclick = () => { if (locked) return; document.querySelectorAll('#mprow .mplate').forEach((x, i) => x.classList.toggle('on', i <= k)); speakFast(String(p.a * (k + 1))); }; });
+  document.querySelectorAll('#mprow .mplate').forEach((pl, k) => { pl.classList.remove('tapfill'); pl.classList.add('tapg'); pl.onpointerdown = null; pl.onclick = () => { if (locked) return; document.querySelectorAll('#mprow .mplate').forEach((x, i) => x.classList.toggle('on', i <= k)); speakFast(String(p.a * (k + 1))); }; });
   const ch = makeChoices(p.ans, 3, p.a + p.b);
   $('choices').innerHTML = ch.map(c => `<button class="btn-choice" data-v="${c}" onclick="answer(this,${p.ans})">${c}</button>`).join('');
   setTimeout(() => { if (session && session.items[session.idx] === p) speak('모두 몇 개?'); }, 700);
 }
 function hintMulPut(p, h, stage) {
   const plates = [...document.querySelectorAll('#mprow .mplate')];
-  if (!mp || !mp.done) {   // 아직 담는 중(보기 전): 자리에 맞춰 담기 안내, 2차는 하나 대신 담아 시범
-    h.innerHTML = `<div class="tip">접시의 옅은 자리에 <b>${p.a}개씩</b> 담아요</div>`;
-    if (stage === 1) { speak(`접시마다 자리가 ${koCnt(p.a)} 개예요. 자리에 맞춰 담아 봐요.`); return; }
-    const d = $('mptray') && $('mptray').querySelector('.mpitem'), pl = plates.find(x => [...x.querySelectorAll('.mps')].some(sl => !sl.querySelector('.mpitem')));
-    speak(`${koCnt(p.a)} 개씩 담으면 돼요.`);
-    if (d && pl) setTimeout(() => { if (!session || session.items[session.idx] !== p) return; const sl = [...pl.querySelectorAll('.mps')].find(x => !x.querySelector('.mpitem')); if (sl) { sl.appendChild(d); tick(); if (![...pl.querySelectorAll('.mps')].some(x => !x.querySelector('.mpitem'))) pl.classList.add('full'); if (!$('mptray').querySelector('.mpitem')) mpAsk(p); } }, 900);
+  if (!mp || !mp.done) {   // 아직 담는 중(보기 전): 접시 누르기 안내, 2차는 접시 하나를 대신 채워 시범
+    h.innerHTML = `<div class="tip">빈 접시를 눌러요.<br>한 접시에 <b class="ca">${p.a}</b>개씩 담겨요</div>`;
+    const pl = plates.find(x => !x.classList.contains('full'));
+    if (stage === 1) { if (pl) pl.classList.add('hl'); speak(`빈 접시를 눌러요. 한 접시에 ${koCnt(p.a)} 개씩 담겨요.`); return; }
+    speak(`이렇게 접시를 누르면 돼요.`);
+    if (pl && !mp.busy) setTimeout(() => { if (session && session.items[session.idx] === p && !mp.done && !mp.busy) fillPlate(p, pl); }, 900);
     return;
   }
   h.innerHTML = `<div class="tip">접시를 하나씩 누르며 <b>${p.a}씩</b> 뛰어 세어 봐요</div>`;
@@ -8221,8 +8237,8 @@ function mmDone(p) {
 }
 function hintMulMach(p, h, stage) {
   const tg = [...document.querySelectorAll('#mmtrow .mgrp')];
-  h.innerHTML = `<div class="tip">위 그림에서 <b>한 묶음에 몇 개</b>인지, <b>묶음이 몇 개</b>인지 세어 봐요</div>`;
-  if (stage === 1) { if (tg[0]) tg[0].classList.add('on'); speak('위 그림에서 한 묶음에 몇 개인지, 묶음이 몇 개인지 세어 봐요.'); return; }
+  h.innerHTML = `<div class="tip">한 묶음에 몇 개인가요?<br>묶음이 몇 개인가요?</div>`;   // v165(사용자 지시): 줄바꿈으로 구분
+  if (stage === 1) { if (tg[0]) tg[0].classList.add('on'); speak('한 묶음에 몇 개인가요? 묶음이 몇 개인가요?'); return; }
   mm.busy = true; tg.forEach(g => g.classList.remove('on'));
   const dots = tg[0] ? [...tg[0].querySelectorAll('.cdot')] : [], items = [{ text: '한 묶음에,' }];
   dots.forEach((d, i) => items.push({ text: KO_NUM[i + 1], action: () => { d.textContent = i + 1; d.classList.add('tapped'); } }));
@@ -8237,7 +8253,7 @@ function hintMulMach(p, h, stage) {
 function mkLight(i) { const b = document.querySelector(`#choices .mkc[data-v="${i}"]`); if (b) b.classList.add('pulse'); }
 function hintMulPick(p, h, stage) {
   const gs = [...document.querySelectorAll('#mkrow .mgrp')]; gs.forEach(g => g.classList.remove('on'));
-  h.innerHTML = `<div class="tip"><b>한 묶음에 몇 개</b>, <b>묶음이 몇 개</b>인지 세어 봐요</div>`;
+  h.innerHTML = `<div class="tip">한 묶음에 몇 개인가요?<br>묶음이 몇 개인가요?</div>`;   // v165
   if (stage === 1) {
     const items = [{ text: '묶음은,' }]; gs.forEach((g, i) => items.push({ text: KO_NUM[i + 1], action: () => g.classList.add('on') }));
     items.push({ text: `${koCnt(p.b)} 묶음. 한 묶음에 ${koCnt(p.a)} 개.` }); speakSequence(items); return;
