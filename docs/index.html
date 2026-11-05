@@ -770,6 +770,11 @@ td select{ font-size:1rem; padding:.3rem .4rem; }
 .lvpage .optrow{ flex:1; margin:0; }
 .lvlist .opt{ border:none; padding:.62rem 1.32rem; }
 .lvlist .opt.sel{ background:var(--accent); color:#fff; }
+/* v169 시계 묶음의 칸 단추(정각·30분·15·45분·5분·1분) — 활동 화면의 ◀ ▶ 칸 단추와 같은 주황 계열. 묶음 하나가 한 줄 */
+.lvlist .lvclk{ flex:0 0 100%; display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+.lvlist .rungrow{ display:flex; gap:.35rem; flex-wrap:wrap; }
+.lvlist .rung{ font-family:inherit; cursor:pointer; border:2px solid #FFB74D; background:#FFF3E0; color:#E65100; border-radius:999px; padding:.3rem .8rem; font-size:1rem; font-weight:800; }
+.lvlist .rung.sel{ background:#FB8C00; border-color:#EF6C00; color:#fff; }
 
 /* ===== 기초 단계 36~46 (세기·담기·모으기가르기·비교·수열·문장제·채점) ===== */
 .early{ display:flex; flex-direction:column; align-items:center; gap:.55rem; }
@@ -1835,7 +1840,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 168';
+const APP_VERSION = 'ver 169';   // v169: 단계 선택 창에서 시계 칸(정각·30분…)을 골라 중간부터 시작
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -6183,18 +6188,31 @@ function openLevelPicker(tabIdx) {
   const allow = (current && !current.guest && current.lvSet && current.lvSet.length)
     ? new Set([...current.lvSet.map(migrateLv), cur]) : null;
   if (tabIdx === undefined) tabIdx = Math.max(0, LEVEL_BANDS.findIndex(b => b.ids.includes(cur)));
+  /* v169: 시계 묶음은 칸 단추(정각·30분…)도 함께 — 묶음 이름은 지금처럼 첫 칸부터(반복 학습), 칸 단추는 그 칸부터(중간 시작). 콤보는 바늘 돌리기 칸을 따라가므로 칸 단추 없음 */
+  const R = current ? clockRungs() : {};
   const pk = lvPickerHtml(tabIdx, allow, i => `openLevelPicker(${i})`,
-    l => `<button class="opt ${l.id === cur ? 'sel' : ''}" onclick="chooseLevel(${l.id})">${lvlNo(l.id)}. ${l.name}</button>`);
+    l => {
+      const btn = `<button class="opt ${l.id === cur ? 'sel' : ''}" onclick="chooseLevel(${l.id})">${lvlNo(l.id)}. ${l.name}</button>`;
+      const rs = l.group && !CLOCK_GROUPS[l.group].follow ? CLOCK_GROUPS[l.group].rungs : [];
+      if (!rs.length) return btn;
+      const ri = l.id === cur ? clockRungIx(R, l.group) : -1;
+      return `<div class="lvclk">${btn}<div class="rungrow">${rs.map((r, i) => `<button class="rung ${i === ri ? 'sel' : ''}" onclick="chooseLevel(${l.id},${i})">${r.label}</button>`).join('')}</div></div>`;
+    });
   if (!pk) return;
   openModal(`<div class="read-sentence" style="font-size:1.4rem;margin-bottom:.4rem;text-align:center">단계 선택</div>
     <div class="lvtabs">${pk.tabs}</div>
     <div class="lvlist" style="text-align:left;max-height:62vh;overflow:auto">${pk.html}</div>
     <div style="text-align:center;margin-top:.6rem"><button class="btn btn--gray" onclick="closeModal()">닫기</button></div>`, '760px');
 }
-async function chooseLevel(id) {
+async function chooseLevel(id, rung) {
   if (current) {
     const g = (levelById(id) || {}).group;   // ver 135: 단계 단추로 시계 묶음을 고르면 앞·뒤·같은 묶음 가리지 않고 **항상 첫 칸부터**(반복 학습 — 사용자 지시). ver 134는 앞선 묶음만이었음. 칸 승급(3연속)은 그대로
-    if (g) { const R = clockRungs(); R[g] = 0; if (g === 'face') R._bh = R._bm = 0; }
+    /* v169: 칸 단추로 고르면 그 칸부터(정각을 마치고 30분부터 시작 — 사용자 요청). 숫자 넣기 사다리(_bh/_bm)는 어느 쪽이든 처음부터 */
+    if (g) {
+      const r = Number.isInteger(rung) ? Math.max(0, Math.min(rung, CLOCK_GROUPS[g].rungs.length - 1)) : 0;
+      if (current.guest) clockPick = { [g]: r };   // 손님: 세션 칸(clockSess.rungs)은 새 세션마다 새로 만들어지므로 고른 칸을 따로 들고 가 세션 생성 때 넣음
+      else { const R = clockRungs(); R[g] = r; if (g === 'face') R._bh = R._bm = 0; }
+    }
     current.level = id; if (!current.guest) await Store.updateStudent(current);
   }
   closeModal(); clearResume(); startSession();
@@ -9379,10 +9397,11 @@ const CLOCK_DAY_SCENES = [['🛏️', '일어나기', 7, 0], ['🍚', '아침밥
 const clockDayUnitLen = unit => CLOCK_DAY_SCENES.length + (unit === 'five' ? 1 : 0);   // 5분 칸은 끝에 걸린 시간 1문제
 let ck = null;            // 마운트된 엔진 {api, p, tok, sc}
 let clockSess = null;     // {startAt, build:{hour,min}, rs:{streak, combo}, rungs:{}} — 세션 단위 상태(rungs는 손님만)
+let clockPick = {};       // v169: 손님이 단계 창에서 고른 칸 {묶음: 칸} — 새 세션의 clockSess.rungs 초기값(다시 고를 때까지 유지). 등록 학생은 strat.clock에 바로 씀
 function clockSessState() {
   if (!clockSess || !session || clockSess.startAt !== session.startAt) {
     const r0 = (current && !current.guest && current.strat && current.strat.clock) || {}, b = k => ({ lvl: Math.max(0, Math.min(+r0['_b' + k] | 0, k === 'm' ? 6 : 4)), streak: 0, left: [], wrong: 0, sel: null, drag: null });   // ver 129: 숫자 넣기 사다리는 저장된 단계(_bh/_bm, 4 = B_LV 마지막 12개 전부)부터
-    clockSess = { startAt: session && session.startAt, build: { hour: b('h'), min: b('m') }, rs: { streak: 0, combo: 0 }, rungs: {} };
+    clockSess = { startAt: session && session.startAt, build: { hour: b('h'), min: b('m') }, rs: { streak: 0, combo: 0 }, rungs: Object.assign({}, clockPick) };   // v169: 손님은 단계 창에서 고른 칸부터
   }
   return clockSess;
 }
@@ -9392,7 +9411,7 @@ const clockRungIx = (rungs, g) => { const k = CLOCK_GROUPS[g].follow || g; retur
 const clockRungOf = (rungs, g) => { const rs = CLOCK_GROUPS[CLOCK_GROUPS[g].follow || g].rungs; return rs.length ? rs[clockRungIx(rungs, g)] : null; };
 function clockRungs() { if (!current || current.guest) return clockSessState().rungs; const st = current.strat || (current.strat = {}); return st.clock || (st.clock = {}); }
 async function clockSaveRungs() { if (current && !current.guest) await Store.updateStudent(current); }
-function clockDayLen() { const r = clockRungOf((current && !current.guest && current.strat && current.strat.clock) || {}, 'day'); return clockDayUnitLen(r.unit); }   // 하루 일과 세션 문제 수 = 지금 칸의 장면 수(06_study startSession). 손님은 새 세션마다 첫 칸
+function clockDayLen() { const r = clockRungOf(current && !current.guest ? (current.strat && current.strat.clock) || {} : clockPick, 'day'); return clockDayUnitLen(r.unit); }   // 하루 일과 세션 문제 수 = 지금 칸의 장면 수(06_study startSession). 손님은 단계 창에서 고른 칸(v169), 없으면 첫 칸
 function clockRungName(s, levelId) { const l = levelById(levelId), r = l && l.group ? clockRungOf((s.strat || {}).clock || {}, l.group) : null; return r ? ' · ' + r.label : ''; }   // 대시보드 "바늘 돌리기 · 30분"
 function clockFace(p) {
   return `<div class="early ck-wrap" id="ckWrap"><div class="clockq" id="clockq">  <div id="ck-learn" class="screen">
