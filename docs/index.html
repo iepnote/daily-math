@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 172 · 단일 파일 앱(docs/index.html 을 직접 수정) -->
+<!-- 매일매일 수학 · ver 173 · 단일 파일 앱(docs/index.html 을 직접 수정) -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1118,10 +1118,6 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
   background:var(--choice-bg); border:2px solid #C7E3FA; color:var(--ink); cursor:pointer; transition:transform .08s;
   box-shadow:0 4px 0 #C7E3FA; }
 .chk-key:active{ transform:translateY(3px); box-shadow:0 1px 0 #C7E3FA; }
-/* ① 2차 오답부터 직접 입력(v107): 객관식 자리의 숫자패드(6열 2줄 — 힌트와 함께 720 무대 안에 들어오게) + 정답칸 입력 커서 */
-.anspad{ display:grid; grid-template-columns:repeat(6, 84px); gap:.45rem; justify-content:center; margin-top:.4rem; }
-.anspad .chk-key{ height:52px; }
-.ansbox.padcur{ box-shadow:inset 0 0 0 4px var(--accent-strong); }
 .chk-del{ background:#FFF3E0; border-color:#FFDFB0; box-shadow:0 4px 0 #FFDFB0; }
 .chk-del:active{ box-shadow:0 1px 0 #FFDFB0; }
 .chk-ok{ background:var(--ok-bg); border-color:#A5D6A7; box-shadow:0 4px 0 #A5D6A7; font-size:1.9rem; }
@@ -1252,9 +1248,19 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .clockq .hand.blink{ animation: hb 1s infinite; }
 @keyframes hb { 50% { opacity: .25; } }
 .clockq .yb{ animation: hb 1s infinite; }
+/* ver 173 시 세기 시연(읽기 시 2차·3차): 길어진 짧은바늘(.hext, 바늘 묶음 안이라 같이 돎)·12에서 도는 빨간 점선(.hcnt). 애니메이션이 꺼져도 끝 모습이 보이게 기본값 = 다 그려진 상태 */
+.clockq .hext{ pointer-events: none; }
+.clockq .hext line{ stroke: var(--red); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 80; stroke-dashoffset: 0; animation: hextGrow .4s both; }
+.clockq .hext path{ fill: var(--red); animation: hextTip .2s .3s both; }
+@keyframes hextGrow{ from{ stroke-dashoffset: 80; } to{ stroke-dashoffset: 0; } }
+@keyframes hextTip{ from{ opacity: 0; } to{ opacity: 1; } }
+.clockq .hcnt{ pointer-events: none; }
+.clockq .hcnt .hca{ fill: none; stroke: var(--red); stroke-width: 6; stroke-linecap: round; stroke-dasharray: .1 12; }
+.clockq .hcnt .hch{ fill: var(--red); }
 .clockq .num{ font-size: 56px; font-weight: 800; font-family: 'NanumSquareNeoExtraBold', var(--font-main); fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
 .clockq .tapn, .clockq .tapt{ fill: transparent; cursor: pointer; pointer-events: none; }
 .clockq .tapn.on, .clockq .tapt.on{ pointer-events: all; stroke: #ffb300; stroke-width: 6; animation: tp 1s infinite; }
+.clockq .tapt.on.hot{ stroke-width: 11; fill: rgba(255,196,0,.4); }   /* ver 173 눈금 세기 「도와줘」 1차: 다음에 누를 눈금을 굵고 노랗게 */
 @keyframes tp { 50% { stroke-opacity: .2; } }
 .clockq .hh{ fill: transparent; pointer-events: none; }
 .clockq #ck-analog.drag .hh{ pointer-events: all; cursor: grab; }
@@ -1844,7 +1850,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 172';   // v170: 코드 전수조사 — 죽은 코드·중복 코드 정리(동작 변화 없음)
+const APP_VERSION = 'ver 173';   // v173: 쓰지 않는 2차 오답 숫자패드 코드 삭제 · 시각 읽기 시 2차·3차 「시 세기」 시연 · 시계 단계 「도와줘」
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2680,6 +2686,9 @@ const TRX = {
   '같은 시각을 골라요.': { en: 'Choose the same time.', zh: '选出相同的时间。', vi: 'Hãy chọn giờ giống nhau.', ja: 'おなじ じこくを えらんでね。', ru: 'Выбери такое же время.' },
   '같은 시각끼리 찾아요.': { en: 'Find the cards with the same time.', zh: '找出时间相同的卡片。', vi: 'Hãy tìm các thẻ cùng giờ.', ja: 'おなじ じこくどうしを さがしてね。', ru: 'Найди карточки с одинаковым временем.' },
   '다 찾았어요.': { en: 'You found them all.', zh: '全部找到了。', vi: 'Tìm hết rồi.', ja: 'ぜんぶ みつけたね。', ru: 'Ты нашёл все.' },
+  '노란 동그라미를 눌러요.': { en: 'Tap the yellow circle.', zh: '点黄色的圆圈。', vi: 'Chạm vào vòng tròn màu vàng.', ja: 'きいろい まるを おしてね。', ru: 'Нажми на жёлтый кружок.' },   // ver 173 눈금 세기 도와줘 1차
+  '이어서 눌러요.': { en: 'Keep tapping.', zh: '接着点。', vi: 'Chạm tiếp nhé.', ja: 'つづけて おしてね。', ru: 'Нажимай дальше.' },   // ver 173 눈금 세기 도와줘 2차
+  '확인을 눌러요.': { en: 'Press OK.', zh: '按确认。', vi: 'Hãy bấm xác nhận.', ja: 'かくにんを おしてね。', ru: 'Нажми «Готово».' },   // ver 173 시계 도와줘(바늘을 이미 맞게 돌려 놓았을 때)
   '작은 수를 골라요. 긴바늘도 보세요.': { en: 'Choose the smaller number. Look at the long hand too.', zh: '选小的那个数。也看看长针。', vi: 'Chọn số nhỏ hơn. Nhìn cả kim dài nữa.', ja: 'ちいさい かずを えらんでね。ながい はりも みてね。', ru: 'Выбери меньшее число. Посмотри и на длинную стрелку.' },   // ver 129: 시각 읽기 4지선다 2차 힌트
   '앞 숫자까지 5씩 세고, 몇 칸 더 갔어요?': { en: 'Count by 5 up to the number before, then how many more marks?', zh: '先 5 个 5 个地数到前面的数字，再多走了几格？', vi: 'Đếm mỗi lần 5 đến số phía trước, rồi đi thêm mấy vạch?', ja: 'まえの すうじまで 5ずつ かぞえて、あと なんめもり すすんだ？', ru: 'Считай по 5 до предыдущей цифры. На сколько делений дальше?' },   // ver 129: 시각 읽기 1분 칸 1차 힌트
 };
@@ -2768,6 +2777,7 @@ const TRX_RX = [
   [/^(\d+)[을를] (.+?) 번 덜어냈어요\.$/, m => { const n = cntToNum(m[2]) || m[2]; return { en: `We took away ${m[1]}, ${n} times.`, zh: `拿走了 ${n} 次 ${m[1]}。`, vi: `Đã bớt ${m[1]} được ${n} lần.`, ja: `${m[1]}を ${n}かい とったよ。`, ru: `Мы убрали по ${m[1]} ${n} раз.` }; }],
   /* 시계(v129) — 시각 "([가-힣]+) 시(?: (\d+) 분)?" = 시계놀이 tk(h, m) */
   [/^([가-힣]+) 시를 눌러요\.$/, m => { const h = cntToNum(m[1]); return { en: `Tap ${h} o'clock.`, zh: `点 ${h} 点。`, vi: `Chạm số ${h} giờ.`, ja: `${h}じを おしてね。`, ru: `Нажми ${h} часов.` }; }],   // v66 숫자 찾기
+  [/^([가-힣]+) 시까지 못 갔어요\. 아직 ([가-힣]+) 시예요\.$/, m => { const n = cntToNum(m[1]), h = cntToNum(m[2]); return { en: `It has not reached ${n} o'clock yet. It is still ${h} o'clock.`, zh: `还没到 ${n} 点。现在还是 ${h} 点。`, vi: `Chưa đến ${n} giờ. Vẫn là ${h} giờ.`, ja: `まだ ${n}じに なって いないよ。まだ ${h}じだよ。`, ru: `До ${n} часов ещё не дошла. Пока ещё ${h} часов.` }; }],   // ver 173 시 세기 시연 끝말
   [/^([가-힣]+) 시\.$/, m => { const h = cntToNum(m[1]); return { en: `${h} o'clock.`, zh: `${h} 点。`, vi: `${h} giờ.`, ja: `${h}じ。`, ru: `${h} часов.` }; }],
   [/^([가-힣]+) 시(?: (\d+) 분)?[이가] 되면 눌러요\.$/, m => { const t = ckTime(m[1], m[2]); return { en: `Tap when it is ${t}.`, zh: `到 ${t} 时点一下。`, vi: `Chạm khi đến ${t}.`, ja: `${t}に なったら おしてね。`, ru: `Нажми, когда будет ${t}.` }; }],
   [/^지금 ([가-힣]+) 시(?: (\d+) 분)?\. (\d+) 분 (뒤로|전으로) 돌려요\.$/, m => { const t = ckTime(m[1], m[2]), f = m[4] === '뒤로'; return { en: `It is ${t} now. Turn it ${m[3]} minutes ${f ? 'later' : 'earlier'}.`, zh: `现在是 ${t}。往${f ? '后' : '前'}拨 ${m[3]} 分钟。`, vi: `Bây giờ là ${t}. Quay ${f ? 'tới' : 'lùi'} ${m[3]} phút.`, ja: `いまは ${t}。${m[3]}ぷん ${f ? 'あと' : 'まえ'}に まわしてね。`, ru: `Сейчас ${t}. Переведи на ${m[3]} минут ${f ? 'вперёд' : 'назад'}.` }; }],
@@ -3459,10 +3469,14 @@ function watchHintTip() {
   const sync = () => { const tip = h.querySelector('.tip'); if (tip && tip.textContent.trim()) { const b = $('bubble'); if (b) b.innerHTML = koGlue(tip.innerHTML); } };   // v158: 역할 색(<b class=ca/cb>) 유지 · v165: 줄바꿈(<br>)도 그대로
   _tipObs = new MutationObserver(sync); _tipObs.observe(h, { childList: true, subtree: true, characterData: true }); sync();
 }
-/* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) */
-function helpHint() { if (locked || !session) return; const st = Math.min(2, (hintStage || 0) + 1); buddySay(st === 1 ? '같이 생각해 봐요' : '이렇게 해 봐요'); routeHint(st); }
+/* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) · ver 173: 시계 단계에도 버튼(짝 뒤집기·콤보·시각 만들기는 기억·속도·자유 놀이라 제외, 받아올림 큐브는 아직 없음) */
+function helpHint() {
+  if (!session) return;
+  if ((session.items[session.idx] || {}).type === 'clock') { clockHelp(); return; }   // ver 173: 시계 단계는 엔진이 유형별 힌트를 냄(15_clock help)
+  if (locked) return; const st = Math.min(2, (hintStage || 0) + 1); buddySay(st === 1 ? '같이 생각해 봐요' : '이렇게 해 봐요'); routeHint(st);
+}
 function renderProblem() {
-  wrongCount = 0; wrongVals = []; wrongTags = []; locked = false; guide = null; mguide = null; cadd = null; curCirc = null; pad = null; itemStart = Date.now();
+  wrongCount = 0; wrongVals = []; wrongTags = []; locked = false; guide = null; mguide = null; cadd = null; curCirc = null; itemStart = Date.now();
   retryArm = false; rt = null;                             // ③(v100) 재도전 예약·상태 초기화
   hintStage = 0;                                           // ①(v106) 힌트 실측 초기화
   /* 낮은 단계(5 이하 연산)는 문제부터 그림+식(CRA 구체물, 토도 B레벨) — 뺄셈 뒷수는 회색(제거 의미) */
@@ -3488,7 +3502,7 @@ function renderProblem() {
     <aside class="buddy-col" id="buddyCol">
       <div class="streak-card"><div class="lbl">연속 정답</div><div class="big"><b id="streakN">${sessionStreak()}</b><span>번째</span></div><div class="bars" id="streakBars">${streakBarsHtml()}</div><div class="sub">3번 연속이면 별 하나 더</div></div>
       <div class="buddy-card"><div class="buddy-face">${BUDDY_SVG}</div><div class="bubble" id="bubble">잘 보고 골라요</div>
-        ${['clock', 'carry'].includes(p0.type) ? '' : '<button type="button" class="helpbtn" onclick="helpHint()">' + ICON_BULB + '<span>도와줘</span></button>'}</div>
+        ${p0.type === 'carry' || (p0.type === 'clock' && ['flip', 'combo', 'free'].includes(p0.group)) ? '' : '<button type="button" class="helpbtn" onclick="helpHint()">' + ICON_BULB + '<span>도와줘</span></button>'}</div>
     </aside>
     </div>
   </div>`;
@@ -3556,7 +3570,6 @@ function paintFace(flip) {
   const before = flip ? captureTokens(el) : null;
   el.innerHTML = buildFace(p, curCirc);
   if (before) runFlip(el, before);
-  if (pad) padPaint();                                   // 숫자패드 입력 중이면 새 얼굴에 입력 표시 복원(v107)
   if (curCirc) fitCircles();                             // 그림 문제 모드(1~3단계)·세 수 안내
   if (p.type === 'put') initPut();                // 담기: 드래그/탭 상호작용 연결
   if (p.type === 'count') initCount();            // 세기: 동그라미 누르면 "하나, 둘…" 소리
@@ -3578,10 +3591,10 @@ function paintFace(flip) {
   if (p.type === 'clock') initClock();            // 시계놀이(v127): 엔진 마운트
 }
 /* v152 오답 뒤 보기 새로 내기(사용자 지시) — 보기 3개 유형은 2차 오답이면 소거로 정답만 남아 추측이 통했다.
-   오답마다 보기를 다시 만들되, 이미 고른 오답값은 다시 넣지 않는다. 숫자패드(연산 2차 이후)나 보기 없는 조작형은 건드리지 않음.
+   오답마다 보기를 다시 만들되, 이미 고른 오답값은 다시 넣지 않는다. 보기 없는 조작형은 건드리지 않음.
    곱셈식 고르기(mulpick)는 보기가 문제에 박혀 있어 오답 종류를 바꿔 다시 만든다 */
 function rerollChoices(p) {
-  const box = $('choices'); if (!box || pad || !box.querySelector('.btn-choice') || box.querySelector('.anspad')) return;
+  const box = $('choices'); if (!box || !box.querySelector('.btn-choice')) return;
   if (!session || session.items[session.idx] !== p) return;
   if (p.type === 'judge') return;   // ○× 두 개는 다시 낼 게 없음
   if (p.type === 'mulpick') {
@@ -3784,12 +3797,12 @@ function answer(btn, ans) {
   speakFast(String(v), go);
   setTimeout(go, 1400);
 }
-/* 정·오답 판정 공통(v107) — btn=객관식 버튼(패드 입력이면 null) */
+/* 정·오답 판정 공통(v107) — btn=객관식 버튼(읽는 사이 보기가 다시 그려졌으면 null) */
 function judgeAnswer(btn, v, ans) {
   if (locked) return;
   const p = session.items[session.idx];
   if (v === ans) {
-    locked = true; if (btn) btn.classList.add('correct'); pad = null;
+    locked = true; if (btn) btn.classList.add('correct');
     const slot = $('qslot'); if (slot) { fillSlot(slot, ans); celebrate(slot); }
     if (p.type === 'flash') { flashOpen = true; const c = $('fcover'); if (c) c.classList.add('hidden'); }   // 직산: 정답 후 열어서 눈으로 확인
     chime(true);
@@ -3803,7 +3816,7 @@ function judgeAnswer(btn, v, ans) {
     } else speak(praiseFor(wrongCount));   // 5차(v105): 힌트 뒤 정답은 과정 칭찬(전략 사용 언급 — 자기효능감·전이)
     afterCorrect();   // 대기 시간은 칭찬 발화 길이에 맞춰 자동(afterCorrect)
   } else {
-    if (btn) { btn.classList.add('wrong'); btn.disabled = true; } else padPaint();   // 패드 입력은 지우고 다시
+    if (btn) { btn.classList.add('wrong'); btn.disabled = true; }
     chime(false); wrongCount++; wrongVals.push(v); wiggle($('qface'));
     { const gs = document.querySelector('#qface .gsplit.move'); if (gs) gs.classList.add('cnton'); }   // ver 171: 모으기·가르기 상자 옆 개수는 첫 오답 뒤부터
     if (p.type === 'mulpick') { wrongTags.push(p.opts[v] && p.opts[v].tag || 'other'); (p.chosen = p.chosen || []).push(p.opts[v] && p.opts[v].t); }   // v142: 덧셈 혼동=symbol, 묶음 수=fact · v152: 고른 식은 다시 안 냄
@@ -3811,7 +3824,7 @@ function judgeAnswer(btn, v, ans) {
     /* v121 ①(사용자 지시): 오답 상한 3회(보기 2 + 패드 1) — 패드(v107)는 보기 소거 같은 자연 상한이 없어 같은 발문·시연이 끝없이 재시작됐다.
        정답을 채워 공개하고 발화 종료 기반으로 다음 문제(수직선 v115와 같은 규칙). 재도전 큐는 nextStep이 wrongCount≥2로 자동 처리 */
     if (wrongCount >= 3) {
-      locked = true; pad = null;
+      locked = true;
       const slot = $('qslot'); if (slot) fillSlot(slot, ans);
       afterCorrectSpeak(eqSay(p), 1000);
       return;
@@ -3821,7 +3834,7 @@ function judgeAnswer(btn, v, ans) {
     const unlock = () => { locked = false; rerollChoices(p); };   // v152: 오답 뒤 보기를 새로 섞어 냄(소거로 정답만 남는 것 방지, 사용자 지시)
     const lv = hintLvOf(current);   // 학생별 힌트 수준(IEP 개별화)
     /* ver 172(사용자 지시): 2차 오답에도 숫자패드로 바꾸지 않고 정답 카드를 새로 낸다(rerollChoices — 고른 오답값은 다시 안 나와 소거로 정답만 남지 않음).
-       showAnswerPad·pad*는 호출하는 곳이 없어짐 — 되돌릴 때를 위해 남김. 재도전 관문·도전 모드의 숫자패드는 그대로 */
+       ver 173: 쓰지 않게 된 2차 숫자패드 코드(showAnswerPad·pad*) 삭제. 재도전 관문·도전 모드의 숫자패드(numpadHtml)는 그대로 */
     if (lv === 'off') { speak('다시 한 번 해 볼까요?', unlock); setTimeout(unlock, lastSpeakMs + 800); return; }
     /* 힌트가 곧바로 speak/speakSequence를 부르면 이 안내가 잘림 → 발화가 끝난 뒤 힌트 시작(보루 타이머 병행) */
     /* SEM ⑥ 힌트 fading(v91): 'fade'=지원 점감 — 한 단계 늦춤(1차 오답은 발문만 듣고 스스로, 2차부터 단서) */
@@ -3866,49 +3879,12 @@ function judgeAnswer(btn, v, ans) {
     setTimeout(sayThenGo, lastSpeakMs + 1200);
   }
 }
-/* =========================================================
-   ① 2차 오답부터 직접 입력(v107, 사용자 지시) — 객관식 자리에 숫자패드(6열 2줄), 정답칸에 입력 표시.
-   자릿값 칸이 있으면 왼쪽(높은 자리)부터 채우고 다음 칸에 커서, 한 칸 정답은 ? 자리에 숫자.
-   힌트가 얼굴을 다시 그려도 paintFace 끝에서 padPaint()로 되살림. 자리별 입력(startColumn)·다음 문제에서 해제.
-   ========================================================= */
-let pad = null;
-/* 숫자패드 공용 HTML — 2차 입력(pad*)·재도전(rt*)·도전(chal*)이 같은 모양을 씀. fn = 전역 핸들러 접두(fnKey·fnDel·fnOk) */
+/* 숫자패드 공용 HTML — 재도전(rt*)·도전(chal*)이 같은 모양을 씀. fn = 전역 핸들러 접두(fnKey·fnDel·fnOk) */
 function numpadHtml(fn, keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, 'del', 0, 'ok']) {
   return keys.map(k =>
     k === 'del' ? `<button class="chk-key chk-del" onclick="${fn}Del()" aria-label="지우기">⌫</button>`
       : k === 'ok' ? `<button class="chk-key chk-ok" onclick="${fn}Ok()" aria-label="확인">✓</button>`
         : `<button class="chk-key" data-k="${k}" onclick="${fn}Key(${k})">${k}</button>`).join('');
-}
-function showAnswerPad() {
-  const p = session.items[session.idx];
-  if (pad || !p || !(p.type === 'binary' || p.type === 'missing')) return false;
-  const ch = $('choices'); if (!ch || !ch.querySelector('.btn-choice')) return false;
-  pad = { typed: '' };
-  ch.innerHTML = `<div class="anspad" id="anspad">${numpadHtml('pad', [1, 2, 3, 4, 5, 'del', 6, 7, 8, 9, 0, 'ok'])}</div>`;
-  padPaint();
-  return true;
-}
-function padBoxes() { const s = $('qslot'); return s ? [...s.querySelectorAll('.ansbox')].sort((a, b) => +b.dataset.pl - +a.dataset.pl) : []; }
-function padPaint() {
-  if (!pad) return;
-  if (!$('anspad')) { pad = null; return; }                       // 다른 흐름이 보기를 바꿨으면 해제
-  const slot = $('qslot'); if (!slot || slot.classList.contains('answered')) return;
-  const boxes = padBoxes();
-  if (boxes.length) boxes.forEach((bx, i) => { bx.textContent = pad.typed[i] || ''; bx.classList.toggle('padcur', i === pad.typed.length); });
-  else slot.innerHTML = pad.typed ? esc(pad.typed) : '<span class="qm">?</span>';
-}
-function padKey(k) {
-  if (!pad || !$('anspad') || locked) return;
-  const max = padBoxes().length || 4;
-  if (pad.typed.length >= max) return;
-  pad.typed += k; padPaint();
-}
-function padDel() { if (!pad || locked) return; pad.typed = pad.typed.slice(0, -1); padPaint(); }
-function padOk() {
-  if (!pad || locked) return;
-  if (!pad.typed) { wiggle($('qslot')); return; }
-  const v = parseInt(pad.typed, 10); pad.typed = '';
-  judgeAnswer(null, v, session.items[session.idx].ans);
 }
 /* SEM 오답값→오류 유형 판정(v86, 서울대 난산 연수자료) — 오답 보기 값이 알려진 오류 패턴과 일치하면
    일반 멘트 대신 특정 피드백 발문. 판정 순서는 좁은 패턴부터. 해당 없으면 null(기존 흐름) */
@@ -4288,7 +4264,7 @@ function startColumn(p) {
   }
   /* 자릿값 라벨은 1차 단서 전용 — 계산 단계에선 올림·빌림 표기(cmark·bmark)와 겹치지 않게 표시 안 함(paintFace가 지움) */
   locked = true;
-  $('choices').innerHTML = ''; pad = null;           // 객관식 대신 직접 입력(숫자패드가 있었어도 자리별 입력으로 대체)
+  $('choices').innerHTML = '';           // 객관식 대신 직접 입력(자리별 입력)
   renderColStep();                                   // 자리 하이라이트는 litCol이 현재 자리만 색칠
 }
 /* 지금까지 채운 자리·올림·빌림 표기를 기록해 둔다 — paintFace가 얼굴을 새로 만들어도(가로↔세로 전환) 그대로 재생 */
@@ -6106,7 +6082,7 @@ function animateStep(p, step) {
 /* =========================================================
    세션 이동·전환·종료
    ========================================================= */
-function goHome() { cadd = null; pad = null; guide = null; mguide = null; rt = null; if (current) renderCalendar(false); else renderStart(); }   // 진행 중 힌트 상태 해제(v107)
+function goHome() { cadd = null; guide = null; mguide = null; rt = null; if (current) renderCalendar(false); else renderStart(); }   // 진행 중 힌트 상태 해제(v107)
 function prevProblem() { if (rt) return; if (session.idx > 0) { session.idx--; renderProblem(); } }   // 재도전 화면: 이전 문제 없음
 let advancing = false;   // v164: 정답 처리 뒤 다음 문제로 넘어가는 중(그 사이 「다음」은 무시)
 function nextProblem() {
@@ -9490,6 +9466,7 @@ function initClock() {
       if (b) { const k = b.mode === 'minb' ? 'min' : 'hour'; sess.build[k].lvl = b.lvl; sess.build[k].streak = 0; rungs[b.mode === 'minb' ? '_bm' : '_bh'] = b.lvl; clockSaveRungs(); }
       session.items[session.idx] = clockLv(p.group)(); saveResume(); renderProblem();
     },
+    bubble: t => { if (H.alive()) buddySay(t); },   // ver 173: 엔진의 발문·힌트 글을 친구 말풍선으로
     retry: q => { if (!H.alive()) return; if (!session.items.some(o => o.retry && o === q)) session.items.push(Object.assign({}, q, { retry: true, first: true, hint: 0, tags: [], ready: true })); },
   };
   ck = me;
@@ -9497,6 +9474,7 @@ function initClock() {
   clockFit();
 }
 function clockBegin() { if (ck && ck.api) ck.api.begin(); }
+function clockHelp() { if (ck && ck.api && ck.api.help) ck.api.help(); }   // ver 173 「도와줘」 — 06_study helpHint가 부름
 function clockIntro(p) { return ck && ck.api ? ck.api.question() : '시계를 보세요.'; }
 /* 무대를 카드의 남은 공간에 맞춰 축소(받아올림 carryFit과 같은 문법). ver 130: 삽입판 무대는 1600×850 — 나비 바 52·여백 12·진행 점 숨김으로 시계놀이 900보다 낮춰 같은 카드에서 더 크게 */
 const CK_W = 1600, CK_H = 850;
@@ -9516,6 +9494,7 @@ function clockMount(p, H) {
     window.speak(t, fin); window.setTimeout(fin, (lastSpeakMs || 0) * (prefs.lang && prefs.lang !== 'ko' ? 2 : 1) + 1500);
   };
   const speakFast = t => window.speakFast(t);
+  const cue = (t, cb) => { if (H.bubble) H.bubble(t); speak(t, cb); };   // ver 173: 힌트 발문은 친구 말풍선에도 글로 보여 줌(연산 단계 buddySay와 같은 규칙 — 정답 읽기는 넣지 않음)
   const tick = () => window.tick();
   const bell = () => chime(true);
   const tone = () => chime(false);   // 콤보 시간 끝 소리(시계놀이 tone은 소리 블록과 함께 잘려 나감)
@@ -9764,6 +9743,50 @@ function clockMount(p, H) {
   function redCircle(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="40" fill="none" stroke="var(--red)" stroke-width="8" stroke-dasharray="14 11" stroke-linecap="round"/>`); }   // v38: 점선
   function ringNum(n) { const [x, y] = pt(n * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle class="yb" cx="${x}" cy="${y}" r="44" fill="none" stroke="#FFC400" stroke-width="9"/>`); }   // v40: 노란 동그라미 깜빡임(읽기 정각 2차)
   function tickDot(i) { const [x, y] = pt(i * 6, 262); A('.marks').insertAdjacentHTML('beforeend', `<circle cx="${x}" cy="${y}" r="9" fill="var(--red)"/>`); }
+  /* ver 173(사용자 지시) 정각 아닌 시각 읽기 — 시 2차 힌트 「시 세기」: 짧은바늘이 테두리 눈금까지 길어지고(.hext), 12에서 시계 방향으로 숫자 안쪽을 따라 빨간 점선(.hcnt)이 돈다.
+     앞 숫자들은 말없이 지나가고 마지막 세 숫자(h-2·h-1·h)만 "다섯 시, 여섯 시, 일곱 시" 세고 정답 숫자(h)에만 노란 불(.hcl)을 켠 뒤 짧은바늘 앞에서 멈춤 → "여덟 시까지 못 갔어요. 아직 일곱 시예요."
+     circle = 3차: 끝에 그 숫자에 작은 빨간 동그라미(.hcr). 점선은 숫자 자리를 지나가며 숫자 글자 아래 층(.sector)에 그림. 끝 상태는 타이머로 확정(rAF는 사이 그림만), 문제·마운트가 바뀌면 gen으로 중단 */
+  const HC_R = NUMR;   // 사용자 지시: 점선이 숫자 자리를 지나감(숫자 글자 아래 층 .sector — 노란 불 위, 숫자·바늘 아래)
+  function hourCountClear() {
+    hourCount.gen = (hourCount.gen || 0) + 1;
+    A('.sector').querySelectorAll('.hcl').forEach(e => e.remove()); A('.marks').querySelectorAll('.hcr').forEach(e => e.remove());
+    A('.sector').querySelectorAll('.hcnt').forEach(e => e.remove()); const x = A('.hext'); if (x) x.remove();
+  }
+  function hourCount(p, circle, done) {
+    hourCountClear(); const gen = hourCount.gen, ok = () => hourCount.gen === gen && S.p === p;
+    const nums = p.h === 12 ? [12] : [p.h - 2, p.h - 1, p.h].filter(n => n >= 1), angOf = n => n === 12 ? 0 : n * 30;
+    const hand = (p.h % 12) * 30 + p.m * .5, end = Math.max(angOf(p.h), hand - 5);   // 화살표는 짧은바늘 바로 앞에서 멈춤
+    A('.hourHand').classList.remove('blink');
+    A('.hourHand').insertAdjacentHTML('beforeend', `<g class="hext"><line x1="300" y1="116" x2="300" y2="40"/><path d="M300,22 L289,42 L311,42 Z"/></g>`);
+    A('.sector').insertAdjacentHTML('beforeend', `<g class="hcnt"><path class="hca"/><path class="hch" d="M-11,-10 L9,0 L-11,10 Z"/></g>`);
+    const grp = A('.hcnt'), arc = A('.hca'), head = A('.hch');
+    const draw = a => {
+      const [x0, y0] = pt(0, HC_R), [x, y] = pt(a, HC_R);
+      arc.setAttribute('d', a > .5 ? `M${x0},${y0} A${HC_R},${HC_R} 0 ${a > 180 ? 1 : 0} 1 ${x.toFixed(1)},${y.toFixed(1)}` : '');
+      head.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${a.toFixed(1)})`);
+    };
+    /* 시간표: kf = [시각(ms), 각도] 꺾은선, ev = [시각, 숫자] 세는 순간 */
+    const kf = [[0, 0], [450, 0]], ev = []; let t = 450, a = 0;
+    const a0 = Math.max(0, angOf(nums[0]) - 30);   // 말없이 지나가는 끝(첫 세는 숫자 한 칸 앞)
+    if (a0 > 0) { t += a0 / 30 * 170; a = a0; kf.push([t, a]); }
+    nums.forEach(n => { const an = angOf(n); if (an > a) { t += 330; a = an; kf.push([t, a]); } ev.push([t, n]); t += 560; kf.push([t, a]); });
+    if (end > a) { t += 350; a = end; kf.push([t, a]); }
+    const at = ms => { for (let i = 1; i < kf.length; i++) if (ms <= kf[i][0]) { const [t0, v0] = kf[i - 1], [t1, v1] = kf[i]; return t1 > t0 ? v0 + (v1 - v0) * (ms - t0) / (t1 - t0) : v1; } return a; };
+    draw(0); const T0 = performance.now();
+    const step = now => { if (!ok() || !arc.isConnected) return; const ms = now - T0; draw(at(ms)); if (ms < t) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+    ev.forEach(([ms, n]) => setTimeout(() => { if (!ok()) return; const [x, y] = pt(n * 30, NUMR); if (n === p.h) (grp.isConnected ? grp : A('.sector')).insertAdjacentHTML(grp.isConnected ? 'beforebegin' : 'beforeend', `<circle class="hcl" cx="${x}" cy="${y}" r="38" fill="#FFE066"/>`); speakFast(`${KO_HOUR[n]} 시.`); }, ms));   // 사용자 지시: 노란 불은 정답 숫자(h)에만 — 앞의 두 숫자는 읽어 주기만. 불은 점선 아래에
+    setTimeout(() => {
+      if (!ok()) return; if (arc.isConnected) { draw(a); if (end - angOf(p.h) < 10) head.style.display = 'none'; }   // 멈춘 자리가 숫자 글자 밑이면 화살촉은 숨김(숫자가 지저분해짐)
+      if (circle) { const [x, y] = pt(p.h * 30, NUMR); A('.marks').insertAdjacentHTML('beforeend', `<circle class="hcr" cx="${x}" cy="${y}" r="36" fill="none" stroke="var(--red)" stroke-width="6"/>`); }
+      const say = `${KO_HOUR[nextH(p.h)]} 시까지 못 갔어요. 아직 ${KO_HOUR[p.h]} 시예요.`;
+      /* 사용자 지적: 끝말이 다 끝나길 기다리면 확인 버튼이 너무 늦게 켜짐(세는 말을 끊고 시작한 발화는 끝 신호가 안 올 때가 있어 보루 타이머 약 7초까지 밀림).
+         2차 = 끝말이 시작되면 바로 입력을 풂(말은 끝까지 나오고 말풍선에도 남음) / 3차 = 말이 끝나거나 4.2초 뒤 채움 */
+      if (!circle) { cue(say); done(); return; }
+      let fin = false; const finish = () => { if (fin || !ok()) return; fin = true; done(); };
+      cue(say, finish); setTimeout(finish, 4200);
+    }, t + 250);
+  }
   /* v140 눈금 세기(사용자 그림): 시계 테두리 바깥에 눈금 i-1 → i를 잇는 작은 반원 아치(가는 검정 점선)가 1분마다 하나씩 쌓이고, 빨간 공이 그 아치를 따라 뛴다(v141).
      이어 세기(from > 0)는 이미 센 아치(1..from)를 연하게 미리 그린다. anim=false면 현재 길이까지 바로 그림 */
   const HOP_R = 300, HOP_H = 16;   // 발 자리 반지름(테두리 294 바로 밖)·아치 높이(2차 곡선 조절점은 2배 높이) · v141: 28→16 완만하게
@@ -9778,7 +9801,8 @@ function clockMount(p, H) {
     b.removeAttribute('transform'); b.innerHTML = `<animateMotion begin="indefinite" dur=".3s" fill="freeze" calcMode="spline" keySplines=".3 0 .7 1" path="${hopPath(i, s)}"/>`; b.firstChild.beginElement();
   }
   function minLabel(n, text) { const [x, y] = pt(n * 30, 328); A('.labels').insertAdjacentHTML('beforeend', `<text class="mlab" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${text}</text>`); }   // 시계 바깥 작은 분 숫자(v17)
-  function clearMarks() { A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; A('.cues').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill', 'cue-h'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구 · v137: 빨간 숫자 단서도
+  function clearMarks() { hourCount.gen = (hourCount.gen || 0) + 1; { const x = A('.hext'); if (x) x.remove(); }   /* ver 173 시 세기 시연 중단 + 길어진 짧은바늘 복구 */
+    A('.sector').innerHTML = ''; A('.marks').innerHTML = ''; A('.labels').innerHTML = ''; A('.cues').innerHTML = ''; armTap(0); armTick(-1); A('.hourHand').classList.remove('blink'); A('.minHand').classList.remove('blink'); document.querySelectorAll('#ck-analog .num').forEach(t => { t.style.display = ''; t.classList.remove('fill', 'cue-h'); }); }   // v38: 시계 만들기가 숨긴 숫자 복구 · v137: 빨간 숫자 단서도
   /* v137 바늘 찾기 색 단서 — 짧은바늘: 가리키는 숫자가 빨간색 / 긴바늘: 바늘 끝 바깥에 파란 「15분」. blink = 바늘 깜빡임도 함께 */
   function handCue(p, blink) {
     if (p.target === 'h') document.querySelectorAll('#ck-analog .num')[p.h - 1].classList.add('cue-h');
@@ -10008,9 +10032,9 @@ function clockMount(p, H) {
   function answerKo() { const p = S.p; return S.mode === 'flip' ? '다 찾았어요.' : S.mode === 'nexth' ? `다음 숫자는 ${sino(nextH(p.h))}. 다음 정각은 ${KO_HOUR[nextH(p.h)]} 시.` : S.sub === 'day' ? `${p.scene.name}, ${tk(p.h, p.m)}.` : S.mode === 'set' && S.sub === 'turn' ? `한 바퀴, 한 시간. ${KO_HOUR[p.h]} 시.` : S.mode === 'set' && S.sub === 'trip' ? `${sino(p.d)} 분 ${p.dir > 0 ? '뒤는' : '전은'} ${tk(p.h, p.m)}.` : S.mode === 'numf' ? `${KO_HOUR[p.n]} 시.` : S.mode === 'handf' ? `${HAND_KO[p.target][0]}, ${HAND_KO[p.target][1]}. ${p.target === 'h' ? `${KO_HOUR[p.h]} 시` : `${sino(p.m)} 분`}.` : isBuild() ? '다 채웠어요.' : S.mode === 'elapsed' ? durKo(p.ansH, p.ansM) : (S.mode === 'read' || S.mode === 'pick4') && p.m === 0 ? `${KO_HOUR[p.h]} 시 정각.` : timeKo(p.h, p.m); }   // v40: 읽기 정각은 "N 시 정각."
   function nextProblem() {
     stopHalt(); comboStop();   // v58: 돌던 긴바늘이 다음 문제에 남지 않게 · v60: 콤보 타이머도
-    S.p = S.items[S.idx]; S.mode = S.p.mode; S.unit = S.p.unit; S.sub = S.p.sub; layout(); S.wrong = { h: 0, m: 0 }; S.ok = { h: false, m: false }; S.counting = null; S.E = 0;
+    S.p = S.items[S.idx]; S.mode = S.p.mode; S.unit = S.p.unit; S.sub = S.p.sub; layout(); S.wrong = { h: 0, m: 0 }; S.ok = { h: false, m: false }; S.counting = null; S.E = 0; S.hs = {};   // ver 173: S.hs = 「도와줘」로 받은 힌트 단계
     clearMarks(); renderProg(); resetInput(); lock(true); faceZoom(false, 0); $('cards').style.gridTemplateColumns = '';   // v139: 부채꼴 확대 즉시 해제 · ver 171: 고르기 2장 배치 해제
-    $('ask').textContent = koGlue(question());
+    $('ask').textContent = koGlue(question()); if (H.bubble) H.bubble(question());   // ver 173: 친구 말풍선도 「잘 보고 골라요」 대신 이 활동의 발문
     if (S.mode === 'numf') { setHands(S.p.n, 0, false); setDigital(null, null); $('cards').innerHTML = `<div class="ncard b1">${S.p.n}</div>`; askQ(() => lock(false)); return; }   // v48 A1
     if (S.mode === 'nexth') { const p = S.p; setHands(p.h, p.m, false); setDigital(null, null); askQ(() => lock(false)); return; }   // v49 C2-1
     if (S.mode === 'handf') { setHands(S.p.h, S.p.m, false); setDigital(null, null); if (!S.p.term) handCue(S.p, true); askQ(() => lock(false)); return; }   // v48 A2 · v137: 촉진 단계는 바늘 깜빡임 + 색 단서
@@ -10056,12 +10080,14 @@ function clockMount(p, H) {
     const p = S.p; p.hint = 3; queueRetry(p);
     const v = k === 'h' ? p.ansH : p.ansM;
     const say = S.mode === 'elapsed' ? (k === 'h' ? `${KO_HOUR[v]} 시간.` : `${v} 분.`) : k === 'h' ? `${KO_HOUR[v]} 시.` : `${v} 분.`;
-    speak(say, () => {
+    const fill = () => {
       S[k] = v; S.ok[k] = true; clearMarks(); if (S.mode === 'read') setDigital(S.h, S.m); renderSlots();
       const other = k === 'h' ? 'm' : 'h';
       if (S[other] == null) { S.k = other; renderPad(); renderSlots(); lock(false); return; }
       judgeAll();
-    });
+    };
+    if (S.mode === 'read' && k === 'h' && S.unit !== 'hour' && p.m !== 0) { if (!A('.hsec')) showSector(p.h); hourCount(p, true, () => setTimeout(() => { if (S.p === p) fill(); }, 600)); return; }   // ver 173(사용자 지시): 3차 = 2차 시연 + 그 숫자에 작은 빨간 동그라미 → 끝말 뒤 0.6초 보여 주고 채움
+    speak(say, fill);
   }
   function complete() {
     lock(true); S.k = ''; clearMarks(); $('slotH').classList.remove('on'); $('slotM').classList.remove('on'); renderSlots();
@@ -10077,19 +10103,19 @@ function clockMount(p, H) {
     const p = S.p, done = () => lock(false);
     if (S.mode === 'read') {
       if (k === 'h') {
-        if (S.unit === 'hour' || p.m === 0) { A('.hourHand').classList.add('blink'); if (stage === 1) speak('짧은바늘이 어떤 숫자를 가리켜요?', done); else { ringNum(p.h); speak('짧은바늘이 가리키는 숫자는?', done); } }   // v36: 정각 문제는 부채꼴 대신 숫자 가리키기 · v40: 2차 = 1부터 세기 대신 그 숫자에 노란 동그라미 깜빡임
-        else if (stage === 1) { showSector(p.h); speak('짧은바늘이 어느 숫자 사이에 있어요?', done); }
-        else { if (!A('.hsec')) showSector(p.h); redCircle(p.h); speak('작은 수를 골라요.', done); }
+        if (S.unit === 'hour' || p.m === 0) { A('.hourHand').classList.add('blink'); if (stage === 1) cue('짧은바늘이 어떤 숫자를 가리켜요?', done); else { ringNum(p.h); cue('짧은바늘이 가리키는 숫자는?', done); } }   // v36: 정각 문제는 부채꼴 대신 숫자 가리키기 · v40: 2차 = 1부터 세기 대신 그 숫자에 노란 동그라미 깜빡임
+        else if (stage === 1) { showSector(p.h); cue('짧은바늘이 어느 숫자 사이에 있어요?', done); }
+        else { if (!A('.hsec')) showSector(p.h); hourCount(p, false, done); }   // ver 173(사용자 지시): 「작은 수를 골라요」+빨간 점선 동그라미 대신 시 세기 시연
         return;
       }
       A('.minHand').classList.add('blink');
-      if (stage === 1) speak(S.unit === 'one' ? '앞 숫자까지 5씩 세고, 몇 칸 더 갔어요?' : S.unit === 'half' ? '긴바늘이 6이면 삼십 분.' : '긴바늘 숫자까지 5씩 세요.', done);   // v56: 1분 칸 안내
-      else speak('12부터 5씩 세요.', () => startCount(S.unit === 'one' ? 'one' : 'five'));   // v56: 1분 칸은 5씩 센 뒤 "N 분은 … 칸 더 가요"(startCount one → countOn)
+      if (stage === 1) cue(S.unit === 'one' ? '앞 숫자까지 5씩 세고, 몇 칸 더 갔어요?' : S.unit === 'half' ? '긴바늘이 6이면 삼십 분.' : '긴바늘 숫자까지 5씩 세요.', done);   // v56: 1분 칸 안내
+      else cue('12부터 5씩 세요.', () => startCount(S.unit === 'one' ? 'one' : 'five'));   // v56: 1분 칸은 5씩 센 뒤 "N 분은 … 칸 더 가요"(startCount one → countOn)
       return;
     }
     if (S.mode === 'elapsed') {
-      if (k === 'h') { stage === 1 ? speak('긴바늘이 몇 바퀴 돌았어요?', done) : speak('한 바퀴씩 세요.', () => startCount('turn')); return; }
-      stage === 1 ? speak('시작부터 5씩 세요.', done) : speak('5씩 세요.', () => startCount('span'));
+      if (k === 'h') { stage === 1 ? cue('긴바늘이 몇 바퀴 돌았어요?', done) : cue('한 바퀴씩 세요.', () => startCount('turn')); return; }
+      stage === 1 ? cue('시작부터 5씩 세요.', done) : cue('5씩 세요.', () => startCount('span'));
     }
   }
   /* ---------- 탭 세기(숫자·눈금 과녁) ----------
@@ -10101,8 +10127,8 @@ function clockMount(p, H) {
     if (kind === 'bell') { st.k = p.h; st.next = 1; }
     else if (kind === 'five') { st.k = p.m / 5; st.next = 1; if (!st.k) { lock(false); return; } }
     else if (kind === 'one') { st.f = Math.floor(p.m / 5); st.k = st.f; st.next = st.f ? 1 : 0; st.phase = 'five'; st.i = st.f * 5; }   // v40: 5씩 센 뒤는 countOn(눈금 탭 없음)
-    else if (kind === 'turn') { st.k = p.ansH; st.next = minNum(p.m); }
-    else if (kind === 'span') { st.k = p.ansM / 5; st.next = minNum(p.m) % 12 + 1; st.a0 = p.m * 6; }
+    else if (kind === 'turn') { st.k = p.ansH; st.next = minNum(p.m); if (S.E) { S.E = 0; setHands(p.h, p.m, false); } }   // ver 173: 다시 세면 처음 자리에서(도와줘로 2차를 또 부를 수 있음)
+    else if (kind === 'span') { st.k = p.ansM / 5; st.next = minNum(p.m) % 12 + 1; st.a0 = p.m * 6; if (S.E % 60) { S.E -= S.E % 60; setHands(hourAt(p, S.E), p.m, false); } }
     S.counting = st; lock(true);
     if (kind === 'one' && !st.f) { countOn(0); return; }   // v40: 1~4분은 5씩 셀 것이 없으니 바로 "12에서 r 칸 더"
     armTap(st.next);
@@ -10138,9 +10164,14 @@ function clockMount(p, H) {
     const b = e.target.closest('.ch'); if (!b || S.locked || S.mode !== 'pick4') return; const p = S.p, c = +b.dataset.c;
     if (c === p.ans) { tick(); b.classList.add('ok'); pickDone(); return; }
     const o = p.opts[c]; p.tags.push(o.h !== p.h ? diag('read', 'h', o.h, p) : diag('read', 'm', o.m, p)); shake(b); b.classList.add('dim');
-    pickWrong(() => { if (p.m === 0) { A('.hourHand').classList.add('blink'); ringNum(p.h); speak('짧은바늘이 가리키는 숫자는?', () => lock(false)); } else { showSector(p.h); redCircle(p.h); speak('작은 수를 골라요. 긴바늘도 보세요.', () => lock(false)); } },
-      () => { $('choice').querySelector(`.ch[data-c="${p.ans}"]`).classList.add('ok'); pickDone(); });
+    pickWrong(() => pick4Cue(o), () => { $('choice').querySelector(`.ch[data-c="${p.ans}"]`).classList.add('ok'); pickDone(); });
   });
+  function pick4Cue(o) {   // 4지선다 2차 단서(오답·「도와줘」 공용) — o = 방금 고른 틀린 보기(도와줘는 null)
+    const p = S.p;
+    if (p.m === 0) { A('.hourHand').classList.add('blink'); ringNum(p.h); cue('짧은바늘이 가리키는 숫자는?', () => lock(false)); }
+    else if (!o || o.h !== p.h) { if (!A('.hsec')) showSector(p.h); hourCount(p, false, () => lock(false)); }   // ver 173: 시를 틀리게 골랐으면(또는 도와줘) 읽기 2차와 같은 시 세기 시연
+    else { showSector(p.h); redCircle(p.h); cue('작은 수를 골라요. 긴바늘도 보세요.', () => lock(false)); }
+  }
   $('analog').addEventListener('click', e => {
     if (S.mode === 'handf') { const hd = e.target.closest('.hand'); handfTry(hd ? (hd.classList.contains('hourHand') ? 'h' : 'm') : null); return; }   // v48 A2 · v137: 빗나간 터치도 handfTry(null)
     const c = e.target.closest('.tapn'); if (c) { if (S.mode === 'numf') numfTry(+c.dataset.n); else if (S.mode === 'nexth') tapTry(+c.dataset.n); else countTap(+c.dataset.n); return; }   // v48 A1 · v49 nexth
@@ -10205,50 +10236,56 @@ function clockMount(p, H) {
     p.hint = Math.max(p.hint, Math.min(n, 3));
     setTimeout(() => {
       if (n >= 3) { queueRetry(p); if (S.sub === 'trip') { setHands(p.h, p.m, true, p.dir); cur.h = p.h; cur.m = p.m; } else curSet(p.h, p.m, true); setTimeout(complete, 1900); return; }   // v57: 시간 여행 공개는 뒤·전 방향으로
-      clearMarks();
-      if (n === 1 && S.sub === 'trip') { curSet(p.h0, p.m0, true); speak(`${tk(p.h0, p.m0)}에서 5분씩 ${p.dir > 0 ? '앞으로' : '거꾸로'} 세어 봐요.`, () => lock(false)); }   // v57: 출발로 되감기 + 발문
-      else if (n === 1) {
-        const fine = p.m % 5 !== 0, mn = Math.floor(p.m / 5) || 12, r = p.m % 5;   // v38 1분 단위: 앞 숫자 불 + 눈금 점, "N에서 r칸 더"
-        if (badH) lightNum(p.h, '#FFC9C9'); if (badM) { lightNum(mn, '#BFD3FF'); if (fine) tickDot(p.m); }
-        speak(S.sub === 'turn' ? '긴바늘을 12까지 한 바퀴 돌려요.' : badH ? `짧은바늘을 ${p.h}${josaRo(p.h)}.` : fine ? `긴바늘을 ${mn}에서 ${r} 칸 더.` : `긴바늘을 ${minNum(p.m)}${josaRo(minNum(p.m))}.`, () => lock(false));
-      }
-      else if (S.sub === 'trip') {   // v57 2차: 5분 눈금마다 파란 숫자 + 호 → 목표까지 돌았다가 출발로
-        const a0 = p.m0 * 6, a1 = a0 + p.dir * p.d * 6; for (let k = 5; k <= p.d; k += 5) minLabel(((p.m0 + p.dir * k) % 60 + 60) % 60 / 5 || 12, k);
-        showArc(Math.min(a0, a1), Math.max(a0, a1)); curSet(p.h0, p.m0, true);
-        speak('잘 보세요.', () => { setHands(p.h, p.m, true, p.dir); setTimeout(() => speak(answerKo(), () => setTimeout(() => { curSet(p.h0, p.m0, true); setTimeout(() => speak('직접 해 봐요.', () => lock(false)), 1900); }, 800)), 1900); });
-      }
-      else speak('잘 보세요.', () => { setHands(p.h, p.m, true, 1, S.sub === 'turn' ? 1 : 0); setTimeout(() => speak(S.sub === 'turn' ? '한 바퀴.' : timeKo(p.h, p.m), () => setTimeout(() => { curSet(p.h0 ?? 12, p.m0 ?? 0, true); setTimeout(() => speak('직접 해 봐요.', () => lock(false)), 1900); }, 800)), 1900); });   // v49: 한 바퀴는 h0에서 다시
+      setHint(n, badH, badM);
     }, 500);
   });
+  function setHint(n, badH, badM) {   // 바늘 돌리기 1차(목표 숫자 불 + 발문)·2차(시연 → 직접) — 오답과 「도와줘」가 같이 씀(ver 173에 함수로 뺌, 발문은 말풍선에도)
+    const p = S.p; clearMarks();
+    if (n === 1 && S.sub === 'trip') { curSet(p.h0, p.m0, true); cue(`${tk(p.h0, p.m0)}에서 5분씩 ${p.dir > 0 ? '앞으로' : '거꾸로'} 세어 봐요.`, () => lock(false)); }   // v57: 출발로 되감기 + 발문
+    else if (n === 1) {
+      const fine = p.m % 5 !== 0, mn = Math.floor(p.m / 5) || 12, r = p.m % 5;   // v38 1분 단위: 앞 숫자 불 + 눈금 점, "N에서 r칸 더"
+      if (badH) lightNum(p.h, '#FFC9C9'); if (badM) { lightNum(mn, '#BFD3FF'); if (fine) tickDot(p.m); }
+      cue(S.sub === 'turn' ? '긴바늘을 12까지 한 바퀴 돌려요.' : badH ? `짧은바늘을 ${p.h}${josaRo(p.h)}.` : fine ? `긴바늘을 ${mn}에서 ${r} 칸 더.` : `긴바늘을 ${minNum(p.m)}${josaRo(minNum(p.m))}.`, () => lock(false));
+    }
+    else if (S.sub === 'trip') {   // v57 2차: 5분 눈금마다 파란 숫자 + 호 → 목표까지 돌았다가 출발로
+      const a0 = p.m0 * 6, a1 = a0 + p.dir * p.d * 6; for (let k = 5; k <= p.d; k += 5) minLabel(((p.m0 + p.dir * k) % 60 + 60) % 60 / 5 || 12, k);
+      showArc(Math.min(a0, a1), Math.max(a0, a1)); curSet(p.h0, p.m0, true);
+      cue('잘 보세요.', () => { setHands(p.h, p.m, true, p.dir); setTimeout(() => speak(answerKo(), () => setTimeout(() => { curSet(p.h0, p.m0, true); setTimeout(() => cue('직접 해 봐요.', () => lock(false)), 1900); }, 800)), 1900); });
+    }
+    else cue('잘 보세요.', () => { setHands(p.h, p.m, true, 1, S.sub === 'turn' ? 1 : 0); setTimeout(() => speak(S.sub === 'turn' ? '한 바퀴.' : timeKo(p.h, p.m), () => setTimeout(() => { curSet(p.h0 ?? 12, p.m0 ?? 0, true); setTimeout(() => cue('직접 해 봐요.', () => lock(false)), 1900); }, 800)), 1900); });   // v49: 한 바퀴는 h0에서 다시
+  }
 
   /* ---------- v48 시계판 알기 A1 숫자 찾기(numf) · A2 바늘 찾기(handf) — 탭 선택 과제, 오답 사다리 공통 ---------- */
   function pickDone() { lock(true); const p = S.p; logItem(p); speak(answerKo(), () => laterRun(600, advance)); }
   function pickWrong(say2, reveal) {   // 1차 "다시 봐요." / 2차 정답 강조 + 발문 / 3차 공개(재도전 큐) — S.wrong.h를 오답 수로 씀
     const p = S.p; p.first = false; S.wrong.h++; const n = S.wrong.h; p.hint = Math.max(p.hint, Math.min(n, 3));
     shake($('analog')); lock(true);
-    setTimeout(() => { if (n >= 3) { queueRetry(p); reveal(); return; } if (n === 1) { speak('다시 봐요.', () => lock(false)); return; } say2(); }, 500);
+    setTimeout(() => { if (n >= 3) { queueRetry(p); reveal(); return; } if (n === 1) { cue('다시 봐요.', () => lock(false)); return; } say2(); }, 500);
   }
   function numfTry(v) {
     if (S.locked || S.mode !== 'numf') return; const p = S.p;
     if (v === p.n) { tick(); lightNum(v); pickDone(); return; }
     p.tags.push(Math.abs(v - p.n) === 1 ? 'count' : 'other');
-    pickWrong(() => { ringNum(p.n); speak(`여기 있어요. ${p.n}${EUL(p.n)} 눌러요.`, () => lock(false)); }, () => { ringNum(p.n); lightNum(p.n); pickDone(); });
+    pickWrong(numfCue, () => { ringNum(p.n); lightNum(p.n); pickDone(); });
   }
+  function numfCue() { const p = S.p; ringNum(p.n); cue(`여기 있어요. ${p.n}${EUL(p.n)} 눌러요.`, () => lock(false)); }   // 숫자 찾기 2차 단서(오답·「도와줘」 공용)
   function handfTry(k) {
     if (S.locked || S.mode !== 'handf') return; const p = S.p, name = HAND_KO[p.target][0];
     if (k === p.target) { tick(); handCue(p, true); pickDone(); return; }   // v137: 정답이면 색 단서(빨간 숫자·파란 분)로 바늘의 뜻을 보여 줌
-    if (k === null) { lock(true); speak('바늘을 눌러요.', () => lock(false)); return; }   // v137: 바늘이 아닌 곳 — 오답으로 세지 않음
+    if (k === null) { lock(true); cue('바늘을 눌러요.', () => lock(false)); return; }   // v137: 바늘이 아닌 곳 — 오답으로 세지 않음
     p.tags.push('hands_swap');
-    pickWrong(() => { handCue(p, true); speak(`이게 ${name}이에요. ${name}을 눌러요.`, () => lock(false)); }, () => { handCue(p, true); pickDone(); });
+    pickWrong(handfCue, () => { handCue(p, true); pickDone(); });
   }
+  function handfCue() { const p = S.p, name = HAND_KO[p.target][0]; handCue(p, true); cue(`이게 ${name}이에요. ${name}을 눌러요.`, () => lock(false)); }   // 바늘 찾기 2차 단서(공용)
 
   /* ---------- v49 다음 정각(nexth) — 탭 선택 과제 ---------- */
   function tapTry(v) {   // nexth: 시계판 숫자 탭
     if (S.locked) return; const p = S.p, ans = p.ans;
     if (v === ans) { tick(); lightNum(ans); pickDone(); return; }
     p.tags.push(Math.abs(v - ans) === 1 ? 'count' : 'other');
-    pickWrong(() => { lightNum(12, '#FFC9C9'); ringNum(ans); speak(`긴바늘이 12에 가면 짧은바늘은 여기. ${ans}${EUL(ans)} 눌러요.`, () => lock(false)); }, () => { ringNum(ans); lightNum(ans); pickDone(); });
+    pickWrong(nexthCue, () => { ringNum(ans); lightNum(ans); pickDone(); });
   }
+  function nexthCue() { const ans = S.p.ans; lightNum(12, '#FFC9C9'); ringNum(ans); cue(`긴바늘이 12에 가면 짧은바늘은 여기. ${ans}${EUL(ans)} 눌러요.`, () => lock(false)); }   // 다음 정각 2차 단서(공용)
 
   /* ---------- v38 유형 0: 시계 만들기 — 숫자 빈칸에 카드 끌어 넣기(탭 폴백: 카드 탭 → 빈칸 탭). 빈칸 1 → 연속 5회 정답 → 2 → 3 → 11(12만 남김) ---------- */
   const B = H.build;   // 세션 동안 유지(단계·연속 정답) — 15_clock 머리의 clockSess
@@ -10366,10 +10403,10 @@ function clockMount(p, H) {
     document.querySelectorAll('#ck-cards .ncard.sel').forEach(x => x.classList.remove('sel')); B.sel = null;
     setTimeout(() => {
       if (B.wrong >= 3) { (function step() { if (!B.left.length) return; buildPlace(B.left[0]); if (B.left.length) setTimeout(step, 700); })(); return; }   // 3차: 자동 채움(v46: 700ms — "육십 분, 한 바퀴"가 잘리지 않게)
-      if (B.wrong === 1) { speak('다시 봐요.', () => lock(false)); return; }
+      if (B.wrong === 1) { cue('다시 봐요.', () => lock(false)); return; }
       if (bkind() === 'min') { minCountHint(target); return; }   // v46: 분 만들기 2차 = 앞 자리에서 1분씩 세기
       const hn = buildHint(target, B.left); lightNum(hn.light); A(`.bk[data-n="${target}"]`).classList.add('on');   // 2차: 이웃 숫자 불 + 발문(v39 buildHint)
-      speak(hn.say, () => lock(false));
+      cue(hn.say, () => lock(false));
     }, 500);
   }
   async function minCountHint(target) {   // v46 분 만들기 2차: 앞 자리(35)에 불 → "삼십오 분에서 하나씩 세요." → 36~40 눈금에 빨간 점 + 1분씩 세기 → "사십 분." (앞 자리가 빈칸이면 숫자를 회색으로 잠깐 보여 주고 지움)
@@ -10377,7 +10414,7 @@ function clockMount(p, H) {
     let tmp = null, pbk = prev ? A(`.bk[data-n="${prev}"]`) : null;
     if (!prev) lightNum(12); else if (!pbk) lightSlot(prev); else { pbk.setAttribute('fill', '#FFE066'); const [x, y] = slotPos(prev); A('.labels').insertAdjacentHTML('beforeend', `<text class="mnum tmp" x="${x.toFixed(1)}" y="${y.toFixed(1)}" style="fill:#8a8a8a">${from}</text>`); tmp = A('.mnum.tmp'); }   // 앞 자리가 빈칸이면 그 칸을 노랗게 + 숫자를 회색으로 잠깐
     const undo = () => { if (tmp) tmp.remove(); if (pbk) pbk.setAttribute('fill', '#DDEBFF'); };
-    await new Promise(r => speak(from ? `${sino(from)} 분에서 하나씩 세요.` : '12에서 하나씩 세요.', r)); if (!alive()) return undo();
+    await new Promise(r => cue(from ? `${sino(from)} 분에서 하나씩 세요.` : '12에서 하나씩 세요.', r)); if (!alive()) return undo();
     for (let i = from + 1; i <= to; i++) { tickDot(i); speakFast(sino(i)); await d(560); if (!alive()) return undo(); }
     await d(300); undo();
     A(`.bk[data-n="${target}"]`).classList.add('on');
@@ -10392,7 +10429,7 @@ function clockMount(p, H) {
   function buildDone() {
     lock(true); const p = S.p; logItem(p); bell();
     laterRun(1200, () => {   // v47: "다 채웠어요." 없이 종 → 마지막 숫자 읽기가 끝날 만큼(1.2초) → 바로 다음 문제(사용자 지시) · v48: 세션 토큰 보호
-      if (p.first) B.streak++; else B.streak = 0;
+      if (p.first && !p.helped) B.streak++; else B.streak = 0;   // ver 173: 도와줘 2차를 받은 문제는 사다리 승급에 안 셈
       if (B.lvl === bLen(bkind()) - 1) { const k = rungKey(S.group), last = GROUPS[k].rungs.length - 1; if (rungOf(S.group) < last) { B.lvl = 0; H.setBuildLvl(0); setRung(S.group, rungOf(S.group) + 1); } finish(); return; }   // v55: 마지막 단계 끝 = 다음 칸
       if (B.streak >= B_NEED) { B.lvl++; B.streak = 0; H.setBuildLvl(B.lvl); }
       H.done();   // 매일수학: 다음 문제는 06_study가 제시
@@ -10418,6 +10455,39 @@ function clockMount(p, H) {
   }
   $('cards').addEventListener('pointerup', cardUp); $('cards').addEventListener('pointercancel', cardUp);
   $('analog').addEventListener('click', e => { const b = e.target.closest('.bk'); if (b && isBuild() && B.sel != null) buildTry(B.sel, +b.dataset.n); });
+
+  /* ---------- ver 173 「도와줘」(사용자 승인안) — 친구 자리 버튼(06_study helpHint → clockHelp)이 부름. 학생이 스스로 힌트를 청함:
+     오답으로 세지 않고(p.first·S.wrong 그대로) 받은 힌트 단계만 p.hint에 기록. 단 2차까지 받은 문제(p.helped)는 칸·사다리 승급의 연속 정답에서 빠짐(1차만 받았으면 정답으로 인정). 누를 때마다 1차 → 2차(2차에서 머묾), 이미 받은 오답 힌트가 있으면 그다음 단계부터.
+     짝 뒤집기·콤보·시각 만들기는 버튼이 없음(06_study renderProblem). 1차 단서가 「다시 봐요.」뿐인 유형(고르기·찾기)의 1차는 문제 다시 읽기. 눈금 세기는 따로(아래 첫 분기) ---------- */
+  function help() {
+    const p = S.p, m = S.mode; if (!p || S.demo || !H.alive() || m === 'flip' || m === 'free' || S.group === 'combo') return;
+    if (isBuild() && p.intro) {   // 눈금 세기(사용자 지적: 문제만 다시 읽으면 도움이 안 됨) — 1차: 다음에 누를 눈금(노란 동그라미)을 크게 짚어 줌 / 2차부터: 앱이 한 칸을 대신 눌러 보여 주고 "이어서 눌러요."
+      const st = S.counting; if (S.locked || !st || st.kind !== 'intro') return;
+      const lv = Math.min(2, (S.hs.h || 0) + 1), nx = (st.i + st.step) % 60, el = A(`.tapt[data-i="${nx}"]`); S.hs.h = lv; p.hint = Math.max(p.hint || 0, lv); if (lv >= 2) p.helped = true;
+      if (lv === 1) { tick(); if (el) el.classList.add('hot'); cue('노란 동그라미를 눌러요.'); return; }
+      const more = st.i + st.step < st.end; introTick(nx);   // 마지막 칸이면 introTick이 끝말·다음 문제까지 맡음
+      if (more) { H.bubble('이어서 눌러요.'); setTimeout(() => { if (S.p === p && S.counting === st && !S.locked) speak('이어서 눌러요.'); }, 900); }
+      return;
+    }
+    if (S.locked || S.counting || drag) return;
+    const lvl = k => { const n = Math.min(2, Math.max(S.hs[k] || 0, S.wrong[k] || 0) + 1); S.hs[k] = n; p.hint = Math.max(p.hint || 0, n); if (n >= 2) p.helped = true; return n; };   // p.helped = 도와줘 2차(시연)를 받은 문제 — 오답은 아니지만 칸 승급의 연속 정답에는 안 셈(사용자 결정)
+    const done = () => lock(false);
+    tick();
+    if (m === 'stop') { lvl('h'); clearMarks(); showArc(p.m * 6 - 15, p.m * 6 + 15, 'rgba(255,196,0,.45)', 'garc'); ringNum(minNum(p.m)); cue(S.unit === 'one' ? `긴바늘이 ${p.m} 분 칸에 오면 눌러요.` : `긴바늘이 ${minNum(p.m)}에 오면 눌러요.`); return; }   // 바늘은 계속 돎(잠그지 않음)
+    if (m === 'read' || m === 'elapsed') { const k = S.ok.h ? 'm' : 'h', n = lvl(k); lock(true); clearMarks(); hint(k, n); return; }   // 지금 넣을 칸(시를 맞혔으면 분)
+    if (m === 'pick4') { const n = lvl('h'); lock(true); clearMarks(); if (n === 1) { A('.hourHand').classList.add('blink'); cue(question(), done); } else pick4Cue(null); return; }
+    if (m === 'set') {
+      const badH = cur.h !== p.h, badM = cur.m !== p.m;
+      if (!badH && !badM) { lock(true); cue('확인을 눌러요.', done); return; }   // 이미 맞게 돌려 놓음
+      const n = lvl(badH ? 'h' : 'm'); lock(true); setHint(n, badH, badM); return;
+    }
+    if (m === 'numf' || m === 'handf' || m === 'nexth') { const n = lvl('h'); lock(true); if (n === 1) cue(question(), done); else (m === 'numf' ? numfCue : m === 'handf' ? handfCue : nexthCue)(); return; }
+    if (isBuild()) {   // 가장 작은 빈칸(바늘이 가리키는 칸) 기준 — 1차 「다시 봐요.」는 건너뛰고 바로 단서
+      const target = B.left[0]; if (target == null) return; lvl('h'); lock(true);
+      if (bkind() === 'min') { minCountHint(target); return; }
+      const hn = buildHint(target, B.left), bk = A(`.bk[data-n="${target}"]`); lightNum(hn.light); if (bk) bk.classList.add('on'); cue(hn.say, done);
+    }
+  }
 
   /* ---------- 교사 ▶ 보여주기(설계 §6) — 같은 문제를 앱이 자동 수행 → 답 읽기 → "직접 해 봐요." → 같은 문제 재제시. 기록·점수 미반영 ---------- */
   const d = ms => new Promise(r => setTimeout(r, ms));
@@ -10452,7 +10522,7 @@ function clockMount(p, H) {
       if (S.run !== r || !H.alive()) return;   // 처음·기록으로 나갔거나 새 세션이면 중단
       if (n >= 3) { queueRetry(p); handsTransition(''); setHands(p.h, p.m, true, 1); p.stars = 0; setTimeout(() => { if (S.run !== r) return; logItem(p); speak(answerKo(), () => laterRun(600, advance)); }, 1900); return; }
       clearMarks(); if (n >= 2) { showArc(p.m * 6 - 15, p.m * 6 + 15, 'rgba(255,196,0,.45)', 'garc'); ringNum(minNum(p.m)); }   // 2번 놓치면 어디서 눌러야 하는지 미리 보임
-      stopPlace(p.abs0); speak(n === 1 ? '다시 봐요.' : S.unit === 'one' ? `긴바늘이 ${p.m} 분 칸에 오면 눌러요.` : `긴바늘이 ${minNum(p.m)}에 오면 눌러요.`, () => { if (S.p !== p) return; lock(false); stopStart(); });
+      stopPlace(p.abs0); cue(n === 1 ? '다시 봐요.' : S.unit === 'one' ? `긴바늘이 ${p.m} 분 칸에 오면 눌러요.` : `긴바늘이 ${minNum(p.m)}에 오면 눌러요.`, () => { if (S.p !== p) return; lock(false); stopStart(); });
     }, 500);
   }
   $('cardL').addEventListener('pointerdown', e => { if (S.mode === 'stop') { e.preventDefault(); stopTap(); } });
@@ -10550,7 +10620,7 @@ function clockMount(p, H) {
   function applyRung() { const rg = curRung(); S.mode = rg.mode; S.unit = rg.unit || 'hour'; S.sub = rg.sub || null; }
   function rungStep(p) {   // 문제 하나 끝(재도전 제외): 연속 정답 → 승급(종). 다음 문제부터 새 칸 — pushFresh가 curRung을 읽고 nextProblem이 p.mode를 적용
     const k = rungKey(S.group), last = GROUPS[k].rungs.length - 1; if (last < 0 || isBuildMode(p.mode) || (p.mode === 'handf' && !p.term)) return;   // 시·분 숫자 넣기는 B 사다리(buildDone)가 승급 · v137: 바늘 찾기 촉진 단계는 연속 정답에 안 셈(촉진 없이 3번 맞혀야 승급)
-    const a = rungAfter(RS.streak, p.first, rungOf(S.group), S.group === 'day' && moreFresh() ? rungOf(S.group) : last); RS.streak = a.streak;   // v61: 하루 일과는 이야기 도중 칸이 바뀌면 장면이 처음부터 다시 → 마지막 문제에서만 승급
+    const a = rungAfter(RS.streak, p.first && !p.helped, rungOf(S.group), S.group === 'day' && moreFresh() ? rungOf(S.group) : last); RS.streak = a.streak;   // v61: 하루 일과는 이야기 도중 칸이 바뀌면 장면이 처음부터 다시 → 마지막 문제에서만 승급
     if (a.r !== rungOf(S.group)) { setRung(S.group, a.r); bell(); }   // applyRung 안 함: 지금 문제의 정답 음성(answerKo)이 S.mode를 씀(숫자 찾기→바늘 찾기 승급 때 HAND_KO[undefined] 오류)
   }
   function logItem(p) { S.log.push(p); if (!p.retry) rungStep(p); }
@@ -10568,7 +10638,7 @@ function clockMount(p, H) {
   }
   S.items = [p]; S.idx = 0; S.log = []; S.retryQ = []; C.n = H.rs.combo || 0;
   buildAnalog(); setHands(12, 0, false); setDigital(null, null); renderPad(); renderSlots(); layout(); clearMarks(); renderProg();
-  return { begin: () => nextProblem(), question: () => question(), demo: () => demo(), setScale: s => { _sc = (window._sc || 1) * s; }, S };
+  return { begin: () => nextProblem(), question: () => question(), demo: () => demo(), help: () => help(), setScale: s => { _sc = (window._sc || 1) * s; }, S };
 }
 
 /* 내장 이미지 (v3에서 이관) */
