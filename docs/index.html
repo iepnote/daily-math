@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 매일매일 수학 · ver 173 · 단일 파일 앱(docs/index.html 을 직접 수정) -->
+<!-- 매일매일 수학 · ver 174 · 단일 파일 앱(docs/index.html 을 직접 수정) -->
 <html lang="ko">
 <head>
 <meta charset="utf-8">
@@ -1192,8 +1192,9 @@ button, .nav button, .btn, .btn-choice, .btn-name, .opt, .lvtab, .mbtn, .cmp{ fo
 .cb-pad{ position:absolute; left:560px; top:372px; display:grid; grid-template-columns:repeat(5,64px); gap:8px; }
 .cb-key{ font-family:var(--font-btn); font-size:34px; font-weight:800; height:56px; border-radius:12px; border:none; background:var(--choice-bg); box-shadow:0 3px 0 #C7E3FA; color:var(--ink); cursor:pointer; touch-action:manipulation; }
 .cb-key:active{ transform:translateY(3px); box-shadow:none; }
-.cb-demo{ position:absolute; right:0; top:0; width:56px; height:56px; border-radius:50%; border:none; background:#EEF2F6; color:#8A96A3; font-size:24px; cursor:pointer; touch-action:manipulation; }   /* 교사 ▶ 보여주기(64px 예외 규칙의 구석 버튼) */
-.cb-demo.on{ background:var(--amber); color:#fff; }
+/* ver 174 「도와줘」 1차: 지금 눌러야(놓아야) 할 자리를 굵은 노란 테두리로 세 번 깜빡임 — 옛 교사 ▶ 보여주기 버튼(.cb-demo)은 도와줘로 옮겨 가 없앰 */
+#carryq .cb-hot{ animation:cbHot .8s ease-in-out 3; z-index:2; }   /* id 선택자: 칸의 기본 깜빡임(.cb-cell.cb-blink)보다 우선해야 보임 */
+@keyframes cbHot{ 50%{ box-shadow:0 0 0 8px #FFB300, inset 0 0 0 6px #FFD54A; } }
 /* 183 모형 옮겨 식 만들기(v125): 쟁반·끌기 유령·자리표시 */
 .cb-tray{ position:absolute; left:0; top:72px; width:156px; height:300px; box-sizing:border-box; border:3px dashed #B0BEC5; border-radius:14px; background:#FAFBFC; display:flex; justify-content:space-evenly; align-items:center; }
 .cb-src{ cursor:grab; touch-action:none; padding:10px 12px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
@@ -1850,7 +1851,7 @@ const HWPX_TPL=[["mimetype", "YXBwbGljYXRpb24vaHdwK3ppcA=="], ["version.xml", "P
    - 비워 두면 "로컬 모드"(이 기기에만 저장, 즉시 사용 가능)
    자세한 설정 방법: 설계.md 6장 참고
    ========================================================= */
-const APP_VERSION = 'ver 173';   // v173: 쓰지 않는 2차 오답 숫자패드 코드 삭제 · 시각 읽기 시 2차·3차 「시 세기」 시연 · 시계 단계 「도와줘」
+const APP_VERSION = 'ver 174';   // v174: 받아올림 큐브 「도와줘」(옛 ▶ 자동 실행 버튼을 대신함 — 단계 힌트 → 자동 실행)
 const REMOTE = {
   url: 'https://flabuodwvywblybbfqwc.supabase.co',
   anonKey: 'sb_publishable_tNAVsdnTtUePE1zaKCeX-A_vWkWM8OM',  // 공개용(publishable) 키 — 앱에 내장하도록 설계된 키
@@ -2688,6 +2689,10 @@ const TRX = {
   '다 찾았어요.': { en: 'You found them all.', zh: '全部找到了。', vi: 'Tìm hết rồi.', ja: 'ぜんぶ みつけたね。', ru: 'Ты нашёл все.' },
   '노란 동그라미를 눌러요.': { en: 'Tap the yellow circle.', zh: '点黄色的圆圈。', vi: 'Chạm vào vòng tròn màu vàng.', ja: 'きいろい まるを おしてね。', ru: 'Нажми на жёлтый кружок.' },   // ver 173 눈금 세기 도와줘 1차
   '이어서 눌러요.': { en: 'Keep tapping.', zh: '接着点。', vi: 'Chạm tiếp nhé.', ja: 'つづけて おしてね。', ru: 'Нажимай дальше.' },   // ver 173 눈금 세기 도와줘 2차
+  '여기를 눌러요.': { en: 'Tap here.', zh: '点这里。', vi: 'Chạm vào đây.', ja: 'ここを おしてね。', ru: 'Нажми сюда.' },   // ver 174 받아올림 큐브 도와줘
+  '여기에 놓아요.': { en: 'Put it here.', zh: '放在这里。', vi: 'Đặt vào đây.', ja: 'ここに おいてね。', ru: 'Положи сюда.' },
+  '많아요. 눌러서 빼요.': { en: 'Too many. Tap one to take it away.', zh: '太多了。点一下拿走。', vi: 'Nhiều quá. Chạm để bớt đi.', ja: 'おおいよ。おして とってね。', ru: 'Слишком много. Нажми, чтобы убрать.' },
+  '다 놓았으면 여기를 눌러요.': { en: 'When you are done, tap here.', zh: '放好了就点这里。', vi: 'Đặt xong thì chạm vào đây.', ja: 'おきおわったら ここを おしてね。', ru: 'Когда закончишь, нажми сюда.' },
   '확인을 눌러요.': { en: 'Press OK.', zh: '按确认。', vi: 'Hãy bấm xác nhận.', ja: 'かくにんを おしてね。', ru: 'Нажми «Готово».' },   // ver 173 시계 도와줘(바늘을 이미 맞게 돌려 놓았을 때)
   '작은 수를 골라요. 긴바늘도 보세요.': { en: 'Choose the smaller number. Look at the long hand too.', zh: '选小的那个数。也看看长针。', vi: 'Chọn số nhỏ hơn. Nhìn cả kim dài nữa.', ja: 'ちいさい かずを えらんでね。ながい はりも みてね。', ru: 'Выбери меньшее число. Посмотри и на длинную стрелку.' },   // ver 129: 시각 읽기 4지선다 2차 힌트
   '앞 숫자까지 5씩 세고, 몇 칸 더 갔어요?': { en: 'Count by 5 up to the number before, then how many more marks?', zh: '先 5 个 5 个地数到前面的数字，再多走了几格？', vi: 'Đếm mỗi lần 5 đến số phía trước, rồi đi thêm mấy vạch?', ja: 'まえの すうじまで 5ずつ かぞえて、あと なんめもり すすんだ？', ru: 'Считай по 5 до предыдущей цифры. На сколько делений дальше?' },   // ver 129: 시각 읽기 1분 칸 1차 힌트
@@ -3469,10 +3474,11 @@ function watchHintTip() {
   const sync = () => { const tip = h.querySelector('.tip'); if (tip && tip.textContent.trim()) { const b = $('bubble'); if (b) b.innerHTML = koGlue(tip.innerHTML); } };   // v158: 역할 색(<b class=ca/cb>) 유지 · v165: 줄바꿈(<br>)도 그대로
   _tipObs = new MutationObserver(sync); _tipObs.observe(h, { childList: true, subtree: true, characterData: true }); sync();
 }
-/* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) · ver 173: 시계 단계에도 버튼(짝 뒤집기·콤보·시각 만들기는 기억·속도·자유 놀이라 제외, 받아올림 큐브는 아직 없음) */
+/* 「도와줘」: 학생이 스스로 힌트를 부름 — 1차, 다시 누르면 2차(오답 수는 안 셈, 힌트 단계는 기록) · ver 173: 시계 단계에도 버튼(짝 뒤집기·콤보·시각 만들기는 기억·속도·자유 놀이라 제외) · ver 174: 받아올림 큐브에도(옛 ▶ 자동 실행 버튼을 대신함) */
 function helpHint() {
   if (!session) return;
   if ((session.items[session.idx] || {}).type === 'clock') { clockHelp(); return; }   // ver 173: 시계 단계는 엔진이 유형별 힌트를 냄(15_clock help)
+  if ((session.items[session.idx] || {}).type === 'carry') { carryHelp(); return; }   // ver 174: 받아올림 큐브 — 단계 힌트 → 자동 실행(14_carry carryHelp)
   if (locked) return; const st = Math.min(2, (hintStage || 0) + 1); buddySay(st === 1 ? '같이 생각해 봐요' : '이렇게 해 봐요'); routeHint(st);
 }
 function renderProblem() {
@@ -3502,7 +3508,7 @@ function renderProblem() {
     <aside class="buddy-col" id="buddyCol">
       <div class="streak-card"><div class="lbl">연속 정답</div><div class="big"><b id="streakN">${sessionStreak()}</b><span>번째</span></div><div class="bars" id="streakBars">${streakBarsHtml()}</div><div class="sub">3번 연속이면 별 하나 더</div></div>
       <div class="buddy-card"><div class="buddy-face">${BUDDY_SVG}</div><div class="bubble" id="bubble">잘 보고 골라요</div>
-        ${p0.type === 'carry' || (p0.type === 'clock' && ['flip', 'combo', 'free'].includes(p0.group)) ? '' : '<button type="button" class="helpbtn" onclick="helpHint()">' + ICON_BULB + '<span>도와줘</span></button>'}</div>
+        ${p0.type === 'clock' && ['flip', 'combo', 'free'].includes(p0.group) ? '' : '<button type="button" class="helpbtn" onclick="helpHint()">' + ICON_BULB + '<span>도와줘</span></button>'}</div>
     </aside>
     </div>
   </div>`;
@@ -8978,7 +8984,6 @@ function carryFace(p) {
     <div class="cb-pad hidden" id="cbPad">${pad}</div>
     <div class="cb-tray hidden" id="cbTray"><div class="cb-src" data-k="t"><img class="cb-rod" src="${IMG_CUBE_ROD}" draggable="false" alt=""></div><div class="cb-src" data-k="o"><div class="cb-cube"></div></div></div>
     <button type="button" class="cb-ok hidden" id="cbOk" onclick="carryFreeDone()" aria-label="다 놓았어요">✓</button>
-    <button type="button" class="cb-demo" id="cbDemo" onclick="carryDemoToggle()" title="보여주기(교사)" aria-label="보여주기">▶</button>
   </div></div>`;
 }
 
@@ -8994,9 +8999,8 @@ function cbFrame(frame, n) {
 /* paintFace 끝에서 호출 — 상태 초기화 + 모형 그리기. 발화는 renderProblem이 carryBegin()으로 시작 */
 function initCarry() {
   const p = session.items[session.idx], q = $('carryq'); if (!q) return;
-  carry = { p, phase: 'present', placed: 0, wrong: {}, cnt: {}, revealed: false, tok: itemStart, sc: 1 };
+  carry = { p, phase: 'present', placed: 0, wrong: {}, cnt: {}, help: {}, revealed: false, tok: itemStart, sc: 1 };   // help = 단계별 「도와줘」 누른 횟수(ver 174)
   carryDemoOn = carryDemoReq === session.idx; carryDemoReq = null;
-  $('cbDemo').textContent = carryDemoOn ? '■' : '▶'; $('cbDemo').classList.toggle('on', carryDemoOn);
   q.style.setProperty('--img-cube', `url("${IMG_CUBE_ONE}")`);
   const build = p.kind === 'build' || p.kind === 'free', rods = $('cbRods'); rods.innerHTML = '';
   for (let i = 0; i < (build ? 0 : p.t); i++) rods.appendChild(cbRod());
@@ -9055,6 +9059,11 @@ function cbRect(el) { const r = el.getBoundingClientRect(), k = (window._sc || 1
 const carryIntro = p => p.kind === 'model' ? '식을 써요.' : p.kind === 'free' ? '막대와 낱개를 놓아서 식을 만들어요.' : p.kind === 'build' ? `${p.a} 더하기 ${p.b}${josaEul(p.b)} 만들어요.` : `${p.a} 더하기 ${p.b}${josaEun(p.b)}?`;   // speakProblem(🔊)도 이 문장
 function carryBegin() {
   if (!carry) return; locked = true;
+  buddySay(carryDemoOn ? '잘 보세요' : carryIntro(carry.p));   // ver 174: 친구 말풍선에 이 문제의 발문(자동 실행 중엔 「잘 보세요」)
+  if (!carryDemoOn) {   // ver 174: 「도와줘」 자동 실행이 끝나 같은 문제를 다시 냈으면 그 전의 오답 기록을 되살리고 힌트 2로 남김(자동 실행이 오답을 지워 주지 않게)
+    const k = carryKeep; carryKeep = null;
+    if (k && k.idx === session.idx && k.sid === session.startAt) { wrongCount = k.wc; wrongVals = k.wv; wrongTags = k.wt; hintStage = Math.max(hintStage, 2); }
+  }
   if (carry.p.kind === 'model') cbSay(carryIntro(carry.p), () => carryAskRead('rt'));
   else if (carry.p.kind === 'build' || carry.p.kind === 'free') cbSay(carryIntro(carry.p), carryStartBuild);
   else cbSay(carryIntro(carry.p), carryStartPlace);
@@ -9241,6 +9250,35 @@ function carryFinish() {
 }
 /* routeHint(stage) 경유(점검 도구·공통 라우터용) — 지금 입력 중인 칸에 힌트 */
 function carryRouteHint(stage) { if (!carry) return; const s = carry.phase; if (s === 'ones' || s === 'tens' || cbIsRead(s)) carryHint(s, stage); }
+
+/* ---- ver 174 「도와줘」(사용자 지시: 화면 구석에 따로 있던 ▶ 자동 실행 버튼을 친구 자리 「도와줘」로 바꿈) — 06_study helpHint가 부름.
+   같은 단계에서 첫 번째 누름 = 지금 단계의 힌트(할 일을 짚어 줌 / 답 칸은 모형을 세어 줌), 두 번째 누름 = 문제 전체 자동 실행(아래 보여주기) → "직접 해 봐요." → 같은 문제 다시.
+   오답으로 세지 않고 힌트 단계만 기록(짚기 1, 자동 실행 2). 자동 실행 중에 누르면 멈춤(옛 ■) ---- */
+let carryKeep = null;   // 자동 실행 직전의 기록 {idx, sid, wc, wv, wt} — 끝난 뒤 carryBegin이 되살림
+function cbHot(el) { if (!el) return; el.classList.remove('cb-hot'); void el.offsetWidth; el.classList.add('cb-hot'); cbTimer(() => el.classList.remove('cb-hot'), 2600); }
+function carryHelp() {
+  if (!carry || !session) return;
+  if (carryDemoOn) { carryDemoStop(); return; }
+  const ph = carry.phase;
+  if (locked || ph === 'present' || ph === 'fuse' || ph === 'done') return;   // 안내·받아올림 연출 중엔 기다림
+  const n = carry.help[ph] = (carry.help[ph] || 0) + 1;
+  if (n >= 2) { carryKeep = { idx: session.idx, sid: session.startAt, wc: wrongCount, wv: wrongVals.slice(), wt: wrongTags.slice() }; carryDemoToggle(); return; }
+  tick(); locked = true; hintStage = Math.max(hintStage, 1);
+  const say = (t, el) => { cbHot(el); buddySay(t); cbSay(t, cbUnlock); };
+  if (ph === 'ones' || ph === 'tens' || cbIsRead(ph)) { buddySay('같이 세어 봐요'); carryHint(ph, carry.wrong[ph] ? 2 : 1); return; }   // 답 칸: 모형을 세어 줌(이미 틀린 적이 있으면 소리 내어 하나씩)
+  if (ph === 'place' || ph === 'raise') { say('여기를 눌러요.', $('cbOB')); return; }
+  if (ph === 'build') {
+    const c = cbBuildCounts(), p = carry.p;
+    if (p.kind === 'free') {   // 자유 식: 낱개가 위·아래에 하나씩은 있어야 함
+      if (cbFreeValid(c)) say('다 놓았으면 여기를 눌러요.', $('cbOk')); else say('여기에 놓아요.', $(c.u < 1 ? 'cbOT' : 'cbOB'));
+      return;
+    }
+    const cells = [['cbTT', c.t, p.t], ['cbOT', c.u, p.u], ['cbOB', c.b, p.b]], less = cells.find(x => x[1] < x[2]), more = cells.find(x => x[1] > x[2]);
+    if (less) say('여기에 놓아요.', $(less[0])); else if (more) say('많아요. 눌러서 빼요.', $(more[0])); else cbUnlock();
+    return;
+  }
+  cbUnlock();
+}
 
 /* ---- 교사 ▶ 보여주기(설계 §6): 현재 문제를 앱이 ②~⑦까지 자동 수행. 음성은 학생용 문장 그대로, 탭은 0.6초 간격, 입력 칸은 앱이 채움(패드 숨김).
    ■(중지)·끝남 → 같은 문제를 학생용으로 다시 제시("직접 해 봐요."). 시연한 문제는 기록·점수에 남지 않는다(renderProblem이 오답 수를 초기화) ---- */
